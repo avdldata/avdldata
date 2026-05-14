@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arjan van der Laan | Data & Automation</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --text: #1a1a1a;
+      --muted: #666666;
+      --soft: #f5f7fb;
+      --line: #e7eaf0;
+      --accent: #2563eb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #ffffff;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .page {
+      width: min(100% - 40px, 760px);
+      margin: 0 auto;
+      padding: 72px 0 40px;
+    }
+
+    header {
+      padding: 28px 0 56px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 680px;
+      font-size: clamp(2.25rem, 7vw, 4.5rem);
+      line-height: 1.05;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin-top: 20px;
+      color: var(--accent);
+      font-size: clamp(1.05rem, 3vw, 1.35rem);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .location {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    main {
+      padding: 44px 0 0;
+    }
+
+    section {
+      padding: 34px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    section:first-child {
+      padding-top: 0;
+    }
+
+    h2 {
+      margin-bottom: 18px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .intro {
+      max-width: 660px;
+      font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+      line-height: 1.75;
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .list li {
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      font-weight: 500;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      text-underline-offset: 0.18em;
+      transition: color 160ms ease, text-decoration-color 160ms ease;
+    }
+
+    a:hover,
+    a:focus-visible {
+      color: #1746a2;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+    }
+
+    a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    footer {
+      padding-top: 30px;
+      color: #777777;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 560px) {
+      .page {
+        width: min(100% - 28px, 760px);
+        padding: 44px 0 30px;
+      }
+
+      header {
+        padding: 18px 0 42px;
+      }
+
+      main {
+        padding-top: 34px;
+      }
+
+      section {
+        padding: 28px 0;
+      }
+
+      .list li {
+        padding: 14px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Arjan van der Laan</h1>
+      <p class="subtitle">Data &amp; Automation | Power BI &middot; n8n &middot; AI</p>
+      <p class="location">Groningen, Netherlands</p>
+    </header>
+
+    <main>
+      <section aria-labelledby="intro-heading">
+        <h2 id="intro-heading">About</h2>
+        <p class="intro">I build automated reporting systems and workflows for small and medium businesses. Background in IT, onboarding and PMO — now combining Power BI, n8n and AI to make data actually useful.</p>
+      </section>
+
+      <section aria-labelledby="building-heading">
+        <h2 id="building-heading">What I'm building</h2>
+        <ul class="list">
+          <li>Power BI dashboards &amp; automated reporting</li>
+          <li>Workflow automation with n8n</li>
+          <li>AI-assisted data pipelines</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="learning-heading">
+        <h2 id="learning-heading">Learning in public</h2>
+        <p>I share my projects and experiments publicly on <a href="https://github.com/avdldata">GitHub</a>.</p>
+      </section>
+
+      <section aria-labelledby="contact-heading">
+        <h2 id="contact-heading">Contact</h2>
+        <p>Open to connections and small projects. <a href="mailto:arjanvdlaanzakelijk@gmail.com">arjanvdlaanzakelijk@gmail.com</a></p>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Arjan van der Laan</p>
+    </footer>
+  </div>
+</body>
+</html>
