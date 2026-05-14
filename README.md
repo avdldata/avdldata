@@ -1,16 +1,16 @@
-## Hi there 👋
+# 👋 Hi, ik ben Arjan
 
-<!--
-**avldata/avldata** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+Data & automation enthousiast uit het noorden van Nederland.
+Achtergrond in IT, onboarding en PMO — nu bouwend met Power BI, n8n en AI.
 
-Here are some ideas to get you started:
+## Wat ik nu doe
+- 📊 Power BI (werkend aan PL-300)
+- ⚙️ Automatisering met n8n
+- 🤖 Experimenteren met AI-agents
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+## Learning in public
+Op deze GitHub deel ik kleine projecten en experimenten.
+Doel: leren door te bouwen, niet door cursussen te stapelen.
+
+---
+*Open voor connecties — bereik me via [later toe te voegen]*
