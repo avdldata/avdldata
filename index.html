@@ -1,203 +1,946 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Arjan van der Laan | Data & Automation</title>
+  <meta name="description" content="AVDLData bouwt automatische Power BI dashboards, AI-rapportages en workflow automatisering voor accountantskantoren en het MKB.">
+  <title>AVDLData | Automatische rapportages voor accountantskantoren</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      color-scheme: light;
-      --text: #1a1a1a;
-      --muted: #666666;
-      --soft: #f5f7fb;
-      --line: #e7eaf0;
+      --dark: #0f172a;
+      --dark-soft: #16213a;
+      --light: #f8fafc;
+      --white: #ffffff;
+      --text: #102033;
+      --muted: #64748b;
+      --line: #e2e8f0;
       --accent: #2563eb;
+      --accent-dark: #1d4ed8;
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
+      --radius: 22px;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      background: #ffffff;
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 16px;
-      line-height: 1.65;
+      background: var(--dark);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
     }
 
-    .page {
-      width: min(100% - 40px, 760px);
-      margin: 0 auto;
-      padding: 72px 0 40px;
+    body.menu-open {
+      overflow: hidden;
     }
 
-    header {
-      padding: 28px 0 56px;
-      border-bottom: 1px solid var(--line);
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .container {
+      width: min(100% - 32px, 1160px);
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 76px;
+      gap: 28px;
+    }
+
+    .logo {
+      color: var(--white);
+      font-size: 1.22rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      color: rgba(255, 255, 255, 0.74);
+      font-size: 0.94rem;
+      font-weight: 650;
+    }
+
+    .nav-links a {
+      transition: color 180ms ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--white);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .menu-toggle {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--white);
+      cursor: pointer;
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      margin: 4px auto;
+      border-radius: 20px;
+      background: currentColor;
+      transition: transform 180ms ease, opacity 180ms ease;
+    }
+
+    body.menu-open .menu-toggle span:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+
+    body.menu-open .menu-toggle span:nth-child(2) {
+      opacity: 0;
+    }
+
+    body.menu-open .menu-toggle span:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 20px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      font-weight: 800;
+      line-height: 1;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      color: var(--white);
+      background: var(--accent);
+      box-shadow: 0 18px 36px rgba(37, 99, 235, 0.28);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      box-shadow: 0 20px 42px rgba(37, 99, 235, 0.36);
+    }
+
+    .btn-secondary {
+      color: var(--white);
+      border-color: rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-secondary:hover {
+      border-color: rgba(255, 255, 255, 0.42);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-dark {
+      color: var(--white);
+      background: var(--dark);
+    }
+
+    .btn-dark:hover {
+      background: #111d35;
+      box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 112px 0 96px;
+      color: var(--white);
+      background:
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.34), transparent 34%),
+        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        var(--dark);
+      background-size: auto, 38px 38px, 38px 38px, auto;
+    }
+
+    .hero::after {
+      position: absolute;
+      right: -90px;
+      bottom: -120px;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: rgba(37, 99, 235, 0.18);
+      filter: blur(30px);
+      content: "";
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 36px;
+      padding: 0 14px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 999px;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 0.9rem;
+      font-weight: 700;
     }
 
     h1,
     h2,
+    h3,
     p {
       margin: 0;
     }
 
     h1 {
-      max-width: 680px;
-      font-size: clamp(2.25rem, 7vw, 4.5rem);
-      line-height: 1.05;
-      font-weight: 700;
-      letter-spacing: 0;
+      max-width: 980px;
+      margin-top: 24px;
+      font-size: clamp(3rem, 8vw, 6.8rem);
+      line-height: 0.95;
+      font-weight: 900;
+      letter-spacing: -0.06em;
     }
 
-    .subtitle {
-      margin-top: 20px;
-      color: var(--accent);
-      font-size: clamp(1.05rem, 3vw, 1.35rem);
-      font-weight: 600;
-      line-height: 1.4;
-    }
-
-    .location {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 0.98rem;
-    }
-
-    main {
-      padding: 44px 0 0;
-    }
-
-    section {
-      padding: 34px 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    section:first-child {
-      padding-top: 0;
-    }
-
-    h2 {
-      margin-bottom: 18px;
-      font-size: 0.84rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .intro {
-      max-width: 660px;
-      font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+    .hero p {
+      max-width: 760px;
+      margin-top: 28px;
+      color: rgba(255, 255, 255, 0.76);
+      font-size: clamp(1.08rem, 2vw, 1.35rem);
       line-height: 1.75;
     }
 
-    .list {
-      display: grid;
-      gap: 12px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 36px;
     }
 
-    .list li {
-      padding: 16px 18px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--soft);
-      font-weight: 500;
+    .section {
+      padding: 92px 0;
     }
 
-    a {
+    .section-light {
+      background: var(--light);
+    }
+
+    .section-dark {
+      color: var(--white);
+      background: var(--dark);
+    }
+
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 42px;
+    }
+
+    .eyebrow {
       color: var(--accent);
-      text-decoration: none;
-      text-underline-offset: 0.18em;
-      transition: color 160ms ease, text-decoration-color 160ms ease;
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
     }
 
-    a:hover,
-    a:focus-visible {
-      color: #1746a2;
-      text-decoration: underline;
-      text-decoration-thickness: 1px;
+    h2 {
+      margin-top: 10px;
+      font-size: clamp(2.1rem, 5vw, 4rem);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.055em;
     }
 
-    a:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 3px;
-      border-radius: 2px;
+    .section-head p {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 1.08rem;
     }
 
-    footer {
-      padding-top: 30px;
-      color: #777777;
+    .section-dark .section-head p,
+    .section-dark .muted {
+      color: rgba(255, 255, 255, 0.68);
+    }
+
+    .proof {
+      padding: 28px 0;
+      background: var(--light);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .proof-item {
+      padding: 18px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--white);
+      color: var(--text);
+      font-weight: 850;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .card,
+    .product-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    }
+
+    .card {
+      min-height: 360px;
+      padding: 30px;
+    }
+
+    .card:hover,
+    .product-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(37, 99, 235, 0.34);
+      box-shadow: var(--shadow);
+    }
+
+    .icon {
+      display: grid;
+      width: 54px;
+      height: 54px;
+      margin-bottom: 28px;
+      place-items: center;
+      border-radius: 16px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 1.6rem;
+    }
+
+    h3 {
+      font-size: 1.35rem;
+      line-height: 1.2;
+      font-weight: 900;
+      letter-spacing: -0.035em;
+    }
+
+    .card p,
+    .product-card p,
+    .about-copy {
+      margin-top: 16px;
+      color: var(--muted);
+    }
+
+    .price {
+      display: inline-flex;
+      margin-top: 24px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: var(--accent);
+      background: var(--accent-soft);
       font-size: 0.9rem;
+      font-weight: 900;
     }
 
-    @media (max-width: 560px) {
-      .page {
-        width: min(100% - 28px, 760px);
-        padding: 44px 0 30px;
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      counter-reset: steps;
+    }
+
+    .step {
+      position: relative;
+      min-height: 260px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .step::before {
+      display: grid;
+      width: 52px;
+      height: 52px;
+      margin-bottom: 28px;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--white);
+      background: var(--accent);
+      font-weight: 900;
+      counter-increment: steps;
+      content: counter(steps);
+    }
+
+    .step p {
+      margin-top: 14px;
+      color: rgba(255, 255, 255, 0.68);
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .product-card {
+      padding: 30px;
+    }
+
+    .product-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .product-badge {
+      display: inline-flex;
+      padding: 8px 11px;
+      border-radius: 999px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-size: 0.78rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .product-price {
+      margin-top: 28px;
+      font-size: 2rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+
+    .product-link {
+      display: inline-flex;
+      margin-top: 26px;
+      color: var(--accent);
+      font-weight: 900;
+      transition: transform 180ms ease, color 180ms ease;
+    }
+
+    .product-link:hover {
+      color: var(--accent-dark);
+      transform: translateX(4px);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 42px;
+      align-items: center;
+    }
+
+    .about-panel {
+      padding: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .about-link,
+    .about-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.82);
+      font-weight: 750;
+    }
+
+    .about-link:hover {
+      color: var(--white);
+    }
+
+    .about-row:last-child {
+      border-bottom: 0;
+    }
+
+    .availability {
+      color: #86efac;
+    }
+
+    .contact {
+      text-align: center;
+    }
+
+    .contact .section-head {
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    .contact-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .contact .btn {
+      min-height: 58px;
+      padding: 0 28px;
+      font-size: 1rem;
+    }
+
+    .secondary-link {
+      color: var(--muted);
+      font-weight: 750;
+      transition: color 180ms ease;
+    }
+
+    .secondary-link:hover {
+      color: var(--accent);
+    }
+
+    .footer {
+      padding: 34px 0;
+      color: rgba(255, 255, 255, 0.68);
+      background: var(--dark);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      font-size: 0.94rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 18px;
+      font-weight: 750;
+    }
+
+    .footer a {
+      transition: color 180ms ease;
+    }
+
+    .footer a:hover {
+      color: var(--white);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 700ms ease, transform 700ms ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
       }
 
-      header {
-        padding: 18px 0 42px;
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @media (max-width: 920px) {
+      .nav-links {
+        position: fixed;
+        inset: 76px 0 auto 0;
+        display: grid;
+        gap: 0;
+        padding: 10px 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(15, 23, 42, 0.96);
+        transform: translateY(-120%);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 220ms ease, opacity 220ms ease;
       }
 
-      main {
-        padding-top: 34px;
+      body.menu-open .nav-links {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
       }
 
-      section {
-        padding: 28px 0;
+      .nav-links a {
+        padding: 16px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       }
 
-      .list li {
-        padding: 14px 15px;
+      .nav-links a:last-child {
+        border-bottom: 0;
+      }
+
+      .nav-actions .btn {
+        display: none;
+      }
+
+      .menu-toggle {
+        display: inline-block;
+      }
+
+      .proof-grid,
+      .cards,
+      .steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .products,
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        width: min(100% - 24px, 1160px);
+      }
+
+      .nav-inner {
+        min-height: 68px;
+      }
+
+      .nav-links {
+        inset: 68px 0 auto 0;
+      }
+
+      .hero {
+        padding: 74px 0 68px;
+      }
+
+      h1 {
+        font-size: clamp(2.65rem, 15vw, 4.4rem);
+      }
+
+      .hero-actions,
+      .footer-inner {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .section {
+        padding: 68px 0;
+      }
+
+      .proof-grid,
+      .cards,
+      .steps,
+      .products {
+        grid-template-columns: 1fr;
+      }
+
+      .card,
+      .product-card,
+      .step,
+      .about-panel {
+        border-radius: 18px;
+        padding: 24px;
+      }
+
+      .product-top {
+        display: grid;
+      }
+
+      .footer-links {
+        flex-wrap: wrap;
       }
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <header>
-      <h1>Arjan van der Laan</h1>
-      <p class="subtitle">Data &amp; Automation | Power BI &middot; n8n &middot; AI</p>
-      <p class="location">Groningen, Netherlands</p>
-    </header>
+  <nav class="nav" aria-label="Hoofdnavigatie">
+    <div class="container nav-inner">
+      <a class="logo" href="#top" aria-label="AVDLData home">AVDL<span>Data</span></a>
+      <div class="nav-links" id="nav-links">
+        <a href="#diensten">Diensten</a>
+        <a href="#producten">Producten</a>
+        <a href="#over-mij">Over mij</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-primary" href="mailto:arjanvdlaanzakelijk@gmail.com">Plan een gesprek</a>
+        <button class="menu-toggle" type="button" aria-label="Menu openen" aria-expanded="false" aria-controls="nav-links">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
 
-    <main>
-      <section aria-labelledby="intro-heading">
-        <h2 id="intro-heading">About</h2>
-        <p class="intro">I build automated reporting systems and workflows for small and medium businesses. Background in IT, onboarding and PMO — now combining Power BI, n8n and AI to make data actually useful.</p>
-      </section>
+  <header class="hero" id="top">
+    <div class="container hero-content reveal">
+      <div class="badge">📍 Groningen, Nederland</div>
+      <h1>Automatische rapportages die uw klanten écht gebruiken</h1>
+      <p>Ik bouw geautomatiseerde Power BI dashboards en AI-rapportages voor accountantskantoren en MKB — zodat u meer tijd heeft voor advies en minder voor Excel.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#producten">Bekijk een demo →</a>
+        <a class="btn btn-secondary" href="#diensten">Lees meer ↓</a>
+      </div>
+    </div>
+  </header>
 
-      <section aria-labelledby="building-heading">
-        <h2 id="building-heading">What I'm building</h2>
-        <ul class="list">
-          <li>Power BI dashboards &amp; automated reporting</li>
-          <li>Workflow automation with n8n</li>
-          <li>AI-assisted data pipelines</li>
-        </ul>
-      </section>
+  <main>
+    <section class="proof" aria-label="Social proof">
+      <div class="container proof-grid reveal">
+        <div class="proof-item">16.8M+ datapunten verwerkt</div>
+        <div class="proof-item">Power BI + n8n + AI</div>
+        <div class="proof-item">Noord-Nederland</div>
+        <div class="proof-item">Beschikbaar voor nieuwe projecten</div>
+      </div>
+    </section>
 
-      <section aria-labelledby="learning-heading">
-        <h2 id="learning-heading">Learning in public</h2>
-        <p>I share my projects and experiments publicly on <a href="https://github.com/avdldata">GitHub</a>.</p>
-      </section>
+    <section class="section section-light" id="diensten">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="eyebrow">Diensten</div>
+          <h2>Wat ik voor u bouw</h2>
+        </div>
+        <div class="cards">
+          <article class="card reveal">
+            <div class="icon" aria-hidden="true">↻</div>
+            <h3>Automatische Rapportages</h3>
+            <p>Maandelijkse financiële rapporten die automatisch worden gegenereerd vanuit uw boekhoudpakket (Exact, SnelStart) en direct naar uw klanten worden gestuurd.</p>
+            <span class="price">Vanaf €350/maand</span>
+          </article>
+          <article class="card reveal">
+            <div class="icon" aria-hidden="true">▦</div>
+            <h3>Power BI Dashboards</h3>
+            <p>Live dashboards die uw klanten zelf kunnen bekijken. Altijd actueel, altijd inzichtelijk. Gekoppeld aan uw bestaande data.</p>
+            <span class="price">Vanaf €1.500 eenmalig</span>
+          </article>
+          <article class="card reveal">
+            <div class="icon" aria-hidden="true">⚡</div>
+            <h3>Workflow Automatisering</h3>
+            <p>Repetitieve processen automatiseren met n8n en AI. Van cliëntacceptatie tot debiteursignalering — wij maken het slim.</p>
+            <span class="price">Op aanvraag</span>
+          </article>
+        </div>
+      </div>
+    </section>
 
-      <section aria-labelledby="contact-heading">
-        <h2 id="contact-heading">Contact</h2>
-        <p>Open to connections and small projects. <a href="mailto:arjanvdlaanzakelijk@gmail.com">arjanvdlaanzakelijk@gmail.com</a></p>
-      </section>
-    </main>
+    <section class="section section-dark" id="proces">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="eyebrow">Proces</div>
+          <h2>Hoe het werkt</h2>
+        </div>
+        <div class="steps">
+          <article class="step reveal">
+            <h3>Intake gesprek</h3>
+            <p>We bespreken uw processen en pijnpunten. Wat kost nu de meeste tijd?</p>
+          </article>
+          <article class="step reveal">
+            <h3>Wij bouwen</h3>
+            <p>In 2-4 weken bouwen wij uw automatisering. U hoeft niks te doen.</p>
+          </article>
+          <article class="step reveal">
+            <h3>U profiteert</h3>
+            <p>Elke maand automatisch. Minder handwerk, meer inzicht, betere service.</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-    <footer>
-      <p>&copy; 2026 Arjan van der Laan</p>
-    </footer>
-  </div>
+    <section class="section section-light" id="producten">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="eyebrow">Producten</div>
+          <h2>Kant-en-klare oplossingen</h2>
+          <p>Direct te gebruiken templates en rapporten — geen maatwerk nodig</p>
+        </div>
+        <div class="products">
+          <article class="product-card reveal">
+            <div class="product-top">
+              <h3>AVDLData Reports</h3>
+              <span class="product-badge">Power BI template</span>
+            </div>
+            <p>Volledig ingerichte Power BI rapportage voor MKB-klanten. Koppel uw eigen data en u bent klaar.</p>
+            <div class="product-price">€299 eenmalig</div>
+            <a class="product-link" href="mailto:arjanvdlaanzakelijk@gmail.com?subject=Meer%20info%20over%20AVDLData%20Reports">Meer info →</a>
+          </article>
+          <article class="product-card reveal">
+            <div class="product-top">
+              <h3>AVDLData Insights</h3>
+              <span class="product-badge">n8n + Power BI</span>
+            </div>
+            <p>n8n workflow + Power BI dashboard voor accountantskantoren. Inclusief installatie-handleiding.</p>
+            <div class="product-price">€499 eenmalig</div>
+            <a class="product-link" href="mailto:arjanvdlaanzakelijk@gmail.com?subject=Meer%20info%20over%20AVDLData%20Insights">Meer info →</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark" id="over-mij">
+      <div class="container about-grid">
+        <div class="reveal">
+          <div class="eyebrow">Over mij</div>
+          <h2>Over Arjan</h2>
+          <p class="about-copy">Achtergrond in IT, onboarding en PMO. Nu gespecialiseerd in data-automatisering en AI voor het MKB. Ik bouw dingen die écht werken — geen PowerPoints, geen praatjes.</p>
+        </div>
+        <div class="about-panel reveal">
+          <a class="about-link" href="https://github.com/avdldata">
+            <span>GitHub</span>
+            <span>github.com/avdldata →</span>
+          </a>
+          <div class="about-row">
+            <span>Locatie</span>
+            <span>Groningen, Nederland</span>
+          </div>
+          <div class="about-row">
+            <span>Status</span>
+            <span class="availability">✓ Beschikbaar voor nieuwe projecten</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-light contact" id="contact">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="eyebrow">Contact</div>
+          <h2>Klaar om te starten?</h2>
+          <p>Plan een vrijblijvend gesprek van 30 minuten. Ik vertel u precies wat ik voor u kan betekenen.</p>
+        </div>
+        <div class="contact-actions reveal">
+          <a class="btn btn-dark" href="mailto:arjanvdlaanzakelijk@gmail.com">Plan een gesprek → arjanvdlaanzakelijk@gmail.com</a>
+          <a class="secondary-link" href="#" aria-label="LinkedIn profiel placeholder">Of stuur een bericht op LinkedIn</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>© 2026 AVDLData — Arjan van der Laan | Groningen, Nederland</p>
+      <div class="footer-links">
+        <a href="https://github.com/avdldata">GitHub</a>
+        <a href="#" aria-label="LinkedIn placeholder">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const body = document.body;
+    const toggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const revealItems = document.querySelectorAll('.reveal');
+    const observedSections = document.querySelectorAll('main section[id]');
+
+    toggle.addEventListener('click', () => {
+      const isOpen = body.classList.toggle('menu-open');
+      toggle.setAttribute('aria-expanded', String(isOpen));
+      toggle.setAttribute('aria-label', isOpen ? 'Menu sluiten' : 'Menu openen');
+    });
+
+    navLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        body.classList.remove('menu-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Menu openen');
+      });
+    });
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.14 });
+
+    revealItems.forEach((item) => revealObserver.observe(item));
+
+    const navObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach((link) => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+        });
+      });
+    }, { rootMargin: '-35% 0px -55% 0px', threshold: 0 });
+
+    observedSections.forEach((section) => navObserver.observe(section));
+  </script>
 </body>
 </html>
