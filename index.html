@@ -3,595 +3,653 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="AVDLData bouwt automatische Power BI dashboards, AI-rapportages en workflow automatisering voor accountantskantoren en het MKB.">
-  <title>AVDLData | Automatische rapportages voor accountantskantoren</title>
+  <meta name="description" content="AVDLData Transport Dashboard Starter. Power BI-dashboard voor transportbedrijven met 5-25 voertuigen, in 4 weken, vaste prijs €2.495. Voor Boltrics 3PL Dynamics en AFAS.">
+  <title>AVDLData | Power BI-dashboard voor transport-MKB, vaste prijs €2.495</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --dark: #0f172a;
-      --dark-soft: #16213a;
+      --dark-2: #111c31;
       --light: #f8fafc;
       --white: #ffffff;
-      --text: #102033;
+      --text: #142033;
       --muted: #64748b;
-      --line: #e2e8f0;
+      --line: #dbe3ee;
+      --line-dark: rgba(255, 255, 255, 0.12);
       --accent: #2563eb;
       --accent-dark: #1d4ed8;
-      --accent-soft: rgba(37, 99, 235, 0.12);
-      --shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
-      --radius: 22px;
+      --green: #16a34a;
+      --red: #dc2626;
+      --max: 1120px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
       color: var(--text);
-      background: var(--dark);
+      background: var(--light);
       font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
     }
 
-    body.menu-open {
-      overflow: hidden;
-    }
+    a { color: inherit; text-decoration: none; }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button,
-    a {
-      -webkit-tap-highlight-color: transparent;
+    a:focus-visible,
+    button:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.45);
+      outline-offset: 3px;
     }
 
     .container {
-      width: min(100% - 32px, 1160px);
+      width: min(100% - 32px, var(--max));
       margin: 0 auto;
     }
 
+    /* ===== Nav ===== */
     .nav {
       position: sticky;
       top: 0;
-      z-index: 40;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(15, 23, 42, 0.82);
-      backdrop-filter: blur(18px);
+      z-index: 20;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+      background: rgba(248, 250, 252, 0.9);
+      backdrop-filter: blur(14px);
     }
 
     .nav-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: 76px;
-      gap: 28px;
+      min-height: 74px;
+      gap: 24px;
     }
 
     .logo {
-      color: var(--white);
-      font-size: 1.22rem;
-      font-weight: 900;
-      letter-spacing: -0.04em;
+      color: var(--dark);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -0.035em;
     }
 
-    .logo span {
-      color: var(--accent);
-    }
+    .logo span { color: var(--accent); }
 
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      color: rgba(255, 255, 255, 0.74);
-      font-size: 0.94rem;
-      font-weight: 650;
-    }
-
-    .nav-links a {
-      transition: color 180ms ease;
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active {
-      color: var(--white);
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .menu-toggle {
-      display: none;
-      width: 44px;
-      height: 44px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--white);
-      cursor: pointer;
-    }
-
-    .menu-toggle span {
-      display: block;
-      width: 18px;
-      height: 2px;
-      margin: 4px auto;
-      border-radius: 20px;
-      background: currentColor;
-      transition: transform 180ms ease, opacity 180ms ease;
-    }
-
-    body.menu-open .menu-toggle span:nth-child(1) {
-      transform: translateY(6px) rotate(45deg);
-    }
-
-    body.menu-open .menu-toggle span:nth-child(2) {
-      opacity: 0;
-    }
-
-    body.menu-open .menu-toggle span:nth-child(3) {
-      transform: translateY(-6px) rotate(-45deg);
-    }
-
+    /* ===== Buttons ===== */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       min-height: 46px;
-      padding: 0 20px;
-      border: 1px solid transparent;
-      border-radius: 999px;
-      font-weight: 800;
+      padding: 0 18px;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      color: var(--white);
+      background: var(--accent);
+      font-size: 0.95rem;
+      font-weight: 750;
       line-height: 1;
-      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+      transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
     }
 
     .btn:hover {
-      transform: translateY(-2px);
-    }
-
-    .btn-primary {
-      color: var(--white);
-      background: var(--accent);
-      box-shadow: 0 18px 36px rgba(37, 99, 235, 0.28);
-    }
-
-    .btn-primary:hover {
+      border-color: var(--accent-dark);
       background: var(--accent-dark);
-      box-shadow: 0 20px 42px rgba(37, 99, 235, 0.36);
+      transform: translateY(-1px);
     }
 
-    .btn-secondary {
+    .btn-outline {
+      color: var(--dark);
+      background: transparent;
+      border-color: var(--line);
+    }
+
+    .btn-outline:hover {
       color: var(--white);
-      border-color: rgba(255, 255, 255, 0.22);
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .btn-secondary:hover {
-      border-color: rgba(255, 255, 255, 0.42);
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .btn-dark {
-      color: var(--white);
+      border-color: var(--dark);
       background: var(--dark);
     }
 
-    .btn-dark:hover {
-      background: #111d35;
-      box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+    .btn-large {
+      min-height: 54px;
+      padding: 0 26px;
+      font-size: 1.02rem;
     }
 
-    .hero {
-      position: relative;
-      overflow: hidden;
-      padding: 112px 0 96px;
-      color: var(--white);
-      background:
-        radial-gradient(circle at top right, rgba(37, 99, 235, 0.34), transparent 34%),
-        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-        var(--dark);
-      background-size: auto, 38px 38px, 38px 38px, auto;
-    }
-
-    .hero::after {
-      position: absolute;
-      right: -90px;
-      bottom: -120px;
-      width: 360px;
-      height: 360px;
-      border-radius: 50%;
-      background: rgba(37, 99, 235, 0.18);
-      filter: blur(30px);
-      content: "";
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 1;
-      max-width: 900px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 36px;
-      padding: 0 14px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 999px;
-      color: rgba(255, 255, 255, 0.82);
-      background: rgba(255, 255, 255, 0.08);
-      font-size: 0.9rem;
-      font-weight: 700;
-    }
-
-    h1,
-    h2,
-    h3,
-    p {
-      margin: 0;
-    }
+    /* ===== Typography ===== */
+    h1, h2, h3, h4, p { margin: 0; }
 
     h1 {
-      max-width: 980px;
-      margin-top: 24px;
-      font-size: clamp(3rem, 8vw, 6.8rem);
-      line-height: 0.95;
-      font-weight: 900;
-      letter-spacing: -0.06em;
+      max-width: 900px;
+      margin-top: 18px;
+      font-size: clamp(2.4rem, 6vw, 4.6rem);
+      line-height: 1.0;
+      font-weight: 800;
+      letter-spacing: -0.055em;
     }
 
-    .hero p {
+    h2 {
+      font-size: clamp(1.9rem, 4.6vw, 3.4rem);
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+    }
+
+    h3 {
+      font-size: 1.18rem;
+      line-height: 1.3;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    /* ===== Hero ===== */
+    .hero {
+      color: var(--white);
+      background: var(--dark);
+      border-bottom: 1px solid var(--line-dark);
+    }
+
+    .hero-inner {
+      max-width: 940px;
+      padding: 100px 0 84px;
+    }
+
+    .kicker {
+      color: #93c5fd;
+      font-size: 0.86rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .hero-copy {
       max-width: 760px;
       margin-top: 28px;
-      color: rgba(255, 255, 255, 0.76);
-      font-size: clamp(1.08rem, 2vw, 1.35rem);
-      line-height: 1.75;
+      color: rgba(255, 255, 255, 0.74);
+      font-size: clamp(1.08rem, 2vw, 1.3rem);
+      line-height: 1.7;
     }
 
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 12px;
       margin-top: 36px;
     }
 
-    .section {
-      padding: 92px 0;
-    }
-
-    .section-light {
-      background: var(--light);
-    }
-
-    .section-dark {
+    .hero-actions .btn-outline {
       color: var(--white);
-      background: var(--dark);
+      border-color: rgba(255, 255, 255, 0.3);
     }
+
+    .hero-actions .btn-outline:hover {
+      background: var(--white);
+      color: var(--dark);
+      border-color: var(--white);
+    }
+
+    .hero-note {
+      max-width: 720px;
+      margin-top: 22px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.95rem;
+    }
+
+    /* ===== Sections ===== */
+    .section { padding: 88px 0; }
+    .section-light { background: var(--light); }
+    .section-white { background: var(--white); }
+    .section-dark { color: var(--white); background: var(--dark); }
 
     .section-head {
       max-width: 760px;
-      margin-bottom: 42px;
-    }
-
-    .eyebrow {
-      color: var(--accent);
-      font-size: 0.82rem;
-      font-weight: 900;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-
-    h2 {
-      margin-top: 10px;
-      font-size: clamp(2.1rem, 5vw, 4rem);
-      line-height: 1;
-      font-weight: 900;
-      letter-spacing: -0.055em;
+      margin-bottom: 44px;
     }
 
     .section-head p {
-      margin-top: 18px;
+      margin-top: 16px;
       color: var(--muted);
-      font-size: 1.08rem;
+      font-size: 1.05rem;
     }
 
-    .section-dark .section-head p,
-    .section-dark .muted {
-      color: rgba(255, 255, 255, 0.68);
+    .section-dark .section-head p { color: rgba(255, 255, 255, 0.7); }
+
+    .label {
+      display: inline-block;
+      margin-bottom: 16px;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
     }
 
-    .proof {
-      padding: 28px 0;
-      background: var(--light);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .proof-grid {
+    /* ===== Grids ===== */
+    .grid-3 {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
     }
 
-    .proof-item {
-      padding: 18px 18px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--white);
-      color: var(--text);
-      font-weight: 850;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
-    }
-
-    .cards {
+    .grid-5 {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
     }
 
-    .card,
-    .product-card {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--white);
-      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
-      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px;
     }
 
     .card {
-      min-height: 360px;
-      padding: 30px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--white);
+      transition: border-color 160ms ease, transform 160ms ease;
     }
 
-    .card:hover,
-    .product-card:hover {
-      transform: translateY(-8px);
-      border-color: rgba(37, 99, 235, 0.34);
-      box-shadow: var(--shadow);
+    .card:hover {
+      border-color: rgba(37, 99, 235, 0.45);
+      transform: translateY(-3px);
     }
 
-    .icon {
-      display: grid;
-      width: 54px;
-      height: 54px;
-      margin-bottom: 28px;
-      place-items: center;
-      border-radius: 16px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-size: 1.6rem;
-    }
-
-    h3 {
-      font-size: 1.35rem;
-      line-height: 1.2;
-      font-weight: 900;
-      letter-spacing: -0.035em;
-    }
-
-    .card p,
-    .product-card p,
-    .about-copy {
-      margin-top: 16px;
+    .card p {
+      margin-top: 12px;
       color: var(--muted);
     }
 
-    .price {
+    /* ===== Steps (Hoe het werkt) ===== */
+    .step-num {
       display: inline-flex;
-      margin-top: 24px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      color: var(--accent);
-      background: var(--accent-soft);
-      font-size: 0.9rem;
-      font-weight: 900;
-    }
-
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
-      counter-reset: steps;
-    }
-
-    .step {
-      position: relative;
-      min-height: 260px;
-      padding: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.055);
-    }
-
-    .step::before {
-      display: grid;
-      width: 52px;
-      height: 52px;
-      margin-bottom: 28px;
-      place-items: center;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      margin-bottom: 14px;
       border-radius: 50%;
-      color: var(--white);
       background: var(--accent);
-      font-weight: 900;
-      counter-increment: steps;
-      content: counter(steps);
+      color: var(--white);
+      font-weight: 800;
+      font-size: 0.95rem;
     }
 
-    .step p {
-      margin-top: 14px;
-      color: rgba(255, 255, 255, 0.68);
+    .step-week {
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
     }
 
-    .products {
+    /* ===== Bullet list ===== */
+    .bullet-list {
+      list-style: none;
+      padding: 0;
+      margin: 32px 0 0;
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 22px;
+      gap: 10px;
     }
 
-    .product-card {
-      padding: 30px;
+    .bullet-list li {
+      padding-left: 28px;
+      position: relative;
+      color: var(--text);
+      font-size: 0.98rem;
     }
 
-    .product-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
+    .bullet-list li::before {
+      content: "+";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    /* ===== Pricing ===== */
+    .pricing-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
       gap: 18px;
-      margin-bottom: 24px;
+      align-items: start;
     }
 
-    .product-badge {
-      display: inline-flex;
-      padding: 8px 11px;
-      border-radius: 999px;
-      color: var(--accent);
-      background: var(--accent-soft);
-      font-size: 0.78rem;
-      font-weight: 900;
-      white-space: nowrap;
+    .pricing-card {
+      padding: 40px;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      background: var(--white);
+      box-shadow: 0 12px 28px -16px rgba(37, 99, 235, 0.35);
     }
 
-    .product-price {
-      margin-top: 28px;
-      font-size: 2rem;
+    .pricing-card-secondary {
+      padding: 36px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--white);
+    }
+
+    .price-big {
+      font-size: clamp(2.6rem, 5vw, 3.6rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--dark);
       line-height: 1;
-      font-weight: 900;
-      letter-spacing: -0.05em;
     }
 
-    .product-link {
-      display: inline-flex;
+    .price-sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .price-block {
       margin-top: 26px;
+    }
+
+    .price-block h4 {
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .price-block ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .price-block.incl li { padding-left: 22px; position: relative; }
+    .price-block.incl li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .price-block.excl li { padding-left: 22px; position: relative; }
+    .price-block.excl li::before {
+      content: "−";
+      position: absolute;
+      left: 0;
+      top: -1px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    /* ===== Voor wie (wel/niet) ===== */
+    .fit-card {
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--white);
+    }
+
+    .fit-card h3 { margin-bottom: 18px; }
+    .fit-card.yes h3 { color: var(--green); }
+    .fit-card.no h3 { color: var(--red); }
+
+    .fit-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .fit-card ul li {
+      padding-left: 26px;
+      position: relative;
+      color: var(--text);
+      font-size: 0.98rem;
+      line-height: 1.55;
+    }
+
+    .fit-card.yes ul li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .fit-card.no ul li::before {
+      content: "✗";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--red);
+      font-weight: 800;
+    }
+
+    /* ===== Projects ===== */
+    .project-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .project-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: center;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--white);
+      transition: border-color 160ms ease, transform 160ms ease;
+    }
+
+    .project-card:hover {
+      border-color: rgba(37, 99, 235, 0.45);
+      transform: translateY(-3px);
+    }
+
+    .project-card p {
+      margin-top: 12px;
+      color: var(--muted);
+    }
+
+    .project-card a {
       color: var(--accent);
-      font-weight: 900;
-      transition: transform 180ms ease, color 180ms ease;
+      font-weight: 750;
+      white-space: nowrap;
+      transition: color 160ms ease;
     }
 
-    .product-link:hover {
+    .project-card a:hover {
       color: var(--accent-dark);
-      transform: translateX(4px);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
     }
 
+    .demo-note {
+      margin-top: 22px;
+      padding: 18px 22px;
+      border-left: 3px solid var(--accent);
+      background: rgba(37, 99, 235, 0.06);
+      color: var(--text);
+      font-size: 0.96rem;
+      border-radius: 0 6px 6px 0;
+    }
+
+    /* ===== FAQ ===== */
+    .faq-list {
+      display: grid;
+      gap: 10px;
+      max-width: 880px;
+    }
+
+    .faq-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--white);
+      overflow: hidden;
+    }
+
+    .faq-item summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 22px 26px;
+      font-weight: 700;
+      font-size: 1.02rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: background 160ms ease;
+    }
+
+    .faq-item summary::-webkit-details-marker { display: none; }
+
+    .faq-item summary::after {
+      content: "+";
+      color: var(--accent);
+      font-size: 1.4rem;
+      font-weight: 400;
+      transition: transform 200ms ease;
+    }
+
+    .faq-item[open] summary::after {
+      transform: rotate(45deg);
+    }
+
+    .faq-item summary:hover { background: var(--light); }
+
+    .faq-body {
+      padding: 0 26px 24px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .faq-body p + p { margin-top: 12px; }
+
+    /* ===== About ===== */
     .about-grid {
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 42px;
-      align-items: center;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 56px;
+      align-items: start;
     }
 
-    .about-panel {
-      padding: 28px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.055);
+    .about-copy {
+      max-width: 700px;
+      margin-top: 20px;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 1.06rem;
+      line-height: 1.8;
     }
 
-    .about-link,
-    .about-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      padding: 16px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      color: rgba(255, 255, 255, 0.82);
-      font-weight: 750;
+    .about-copy p + p { margin-top: 16px; }
+
+    .fact-box {
+      border: 1px solid var(--line-dark);
+      border-radius: 10px;
+      background: var(--dark-2);
     }
 
-    .about-link:hover {
+    .fact-row {
+      display: grid;
+      gap: 4px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line-dark);
+    }
+
+    .fact-row:last-child { border-bottom: 0; }
+
+    .fact-row span:first-child {
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .fact-row span:last-child {
       color: var(--white);
+      font-weight: 650;
     }
 
-    .about-row:last-child {
-      border-bottom: 0;
-    }
-
-    .availability {
-      color: #86efac;
-    }
-
-    .contact {
-      text-align: center;
-    }
-
-    .contact .section-head {
-      margin-right: auto;
-      margin-left: auto;
-    }
-
-    .contact-actions {
-      display: flex;
-      flex-direction: column;
+    /* ===== Final CTA ===== */
+    .cta-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 28px;
       align-items: center;
-      gap: 16px;
+      padding: 44px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--white);
     }
 
-    .contact .btn {
-      min-height: 58px;
-      padding: 0 28px;
-      font-size: 1rem;
-    }
-
-    .secondary-link {
+    .cta-panel p {
+      margin-top: 14px;
       color: var(--muted);
-      font-weight: 750;
-      transition: color 180ms ease;
+      max-width: 620px;
     }
 
-    .secondary-link:hover {
-      color: var(--accent);
+    .cta-mailto {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.9rem;
     }
 
+    .cta-mailto a { color: var(--accent); }
+
+    /* ===== Footer ===== */
     .footer {
       padding: 34px 0;
       color: rgba(255, 255, 255, 0.68);
       background: var(--dark);
+      border-top: 1px solid var(--line-dark);
     }
 
     .footer-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 18px;
+      gap: 20px;
       font-size: 0.94rem;
     }
 
     .footer-links {
       display: flex;
       gap: 18px;
-      font-weight: 750;
+      font-weight: 650;
     }
 
-    .footer a {
-      transition: color 180ms ease;
-    }
+    .footer a { transition: color 160ms ease; }
+    .footer a:hover { color: var(--white); }
 
-    .footer a:hover {
-      color: var(--white);
-    }
-
+    /* ===== Reveal animations ===== */
     .reveal {
       opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 700ms ease, transform 700ms ease;
+      transform: translateY(18px);
+      transition: opacity 650ms ease, transform 650ms ease;
     }
 
     .reveal.visible {
@@ -600,347 +658,434 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
+      *, *::before, *::after {
         scroll-behavior: auto !important;
         transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
       }
-
-      .reveal {
-        opacity: 1;
-        transform: none;
-      }
+      .reveal { opacity: 1; transform: none; }
     }
 
-    @media (max-width: 920px) {
-      .nav-links {
-        position: fixed;
-        inset: 76px 0 auto 0;
-        display: grid;
-        gap: 0;
-        padding: 10px 16px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(15, 23, 42, 0.96);
-        transform: translateY(-120%);
-        opacity: 0;
-        pointer-events: none;
-        transition: transform 220ms ease, opacity 220ms ease;
-      }
-
-      body.menu-open .nav-links {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .nav-links a {
-        padding: 16px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      }
-
-      .nav-links a:last-child {
-        border-bottom: 0;
-      }
-
-      .nav-actions .btn {
-        display: none;
-      }
-
-      .menu-toggle {
-        display: inline-block;
-      }
-
-      .proof-grid,
-      .cards,
-      .steps {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .products,
-      .about-grid {
+    /* ===== Responsive ===== */
+    @media (max-width: 960px) {
+      .grid-3, .grid-5, .grid-4, .grid-2 {
         grid-template-columns: 1fr;
       }
+      .pricing-wrap, .about-grid {
+        grid-template-columns: 1fr;
+      }
+      .cta-panel {
+        grid-template-columns: 1fr;
+      }
+      .hero-inner { padding: 84px 0 72px; }
     }
 
-    @media (max-width: 640px) {
-      .container {
-        width: min(100% - 24px, 1160px);
-      }
-
-      .nav-inner {
-        min-height: 68px;
-      }
-
-      .nav-links {
-        inset: 68px 0 auto 0;
-      }
-
-      .hero {
-        padding: 74px 0 68px;
-      }
-
-      h1 {
-        font-size: clamp(2.65rem, 15vw, 4.4rem);
-      }
-
-      .hero-actions,
-      .footer-inner {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      .btn {
-        width: 100%;
-      }
-
-      .section {
-        padding: 68px 0;
-      }
-
-      .proof-grid,
-      .cards,
-      .steps,
-      .products {
-        grid-template-columns: 1fr;
-      }
-
-      .card,
-      .product-card,
-      .step,
-      .about-panel {
-        border-radius: 18px;
-        padding: 24px;
-      }
-
-      .product-top {
-        display: grid;
-      }
-
-      .footer-links {
-        flex-wrap: wrap;
-      }
+    @media (max-width: 620px) {
+      .container { width: min(100% - 24px, var(--max)); }
+      .nav-inner { min-height: 66px; }
+      .section { padding: 64px 0; }
+      .pricing-card, .pricing-card-secondary, .cta-panel { padding: 28px; }
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .hero-actions .btn { width: 100%; }
+      .project-card { grid-template-columns: 1fr; gap: 16px; }
+      .project-card a { white-space: normal; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
+
+  <!-- ===== NAV ===== -->
   <nav class="nav" aria-label="Hoofdnavigatie">
     <div class="container nav-inner">
       <a class="logo" href="#top" aria-label="AVDLData home">AVDL<span>Data</span></a>
-      <div class="nav-links" id="nav-links">
-        <a href="#diensten">Diensten</a>
-        <a href="#producten">Producten</a>
-        <a href="#over-mij">Over mij</a>
-        <a href="#contact">Contact</a>
-      </div>
-      <div class="nav-actions">
-        <a class="btn btn-primary" href="mailto:arjanvdlaanzakelijk@gmail.com">Plan een gesprek</a>
-        <button class="menu-toggle" type="button" aria-label="Menu openen" aria-expanded="false" aria-controls="nav-links">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-      </div>
+      <!-- VERVANG: zet hier je Calendly-URL -->
+      <a class="btn" href="https://calendly.com/arjanvdlaanzakelijk/30min">Plan kennismaking</a>
     </div>
   </nav>
 
+  <!-- ===== HERO ===== -->
   <header class="hero" id="top">
-    <div class="container hero-content reveal">
-      <div class="badge">📍 Groningen, Nederland</div>
-      <h1>Automatische rapportages die uw klanten écht gebruiken</h1>
-      <p>Ik bouw geautomatiseerde Power BI dashboards en AI-rapportages voor accountantskantoren en MKB — zodat u meer tijd heeft voor advies en minder voor Excel.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="#producten">Bekijk een demo →</a>
-        <a class="btn btn-secondary" href="#diensten">Lees meer ↓</a>
+    <div class="container hero-inner">
+      <div class="reveal">
+        <div class="kicker">Transport Dashboard Starter</div>
+        <h1>Power BI-dashboard voor je transportbedrijf in 4 weken. Vaste prijs €2.495.</h1>
+        <p class="hero-copy">Marge per kenteken, klant en chauffeur. Automatische data-refresh uit Boltrics 3PL Dynamics of AFAS. Voor transportbedrijven met 5–25 voertuigen.</p>
+        <div class="hero-actions">
+          <!-- VERVANG: Calendly-URL -->
+          <a class="btn btn-large" href="https://calendly.com/arjanvdlaanzakelijk/30min">Plan vrijblijvende kennismaking (30 min) →</a>
+          <a class="btn btn-outline btn-large" href="#demos">Bekijk voorbeeld-dashboard</a>
+        </div>
+        <p class="hero-note">Eenmalige investering, geen abonnement. Geen langlopend contract. Optioneel onderhoud €129/mnd ex btw vanaf maand 2.</p>
       </div>
     </div>
   </header>
 
   <main>
-    <section class="proof" aria-label="Social proof">
-      <div class="container proof-grid reveal">
-        <div class="proof-item">16.8M+ datapunten verwerkt</div>
-        <div class="proof-item">Power BI + n8n + AI</div>
-        <div class="proof-item">Noord-Nederland</div>
-        <div class="proof-item">Beschikbaar voor nieuwe projecten</div>
-      </div>
-    </section>
 
-    <section class="section section-light" id="diensten">
+    <!-- ===== 1. HET PROBLEEM ===== -->
+    <section class="section section-white" id="probleem">
       <div class="container">
         <div class="section-head reveal">
-          <div class="eyebrow">Diensten</div>
-          <h2>Wat ik voor u bouw</h2>
+          <span class="label">Het probleem</span>
+          <h2>Je rapportage zit verspreid over Excel, je TMS en je boekhouding.</h2>
         </div>
-        <div class="cards">
+        <div class="grid-3">
           <article class="card reveal">
-            <div class="icon" aria-hidden="true">↻</div>
-            <h3>Automatische Rapportages</h3>
-            <p>Maandelijkse financiële rapporten die automatisch worden gegenereerd vanuit uw boekhoudpakket (Exact, SnelStart) en direct naar uw klanten worden gestuurd.</p>
-            <span class="price">Vanaf €350/maand</span>
+            <h3>Maandagochtend kost 4 uur.</h3>
+            <p>De cijfers van vorige week samenbrengen uit je TMS-export, je boekhouding en je tankpas-overzicht. Iedere week opnieuw.</p>
           </article>
           <article class="card reveal">
-            <div class="icon" aria-hidden="true">▦</div>
-            <h3>Power BI Dashboards</h3>
-            <p>Live dashboards die uw klanten zelf kunnen bekijken. Altijd actueel, altijd inzichtelijk. Gekoppeld aan uw bestaande data.</p>
-            <span class="price">Vanaf €1.500 eenmalig</span>
+            <h3>Je weet niet welke ritten verlies maken.</h3>
+            <p>Brandstof, chauffeur-uren en onderhoud per kenteken bij elkaar krijgen lukt wel een keer, niet structureel.</p>
           </article>
           <article class="card reveal">
-            <div class="icon" aria-hidden="true">⚡</div>
-            <h3>Workflow Automatisering</h3>
-            <p>Repetitieve processen automatiseren met n8n en AI. Van cliëntacceptatie tot debiteursignalering — wij maken het slim.</p>
-            <span class="price">Op aanvraag</span>
+            <h3>Maatwerk Power BI kost €15.000.</h3>
+            <p>De grote BI-bureaus rekenen consultancy-tarieven en leveren in maanden. Voor een transportbedrijf van 10 vrachtwagens schiet dat door.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <section class="section section-dark" id="proces">
+    <!-- ===== 2. WAT JE KRIJGT ===== -->
+    <section class="section section-light" id="wat-je-krijgt">
       <div class="container">
         <div class="section-head reveal">
-          <div class="eyebrow">Proces</div>
-          <h2>Hoe het werkt</h2>
+          <span class="label">Wat je krijgt</span>
+          <h2>Eén dashboard met vijf vaste pagina's.</h2>
         </div>
-        <div class="steps">
-          <article class="step reveal">
-            <h3>Intake gesprek</h3>
-            <p>We bespreken uw processen en pijnpunten. Wat kost nu de meeste tijd?</p>
+        <div class="grid-5">
+          <article class="card reveal">
+            <h3>1. Omzet en marge per klant</h3>
+            <p>Top-10 klanten + long tail. Welke klanten leveren echt geld op, welke kosten meer dan ze opleveren.</p>
           </article>
-          <article class="step reveal">
-            <h3>Wij bouwen</h3>
-            <p>In 2-4 weken bouwen wij uw automatisering. U hoeft niks te doen.</p>
+          <article class="card reveal">
+            <h3>2. Marge per kenteken en bezettingsgraad</h3>
+            <p>Per voertuig: omzet, brandstof, kilometers, leeg-uren. Welke vrachtwagen verdient het meeste, welke staat te veel stil.</p>
           </article>
-          <article class="step reveal">
-            <h3>U profiteert</h3>
-            <p>Elke maand automatisch. Minder handwerk, meer inzicht, betere service.</p>
+          <article class="card reveal">
+            <h3>3. On-time delivery + ritten per chauffeur</h3>
+            <p>Wie levert op tijd, wie niet, hoeveel ritten per chauffeur per week.</p>
+          </article>
+          <article class="card reveal">
+            <h3>4. Debiteuren-aging</h3>
+            <p>Wie heeft nog niet betaald, hoe lang staan facturen open, totaalbedrag uitstaand.</p>
+          </article>
+          <article class="card reveal">
+            <h3>5. CO₂-indicator</h3>
+            <p>Kilometers × brandstoftype-emissiefactor per voertuig en per klant. Eerste antwoord aan opdrachtgevers die CSRD-cijfers vragen. Indicatief, niet ISO 14083-gecertificeerd.</p>
           </article>
         </div>
+        <ul class="bullet-list reveal">
+          <li>Automatische data-refresh dagelijks via n8n</li>
+          <li>Veilig delen via Power BI Pro (geen Publish to Web, je data blijft van jou)</li>
+          <li>Handover-video van 15 minuten + 1 pagina cheatsheet</li>
+          <li>1 maand garantie op data-fouten in opgeleverde dashboard</li>
+        </ul>
       </div>
     </section>
 
-    <section class="section section-light" id="producten">
+    <!-- ===== 3. HOE HET WERKT ===== -->
+    <section class="section section-white" id="hoe-het-werkt">
       <div class="container">
         <div class="section-head reveal">
-          <div class="eyebrow">Producten</div>
-          <h2>Kant-en-klare oplossingen</h2>
-          <p>Direct te gebruiken templates en rapporten — geen maatwerk nodig</p>
+          <span class="label">Hoe het werkt</span>
+          <h2>Vier weken, vier stappen.</h2>
         </div>
-        <div class="products">
-          <article class="product-card reveal">
-            <div class="product-top">
-              <h3>AVDLData Reports</h3>
-              <span class="product-badge">Power BI template</span>
+        <div class="grid-4">
+          <article class="card reveal">
+            <div class="step-num">1</div>
+            <div class="step-week">Week 1</div>
+            <h3>Intake en data-check</h3>
+            <p>Online sessie van 60 min. Ik kijk mee in je Boltrics- of AFAS-export en check of de data-structuur klopt. Geen gegoochel achteraf met ontbrekende velden.</p>
+          </article>
+          <article class="card reveal">
+            <div class="step-num">2</div>
+            <div class="step-week">Week 2</div>
+            <h3>Data-pijp</h3>
+            <p>Ik bouw de n8n-workflow op een eigen server. Je hoeft niets te installeren bij jezelf. Data wordt elke nacht gerefreshd naar een veilige opslag.</p>
+          </article>
+          <article class="card reveal">
+            <div class="step-num">3</div>
+            <div class="step-week">Week 3</div>
+            <h3>Dashboard bouwen</h3>
+            <p>De vijf pagina's op jouw echte data. Halverwege de week stuur ik een Loom-video met preview, je geeft feedback per mail.</p>
+          </article>
+          <article class="card reveal">
+            <div class="step-num">4</div>
+            <div class="step-week">Week 4</div>
+            <h3>Oplevering</h3>
+            <p>Live sessie van 90 min: dashboard installeren in jouw Power BI Pro, handover-video opnemen, jou rondleiden door wat je zelf kunt aanpassen. Klaar.</p>
+          </article>
+        </div>
+        <p class="reveal" style="margin-top: 28px; color: var(--muted); font-size: 1rem;">Tijd van jouw kant: ongeveer 3–4 uur in 4 weken. Niet meer.</p>
+      </div>
+    </section>
+
+    <!-- ===== 4. PRIJS ===== -->
+    <section class="section section-light" id="prijs">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="label">Prijs</span>
+          <h2>Eén prijs. Geen verrassingen achteraf.</h2>
+        </div>
+        <div class="pricing-wrap">
+          <div class="pricing-card reveal">
+            <div class="kicker" style="color: var(--accent);">Transport Dashboard Starter</div>
+            <div class="price-big" style="margin-top: 14px;">€2.495 <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">ex btw</span></div>
+            <div class="price-sub">Eenmalig · 4 weken doorlooptijd</div>
+
+            <div class="price-block incl">
+              <h4>Inbegrepen</h4>
+              <ul>
+                <li>Intake, data-check, bouw, oplevering</li>
+                <li>Vijf dashboard-pagina's</li>
+                <li>n8n-workflow voor dagelijkse data-refresh</li>
+                <li>Handover-video (15 min) + cheatsheet</li>
+                <li>1 maand garantie op data-fouten</li>
+              </ul>
             </div>
-            <p>Volledig ingerichte Power BI rapportage voor MKB-klanten. Koppel uw eigen data en u bent klaar.</p>
-            <div class="product-price">€299 eenmalig</div>
-            <a class="product-link" href="mailto:arjanvdlaanzakelijk@gmail.com?subject=Meer%20info%20over%20AVDLData%20Reports">Meer info →</a>
-          </article>
-          <article class="product-card reveal">
-            <div class="product-top">
-              <h3>AVDLData Insights</h3>
-              <span class="product-badge">n8n + Power BI</span>
+
+            <div class="price-block excl">
+              <h4>Niet inbegrepen</h4>
+              <ul>
+                <li>Power BI Pro-licentie (€12,10 per gebruiker per maand, koop je zelf bij Microsoft)</li>
+                <li>Telematica-koppeling (Trimble, Data2Track): aparte module €1.495</li>
+                <li>AI-factuurmatching voor onderaannemers: aparte module €995</li>
+                <li>Routeoptimalisatie, forecasting, mobiele app</li>
+              </ul>
             </div>
-            <p>n8n workflow + Power BI dashboard voor accountantskantoren. Inclusief installatie-handleiding.</p>
-            <div class="product-price">€499 eenmalig</div>
-            <a class="product-link" href="mailto:arjanvdlaanzakelijk@gmail.com?subject=Meer%20info%20over%20AVDLData%20Insights">Meer info →</a>
-          </article>
+          </div>
+
+          <div class="pricing-card-secondary reveal">
+            <div class="kicker" style="color: var(--muted);">Optioneel onderhoud</div>
+            <div class="price-big" style="margin-top: 14px; font-size: clamp(1.8rem, 3.5vw, 2.4rem);">€129 <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/mnd ex btw</span></div>
+            <div class="price-sub">Vanaf maand 2 · Maandelijks opzegbaar</div>
+
+            <div class="price-block incl">
+              <h4>Inhoud</h4>
+              <ul>
+                <li>2 uur support per maand</li>
+                <li>Refresh-monitoring</li>
+                <li>1 kleine wijziging per maand</li>
+              </ul>
+            </div>
+
+            <p style="margin-top: 20px; color: var(--muted); font-size: 0.95rem;">Werk daarboven op urenbasis: €95/u ex btw.</p>
+          </div>
         </div>
       </div>
     </section>
 
+    <!-- ===== 5. PASSEND ===== -->
+    <section class="section section-white" id="passend">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="label">Passend</span>
+          <h2>Voor wie dit werkt — en voor wie niet.</h2>
+        </div>
+        <div class="grid-2">
+          <div class="fit-card yes reveal">
+            <h3>Wel</h3>
+            <ul>
+              <li>Transportbedrijven met 5–25 voertuigen</li>
+              <li>Boltrics 3PL Dynamics gebruikers (warehouse + transport, Microsoft Dynamics-stack)</li>
+              <li>AFAS-gebruikers met transportactiviteit</li>
+              <li>Eigenaren/directeuren die zelf naar de cijfers willen kunnen kijken zonder hun planner of accountant te vragen</li>
+            </ul>
+          </div>
+          <div class="fit-card no reveal">
+            <h3>Niet</h3>
+            <ul>
+              <li>Meer dan 25 voertuigen — daar zit je in maatwerk-territorium, ik verwijs je door</li>
+              <li>Transpas-gebruikers — andere data-structuur, daar zijn betere gespecialiseerde aanbieders voor (Iberico, Puur ICT)</li>
+              <li>Geen TMS, alles in Excel — te weinig structuur in de bron-data, dashboard wordt onbetrouwbaar</li>
+              <li>Woningcorporaties, accountantskantoren, generiek MKB — verkeerde niche, niet mijn pakkie-an</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 6. DEMOS ===== -->
+    <section class="section section-light" id="demos">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="label">Werkwijze</span>
+          <h2>Drie open demos op GitHub.</h2>
+          <p>Nog geen klantcases, dus laat ik in plaats daarvan zien hoe ik bouw. Drie publieke projecten met code, dashboards en uitleg.</p>
+        </div>
+        <div class="project-list">
+          <article class="project-card reveal">
+            <div>
+              <h3>weekrapportage-demo-mkb</h3>
+              <p>n8n-workflow die wekelijkse fictieve verkoopdata verwerkt en als HTML-mail samenvat met Claude.</p>
+            </div>
+            <a href="https://github.com/avdldata/weekrapportage-demo-mkb">Bekijk op GitHub →</a>
+          </article>
+          <article class="project-card reveal">
+            <div>
+              <h3>rdw-brandstof-rapport</h3>
+              <p>Verwerkt 16,8 miljoen voertuig-records uit de RDW Open Data API, groepeert per brandstoftype, mailt analyse via Claude.</p>
+            </div>
+            <a href="https://github.com/avdldata/rdw-brandstof-rapport">Bekijk op GitHub →</a>
+          </article>
+          <article class="project-card reveal">
+            <div>
+              <h3>avdldata-maandrapportage-demo</h3>
+              <p>Volledige pipeline: Google Sheets in Exact Online-formaat → n8n → Claude-analyse → HTML-mail + Power BI dashboard met donkere stijl.</p>
+            </div>
+            <a href="https://github.com/avdldata/avdldata-maandrapportage-demo">Bekijk op GitHub →</a>
+          </article>
+        </div>
+        <p class="demo-note reveal"><strong>Komt eraan:</strong> transport-specifieke demo met fictief bedrijf (10 vrachtwagens, 200 ritten/maand) en gesimuleerde Boltrics-export. Online juli 2026.</p>
+      </div>
+    </section>
+
+    <!-- ===== 7. FAQ ===== -->
+    <section class="section section-white" id="faq">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="label">Veelgestelde vragen</span>
+          <h2>Wat klanten als eerste vragen.</h2>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item reveal">
+            <summary>Hoe zit het met AVG en mijn klantdata?</summary>
+            <div class="faq-body">
+              <p>Je data blijft bij jou. Geen Publish to Web. Het dashboard staat in jouw Power BI Pro-omgeving met row-level security. Alleen jouw mensen kunnen erbij. De n8n-workflow draait op een server in Nederland; ik kan er enkel bij voor onderhoud op jouw vraag.</p>
+            </div>
+          </details>
+
+          <details class="faq-item reveal">
+            <summary>Wat als ik het onderhoud wil opzeggen?</summary>
+            <div class="faq-body">
+              <p>Maandelijks opzegbaar, geen contract. Het dashboard en de .pbip-bestanden blijven van jou — je kunt ze zelf bewerken in Power BI Desktop of een andere partij vragen. Wel handig: ik lever ze gedocumenteerd op.</p>
+            </div>
+          </details>
+
+          <details class="faq-item reveal">
+            <summary>Werk je ook voor mijn directe concurrenten?</summary>
+            <div class="faq-body">
+              <p><strong>Korte versie: ja, maar je merkt er niets van.</strong></p>
+              <p>Ik bouw dashboards voor transport-MKB — dat is mijn vak. Het kan dus best dat jij en je grootste concurrent allebei klant zijn. Wat ik níet doe: je cijfers, je marges of je klantenlijst delen, vermelden of zelfs maar benoemen tegenover wie dan ook. Niet in een gesprek, niet als referentie, niet in een GitHub-commit. Standaard.</p>
+              <p>Wil je dat hard op papier? Dan zet ik een geheimhoudingsclausule in de opdrachtbevestiging, kost je niets extra. Wil je exclusiviteit in jouw regio of bij specifieke concurrenten? Kan, maar dan betaal je wel een toeslag — want dan moet ik anderen afzeggen.</p>
+            </div>
+          </details>
+
+          <details class="faq-item reveal">
+            <summary>Heb ik IT-kennis nodig?</summary>
+            <div class="faq-body">
+              <p>Nee. Toegang tot de Boltrics- of AFAS-export regelt je TMS-leverancier of accountmanager, of ik in overleg. Daarna doe ik de rest.</p>
+            </div>
+          </details>
+
+          <details class="faq-item reveal">
+            <summary>Wat als mijn data niet matcht met het standaardmodel?</summary>
+            <div class="faq-body">
+              <p>Eerste week check ik op echte data. Als de basisstructuur niet bruikbaar is — bijvoorbeeld omdat je TMS niet de standaardvelden levert — krijg je het werk teruggestort minus één dagdeel. Liever vroeg eerlijk dan halverwege vastlopen.</p>
+            </div>
+          </details>
+
+          <details class="faq-item reveal">
+            <summary>Hoeveel uur kost het mij?</summary>
+            <div class="faq-body">
+              <p>Ongeveer 3 à 4 uur van jouw tijd in 4 weken: 60 min intake, één review-mail halverwege, 90 min opleversessie. Niet meer.</p>
+            </div>
+          </details>
+
+          <details class="faq-item reveal">
+            <summary>Waarom geen Transpas?</summary>
+            <div class="faq-body">
+              <p>Transpas heeft een andere data-structuur en er zijn al Nederlandse partijen die daar gespecialiseerd in zijn (Iberico, Puur ICT). Voor Transpas kun je beter daar zijn. Voor Boltrics 3PL Dynamics en AFAS is dat veld nog leeg — daar zit ik dus.</p>
+            </div>
+          </details>
+
+          <details class="faq-item reveal">
+            <summary>Is die CO₂-pagina goed genoeg voor een aanbesteding of audit?</summary>
+            <div class="faq-body">
+              <p>Nee, niet zonder meer. Het is een indicatieve berekening (kilometers × emissiefactor) — bruikbaar als eerste antwoord aan opdrachtgevers die CSRD-cijfers vragen, en voor je eigen sturing. Voor een officiële ISO 14083-rapportage of CO₂-prestatieladder-certificering heb je een audit-traject nodig bij een geaccrediteerde partij. Het label "indicatief" staat ook op de pagina zelf — voor jouw bescherming en die van mij.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 8. WIE BEN IK ===== -->
     <section class="section section-dark" id="over-mij">
       <div class="container about-grid">
         <div class="reveal">
-          <div class="eyebrow">Over mij</div>
-          <h2>Over Arjan</h2>
-          <p class="about-copy">Achtergrond in IT, onboarding en PMO. Nu gespecialiseerd in data-automatisering en AI voor het MKB. Ik bouw dingen die écht werken — geen PowerPoints, geen praatjes.</p>
-        </div>
-        <div class="about-panel reveal">
-          <a class="about-link" href="https://github.com/avdldata">
-            <span>GitHub</span>
-            <span>github.com/avdldata →</span>
-          </a>
-          <div class="about-row">
-            <span>Locatie</span>
-            <span>Groningen, Nederland</span>
+          <span class="label">Achtergrond</span>
+          <h2>Arjan van der Laan.</h2>
+          <div class="about-copy">
+            <p>IT-achtergrond (Service Desk, Onboarding, PMO). Geen bureau, geen consultants in de mix, geen sales-laag. Eén persoon die bouwt wat hij belooft en dezelfde persoon die je belt als er iets niet werkt.</p>
+            <p>Ik werk vanuit Nieuwe Pekela, Groningen, naast een vaste baan. Dat betekent: vaste prijs, vaste scope, vaste doorlooptijd. Geen open-eind-consultancy, geen meerwerkfacturen achteraf.</p>
           </div>
-          <div class="about-row">
-            <span>Status</span>
-            <span class="availability">✓ Beschikbaar voor nieuwe projecten</span>
+        </div>
+        <aside class="fact-box reveal" aria-label="Kerngegevens">
+          <div class="fact-row">
+            <span>Locatie</span>
+            <span>Nieuwe Pekela, Groningen</span>
+          </div>
+          <div class="fact-row">
+            <span>Specialisme</span>
+            <span>Power BI + n8n voor transport-MKB</span>
+          </div>
+          <div class="fact-row">
+            <span>Aanpak</span>
+            <span>Fixed price, fixed scope, 4 weken</span>
+          </div>
+          <div class="fact-row">
+            <span>GitHub</span>
+            <span>github.com/avdldata</span>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===== 9. SLOT CTA ===== -->
+    <section class="section section-white" id="contact">
+      <div class="container">
+        <div class="cta-panel reveal">
+          <div>
+            <span class="label">Kennismaken</span>
+            <h2>Klinkt dit als iets voor jouw bedrijf?</h2>
+            <p>30 minuten online, zonder verplichting. Ik laat de demo-dashboards zien, jij vertelt wat in jouw bedrijf nu het meeste tijd kost. Daarna weet je of een dashboard van €2.495 zinvol is. Eerlijker dan dat krijg je het niet.</p>
+            <p class="cta-mailto">Liever per mail? <a href="mailto:arjanvdlaanzakelijk@gmail.com">arjanvdlaanzakelijk@gmail.com</a></p>
+          </div>
+          <div>
+            <!-- VERVANG: Calendly-URL -->
+            <a class="btn btn-large" href="https://calendly.com/arjanvdlaanzakelijk/30min">Plan kennismaking (30 min) →</a>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section section-light contact" id="contact">
-      <div class="container">
-        <div class="section-head reveal">
-          <div class="eyebrow">Contact</div>
-          <h2>Klaar om te starten?</h2>
-          <p>Plan een vrijblijvend gesprek van 30 minuten. Ik vertel u precies wat ik voor u kan betekenen.</p>
-        </div>
-        <div class="contact-actions reveal">
-          <a class="btn btn-dark" href="mailto:arjanvdlaanzakelijk@gmail.com">Plan een gesprek → arjanvdlaanzakelijk@gmail.com</a>
-          <a class="secondary-link" href="#" aria-label="LinkedIn profiel placeholder">Of stuur een bericht op LinkedIn</a>
-        </div>
-      </div>
-    </section>
   </main>
 
+  <!-- ===== FOOTER ===== -->
   <footer class="footer">
     <div class="container footer-inner">
-      <p>© 2026 AVDLData — Arjan van der Laan | Groningen, Nederland</p>
+      <p>© 2026 AVDLData — Arjan van der Laan | Nieuwe Pekela, Groningen</p>
       <div class="footer-links">
         <a href="https://github.com/avdldata">GitHub</a>
-        <a href="#" aria-label="LinkedIn placeholder">LinkedIn</a>
+        <a href="mailto:arjanvdlaanzakelijk@gmail.com">E-mail</a>
       </div>
     </div>
   </footer>
 
   <script>
-    const body = document.body;
-    const toggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelectorAll('.nav-links a');
+    // Reveal-on-scroll animaties
     const revealItems = document.querySelectorAll('.reveal');
-    const observedSections = document.querySelectorAll('main section[id]');
-
-    toggle.addEventListener('click', () => {
-      const isOpen = body.classList.toggle('menu-open');
-      toggle.setAttribute('aria-expanded', String(isOpen));
-      toggle.setAttribute('aria-label', isOpen ? 'Menu sluiten' : 'Menu openen');
-    });
-
-    navLinks.forEach((link) => {
-      link.addEventListener('click', () => {
-        body.classList.remove('menu-open');
-        toggle.setAttribute('aria-expanded', 'false');
-        toggle.setAttribute('aria-label', 'Menu openen');
-      });
-    });
-
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          revealObserver.unobserve(entry.target);
-        }
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
       });
     }, { threshold: 0.14 });
 
     revealItems.forEach((item) => revealObserver.observe(item));
-
-    const navObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        navLinks.forEach((link) => {
-          link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
-        });
-      });
-    }, { rootMargin: '-35% 0px -55% 0px', threshold: 0 });
-
-    observedSections.forEach((section) => navObserver.observe(section));
   </script>
 </body>
 </html>
