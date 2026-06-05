@@ -73,7 +73,7 @@ if (contactForm) {
       return;
     }
 
-    const subject = encodeURIComponent(`AVDLData vraag van ${name}`);
+    const subject = encodeURIComponent(`AVDLData buildvraag van ${name}`);
     const body = encodeURIComponent(`${message}\n\nNaam: ${name}\nE-mail: ${email}`);
     window.location.href = `mailto:arjanvdlaanzakelijk@gmail.com?subject=${subject}&body=${body}`;
 
