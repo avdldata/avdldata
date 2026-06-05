@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Projectcase: financieel Power BI dashboard met omzet, marge, debiteuren, datamodel en automatische refresh.">
+  <title>Financieel dashboard | AVDLData project</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <header class="site-header dark">
+    <div class="container nav">
+      <a class="brand" href="../index.html"><span class="brand-mark"><i data-lucide="code-2"></i></span>AVDLData.nl</a>
+      <nav class="nav-links" data-nav-links aria-label="Hoofdnavigatie">
+        <a href="../producten/reports.html">Producten</a>
+        <a href="index.html" aria-current="page">Projecten</a>
+        <a href="../portfolio.html">Portfolio</a>
+        <a href="../index.html#over-arjan">Over Arjan</a>
+        <a href="../contact.html">Contact</a>
+      </nav>
+      <a class="btn small nav-cta" href="../contact.html">Neem contact op <i data-lucide="arrow-right"></i></a>
+      <button class="mobile-toggle" type="button" data-mobile-toggle aria-expanded="false" aria-label="Open navigatie"><i data-lucide="menu"></i></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container page-hero-grid">
+        <div class="reveal">
+          <span class="eyebrow">Projectcase</span>
+          <h1>Financieel dashboard voor groothandel.</h1>
+          <p class="page-copy">Een managementdashboard dat omzet, marge, debiteuren en productgroepen samenbrengt in Power BI. Het doel: minder zoeken in exports en sneller zien waar afwijkingen ontstaan.</p>
+          <div class="hero-actions"><a class="btn" href="../producten/reports.html">Past bij AVDLData Reports <i data-lucide="arrow-right"></i></a><a class="btn secondary" href="../contact.html">Bespreek vergelijkbaar project</a></div>
+        </div>
+        <div class="product-window reveal">
+          <div class="window-top"><span>Finance overview</span><div class="window-actions"><span></span><span></span><span></span></div></div>
+          <div class="dashboard-main">
+            <div class="metric-grid">
+              <div class="metric"><span>Omzet</span><strong>EUR 2.45M</strong><em>+12.4%</em></div>
+              <div class="metric"><span>Marge</span><strong>34.8%</strong><em>+3.6pp</em></div>
+              <div class="metric"><span>Openstaand</span><strong>EUR 184K</strong><em>-8.1%</em></div>
+              <div class="metric"><span>Producten</span><strong>412</strong><em>actief</em></div>
+            </div>
+            <div class="chart-row">
+              <div class="chart"><div class="chart-title">Omzet en marge per maand</div><div class="chart-lines"><span style="height:32%"></span><span style="height:48%"></span><span style="height:58%"></span><span style="height:52%"></span><span style="height:76%"></span><span style="height:88%"></span></div></div>
+              <div class="donut-card"><div class="donut"><span>Top 10</span></div><div class="chart-title">Productgroep mix</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="info-grid">
+          <article class="info-card reveal"><span class="section-kicker">Vraag</span><h3>Waarom lopen cijfers uiteen?</h3><p>Sales, finance en voorraad werkten met eigen exports. Daardoor duurde controle lang en werden afwijkingen laat zichtbaar.</p></article>
+          <article class="info-card reveal"><span class="section-kicker">Oplossing</span><h3>Een gedeeld datamodel</h3><p>Bronnen opgeschoond, relaties gelegd, vaste definities voor omzet en marge gemaakt en in Power BI ontsloten.</p></article>
+          <article class="info-card reveal"><span class="section-kicker">Resultaat</span><h3>Rapportage van uren naar minuten</h3><p>De maandelijkse controle werd een dashboardreview in plaats van een zoektocht door spreadsheets.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft">
+      <div class="container">
+        <div class="section-head reveal"><div><span class="section-kicker">Workflow</span><h2>Hoe het dashboard is opgebouwd.</h2></div></div>
+        <div class="process-list">
+          <div class="process-item reveal"><div><h3>Bronnen inventariseren</h3><p>Exact Online, verkoopdata en producttabellen naast elkaar gelegd en definities vastgesteld.</p></div></div>
+          <div class="process-item reveal"><div><h3>Data opschonen</h3><p>Dubbele regels, lege velden en afwijkende totalen gecontroleerd voordat het model werd gebouwd.</p></div></div>
+          <div class="process-item reveal"><div><h3>Power BI model maken</h3><p>Measures voor omzet, marge, debiteuren en productgroepen opgezet in DAX.</p></div></div>
+          <div class="process-item reveal"><div><h3>Dashboard opleveren</h3><p>Managementpagina, finance detailpagina en korte overdrachtsvideo.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head reveal"><div><span class="section-kicker">Techniek</span><h2>Stack en bouwkeuzes.</h2></div></div>
+        <div class="tool-grid reveal">
+          <span class="tool"><i data-lucide="bar-chart-3"></i>Power BI</span>
+          <span class="tool"><i data-lucide="database"></i>SQL</span>
+          <span class="tool"><i data-lucide="file-code-2"></i>DAX</span>
+          <span class="tool"><i data-lucide="refresh-cw"></i>Refresh</span>
+          <span class="tool"><i data-lucide="check-circle"></i>Validatie</span>
+          <span class="tool"><i data-lucide="book-open"></i>Documentatie</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div><a class="brand" href="../index.html"><span class="brand-mark"><i data-lucide="code-2"></i></span>AVDLData.nl</a><p class="lead" style="font-size:0.92rem;">Projectcase voor Power BI en finance rapportage.</p></div>
+      <div><h3>Navigatie</h3><a href="../index.html">Home</a><a href="index.html">Projecten</a><a href="../portfolio.html">Portfolio</a></div>
+      <div><h3>Producten</h3><a href="../producten/reports.html">AVDLData Reports</a><a href="../producten/insights.html">AVDLData Insights</a></div>
+      <div><h3>Connect</h3><a href="https://github.com/avdldata">GitHub</a><a href="../contact.html">Contact</a></div>
+    </div>
+  </footer>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

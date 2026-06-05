@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AVDLData Insights: analyses, voorspellingen en AI-ondersteunde inzichten op basis van je bestaande data.">
+  <title>AVDLData Insights | Analyse, forecasting en AI op je data</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <header class="site-header dark">
+    <div class="container nav">
+      <a class="brand" href="../index.html"><span class="brand-mark"><i data-lucide="code-2"></i></span>AVDLData.nl</a>
+      <nav class="nav-links" data-nav-links aria-label="Hoofdnavigatie">
+        <a href="reports.html" aria-current="page">Producten</a>
+        <a href="../projecten/index.html">Projecten</a>
+        <a href="../portfolio.html">Portfolio</a>
+        <a href="../index.html#over-arjan">Over Arjan</a>
+        <a href="../contact.html">Contact</a>
+      </nav>
+      <a class="btn small nav-cta" href="../contact.html">Neem contact op <i data-lucide="arrow-right"></i></a>
+      <button class="mobile-toggle" type="button" data-mobile-toggle aria-expanded="false" aria-label="Open navigatie"><i data-lucide="menu"></i></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container page-hero-grid">
+        <div class="reveal">
+          <span class="eyebrow">AVDLData Insights</span>
+          <h1>Van rapportage naar antwoorden, trends en voorspellingen.</h1>
+          <p class="page-copy">Insights is voor vragen die niet in een standaard dashboard passen. Denk aan afwijkingen vinden, trends verklaren, omzet voorspellen of een AI-assistent die veilig over je data kan redeneren.</p>
+          <div class="hero-actions">
+            <a class="btn" href="../contact.html">Bespreek je analysevraag <i data-lucide="arrow-right"></i></a>
+            <a class="btn secondary" href="../portfolio.html">Bekijk voorbeelden</a>
+          </div>
+        </div>
+        <div class="product-window reveal">
+          <div class="window-top"><span>Insights forecast</span><div class="window-actions"><span></span><span></span><span></span></div></div>
+          <div class="dashboard-main">
+            <div class="metric-grid">
+              <div class="metric"><span>Forecast 30d</span><strong>EUR 763K</strong><em>+14.2%</em></div>
+              <div class="metric"><span>Risico</span><strong>4 orders</strong><em>actie</em></div>
+              <div class="metric"><span>Drivers</span><strong>7</strong><em>gevonden</em></div>
+              <div class="metric"><span>Model</span><strong>v0.3</strong><em>getest</em></div>
+            </div>
+            <pre class="code-window" style="margin-top:14px;box-shadow:none;"><span>1</span> vraag = "waarom daalde marge vorige week?"
+<span>2</span> context = retrieve(metric="marge", periode="week")
+<span>3</span> antwoord = model.analyseer(context)
+<span>4</span> toon_driver_tabel(antwoord.drivers)</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <span class="section-kicker">Wat je kunt bouwen</span>
+            <h2>Inzichten voor vragen waar je nu te lang op zoekt.</h2>
+            <p class="lead">AVDLData Insights combineert analyse, datakwaliteit en AI waar dat nuttig is. Klein beginnen, werkend testen, daarna uitbreiden.</p>
+          </div>
+        </div>
+        <div class="info-grid">
+          <article class="info-card reveal"><h3>Trendverklaring</h3><p>Welke klanten, producten of processen veroorzaken een stijging of daling?</p></article>
+          <article class="info-card reveal"><h3>Forecasting</h3><p>Voorspellingen voor omzet, bezetting, voorraad of werklast op basis van historische patronen.</p></article>
+          <article class="info-card reveal"><h3>AI vraag en antwoord</h3><p>Een gecontroleerde manier om vragen te stellen over je eigen data zonder handmatig zoeken.</p></article>
+          <article class="info-card reveal"><h3>Afwijkingsdetectie</h3><p>Automatisch signaleren wanneer cijfers buiten de normale bandbreedte vallen.</p></article>
+          <article class="info-card reveal"><h3>Managementnotities</h3><p>Korte samenvattingen van week- of maandcijfers, met bronverwijzing naar de data.</p></article>
+          <article class="info-card reveal"><h3>Beslisregels</h3><p>Concrete acties op basis van drempels, alerts of voorspellende signalen.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft">
+      <div class="container">
+        <div class="section-head reveal"><div><span class="section-kicker">Grenzen</span><h2>AI alleen waar het waarde toevoegt.</h2><p class="lead">Niet elk probleem heeft AI nodig. Soms is een goed datamodel of simpele regel beter. Insights maakt die keuze expliciet.</p></div></div>
+        <div class="case-grid">
+          <article class="case-panel reveal"><h3>Wel geschikt</h3><p>Vragen met veel herhaling, meerdere databronnen, duidelijke metingen en genoeg historische data.</p><div class="tag-row"><span class="tag">Forecasts</span><span class="tag">Root-cause</span><span class="tag">Alerts</span></div></article>
+          <article class="case-panel reveal"><h3>Niet geschikt</h3><p>Vage vragen zonder databasis, kritieke besluiten zonder controle, of situaties waar een Excel-overzicht genoeg is.</p><div class="tag-row"><span class="tag">Geen magie</span><span class="tag">Geen black box</span><span class="tag">Wel controle</span></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta-band">
+      <div class="container cta-grid">
+        <div class="reveal"><h2>Heb je een vraag die steeds terugkomt?</h2><p class="lead">Dan is dat vaak een goed startpunt voor een Insights-project.</p></div>
+        <div class="hero-actions reveal"><a class="btn" href="../contact.html">Start met Insights <i data-lucide="arrow-right"></i></a><a class="btn secondary" href="reports.html">Bekijk Reports</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div><a class="brand" href="../index.html"><span class="brand-mark"><i data-lucide="code-2"></i></span>AVDLData.nl</a><p class="lead" style="font-size:0.92rem;">Producten en oplossingen voor data, inzichten en automatisering.</p></div>
+      <div><h3>Navigatie</h3><a href="../index.html">Home</a><a href="../projecten/index.html">Projecten</a><a href="../portfolio.html">Portfolio</a></div>
+      <div><h3>Producten</h3><a href="reports.html">AVDLData Reports</a><a href="insights.html">AVDLData Insights</a></div>
+      <div><h3>Connect</h3><a href="https://github.com/avdldata">GitHub</a><a href="mailto:arjanvdlaanzakelijk@gmail.com">E-mail</a></div>
+    </div>
+  </footer>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>
