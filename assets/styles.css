@@ -36,6 +36,24 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.hero-grid > *,
+.page-hero-grid > *,
+.section-head > *,
+.about-band > *,
+.proof-grid > *,
+.form-grid > *,
+.cta-grid > *,
+.product-card > *,
+.project-card > *,
+.info-card,
+.case-panel,
+.repo-panel,
+.commit-panel,
+.form-panel,
+.tool {
+  min-width: 0;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -230,10 +248,10 @@ summary:focus-visible {
 .hero-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(560px, 1.1fr);
-  gap: 56px;
+  gap: 48px;
   align-items: center;
-  min-height: 690px;
-  padding: 76px 0 66px;
+  min-height: 640px;
+  padding: 52px 0 42px;
 }
 
 .eyebrow {
@@ -271,7 +289,7 @@ h1 {
   line-height: 1.01;
   font-weight: 820;
   letter-spacing: 0;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   text-wrap: balance;
 }
 
@@ -356,7 +374,7 @@ h1 .accent {
 .dashboard-grid {
   display: grid;
   grid-template-columns: 150px minmax(0, 1fr);
-  min-height: 318px;
+  min-height: 300px;
 }
 
 .side-menu {
@@ -430,7 +448,7 @@ h1 .accent {
 .chart,
 .donut-card,
 .mini-chart {
-  min-height: 150px;
+  min-height: 140px;
   border: 1px solid var(--line-dark);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.035);
@@ -524,7 +542,8 @@ h1 .accent {
   color: #93c5fd;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 0.78rem;
-  line-height: 1.65;
+  line-height: 1.55;
+  overflow-x: auto;
 }
 
 .code-window span {
@@ -568,6 +587,7 @@ h2 {
   line-height: 1.07;
   font-weight: 820;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .lead {
@@ -575,6 +595,7 @@ h2 {
   margin-top: 14px;
   color: var(--muted);
   font-size: 1.04rem;
+  overflow-wrap: anywhere;
 }
 
 .dark .lead {
@@ -674,6 +695,9 @@ h2 {
 
 .product-preview {
   align-self: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 228px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -871,7 +895,7 @@ h2 {
 .repo-row,
 .commit-row {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 18px;
   padding: 16px 20px;
   border-bottom: 1px solid var(--line);
@@ -887,6 +911,7 @@ h2 {
   display: block;
   color: var(--muted);
   font-size: 0.8rem;
+  overflow-wrap: anywhere;
 }
 
 .repo-row strong,
@@ -894,6 +919,7 @@ h2 {
   display: block;
   color: var(--ink);
   font-size: 0.9rem;
+  overflow-wrap: anywhere;
 }
 
 .repo-meta {
@@ -929,6 +955,13 @@ h2 {
   display: block;
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.78rem;
+}
+
+.proof-note {
+  padding: 14px 20px 18px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  border-top: 1px solid var(--line);
 }
 
 .about-band {
@@ -1022,11 +1055,33 @@ h2 {
   padding: 80px 0;
 }
 
+.compact-hero .page-hero-grid {
+  padding: 40px 0;
+}
+
+.compact-hero h1 {
+  font-size: clamp(2.15rem, 3.6vw, 3.05rem);
+}
+
+.compact-hero .page-copy {
+  margin-top: 18px;
+}
+
+.compact-hero .hero-actions {
+  margin-top: 26px;
+}
+
+.compact-hero .panel-head,
+.compact-hero .repo-row {
+  padding-block: 13px;
+}
+
 .page-copy {
   max-width: 690px;
   margin-top: 22px;
   color: rgba(255, 255, 255, 0.72);
   font-size: 1.08rem;
+  overflow-wrap: anywhere;
 }
 
 .info-grid {
@@ -1085,6 +1140,11 @@ h2 {
   margin-bottom: 26px;
 }
 
+.portfolio-list-section,
+.contact-detail-section {
+  padding-top: 34px;
+}
+
 .filter-btn {
   min-height: 40px;
   padding: 0 14px;
@@ -1114,6 +1174,11 @@ h2 {
   padding: 28px;
 }
 
+.contact-form-card {
+  background: var(--paper);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.28);
+}
+
 .form-row {
   display: grid;
   gap: 8px;
@@ -1139,6 +1204,10 @@ h2 {
 .form-row textarea {
   min-height: 138px;
   resize: vertical;
+}
+
+.contact-form-card .form-row textarea {
+  min-height: 112px;
 }
 
 .form-note {
@@ -1218,6 +1287,10 @@ h2 {
 }
 
 @media (max-width: 760px) {
+  body {
+    overflow-x: clip;
+  }
+
   .container {
     width: min(100% - 28px, var(--max));
   }
@@ -1267,12 +1340,44 @@ h2 {
     padding: 48px 0 40px;
   }
 
+  .page-hero-grid,
+  .compact-hero .page-hero-grid {
+    gap: 28px;
+    padding: 42px 0 44px;
+  }
+
   .hero-visual {
     display: none;
   }
 
   h1 {
-    font-size: clamp(2.15rem, 12vw, 3.45rem);
+    font-size: clamp(2.05rem, 10.5vw, 2.85rem);
+    line-height: 1.05;
+    text-wrap: normal;
+  }
+
+  h2 {
+    font-size: clamp(1.7rem, 8vw, 2.22rem);
+    line-height: 1.1;
+    text-wrap: normal;
+  }
+
+  .hero-copy,
+  .page-copy,
+  .lead {
+    font-size: 0.98rem;
+  }
+
+  .hero-actions,
+  .card-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-actions .btn,
+  .card-actions .btn,
+  .form-panel .btn {
+    width: 100%;
   }
 
   .proof-row,
@@ -1287,11 +1392,25 @@ h2 {
   .product-card {
     grid-template-columns: 1fr;
     min-height: auto;
+    overflow: hidden;
     padding: 22px;
+  }
+
+  .product-preview,
+  .product-window,
+  .workflow-window,
+  .code-window,
+  .screenshot-panel {
+    max-width: 100%;
   }
 
   .section {
     padding: 62px 0;
+  }
+
+  .portfolio-list-section,
+  .contact-detail-section {
+    padding-top: 38px;
   }
 
   .section-head {
@@ -1315,6 +1434,17 @@ h2 {
   .chart-row,
   .workflow {
     grid-template-columns: 1fr;
+  }
+
+  .panel-head,
+  .repo-row,
+  .commit-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .repo-meta {
+    white-space: normal;
   }
 
   .tool-grid {
