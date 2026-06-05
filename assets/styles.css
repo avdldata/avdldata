@@ -267,10 +267,12 @@ p {
 h1 {
   max-width: 760px;
   margin-top: 24px;
-  font-size: clamp(2.4rem, 5.8vw, 4.65rem);
+  font-size: clamp(2.4rem, 4.5vw, 4rem);
   line-height: 1.01;
   font-weight: 820;
   letter-spacing: 0;
+  overflow-wrap: break-word;
+  text-wrap: balance;
 }
 
 h1 .accent {
