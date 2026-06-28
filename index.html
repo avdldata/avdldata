@@ -67,33 +67,15 @@
               <span>AVDLData · Model Scan</span>
               <div class="window-actions"><span></span><span></span><span></span></div>
             </div>
-            <div class="dashboard-grid">
-              <aside class="side-menu">
-                <span class="active"><i data-lucide="layout-dashboard"></i> Overzicht</span>
-                <span><i data-lucide="sigma"></i> Measures</span>
-                <span><i data-lucide="table"></i> Tabellen</span>
-                <span><i data-lucide="git-fork"></i> Relaties</span>
-                <span><i data-lucide="shield-alert"></i> Flags</span>
-              </aside>
-              <div class="dashboard-main">
-                <div class="metric-grid">
-                  <div class="metric"><span>Measures</span><strong>58</strong><em>gelezen</em></div>
-                  <div class="metric"><span>Tabellen</span><strong>15</strong><em>gemapt</em></div>
-                  <div class="metric"><span>Relaties</span><strong>8</strong><em>gecheckt</em></div>
-                  <div class="metric"><span>Flags</span><strong>4</strong><em>gevonden</em></div>
-                </div>
-                <div class="chart-row">
-                  <div class="chart">
-                    <div class="chart-title">Vertrouwens-signaal</div>
-                    <div class="chart-lines">
-                      <span style="height: 64%"></span><span style="height: 40%"></span><span style="height: 78%"></span><span style="height: 52%"></span><span style="height: 88%"></span><span style="height: 46%"></span><span style="height: 70%"></span><span style="height: 58%"></span>
-                    </div>
-                  </div>
-                  <div class="donut-card">
-                    <div class="donut"><span>4 flags</span></div>
-                    <div class="chart-title">Kwaliteitsissues</div>
-                  </div>
-                </div>
+            <div style="padding: 18px 20px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 12.5px; line-height: 1.6; color: #c9d1d9; background: #0d1117;">
+              <div style="color: #8b949e; margin-bottom: 14px;">report.pbix · 58 measures · 15 tabellen · 8 relaties</div>
+              <div style="display: flex; gap: 8px; margin-bottom: 8px;"><span style="color: #3fb950;">&#10003;</span><span><b style="color: #e6edf3;">Net Sales</b> &mdash; omzet: som van Amount waar Status = "Sold".</span></div>
+              <div style="display: flex; gap: 8px; margin-bottom: 8px;"><span style="color: #3fb950;">&#10003;</span><span><b style="color: #e6edf3;">Return Rate</b> &mdash; retouren gedeeld door totaalbedrag.</span></div>
+              <div style="margin-top: 16px; padding: 13px 14px; background: #2d1518; border: 1px solid #f85149; border-radius: 9px;">
+                <div style="color: #ff7b72; font-weight: 700; margin-bottom: 9px;">&#9888; 4 vertrouwens-flags</div>
+                <div style="margin-bottom: 6px;"><b style="color: #e6edf3;">Units Returned Indicator</b> &rarr; verwijst naar de verkeerde measure (copy-paste-fout)</div>
+                <div style="margin-bottom: 6px;"><b style="color: #e6edf3;">Customer</b> 1:1 met Sales &rarr; dubbele bron van waarheid</div>
+                <div>Bidirectioneel filteren &middot; dubbele datumtabellen</div>
               </div>
             </div>
           </div>
@@ -220,6 +202,28 @@
             </div>
             <p class="proof-note">AVDLData is dag 1 en wordt openlijk gebouwd. Volg de bouw mee — of laat je eigen model scannen.</p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="output">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <span class="section-kicker">Echte output</span>
+            <h2>Geen mockup &mdash; dit krijg je letterlijk terug.</h2>
+            <p class="lead">Schermafdrukken van een echte scan op Microsoft's Sales &amp; Returns sample: het datawoordenboek in mensentaal, en de vertrouwens-signalen die de tool flagde.</p>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 8px;">
+          <figure style="margin: 0;">
+            <img src="assets/output-dictionary.png" alt="AVDLData datawoordenboek output" loading="lazy" style="width: 100%; border-radius: 12px; border: 1px solid rgba(148,163,184,0.25); display: block;">
+            <figcaption style="margin-top: 10px; color: #64748b; font-size: 0.9rem;">Datawoordenboek: tabellen en measures in mensentaal.</figcaption>
+          </figure>
+          <figure style="margin: 0;">
+            <img src="assets/output-signals.png" alt="AVDLData vertrouwens- en kwaliteitssignalen" loading="lazy" style="width: 100%; border-radius: 12px; border: 1px solid rgba(148,163,184,0.25); display: block;">
+            <figcaption style="margin-top: 10px; color: #64748b; font-size: 0.9rem;">Vertrouwens-signalen: 9 concrete kwaliteits- en governance-issues.</figcaption>
+          </figure>
         </div>
       </div>
     </section>
