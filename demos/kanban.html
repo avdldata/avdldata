@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVDLData — Kanban Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <style>
+    .kanban-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-bottom: 1rem;
+    }
+    .kanban-info {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+    .kanban-info .badge { font-size: .75rem; }
+    .iframe-fallback {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+    .iframe-fallback h2 { margin-bottom: .5rem; }
+    .iframe-fallback a { font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="../portal.html" class="navbar-brand">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="12" fill="#2563eb"/>
+        <path d="M14 34V14l10 10 10-10v20" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      AVDLData
+    </a>
+    <button class="menu-toggle" onclick="document.querySelector('.navbar-nav').classList.toggle('open')" aria-label="Menu">☰</button>
+    <ul class="navbar-nav">
+      <li><a href="../portal.html">Dashboard</a></li>
+      <li><a href="chatbot.html">Chatbot</a></li>
+      <li><a href="kanban.html" class="active">Kanban</a></li>
+      <li><a href="obsidian.html">Obsidian</a></li>
+      <li><a href="#" id="logoutBtn" style="color:var(--danger);">Uitloggen</a></li>
+    </ul>
+  </nav>
+
+  <main class="page">
+    <div class="container">
+      <div class="page-header">
+        <div class="kanban-header">
+          <div class="kanban-info">
+            <h1>📋 Kanban Board</h1>
+            <span class="badge badge-active" id="statusBadge">Verbonden</span>
+          </div>
+          <div>
+            <button class="btn btn-ghost" onclick="reloadFrame()" style="font-size:.8rem;">↻ Verversen</button>
+            <a href="http://192.168.86.22:5555" target="_blank" class="btn btn-ghost" style="font-size:.8rem;">↗ Openen</a>
+          </div>
+        </div>
+        <p>Interactief Kanban bord voor taakbeheer. Draag kaarten tussen kolommen.</p>
+      </div>
+
+      <!-- Kanban Iframe -->
+      <div id="kanbanFrame">
+        <iframe
+          id="kanbanIframe"
+          src="http://192.168.86.22:5555"
+          class="iframe-wrapper"
+          title="Kanban Board"
+          allow="clipboard-read; clipboard-write"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        ></iframe>
+      </div>
+
+      <!-- Fallback als iframe niet laadt -->
+      <div id="kanbanFallback" class="iframe-fallback" style="display:none;">
+        <h2>Kanban Board niet bereikbaar</h2>
+        <p style="margin-bottom:1rem;">De Kanban server op <code style="background:var(--bg-input); padding:.15rem .4rem; border-radius:4px;">192.168.86.22:5555</code> is momenteel niet beschikbaar.</p>
+        <p style="margin-bottom:1.5rem;">Dit kan komen doordat:</p>
+        <ul style="color:var(--ink-dim); text-align:left; max-width:400px; margin:0 auto 1.5rem; padding-left:1.5rem;">
+          <li>Je niet op hetzelfde netwerk bent</li>
+          <li>De server niet actief is</li>
+          <li>De firewall de verbinding blokkeert</li>
+        </ul>
+        <a href="http://192.168.86.22:5555" target="_blank" class="btn btn-primary">Probeer direct te openen</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const SESSION_KEY = 'avdldata_session';
+
+    // Sessie check
+    function getSession() {
+      const s = localStorage.getItem(SESSION_KEY);
+      if (!s) { window.location.href = '../index.html'; return null; }
+      return JSON.parse(s);
+    }
+
+    // Fallback detectie
+    const iframe = document.getElementById('kanbanIframe');
+    const fallback = document.getElementById('kanbanFallback');
+    const frameContainer = document.getElementById('kanbanFrame');
+    const statusBadge = document.getElementById('statusBadge');
+
+    let loadTimeout = setTimeout(function() {
+      // Als iframe na 5 seconden niet geladen is, toon fallback
+      frameContainer.style.display = 'none';
+      fallback.style.display = 'block';
+      statusBadge.textContent = 'Offline';
+      statusBadge.className = 'badge badge-inactive';
+    }, 5000);
+
+    iframe.addEventListener('load', function() {
+      clearTimeout(loadTimeout);
+      // Controleer of er echt content is (niet een error page)
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        if (doc && doc.body && doc.body.innerHTML.length > 10) {
+          statusBadge.textContent = 'Verbonden';
+          statusBadge.className = 'badge badge-active';
+        }
+      } catch(e) {
+        // Cross-origin, maar iframe laadt wel
+        statusBadge.textContent = 'Verbonden';
+        statusBadge.className = 'badge badge-active';
+      }
+    });
+
+    iframe.addEventListener('error', function() {
+      clearTimeout(loadTimeout);
+      frameContainer.style.display = 'none';
+      fallback.style.display = 'block';
+      statusBadge.textContent = 'Offline';
+      statusBadge.className = 'badge badge-inactive';
+    });
+
+    function reloadFrame() {
+      clearTimeout(loadTimeout);
+      loadTimeout = setTimeout(function() {
+        frameContainer.style.display = 'none';
+        fallback.style.display = 'block';
+        statusBadge.textContent = 'Offline';
+        statusBadge.className = 'badge badge-inactive';
+      }, 5000);
+      frameContainer.style.display = 'block';
+      fallback.style.display = 'none';
+      iframe.src = iframe.src;
+    }
+
+    // Uitloggen
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      localStorage.removeItem(SESSION_KEY);
+      window.location.href = '../index.html';
+    });
+
+    getSession();
+  </script>
+</body>
+</html>

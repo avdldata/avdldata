@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVDLData — Obsidian Viewer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <style>
+    .obsidian-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 1rem;
+      height: calc(100vh - 160px);
+    }
+    @media (max-width: 768px) {
+      .obsidian-grid { grid-template-columns: 1fr; height: auto; }
+    }
+    .obsidian-sidebar {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    .obsidian-sidebar h3 { margin-bottom: .75rem; font-size: .9rem; }
+    .note-list { list-style: none; }
+    .note-list li {
+      padding: .5rem .75rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: .85rem;
+      color: var(--ink-dim);
+      transition: background .2s, color .2s;
+    }
+    .note-list li:hover,
+    .note-list li.active {
+      background: var(--line);
+      color: var(--ink);
+    }
+    .note-list li .note-date {
+      display: block;
+      font-size: .7rem;
+      color: var(--ink-dim);
+      margin-top: .2rem;
+    }
+    .obsidian-content {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 2rem;
+      overflow-y: auto;
+    }
+    .obsidian-content h1 { font-size: 1.5rem; margin-bottom: .5rem; }
+    .obsidian-content .meta {
+      font-size: .75rem;
+      color: var(--ink-dim);
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .obsidian-content .body-text {
+      font-size: .9rem;
+      line-height: 1.8;
+      color: var(--ink);
+    }
+    .obsidian-content .body-text p { margin-bottom: 1rem; color: var(--ink); }
+    .obsidian-content .body-text code {
+      background: var(--bg-input);
+      padding: .15rem .4rem;
+      border-radius: 4px;
+      font-size: .85rem;
+    }
+    .obsidian-content .body-text blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      margin: 1rem 0;
+      color: var(--ink-dim);
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="../portal.html" class="navbar-brand">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="12" fill="#2563eb"/>
+        <path d="M14 34V14l10 10 10-10v20" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      AVDLData
+    </a>
+    <button class="menu-toggle" onclick="document.querySelector('.navbar-nav').classList.toggle('open')" aria-label="Menu">☰</button>
+    <ul class="navbar-nav">
+      <li><a href="../portal.html">Dashboard</a></li>
+      <li><a href="chatbot.html">Chatbot</a></li>
+      <li><a href="kanban.html">Kanban</a></li>
+      <li><a href="obsidian.html" class="active">Obsidian</a></li>
+      <li><a href="#" id="logoutBtn" style="color:var(--danger);">Uitloggen</a></li>
+    </ul>
+  </nav>
+
+  <main class="page">
+    <div class="container">
+      <div class="page-header">
+        <h1>📓 Obsidian Viewer</h1>
+        <p>Bekijk je notities en kennisbank direct in de browser.</p>
+      </div>
+
+      <div class="obsidian-grid">
+        <!-- Sidebar met notities -->
+        <div class="obsidian-sidebar">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.75rem;">
+            <h3 style="margin:0;">Notities</h3>
+            <span class="badge badge-active">Demo</span>
+          </div>
+          <ul class="note-list" id="noteList">
+            <!-- Worden door JS gevuld -->
+          </ul>
+        </div>
+
+        <!-- Content area -->
+        <div class="obsidian-content" id="noteContent">
+          <h1 id="noteTitle">Welkom bij Obsidian Viewer</h1>
+          <div class="meta" id="noteMeta">Selecteer een notitie om te bekijken</div>
+          <div class="body-text" id="noteBody">
+            <p>Deze Obsidian Viewer toont notities in een gestructureerd overzicht.</p>
+            <p>In een productie-omgeving kun je hier je echte Obsidian vault koppelen via een API of door de Obsidian Local REST API plugin te gebruiken.</p>
+            <blockquote>"Knowledge is power. Information is liberating." — Kofi Annan</blockquote>
+            <p><strong>Mogelijke koppelingen:</strong></p>
+            <ul style="padding-left:1.5rem; margin-bottom:1rem;">
+              <li>Obsidian Local REST API plugin</li>
+              <li>Directe vault-lezen via een file server</li>
+              <li>n8n workflow voor automatische sync</li>
+              <li>GitHub Pages publicatie van notities</li>
+            </ul>
+            <p>Klik op een notitie in de sidebar om de inhoud te bekijken.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const SESSION_KEY = 'avdldata_session';
+
+    // Demo notities
+    const demoNotes = [
+      {
+        id: 'welcome',
+        title: '👋 Welkom',
+        date: '2026-01-15',
+        tags: ['portal', 'start'],
+        body: `<p>Welkom bij het AVDLData Obsidian Viewer demo portaal.</p>
+               <p>Dit is een voorbeeld van hoe je notities uit Obsidian kunt presenteren in een web-omgeving.</p>
+               <blockquote>"The art of knowledge is to know what to ignore."</blockquote>
+               <p>In de toekomst kun je hier je volledige Obsidian vault doorzoeken en bekijken.</p>`
+      },
+      {
+        id: 'n8n-setup',
+        title: '⚙️ n8n Setup',
+        date: '2026-02-20',
+        tags: ['n8n', 'automatisering'],
+        body: `<p>n8n is een krachtige workflow automatiseringstool die we gebruiken voor:</p>
+               <ul style="padding-left:1.5rem; margin-bottom:1rem;">
+                 <li>Chatbot webhook integratie (<code>192.168.86.22:5678</code>)</li>
+                 <li>Data sync tussen systemen</li>
+                 <li>Automatische rapportages</li>
+                 <li>API koppelingen</li>
+               </ul>
+               <p><strong>Belangrijke endpoints:</strong></p>
+               <p><code>/webhook/chat</code> — Chatbot berichten<br>
+                  <code>/webhook/data</code> — Data import<br>
+                  <code>/webhook/notify</code> — Notificaties</p>`
+      },
+      {
+        id: 'kanban-workflow',
+        title: '📋 Kanban Workflow',
+        date: '2026-03-10',
+        tags: ['kanban', 'productiviteit'],
+        body: `<p>Ons Kanban systeem draait op <code>192.168.86.22:5555</code>.</p>
+               <p><strong>Kolommen:</strong></p>
+               <ul style="padding-left:1.5rem; margin-bottom:1rem;">
+                 <li>📥 Te doen — Nieuwe taken die ingepland moeten worden</li>
+                 <li>🔄 Bezig — Taken die momenteel uitgevoerd worden</li>
+                 <li>👀 Review — Taken die gecontroleerd moeten worden</li>
+                 <li>✅ Klaar — Afgeronde taken</li>
+               </ul>
+               <blockquote>"Getting things done is not about doing everything. It's about knowing what to do."</blockquote>`
+      },
+      {
+        id: 'ai-prompts',
+        title: '🤖 AI Prompt Templates',
+        date: '2026-04-05',
+        tags: ['ai', 'prompts', 'nuttig'],
+        body: `<p>Handige prompt templates voor de AI chatbot:</p>
+               <p><strong>Data Analyse:</strong><br>
+               <code>Analyseer de volgende data en geef een samenvatting met de belangrijkste trends: [data]</code></p>
+               <p><strong>Rapportage:</strong><br>
+               <code>Genereer een professioneel rapport over [onderwerp] met KPI's en aanbevelingen.</code></p>
+               <p><strong>Code Review:</strong><br>
+               <code>Review de volgende code op fouten, verbeterpunten en beveiligingsrisico's: [code]</code></p>`
+      },
+      {
+        id: 'server-notes',
+        title: '🖥️ Server Configuratie',
+        date: '2026-05-12',
+        tags: ['server', 'infra'],
+        body: `<p><strong>AVDLData Server Overzicht:</strong></p>
+               <ul style="padding-left:1.5rem; margin-bottom:1rem;">
+                 <li><code>192.168.86.22:5678</code> — n8n Workflow Engine</li>
+                 <li><code>192.168.86.22:5555</code> — Kanban Board Applicatie</li>
+                 <li><code>avdldata.nl</code> — Website & Portal (GitHub Pages)</li>
+               </ul>
+               <p><strong>Back-up strategie:</strong></p>
+               <p>Dagelijkse back-ups van de n8n database en Kanban data worden automatisch uitgevoerd via cron jobs.</p>
+               <blockquote>"Always have a backup plan. And a backup for the backup plan."</blockquote>`
+      }
+    ];
+
+    // Render notitielijst
+    function renderNoteList() {
+      const list = document.getElementById('noteList');
+      list.innerHTML = '';
+      demoNotes.forEach(note => {
+        const li = document.createElement('li');
+        li.dataset.id = note.id;
+        li.innerHTML = `${note.title}<span class="note-date">${new Date(note.date).toLocaleDateString('nl-NL')} • ${note.tags.join(', ')}</span>`;
+        li.addEventListener('click', () => showNote(note));
+        list.appendChild(li);
+      });
+    }
+
+    // Toon notitie
+    function showNote(note) {
+      document.getElementById('noteTitle').textContent = note.title;
+      document.getElementById('noteMeta').textContent = `${new Date(note.date).toLocaleDateString('nl-NL', { year:'numeric', month:'long', day:'numeric' })} • Tags: ${note.tags.join(', ')}`;
+      document.getElementById('noteBody').innerHTML = note.body;
+
+      // Active state
+      document.querySelectorAll('.note-list li').forEach(li => {
+        li.classList.toggle('active', li.dataset.id === note.id);
+      });
+    }
+
+    // Uitloggen
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      localStorage.removeItem(SESSION_KEY);
+      window.location.href = '../index.html';
+    });
+
+    // Sessie check + init
+    (function() {
+      const s = localStorage.getItem(SESSION_KEY);
+      if (!s) { window.location.href = '../index.html'; return; }
+      renderNoteList();
+      showNote(demoNotes[0]);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVDLData — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="portal.html" class="navbar-brand">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="12" fill="#2563eb"/>
+        <path d="M14 34V14l10 10 10-10v20" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      AVDLData
+    </a>
+    <button class="menu-toggle" onclick="document.querySelector('.navbar-nav').classList.toggle('open')" aria-label="Menu">☰</button>
+    <ul class="navbar-nav">
+      <li><a href="portal.html" class="active">Dashboard</a></li>
+      <li><a href="demos/chatbot.html">Chatbot</a></li>
+      <li><a href="demos/kanban.html">Kanban</a></li>
+      <li><a href="demos/obsidian.html">Obsidian</a></li>
+      <li><a href="#" id="logoutBtn" style="color:var(--danger);">Uitloggen</a></li>
+    </ul>
+  </nav>
+
+  <main class="page">
+    <div class="container">
+      <!-- Welkom -->
+      <div class="page-header">
+        <h1>Welkom terug, <span id="userName">—</span></h1>
+        <p>Hier vind je een overzicht van alle demo's en diensten.</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid grid-4" style="margin-bottom: 2rem;">
+        <div class="card">
+          <p style="font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.3rem;">Status</p>
+          <h2 style="color:var(--success);">Actief</h2>
+        </div>
+        <div class="card">
+          <p style="font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.3rem;">Rol</p>
+          <h2 id="userRole">—</h2>
+        </div>
+        <div class="card">
+          <p style="font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.3rem;">Laatste login</p>
+          <h2 id="lastLogin" style="font-size:1rem;">—</h2>
+        </div>
+        <div class="card">
+          <p style="font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.3rem;">Demo's</p>
+          <h2>3</h2>
+        </div>
+      </div>
+
+      <!-- Demo Cards -->
+      <h2 style="margin-bottom:1rem;">Demo's</h2>
+      <div class="grid grid-3">
+        <!-- Chatbot -->
+        <a href="demos/chatbot.html" class="card" style="text-decoration:none; display:flex; flex-direction:column; gap:.75rem;">
+          <div style="display:flex; align-items:center; gap:.6rem;">
+            <div style="width:40px; height:40px; border-radius:10px; background:#2563eb20; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">🤖</div>
+            <h3>AI Chatbot</h3>
+          </div>
+          <p>Test de AI chatbot interface. Koppeling met n8n webhook voor intelligent antwoorden.</p>
+          <span class="badge badge-active">Beschikbaar</span>
+        </a>
+
+        <!-- Kanban -->
+        <a href="demos/kanban.html" class="card" style="text-decoration:none; display:flex; flex-direction:column; gap:.75rem;">
+          <div style="display:flex; align-items:center; gap:.6rem;">
+            <div style="width:40px; height:40px; border-radius:10px; background:#22c55e20; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">📋</div>
+            <h3>Kanban Board</h3>
+          </div>
+          <p>Interactief Kanban bord voor taakbeheer. Drag & drop functionaliteit.</p>
+          <span class="badge badge-active">Beschikbaar</span>
+        </a>
+
+        <!-- Obsidian -->
+        <a href="demos/obsidian.html" class="card" style="text-decoration:none; display:flex; flex-direction:column; gap:.75rem;">
+          <div style="display:flex; align-items:center; gap:.6rem;">
+            <div style="width:40px; height:40px; border-radius:10px; background:#f59e0b20; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">📓</div>
+            <h3>Obsidian Viewer</h3>
+          </div>
+          <p>Bekijk en doorzoek je Obsidian notities direct in de browser.</p>
+          <span class="badge badge-active">Beschikbaar</span>
+        </a>
+      </div>
+
+      <!-- Klant Overzicht (admin only) -->
+      <div id="adminSection" style="margin-top: 2.5rem; display:none;">
+        <h2 style="margin-bottom:1rem;">Klant Overzicht</h2>
+        <div class="card">
+          <table style="width:100%; border-collapse:collapse;">
+            <thead>
+              <tr style="border-bottom:1px solid var(--line);">
+                <th style="text-align:left; padding:.75rem .5rem; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-dim);">Gebruiker</th>
+                <th style="text-align:left; padding:.75rem .5rem; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-dim);">Rol</th>
+                <th style="text-align:left; padding:.75rem .5rem; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-dim);">Status</th>
+              </tr>
+            </thead>
+            <tbody id="userTable">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const SESSION_KEY = 'avdldata_session';
+    const USERS_KEY = 'avdldata_users';
+
+    // Check sessie
+    function getSession() {
+      const s = localStorage.getItem(SESSION_KEY);
+      if (!s) { window.location.href = '../index.html'; return null; }
+      return JSON.parse(s);
+    }
+
+    // Vul dashboard
+    function initDashboard() {
+      const session = getSession();
+      if (!session) return;
+
+      document.getElementById('userName').textContent = session.name || session.username;
+      document.getElementById('userRole').textContent = session.role === 'admin' ? 'Administrator' : 'Klant';
+      document.getElementById('lastLogin').textContent = new Date(session.loginTime).toLocaleString('nl-NL');
+
+      // Admin sectie tonen
+      if (session.role === 'admin') {
+        document.getElementById('adminSection').style.display = 'block';
+        loadUserTable();
+      }
+    }
+
+    // Laad gebruikerstabel (admin)
+    function loadUserTable() {
+      const users = JSON.parse(localStorage.getItem(USERS_KEY) || '{}');
+      const tbody = document.getElementById('userTable');
+      tbody.innerHTML = '';
+
+      Object.entries(users).forEach(([username, user]) => {
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid var(--line)';
+        const badgeClass = user.role === 'admin' ? 'badge-active' : 'badge-pending';
+        const roleLabel = user.role === 'admin' ? 'Admin' : 'Klant';
+        tr.innerHTML = `
+          <td style="padding:.75rem .5rem; font-weight:500;">${user.name || username}</td>
+          <td style="padding:.75rem .5rem;"><span class="badge ${badgeClass}">${roleLabel}</span></td>
+          <td style="padding:.75rem .5rem;"><span class="badge badge-active">Actief</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Uitloggen
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      localStorage.removeItem(SESSION_KEY);
+      window.location.href = '../index.html';
+    });
+
+    initDashboard();
+  </script>
+</body>
+</html>
