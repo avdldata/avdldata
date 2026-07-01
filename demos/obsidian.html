@@ -105,39 +105,19 @@
     <div class="container">
       <div class="page-header">
         <h1>📓 Obsidian Viewer</h1>
-        <p>Bekijk je notities en kennisbank direct in de browser.</p>
+        <p>Bekijk je notities en kennisbank direct in de browser. Koppeling met je echte Obsidian vault.</p>
       </div>
 
-      <div class="obsidian-grid">
-        <!-- Sidebar met notities -->
-        <div class="obsidian-sidebar">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.75rem;">
-            <h3 style="margin:0;">Notities</h3>
-            <span class="badge badge-active">Demo</span>
-          </div>
-          <ul class="note-list" id="noteList">
-            <!-- Worden door JS gevuld -->
-          </ul>
+      <div class="card" style="margin-bottom:1rem; padding:1rem; display:flex; align-items:center; gap:.75rem;">
+        <span style="font-size:1.2rem;">ℹ️</span>
+        <div>
+          <p style="color:var(--ink); font-size:.85rem; margin:0;"><strong>Server:</strong> <code style="background:var(--bg-input); padding:.15rem .4rem; border-radius:4px; font-size:.8rem;">http://192.168.86.22:5556</code></p>
+          <p style="font-size:.75rem; margin:0;">Je echte Obsidian vault wordt hier weergegeven.</p>
         </div>
+      </div>
 
-        <!-- Content area -->
-        <div class="obsidian-content" id="noteContent">
-          <h1 id="noteTitle">Welkom bij Obsidian Viewer</h1>
-          <div class="meta" id="noteMeta">Selecteer een notitie om te bekijken</div>
-          <div class="body-text" id="noteBody">
-            <p>Deze Obsidian Viewer toont notities in een gestructureerd overzicht.</p>
-            <p>In een productie-omgeving kun je hier je echte Obsidian vault koppelen via een API of door de Obsidian Local REST API plugin te gebruiken.</p>
-            <blockquote>"Knowledge is power. Information is liberating." — Kofi Annan</blockquote>
-            <p><strong>Mogelijke koppelingen:</strong></p>
-            <ul style="padding-left:1.5rem; margin-bottom:1rem;">
-              <li>Obsidian Local REST API plugin</li>
-              <li>Directe vault-lezen via een file server</li>
-              <li>n8n workflow voor automatische sync</li>
-              <li>GitHub Pages publicatie van notities</li>
-            </ul>
-            <p>Klik op een notitie in de sidebar om de inhoud te bekijken.</p>
-          </div>
-        </div>
+      <div style="background:var(--bg-card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; height:calc(100vh - 250px); min-height:500px;">
+        <iframe src="http://192.168.86.22:5556" style="width:100%; height:100%; border:none;" title="Obsidian Viewer"></iframe>
       </div>
     </div>
   </main>
