@@ -511,7 +511,7 @@
             <div class="dropzone-icon">📸</div>
             <h3>Sleep een factuur hierheen</h3>
             <p>of klik om een bestand te kiezen</p>
-            <label class="browse-btn" for="fileInput">
+            <label class="browse-btn" id="browseBtn">
               📁 Kies bestand
             </label>
             <input type="file" id="fileInput" accept="image/*,.pdf">
@@ -744,11 +744,20 @@
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
 
-    // Click to browse
+    // Click to browse — only handle dropzone background clicks
     dropzone.addEventListener('click', (e) => {
-      if (e.target.closest('.browse-btn') || e.target === dropzone || e.target.closest('.dropzone-icon') || e.target.closest('h3') || e.target.closest('p')) {
+      // If click is on the browse button or its children, let the dedicated handler deal with it
+      if (e.target.closest('#browseBtn')) return;
+      // Only open file picker when clicking the dropzone background area
+      if (e.target === dropzone || e.target.closest('.dropzone-icon') || e.target.closest('h3') || e.target.closest('p')) {
         fileInput.click();
       }
+    });
+
+    // Browse button — dedicated handler, stops propagation to avoid double trigger
+    document.getElementById('browseBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.click();
     });
 
     // Drag & Drop
@@ -839,7 +848,7 @@
         <div class="dropzone-icon">📸</div>
         <h3>Sleep een factuur hierheen</h3>
         <p>of klik om een bestand te kiezen</p>
-        <label class="browse-btn" for="fileInput">📁 Kies bestand</label>
+        <label class="browse-btn" id="browseBtn">📁 Kies bestand</label>
         <input type="file" id="fileInput" accept="image/*,.pdf">
         <div class="supported-formats">JPG, PNG, WEBP, HEIC, PDF — max 10MB</div>
       `;
