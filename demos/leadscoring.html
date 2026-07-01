@@ -67,7 +67,7 @@
 
   <script>
     const SESSION_KEY = 'avdldata_session';
-    const WEBHOOK_URL = 'http://192.168.86.22:5678/webhook/lead';
+    const WEBHOOK_URL = 'http://' + location.hostname + ':5678/webhook/lead';
     const chatMessages = document.getElementById('chatMessages');
     const chatInput = document.getElementById('chatInput');
     const sendBtn = document.getElementById('sendBtn');

@@ -722,7 +722,7 @@
     // ══════════════════════════════════════
 
     const SESSION_KEY = 'avdldata_session';
-    const WEBHOOK_URL = 'http://192.168.86.22:5678/webhook/invoice';
+    const WEBHOOK_URL = 'http://' + location.hostname + ':5678/webhook/invoice';
     const HISTORY_KEY = 'avdldata_invoice_history';
     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
