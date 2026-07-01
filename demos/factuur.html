@@ -475,6 +475,58 @@
       display: flex; align-items: center; justify-content: font-size: 2.5rem;
       opacity: .5;
     }
+
+    /* ── BTW Summary Chips ── */
+    .btw-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .3rem;
+      margin-top: .3rem;
+      justify-content: flex-end;
+    }
+    .btw-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      padding: .15rem .5rem;
+      background: var(--bg-input);
+      border: 1px solid var(--line);
+      border-radius: 9999px;
+      font-size: .65rem;
+      color: var(--ink-dim);
+      font-weight: 500;
+    }
+    .btw-chip .btw-pct {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ── Validation ── */
+    .validation-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .validation-list li {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .3rem 0;
+      font-size: .8rem;
+      color: var(--ink);
+    }
+    .validation-ok { color: var(--success); font-weight: 600; }
+    .validation-fail { color: var(--danger); font-weight: 600; }
+    .validation-errors {
+      margin-top: .5rem;
+      padding: .5rem .75rem;
+      background: #ef444410;
+      border: 1px solid #ef444430;
+      border-radius: 6px;
+      font-size: .75rem;
+      color: var(--danger);
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
@@ -622,6 +674,34 @@
               </div>
             </div>
 
+            <!-- Ontvanger -->
+            <div class="data-section">
+              <div class="data-section-title">Ontvanger</div>
+              <div class="data-grid">
+                <div class="data-field">
+                  <div class="data-field-label">
+                    <span class="confidence-dot high" id="conf-ontvanger_naam"></span>
+                    Naam
+                  </div>
+                  <div class="data-field-value editable" id="field-ontvanger_naam" data-key="ontvanger_naam"></div>
+                </div>
+                <div class="data-field full-width">
+                  <div class="data-field-label">
+                    <span class="confidence-dot high" id="conf-ontvanger_adres"></span>
+                    Adres
+                  </div>
+                  <div class="data-field-value editable" id="field-ontvanger_adres" data-key="ontvanger_adres"></div>
+                </div>
+                <div class="data-field">
+                  <div class="data-field-label">
+                    <span class="confidence-dot high" id="conf-ontvanger_btw_nummer"></span>
+                    BTW-nummer
+                  </div>
+                  <div class="data-field-value editable" id="field-ontvanger_btw_nummer" data-key="ontvanger_btw_nummer"></div>
+                </div>
+              </div>
+            </div>
+
             <!-- Factuurregels -->
             <div class="data-section" id="regelsSection" style="display:none;">
               <div class="data-section-title">Factuurregels</div>
@@ -683,9 +763,10 @@
                 <div class="total-item-label">Subtotaal</div>
                 <div class="total-item-value" id="total-subtotaal">€ 0,00</div>
               </div>
-              <div class="total-item">
+              <div class="total-item total-item-btw">
                 <div class="total-item-label">BTW</div>
                 <div class="total-item-value" id="total-btw">€ 0,00</div>
+                <div class="btw-chips" id="btwChips"></div>
               </div>
               <div class="total-item">
                 <div class="total-item-label">Totaal</div>
@@ -707,6 +788,12 @@
                 <span class="confidence-dot low"></span>
                 <span id="confLowCount">0</span> laag
               </div>
+            </div>
+
+            <!-- Validatie -->
+            <div class="data-section" id="validatieSection" style="display:none;">
+              <div class="data-section-title">✅ Validatie</div>
+              <ul class="validation-list" id="validatieList"></ul>
             </div>
           </div>
         </div>
@@ -951,6 +1038,9 @@
         'adres': data.adres || data.address || data.supplier_address || '',
         'btw_nummer': data.btw_nummer || data.vat_number || data.vatNumber || '',
         'kvk_nummer': data.kvk_nummer || data.kvk || data.coc_number || '',
+        'ontvanger_naam': data.ontvanger_naam || '',
+        'ontvanger_adres': data.ontvanger_adres || '',
+        'ontvanger_btw_nummer': data.ontvanger_btw_nummer || '',
         'iban': data.iban || data.bank_account || '',
         'bic': data.bic || '',
         'ten_name_van': data.ten_name_van || data.bank_recipient || data.account_name || '',
@@ -992,12 +1082,79 @@
       document.getElementById('total-btw').textContent = formatEuro(btw);
       document.getElementById('total-totaal').textContent = formatEuro(totaal || (subtotaal + btw));
 
+      // BTW Samenvatting chips
+      renderBtwSamenvatting(data);
+
       // Confidence summary
       updateConfidenceSummary(confidences, fields);
+
+      // Validation
+      renderValidatie(data);
 
       // Reset edit mode
       isEditMode = false;
       document.getElementById('editBtn').textContent = '✏️ Bewerk';
+    }
+
+    function renderBtwSamenvatting(data) {
+      const chipsEl = document.getElementById('btwChips');
+      const btwSamenvatting = data.btw_samenvatting || data.btw_summary || [];
+      chipsEl.innerHTML = '';
+
+      if (Array.isArray(btwSamenvatting) && btwSamenvatting.length > 0) {
+        btwSamenvatting.forEach(item => {
+          const pct = item.percentage || item.tarief || item.rate || 0;
+          const bedrag = parseFloat(item.bedrag || item.amount || 0);
+          const chip = document.createElement('span');
+          chip.className = 'btw-chip';
+          chip.innerHTML = `<span class="btw-pct">${pct}%</span> ${formatEuro(bedrag)}`;
+          chipsEl.appendChild(chip);
+        });
+      }
+    }
+
+    function renderValidatie(data) {
+      const section = document.getElementById('validatieSection');
+      const list = document.getElementById('validatieList');
+      const validatie = data.validatie || data.validation || null;
+
+      if (!validatie || typeof validatie !== 'object') {
+        section.style.display = 'none';
+        return;
+      }
+
+      section.style.display = 'block';
+      list.innerHTML = '';
+
+      // Map of known validation keys to human-readable labels
+      const labels = {
+        iban_geldig: 'IBAN geldig',
+        bedrag_controle: 'Bedragen kloppen (subtotaal + btw = totaal)',
+        regel_math_ok: 'Regel-math klopt',
+        datum_logica_ok: 'Datums logisch',
+        btw_percentages_ok: 'BTW-percentages geldig'
+      };
+
+      // Show boolean checks
+      Object.entries(labels).forEach(([key, label]) => {
+        const ok = validatie[key];
+        if (ok === undefined) return;
+        const li = document.createElement('li');
+        const icon = ok ? '✓' : '✗';
+        const cls = ok ? 'validation-ok' : 'validation-fail';
+        li.innerHTML = `<span class="${cls}">${icon}</span> ${label}`;
+        list.appendChild(li);
+      });
+
+      // Show errors array if present
+      const fouten = validatie.fouten || validatie.errors || [];
+      if (Array.isArray(fouten) && fouten.length > 0) {
+        const errDiv = document.createElement('div');
+        errDiv.className = 'validation-errors';
+        errDiv.innerHTML = '<strong>⚠ Fouten:</strong><br>' +
+          fouten.map(f => '• ' + escapeHtml(f)).join('<br>');
+        list.parentElement.appendChild(errDiv);
+      }
     }
 
     function displayLineItems(regels, invoiceData) {
@@ -1141,6 +1298,9 @@
         adres: 'Adres',
         btw_nummer: 'BTW-nummer',
         kvk_nummer: 'KvK-nummer',
+        ontvanger_naam: 'Ontvanger naam',
+        ontvanger_adres: 'Ontvanger adres',
+        ontvanger_btw_nummer: 'Ontvanger BTW-nummer',
         iban: 'IBAN',
         bic: 'BIC',
         ten_name_van: 'Tenaamstelling',
@@ -1172,6 +1332,9 @@
         `Adres: ${currentResult.adres || ''}`,
         `BTW-nummer: ${currentResult.btw_nummer || ''}`,
         `KvK-nummer: ${currentResult.kvk_nummer || ''}`,
+        `Ontvanger: ${currentResult.ontvanger_naam || ''}`,
+        `Ontvanger adres: ${currentResult.ontvanger_adres || ''}`,
+        `Ontvanger BTW: ${currentResult.ontvanger_btw_nummer || ''}`,
         `IBAN: ${currentResult.iban || ''}`,
         `Tenaamstelling: ${currentResult.ten_name_van || ''}`,
         `Omschrijving: ${currentResult.omschrijving || ''}`,
