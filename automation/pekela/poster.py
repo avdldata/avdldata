@@ -1,5 +1,4 @@
 import math
-import random
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -9,25 +8,26 @@ from models import Fixture
 from titling import MONTHS_NL, build_title
 
 FONT_DIR = Path(__file__).parent / "assets" / "fonts"
-HEADLINE_FONT = FONT_DIR / "BigShoulders-Bold.ttf"
-CAPTION_FONT = FONT_DIR / "WorkSans-Regular.ttf"
-CAPTION_FONT_BOLD = FONT_DIR / "WorkSans-Bold.ttf"
+HEADLINE_FONT = FONT_DIR / "Poppins-ExtraBold.ttf"
+PILL_FONT = FONT_DIR / "Poppins-Bold.ttf"
+CAPTION_FONT = FONT_DIR / "Poppins-Regular.ttf"
+CAPTION_FONT_BOLD = FONT_DIR / "Poppins-SemiBold.ttf"
 
 WIDTH = 1080
 MARGIN = 64
 
-BG_BLUE = (27, 48, 122)
-BG_BLUE_DARK = (20, 36, 92)
-DOT_PURPLE = (92, 62, 156)
-RED = (185, 33, 41)
-RED_DARK = (150, 24, 31)
+# Exact colors sampled from the club's own Canva background export.
+BG_BLUE = (44, 89, 165)        # #2C59A5
+DOT_MAGENTA = (124, 4, 130)    # #7C0482
+RED = (186, 10, 0)             # #BA0A00 (confirmed by club)
+VS_TEXT_NAVY = (24, 44, 99)    # #182C63
 WHITE = (255, 255, 255)
 OFFWHITE = (223, 229, 248)
 
 HEADER_HEIGHT = 330
 FOOTER_HEIGHT = 110
-TARGET_ROWS = 5
-BASE_BLOCK_HEIGHT = 232
+TARGET_ROWS = 4  # matches the club's own reference template
+BASE_BLOCK_HEIGHT = 215
 MIN_BLOCK_HEIGHT = 160
 MAX_BLOCK_HEIGHT = 260
 
@@ -47,67 +47,74 @@ def _fit_font(text: str, font_path: Path, max_width: int, start_size: int, min_s
     return ImageFont.truetype(str(font_path), min_size)
 
 
-def _draw_halftone_background(width: int, height: int) -> Image.Image:
-    img = Image.new("RGB", (width, height), BG_BLUE)
-    # subtle vertical gradient toward a darker blue at the bottom
-    grad = Image.new("L", (1, height))
-    for y in range(height):
-        grad.putpixel((0, y), int(255 * (y / height) * 0.55))
-    grad = grad.resize((width, height))
-    dark_layer = Image.new("RGB", (width, height), BG_BLUE_DARK)
-    img = Image.composite(dark_layer, img, grad)
-
-    dots = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-    ddraw = ImageDraw.Draw(dots)
-    spacing = 34
-    rng = random.Random(42)
-    for row_i, y in enumerate(range(-spacing, height + spacing, spacing)):
+def _diamond_halftone_layer(width: int, height: int, corners: list[tuple[int, int]]) -> Image.Image:
+    """Rotated-square (diamond) halftone, fading out with distance from the given corners."""
+    layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(layer)
+    spacing = 28
+    diamond_r = 10
+    falloff = max(width, height) * 0.42
+    row_i = 0
+    for gy in range(-spacing, height + spacing, spacing):
         offset = (spacing // 2) if row_i % 2 else 0
-        for x in range(-spacing, width + spacing, spacing):
-            # halftone effect: dots are bigger near the top, fading out toward the middle
-            fade = max(0.0, 1 - (y / (height * 0.6)))
-            r = 2 + fade * 5.5
-            if r < 1.2:
+        row_i += 1
+        for gx in range(-spacing, width + spacing, spacing):
+            cx, cy = gx + offset, gy
+            d = min(math.hypot(cx - ax, cy - ay) for ax, ay in corners)
+            t = max(0.0, 1 - d / falloff)
+            if t <= 0.05:
                 continue
-            jx = x + offset + rng.uniform(-3, 3)
-            jy = y + rng.uniform(-3, 3)
-            alpha = int(70 + 90 * fade)
-            ddraw.ellipse([jx - r, jy - r, jx + r, jy + r], fill=(*DOT_PURPLE, alpha))
-    img.paste(Image.alpha_composite(img.convert("RGBA"), dots).convert("RGB"), (0, 0))
-    return img
+            s = diamond_r * (0.6 + 0.4 * t)
+            alpha = int(255 * min(1.0, t))
+            draw.polygon([(cx, cy - s), (cx + s, cy), (cx, cy + s), (cx - s, cy)],
+                         fill=(*DOT_MAGENTA, alpha))
+    return layer
 
 
-def _draw_corner_stripes(img: Image.Image) -> None:
-    width, height = img.size
-    overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
-    od = ImageDraw.Draw(overlay)
+def _diagonal_bar(draw: ImageDraw.ImageDraw, cx: float, cy: float, length: float, width: float, color) -> None:
+    angle = math.radians(45)
+    dx, dy = math.cos(angle) * length / 2, math.sin(angle) * length / 2
+    draw.line([(cx - dx, cy + dy), (cx + dx, cy - dy)], fill=color, width=int(width))
 
-    def stripe_wedge(anchor_x: int, anchor_y: int, flip_x: int, flip_y: int, size: int) -> None:
-        # solid dark navy triangle at the very corner
-        od.polygon(
-            [
-                (anchor_x, anchor_y),
-                (anchor_x + flip_x * size, anchor_y),
-                (anchor_x, anchor_y + flip_y * size),
-            ],
-            fill=(*BG_BLUE_DARK, 255),
-        )
-        # a fan of parallel diagonal red/white stripes just inside the triangle
-        n_stripes = 6
-        stripe_w = 10
-        gap = 16
-        for i in range(n_stripes):
-            offset = size * 0.55 + i * (stripe_w + gap)
-            color = RED if i % 2 == 0 else WHITE
-            x0 = anchor_x + flip_x * offset
-            y0 = anchor_y
-            x1 = anchor_x
-            y1 = anchor_y + flip_y * offset
-            od.line([(x0, y0), (x1, y1)], fill=(*color, 255), width=stripe_w)
 
-    stripe_wedge(width, 0, -1, 1, 210)
-    stripe_wedge(0, height, 1, -1, 210)
-    img.paste(Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB"), (0, 0))
+def _chevron_block(draw: ImageDraw.ImageDraw, cx: float, cy: float, n_bars: int = 2,
+                    bar_len: float = 130, bar_w: float = 34, gap: float = 30, color=WHITE) -> None:
+    # bars are stacked perpendicular to their own 45-degree direction, so they read as
+    # parallel stripes rather than one continuous line
+    perp = (1 / math.sqrt(2), 1 / math.sqrt(2))
+    step = bar_w + gap
+    for i in range(n_bars):
+        offset = (i - (n_bars - 1) / 2) * step
+        ox, oy = cx + perp[0] * offset, cy + perp[1] * offset
+        _diagonal_bar(draw, ox, oy, bar_len, bar_w, color)
+
+
+def _dash_cluster(draw: ImageDraw.ImageDraw, center_x: float, y: float, n: int = 7,
+                   dash_len: float = 46, dash_w: float = 11, gap: float = 20, color=RED) -> None:
+    step = (dash_len * 0.72 + gap)
+    start_x = center_x - step * (n - 1) / 2
+    for i in range(n):
+        cx = start_x + i * step
+        _diagonal_bar(draw, cx, y, dash_len, dash_w, color)
+
+
+def _draw_background(width: int, height: int) -> Image.Image:
+    canvas = Image.new("RGB", (width, height), BG_BLUE)
+    diamonds = _diamond_halftone_layer(width, height, corners=[(0, 0), (width, height)])
+    canvas = Image.alpha_composite(canvas.convert("RGBA"), diamonds)
+    draw = ImageDraw.Draw(canvas)
+
+    # corner chevron flourishes (top-right / bottom-left), plus echoes further down/up the edges
+    _chevron_block(draw, width - 60, 70, n_bars=3, bar_len=150, bar_w=30, gap=22)
+    _chevron_block(draw, 60, height - 70, n_bars=3, bar_len=150, bar_w=30, gap=22)
+    _chevron_block(draw, 20, height * 0.32, n_bars=2, bar_len=110, bar_w=24, gap=18)
+    _chevron_block(draw, width - 20, height * 0.68, n_bars=2, bar_len=110, bar_w=24, gap=18)
+
+    # short red dash accents along the very top and bottom edges
+    _dash_cluster(draw, width * 0.52, 18)
+    _dash_cluster(draw, width * 0.48, height - 18)
+
+    return canvas.convert("RGB")
 
 
 def _rounded_rect(draw: ImageDraw.ImageDraw, box, radius: int, fill) -> None:
@@ -130,7 +137,7 @@ def _paste_logo(canvas: Image.Image, team_name: str, center: tuple[int, int], di
         badge = Image.new("RGBA", (diameter, diameter), (*color, 255))
         bd = ImageDraw.Draw(badge)
         label = initials(team_name)
-        font = _fit_font(label, CAPTION_FONT_BOLD, diameter * 0.72, int(diameter * 0.42), 10)
+        font = _fit_font(label, PILL_FONT, diameter * 0.72, int(diameter * 0.42), 10)
         bbox = bd.textbbox((0, 0), label, font=font)
         tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
         bd.text((diameter / 2 - tw / 2 - bbox[0], diameter / 2 - th / 2 - bbox[1]), label, font=font, fill=WHITE)
@@ -148,19 +155,18 @@ def render_poster(fixtures: list[Fixture], category_label: str) -> Image.Image:
     block_height = max(MIN_BLOCK_HEIGHT, min(MAX_BLOCK_HEIGHT, int(BASE_BLOCK_HEIGHT * scale)))
     height = HEADER_HEIGHT + block_height * n + FOOTER_HEIGHT
 
-    canvas = _draw_halftone_background(WIDTH, height)
-    _draw_corner_stripes(canvas)
+    canvas = _draw_background(WIDTH, height)
     draw = ImageDraw.Draw(canvas)
 
     line1, line2 = build_title(fixtures, category_label)
-    f_line1 = ImageFont.truetype(str(HEADLINE_FONT), 66)
-    f_line2 = ImageFont.truetype(str(HEADLINE_FONT), 66)
-    draw.text((MARGIN, 70), line1, font=f_line1, fill=WHITE)
+    f_line1 = ImageFont.truetype(str(HEADLINE_FONT), 62)
+    f_line2 = ImageFont.truetype(str(HEADLINE_FONT), 62)
+    draw.text((MARGIN, 72), line1, font=f_line1, fill=WHITE)
     draw.text((MARGIN, 150), line2, font=f_line2, fill=WHITE)
 
     cap1_size = max(20, int(30 * scale))
     cap2_size = max(18, int(26 * scale))
-    pill_h = max(56, int(84 * scale))
+    pill_h = max(56, int(88 * scale))
     logo_d = max(56, int(92 * scale))
     pill_font_size = max(18, int(30 * scale))
     vs_d = max(40, int(58 * scale))
@@ -198,8 +204,8 @@ def render_poster(fixtures: list[Fixture], category_label: str) -> Image.Image:
 
         home_txt = fx.home_team.upper()
         away_txt = fx.away_team.upper()
-        home_font = _fit_font(home_txt, CAPTION_FONT_BOLD, home_zone_w, pill_font_size, 12)
-        away_font = _fit_font(away_txt, CAPTION_FONT_BOLD, away_zone_w, pill_font_size, 12)
+        home_font = _fit_font(home_txt, PILL_FONT, home_zone_w, pill_font_size, 12)
+        away_font = _fit_font(away_txt, PILL_FONT, away_zone_w, pill_font_size, 12)
 
         def _draw_centered(text: str, font: ImageFont.FreeTypeFont, zone_x: float, zone_w: float) -> None:
             bbox = draw.textbbox((0, 0), text, font=font)
@@ -213,9 +219,9 @@ def render_poster(fixtures: list[Fixture], category_label: str) -> Image.Image:
 
         vs_box = [WIDTH / 2 - vs_d / 2, row_center_y - vs_d / 2, WIDTH / 2 + vs_d / 2, row_center_y + vs_d / 2]
         draw.ellipse(vs_box, fill=WHITE)
-        f_vs = ImageFont.truetype(str(CAPTION_FONT_BOLD), int(vs_d * 0.42))
+        f_vs = ImageFont.truetype(str(PILL_FONT), int(vs_d * 0.42))
         vs_w = draw.textlength("VS", font=f_vs)
-        draw.text((WIDTH / 2 - vs_w / 2, row_center_y - vs_d * 0.24), "VS", font=f_vs, fill=RED_DARK)
+        draw.text((WIDTH / 2 - vs_w / 2, row_center_y - vs_d * 0.26), "VS", font=f_vs, fill=VS_TEXT_NAVY)
 
         _paste_logo(canvas, fx.home_team, (left_box[0] + 4, row_center_y), logo_d)
         _paste_logo(canvas, fx.away_team, (right_box[2] - 4, row_center_y), logo_d)
