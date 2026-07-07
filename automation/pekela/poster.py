@@ -171,7 +171,7 @@ def render_poster(fixtures: list[Fixture], category_label: str) -> Image.Image:
     cap2_size = max(20, int(30 * scale))
     pill_h = max(60, int(92 * scale))
     logo_d = max(58, int(96 * scale))
-    pill_font_size = max(20, int(34 * scale))
+    pill_font_size = min(max(22, int(44 * scale)), int(pill_h * 0.55))
     vs_d = max(42, int(60 * scale))
 
     y = HEADER_HEIGHT
@@ -199,9 +199,11 @@ def render_poster(fixtures: list[Fixture], category_label: str) -> Image.Image:
         _rounded_rect(draw, right_box, pill_h // 2, RED)
 
         text_pad = 14
-        # safe zone excludes the logo overlap at the outer edge of each pill
-        home_zone = (left_box[0] + logo_d * 0.55, left_box[2] - text_pad)
-        away_zone = (right_box[0] + text_pad, right_box[2] - logo_d * 0.55)
+        # safe zone excludes the logo's reach into the pill (logo center sits 4px inside
+        # the pill edge, radius logo_d/2, plus a fixed clearance) so text can never run under it
+        logo_margin = logo_d / 2 + 4 + 16
+        home_zone = (left_box[0] + logo_margin, left_box[2] - text_pad)
+        away_zone = (right_box[0] + text_pad, right_box[2] - logo_margin)
         home_zone_w = home_zone[1] - home_zone[0]
         away_zone_w = away_zone[1] - away_zone[0]
 
