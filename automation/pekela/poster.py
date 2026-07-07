@@ -121,7 +121,8 @@ def _rounded_rect(draw: ImageDraw.ImageDraw, box, radius: int, fill) -> None:
     draw.rounded_rectangle(box, radius=radius, fill=fill)
 
 
-def _paste_logo(canvas: Image.Image, team_name: str, center: tuple[int, int], diameter: int) -> None:
+def _paste_logo(canvas: Image.Image, team_name: str, center: tuple[int, int], diameter: int,
+                 missing_logos: list[str]) -> None:
     mask = Image.new("L", (diameter, diameter), 0)
     ImageDraw.Draw(mask).ellipse([0, 0, diameter, diameter], fill=255)
 
@@ -133,6 +134,7 @@ def _paste_logo(canvas: Image.Image, team_name: str, center: tuple[int, int], di
         badge = logo
     else:
         from logos import slugify
+        missing_logos.append(team_name)
         color = placeholder_color(slugify(team_name))
         badge = Image.new("RGBA", (diameter, diameter), (*color, 255))
         bd = ImageDraw.Draw(badge)
@@ -149,7 +151,8 @@ def _paste_logo(canvas: Image.Image, team_name: str, center: tuple[int, int], di
     canvas.paste(ring, (cx - (diameter + 8) // 2, cy - (diameter + 8) // 2), ring)
 
 
-def render_poster(fixtures: list[Fixture], category_label: str) -> Image.Image:
+def render_poster(fixtures: list[Fixture], category_label: str) -> tuple[Image.Image, list[str]]:
+    """Returns (poster_image, missing_logo_team_names)."""
     n = len(fixtures)
     scale = min(1.0, TARGET_ROWS / max(n, 1))
     block_height = max(MIN_BLOCK_HEIGHT, min(MAX_BLOCK_HEIGHT, int(BASE_BLOCK_HEIGHT * scale)))
@@ -157,6 +160,7 @@ def render_poster(fixtures: list[Fixture], category_label: str) -> Image.Image:
 
     canvas = _draw_background(WIDTH, height)
     draw = ImageDraw.Draw(canvas)
+    missing_logos: list[str] = []
 
     line1, line2 = build_title(fixtures, category_label)
     title_max_width = WIDTH - 2 * MARGIN - 70
@@ -228,8 +232,8 @@ def render_poster(fixtures: list[Fixture], category_label: str) -> Image.Image:
         vs_w = draw.textlength("VS", font=f_vs)
         draw.text((WIDTH / 2 - vs_w / 2, row_center_y - vs_d * 0.26), "VS", font=f_vs, fill=VS_TEXT_NAVY)
 
-        _paste_logo(canvas, fx.home_team, (left_box[0] + 4, row_center_y), logo_d)
-        _paste_logo(canvas, fx.away_team, (right_box[2] - 4, row_center_y), logo_d)
+        _paste_logo(canvas, fx.home_team, (left_box[0] + 4, row_center_y), logo_d, missing_logos)
+        _paste_logo(canvas, fx.away_team, (right_box[2] - 4, row_center_y), logo_d, missing_logos)
 
         y += block_height
 
@@ -238,4 +242,4 @@ def render_poster(fixtures: list[Fixture], category_label: str) -> Image.Image:
     fw = draw.textlength(footer_text, font=footer_font)
     draw.text((WIDTH / 2 - fw / 2, height - FOOTER_HEIGHT / 2 - 18), footer_text, font=footer_font, fill=WHITE)
 
-    return canvas
+    return canvas, missing_logos

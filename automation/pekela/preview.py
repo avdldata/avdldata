@@ -18,6 +18,10 @@ JEUGD_SAMPLE = [
 ]
 
 if __name__ == "__main__":
-    render_poster(SENIOREN_SAMPLE, "SENIOREN").save("preview_senioren.png")
-    render_poster(JEUGD_SAMPLE, "JEUGD").save("preview_jeugd.png")
+    img, missing = render_poster(SENIOREN_SAMPLE, "SENIOREN")
+    img.save("preview_senioren.png")
+    print("missing logos (senioren):", missing)
+    img, missing = render_poster(JEUGD_SAMPLE, "JEUGD")
+    img.save("preview_jeugd.png")
+    print("missing logos (jeugd):", missing)
     print("done")
