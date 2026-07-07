@@ -27,7 +27,7 @@ OFFWHITE = (223, 229, 248)
 HEADER_HEIGHT = 330
 FOOTER_HEIGHT = 110
 TARGET_ROWS = 4  # matches the club's own reference template
-BASE_BLOCK_HEIGHT = 215
+BASE_BLOCK_HEIGHT = 225
 MIN_BLOCK_HEIGHT = 160
 MAX_BLOCK_HEIGHT = 260
 
@@ -105,8 +105,8 @@ def _draw_background(width: int, height: int) -> Image.Image:
     draw = ImageDraw.Draw(canvas)
 
     # corner chevron flourishes (top-right / bottom-left), plus echoes further down/up the edges
-    _chevron_block(draw, width - 60, 70, n_bars=3, bar_len=150, bar_w=30, gap=22)
-    _chevron_block(draw, 60, height - 70, n_bars=3, bar_len=150, bar_w=30, gap=22)
+    _chevron_block(draw, width - 40, 40, n_bars=3, bar_len=105, bar_w=24, gap=16)
+    _chevron_block(draw, 40, height - 40, n_bars=3, bar_len=105, bar_w=24, gap=16)
     _chevron_block(draw, 20, height * 0.32, n_bars=2, bar_len=110, bar_w=24, gap=18)
     _chevron_block(draw, width - 20, height * 0.68, n_bars=2, bar_len=110, bar_w=24, gap=18)
 
@@ -159,17 +159,20 @@ def render_poster(fixtures: list[Fixture], category_label: str) -> Image.Image:
     draw = ImageDraw.Draw(canvas)
 
     line1, line2 = build_title(fixtures, category_label)
-    f_line1 = ImageFont.truetype(str(HEADLINE_FONT), 62)
-    f_line2 = ImageFont.truetype(str(HEADLINE_FONT), 62)
-    draw.text((MARGIN, 72), line1, font=f_line1, fill=WHITE)
-    draw.text((MARGIN, 150), line2, font=f_line2, fill=WHITE)
+    title_max_width = WIDTH - 2 * MARGIN - 70
+    f_line1 = _fit_font(line1, HEADLINE_FONT, title_max_width, 80, 42)
+    f_line2 = _fit_font(line2, HEADLINE_FONT, title_max_width, 80, 42)
+    w1 = draw.textlength(line1, font=f_line1)
+    w2 = draw.textlength(line2, font=f_line2)
+    draw.text((WIDTH / 2 - w1 / 2, 66), line1, font=f_line1, fill=WHITE)
+    draw.text((WIDTH / 2 - w2 / 2, 150), line2, font=f_line2, fill=WHITE)
 
-    cap1_size = max(20, int(30 * scale))
-    cap2_size = max(18, int(26 * scale))
-    pill_h = max(56, int(88 * scale))
-    logo_d = max(56, int(92 * scale))
-    pill_font_size = max(18, int(30 * scale))
-    vs_d = max(40, int(58 * scale))
+    cap1_size = max(22, int(34 * scale))
+    cap2_size = max(20, int(30 * scale))
+    pill_h = max(60, int(92 * scale))
+    logo_d = max(58, int(96 * scale))
+    pill_font_size = max(20, int(34 * scale))
+    vs_d = max(42, int(60 * scale))
 
     y = HEADER_HEIGHT
     for fx in fixtures:
@@ -228,7 +231,7 @@ def render_poster(fixtures: list[Fixture], category_label: str) -> Image.Image:
 
         y += block_height
 
-    footer_font = ImageFont.truetype(str(CAPTION_FONT_BOLD), 30)
+    footer_font = ImageFont.truetype(str(CAPTION_FONT_BOLD), 34)
     footer_text = "www.vvpekela.nl"
     fw = draw.textlength(footer_text, font=footer_font)
     draw.text((WIDTH / 2 - fw / 2, height - FOOTER_HEIGHT / 2 - 18), footer_text, font=footer_font, fill=WHITE)
