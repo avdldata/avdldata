@@ -19,6 +19,9 @@ Open <http://localhost:3000> en klik op **Bekijk de demo**. Geen database, geen
 API-sleutels, geen configuratie. Er is een voorbeeldhuishouden klaargezet:
 Arjan en Chimene in Groningen, met drie supermarkten in de buurt.
 
+Werkt hetzelfde op Windows, macOS en Linux. Zie [Windows](#windows) als je nog
+niets geïnstalleerd hebt.
+
 > Alleen om de app te demonstreren. Porties en voedingswaarden zijn
 > richtwaarden en Weekmenu is geen medisch hulpmiddel. Alle prijzen zijn
 > demodata — plausibel voor Nederland, maar niet geverifieerd en niet van een
@@ -69,6 +72,67 @@ WEEKMENU_DATA_DIR=.data            # waar de demo-opslag terechtkomt
 Overschakelen naar Postgres met row level security is `DATA_ADAPTER=supabase`
 plus de twee sleutels; er verandert geen regel code. Zie
 [DATABASE.md](DATABASE.md).
+
+## Windows
+
+Werkt zonder WSL. Je hebt alleen Node en pnpm nodig.
+
+**1. Node.js 20.9 of nieuwer.** Download de LTS-installer van
+[nodejs.org](https://nodejs.org) en klik erdoorheen. Controleren in PowerShell:
+
+```powershell
+node --version
+```
+
+**2. pnpm.** Zit al in Node ingebouwd, alleen aanzetten:
+
+```powershell
+corepack enable pnpm
+```
+
+Werkt dat niet, dan `npm install -g pnpm`.
+
+**3. Het project ophalen.** De app staat in de map `apps/weekmenu` op de branch
+`claude/weekly-menu-optimizer-fdagbe`:
+
+```powershell
+git clone https://github.com/avdldata/avdldata.git
+cd avdldata
+git checkout claude/weekly-menu-optimizer-fdagbe
+cd apps\weekmenu
+```
+
+**4. Starten:**
+
+```powershell
+pnpm install
+pnpm dev
+```
+
+Open <http://localhost:3000> en klik op **Bekijk de demo**.
+
+### Goed om te weten op Windows
+
+- **Stoppen** doe je met `Ctrl+C` in het PowerShell-venster.
+- **Poort 3000 al bezet?** Start met `pnpm dev --port 3001`.
+- **Omgevingsvariabelen** zet je anders dan in de voorbeelden hieronder (die
+  gebruiken bash-syntax). In PowerShell:
+  `$env:DATA_ADAPTER = "supabase"`. In cmd: `set DATA_ADAPTER=supabase`.
+  Makkelijker is een bestand `.env.local` in `apps/weekmenu` aanmaken — Next.js
+  leest dat vanzelf, op elk platform hetzelfde.
+- **`pnpm test:e2e`** heeft eenmalig een browser nodig:
+  `pnpm exec playwright install chromium`.
+- **Windows Defender** kan `pnpm install` flink vertragen. Helpt het niet, sluit
+  dan de projectmap uit van realtime scanning.
+- **PowerShell weigert scripts?** Bij "kan niet worden geladen omdat het
+  uitvoeren van scripts is uitgeschakeld" helpt eenmalig:
+  `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
+- **Lange padnamen.** `node_modules` wordt diep; heb je ooit problemen, zet het
+  project dan dicht bij de schijfwortel (`C:\dev\avdldata`) in plaats van diep
+  in `Documenten`.
+
+Alleen `pnpm db:verify` heeft daarnaast de PostgreSQL client tools nodig, en die
+stap is optioneel — de app draait volledig zonder database.
 
 ## Demo-account
 

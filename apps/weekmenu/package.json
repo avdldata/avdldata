@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20.9"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -17,7 +20,7 @@
     "seed:sql": "tsx scripts/generate-seed-sql.ts",
     "verify": "pnpm typecheck && pnpm lint && pnpm test",
     "seed:images": "tsx scripts/generate-recipe-images.ts",
-    "db:verify": "pnpm seed:sql && psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f supabase/migrations/0001_reference_data.sql -f supabase/migrations/0002_household_data.sql -f supabase/migrations/0003_rls.sql -f supabase/seed.sql"
+    "db:verify": "pnpm seed:sql && tsx scripts/db-verify.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

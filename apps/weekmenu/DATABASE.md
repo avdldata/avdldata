@@ -128,7 +128,7 @@ voedingsbehoefte en hoeven niet opgeslagen te worden.
 
 ```bash
 createdb weekmenu
-export DATABASE_URL=postgres://localhost/weekmenu
+export DATABASE_URL=postgres://localhost/weekmenu   # PowerShell: $env:DATABASE_URL = "postgres://localhost/weekmenu"
 pnpm db:verify
 ```
 
