@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="320" height="200" role="img" aria-label="Kip met broccoli en rijst">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#f3eee6"/><stop offset="100%" stop-color="#ddd0bb"/>
+  </linearGradient></defs>
+  <rect width="320" height="200" fill="url(#g)"/>
+  <text x="160" y="118" font-size="64" text-anchor="middle">🍚</text>
+</svg>

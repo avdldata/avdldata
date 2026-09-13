@@ -87,6 +87,11 @@ const config = [
     },
   },
   domainLayerRule,
+  {
+    // Seed and build scripts are command-line tools; printing is the point.
+    files: ['scripts/**/*.ts'],
+    rules: { 'no-console': 'off' },
+  },
 ];
 
 export default config;

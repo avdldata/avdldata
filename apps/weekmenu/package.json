@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "seed:sql": "tsx scripts/generate-seed-sql.ts",
-    "verify": "pnpm typecheck && pnpm lint && pnpm test"
+    "verify": "pnpm typecheck && pnpm lint && pnpm test",
+    "seed:images": "tsx scripts/generate-recipe-images.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

@@ -1,0 +1,87 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens.
+ *
+ * Calm, warm and food-like rather than clinical: an off-white paper ground,
+ * a deep kitchen-garden green for actions, and amber reserved exclusively for
+ * price promotions so a "bonus" badge always means the same thing.
+ *
+ * The palette is deliberately light-only for V1 and says so via color-scheme,
+ * so no browser silently inverts it into something unappetising.
+ */
+@theme {
+  --color-canvas: #f7f6f2;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f0eee7;
+  --color-ink: #1b211d;
+  --color-ink-soft: #55605a;
+  --color-ink-faint: #7d8983;
+  --color-line: #e4e2da;
+  --color-line-strong: #d3d0c5;
+
+  --color-brand: #2f6d4f;
+  --color-brand-dark: #245740;
+  --color-brand-soft: #e7f0ea;
+  --color-brand-ink: #ffffff;
+
+  --color-promo: #b4670e;
+  --color-promo-soft: #fdf1e0;
+  --color-danger: #b3261e;
+  --color-danger-soft: #fdecea;
+  --color-info: #2c5f8a;
+  --color-info-soft: #e8f1f8;
+
+  --radius-card: 1rem;
+  --radius-pill: 999px;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  /* Room for the fixed bottom navigation on phones. */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@layer components {
+  .card {
+    @apply rounded-[var(--radius-card)] border border-line bg-surface;
+  }
+
+  .field-label {
+    @apply mb-1.5 block text-sm font-medium text-ink-soft;
+  }
+
+  .stat-value {
+    @apply text-2xl font-semibold tracking-tight tabular-nums;
+  }
+
+  .stat-label {
+    @apply text-xs font-medium text-ink-faint;
+  }
+}
+
+/* Respect people who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
