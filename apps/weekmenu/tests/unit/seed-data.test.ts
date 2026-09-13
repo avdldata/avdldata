@@ -7,12 +7,19 @@ import { SEED_INGREDIENTS } from '@/data/seed/ingredients';
 import { SEED_RECIPES } from '@/data/seed/recipes';
 import { SEED_CHAINS, SEED_LOCATIONS } from '@/data/seed/stores';
 import { SEED_CATALOGUE, SEED_PROMOTIONS } from '@/data/seed/catalogue';
-import { buildSeedProducts, buildSeedPromotions } from '@/data/seed/products';
+import {
+  buildSeedPriceObservations,
+  buildSeedProducts,
+  buildSeedPromotions,
+  SEED_HISTORY_WEEKS,
+} from '@/data/seed/products';
+import { SEED_BRANDS } from '@/data/seed/brands';
 import { storeCandidates, TEST_DATE } from '../support/fixtures';
 
 const ingredientIndex = buildIngredientIndex(SEED_INGREDIENTS);
 const recipes = normaliseRecipes(SEED_RECIPES, ingredientIndex);
-const { products, prices } = buildSeedProducts();
+const { products, productNutrition } = buildSeedProducts();
+const observations = buildSeedPriceObservations(TEST_DATE);
 const promotions = buildSeedPromotions(TEST_DATE);
 
 describe('seed data integrity', () => {
@@ -52,8 +59,37 @@ describe('seed data integrity', () => {
   });
 
   it('prices every product', () => {
-    const priced = new Set(prices.map((p) => p.productId));
+    const priced = new Set(observations.map((o) => o.productId));
     expect(products.filter((p) => !priced.has(p.id))).toHaveLength(0);
+  });
+
+  it('keeps a full price history per product instead of one current price', () => {
+    const perProduct = new Map<string, number>();
+    for (const o of observations) perProduct.set(o.productId, (perProduct.get(o.productId) ?? 0) + 1);
+    expect(Math.min(...perProduct.values())).toBe(SEED_HISTORY_WEEKS);
+    expect(new Set(observations.map((o) => o.id)).size).toBe(observations.length);
+  });
+
+  it('ships private labels and A-brands, and links every product to a real brand', () => {
+    const brandIds = new Set(SEED_BRANDS.map((b) => b.id));
+    expect(products.every((p) => brandIds.has(p.brandId))).toBe(true);
+    expect(SEED_BRANDS.filter((b) => b.isPrivateLabel).length).toBe(4);
+    expect(SEED_BRANDS.filter((b) => !b.isPrivateLabel).length).toBeGreaterThanOrEqual(15);
+    const aBrandProducts = products.filter(
+      (p) => !SEED_BRANDS.find((b) => b.id === p.brandId)!.isPrivateLabel,
+    );
+    expect(aBrandProducts.length).toBeGreaterThan(80);
+  });
+
+  it('gives every product a unique barcode', () => {
+    const gtins = products.map((p) => p.gtin!);
+    expect(new Set(gtins).size).toBe(gtins.length);
+  });
+
+  it('declares product nutrition only where it genuinely differs', () => {
+    // Both branches of the fallback have to be reachable from the demo data.
+    expect(productNutrition.length).toBeGreaterThan(20);
+    expect(productNutrition.length).toBeLessThan(products.length);
   });
 
   it('points every promotion at a product that exists', () => {

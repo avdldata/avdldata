@@ -1,13 +1,25 @@
 import 'server-only';
 import { resolveOffersForLocation } from '@/domain/stores/offers';
 import type { SupermarketChain, SupermarketLocation } from '@/domain/stores/types';
+import type { HistoricalPriceStats } from '@/domain/pricing/price-history';
+import { buildIngredientIndex } from '@/domain/ingredients/types';
 import type { StoreCandidate } from '@/domain/optimization/store-selection';
-import { SeedSupermarketProvider } from '@/providers/supermarket/seed-provider';
+import { SeedDataProvider } from '@/providers/seed-data-provider';
 import { SeedStoreLocatorProvider } from '@/providers/locator/seed-locator';
-import type { SupermarketProvider } from '@/providers/supermarket/types';
+import type { ProductCatalogProvider } from '@/providers/catalog/types';
+import type { SupermarketPriceProvider } from '@/providers/pricing/types';
+import type { NutritionDataProvider } from '@/providers/nutrition/types';
 import type { StoreLocatorProvider } from '@/providers/locator/types';
 
-const supermarketProvider: SupermarketProvider = new SeedSupermarketProvider();
+/**
+ * The three data seams, all backed by the seed in V1. They are separate
+ * variables rather than one object so that swapping just the price feed for a
+ * live one is a one-line change here and nowhere else.
+ */
+const seed = new SeedDataProvider();
+const catalogProvider: ProductCatalogProvider = seed;
+const priceProvider: SupermarketPriceProvider = seed;
+const nutritionProvider: NutritionDataProvider = seed;
 const locatorProvider: StoreLocatorProvider = new SeedStoreLocatorProvider();
 
 export interface NearbyStoreView {
@@ -27,7 +39,7 @@ export const PRIORITY_CHAIN_IDS = ['lidl', 'jumbo', 'ah'] as const;
 
 export async function findNearbyStores(input: NearbyStoresInput): Promise<NearbyStoreView[]> {
   const [chains, nearby] = await Promise.all([
-    supermarketProvider.getChains(),
+    catalogProvider.getChains(),
     locatorProvider.findNearbyStores(input),
   ]);
   const chainById = new Map(chains.map((c) => [c.id, c]));
@@ -62,8 +74,10 @@ export interface StoreCandidatesInput {
 
 export interface StoreCandidatesResult {
   readonly candidates: readonly StoreCandidate[];
-  /** Ingredients that no selected store sells at all. */
+  /** Products the catalogue could not price or stock at a selected store. */
   readonly unpricedProductCount: number;
+  /** Price history per product, for the deal score and the shopping list. */
+  readonly priceStats: ReadonlyMap<string, HistoricalPriceStats>;
 }
 
 /**
@@ -77,38 +91,50 @@ export async function buildStoreCandidates(
   input: StoreCandidatesInput,
 ): Promise<StoreCandidatesResult> {
   const [chains, locations] = await Promise.all([
-    supermarketProvider.getChains(),
-    supermarketProvider.getStores(),
+    catalogProvider.getChains(),
+    catalogProvider.getStores(),
   ]);
 
   const selected = locations.filter((l) => input.locationIds.includes(l.id));
-  if (selected.length === 0) return { candidates: [], unpricedProductCount: 0 };
+  if (selected.length === 0) {
+    return { candidates: [], unpricedProductCount: 0, priceStats: new Map() };
+  }
 
   const chainIds = [...new Set(selected.map((l) => l.chainId))];
   const query = { onDate: input.onDate, chainIds };
 
-  const [products, prices, promotions] = await Promise.all([
-    supermarketProvider.getProducts(query),
-    supermarketProvider.getPrices(query),
-    supermarketProvider.getPromotions(query),
-  ]);
+  const [products, brands, observations, promotions, productNutrition, ingredients] =
+    await Promise.all([
+      catalogProvider.searchProducts({ chainIds }),
+      catalogProvider.getBrands(),
+      priceProvider.getPriceObservations(query),
+      priceProvider.getPromotions(query),
+      nutritionProvider.getProductNutrition(),
+      catalogProvider.getIngredients(),
+    ]);
 
   const chainById = new Map(chains.map((c) => [c.id, c]));
+  const ingredientIndex = buildIngredientIndex(ingredients);
   const { roadDistanceKm } = await import('@/domain/trip/distance');
 
   let unpriced = 0;
   const candidates: StoreCandidate[] = [];
+  const priceStats = new Map<string, HistoricalPriceStats>();
 
   for (const location of selected) {
     const chain = chainById.get(location.chainId);
     if (!chain) continue;
     const resolved = resolveOffersForLocation(location, {
       products,
-      prices,
+      observations,
       promotions,
+      brands,
+      productNutrition,
+      ingredients: ingredientIndex,
       onDate: input.onDate,
     });
     unpriced += resolved.issues.length;
+    for (const [productId, stats] of resolved.stats) priceStats.set(productId, stats);
     candidates.push({
       location,
       chain,
@@ -117,6 +143,6 @@ export async function buildStoreCandidates(
     });
   }
 
-  return { candidates, unpricedProductCount: unpriced };
+  return { candidates, unpricedProductCount: unpriced, priceStats };
 }
 

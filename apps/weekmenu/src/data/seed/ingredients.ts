@@ -1,11 +1,14 @@
 import type {
   Allergen,
   CanonicalIngredient,
+  IngredientAlias,
   IngredientCategory,
   Perishability,
   PregnancyRisk,
 } from '@/domain/ingredients/types';
+import type { NutritionPer100 } from '@/domain/nutrition/facts';
 import type { BaseUnit } from '@/domain/units';
+import { INGREDIENT_NUTRITION_PER_100 } from './ingredient-nutrition';
 
 interface IngredientOptions {
   readonly density?: number;
@@ -18,6 +21,11 @@ interface IngredientOptions {
   readonly pantryStaple?: boolean;
 }
 
+/** Fixed timestamp so the seed stays byte-for-byte deterministic. */
+const SEED_TIMESTAMP = '2026-01-01T00:00:00.000Z';
+
+const collectedAliases: IngredientAlias[] = [];
+
 function ing(
   id: string,
   canonicalName: string,
@@ -26,6 +34,19 @@ function ing(
   perishability: Perishability,
   options: IngredientOptions = {},
 ): CanonicalIngredient {
+  // Aliases are authored next to the ingredient for readability, but they leave
+  // this module as their own records — see SEED_INGREDIENT_ALIASES below.
+  for (const alias of options.synonyms ?? []) {
+    collectedAliases.push({
+      id: `alias-${id}-${collectedAliases.length}`,
+      ingredientId: id,
+      alias,
+      source: 'demo-seed',
+    });
+  }
+
+  const nutrition: NutritionPer100 | undefined = INGREDIENT_NUTRITION_PER_100[id];
+
   return {
     id,
     canonicalName,
@@ -36,7 +57,9 @@ function ing(
     pregnancyRisks: options.pregnancyRisks ?? [],
     vegetarian: options.vegetarian ?? true,
     vegan: options.vegan ?? (options.vegetarian ?? true),
-    synonyms: options.synonyms ?? [],
+    ...(nutrition ? { nutritionPer100: nutrition, nutritionSource: 'demo-seed' as const } : {}),
+    createdAt: SEED_TIMESTAMP,
+    updatedAt: SEED_TIMESTAMP,
     ...(options.density !== undefined ? { density: options.density } : {}),
     ...(options.pieceWeightGrams !== undefined
       ? { pieceWeightGrams: options.pieceWeightGrams }
@@ -188,3 +211,12 @@ export const SEED_INGREDIENTS: readonly CanonicalIngredient[] = [
   ing('cashewnoten', 'Cashewnoten', 'kruiden-specerijen', 'g', 'pantry', { allergens: ['noten'] }),
   ing('azijn', 'Witte wijnazijn', 'kruiden-specerijen', 'ml', 'pantry', { density: 1.0, allergens: ['sulfiet'] }),
 ];
+
+/**
+ * Alternative spellings, collected while the catalogue above was built.
+ *
+ * A recipe author writing "rode paprika" and a product feed writing "paprika
+ * rood" both have to land on the same canonical ingredient; this is the table
+ * that makes that possible.
+ */
+export const SEED_INGREDIENT_ALIASES: readonly IngredientAlias[] = collectedAliases;

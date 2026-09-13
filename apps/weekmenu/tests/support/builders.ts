@@ -6,6 +6,7 @@ import type {
   IngredientCategory,
   Perishability,
 } from '@/domain/ingredients/types';
+import type { NutritionPer100 } from '@/domain/nutrition/facts';
 import type { NutritionPerServing, Recipe } from '@/domain/recipes/types';
 import type { HouseholdMember, Household } from '@/domain/household/types';
 
@@ -23,6 +24,10 @@ export function makeOffer(options: {
   locationId?: string;
   productId?: string;
   name?: string;
+  brandName?: string;
+  isPrivateLabel?: boolean;
+  nutritionPer100?: NutritionPer100;
+  nutritionOrigin?: ProductOffer['nutritionOrigin'];
 }): ProductOffer {
   const productId = options.productId ?? nextId('product');
   const price = cents(options.priceCents);
@@ -32,12 +37,15 @@ export function makeOffer(options: {
     locationId: options.locationId ?? 'location-a',
     ingredientId: options.ingredientId ?? 'ingredient-a',
     name: options.name ?? productId,
-    brand: 'Test',
+    brandName: options.brandName ?? 'Test',
+    isPrivateLabel: options.isPrivateLabel ?? true,
     packageAmount: { amount: options.packAmount, unit: options.unit ?? 'g' },
     normalUnitPriceCents: cents(options.normalPriceCents ?? options.priceCents),
     unitPriceCents: price,
     ...(options.promotion ? { promotion: options.promotion } : {}),
     pricePerBaseUnitCents: price / options.packAmount,
+    ...(options.nutritionPer100 ? { nutritionPer100: options.nutritionPer100 } : {}),
+    nutritionOrigin: options.nutritionOrigin ?? (options.nutritionPer100 ? 'product' : 'none'),
   };
 }
 
@@ -71,7 +79,11 @@ export const nForX = (bundleSize: number, bundlePriceCents: number): PromotionPa
 
 export function makeIngredient(
   id: string,
-  options: Partial<CanonicalIngredient> & { category?: IngredientCategory; perishability?: Perishability } = {},
+  options: Partial<CanonicalIngredient> & {
+    category?: IngredientCategory;
+    perishability?: Perishability;
+    nutritionPer100?: NutritionPer100;
+  } = {},
 ): CanonicalIngredient {
   return {
     id,
@@ -83,7 +95,9 @@ export function makeIngredient(
     pregnancyRisks: options.pregnancyRisks ?? [],
     vegetarian: options.vegetarian ?? true,
     vegan: options.vegan ?? true,
-    synonyms: options.synonyms ?? [],
+    ...(options.nutritionPer100
+      ? { nutritionPer100: options.nutritionPer100, nutritionSource: 'demo-seed' as const }
+      : {}),
     ...(options.density !== undefined ? { density: options.density } : {}),
     ...(options.pieceWeightGrams !== undefined
       ? { pieceWeightGrams: options.pieceWeightGrams }
@@ -117,6 +131,10 @@ export function makeRecipe(id: string, options: Partial<Recipe> = {}): Recipe {
     baseServings: options.baseServings ?? 4,
     ingredients: options.ingredients ?? [],
     nutritionPerServing: options.nutritionPerServing ?? DEFAULT_NUTRITION,
+    authoredNutritionPerServing:
+      options.authoredNutritionPerServing ?? options.nutritionPerServing ?? DEFAULT_NUTRITION,
+    nutritionSource: options.nutritionSource ?? 'authored',
+    nutritionCoverage: options.nutritionCoverage ?? 1,
     primaryProtein: options.primaryProtein ?? 'geen',
     allergens: options.allergens ?? [],
     vegetarian: options.vegetarian ?? true,

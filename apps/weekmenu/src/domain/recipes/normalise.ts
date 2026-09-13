@@ -1,4 +1,5 @@
 import { toBaseQuantity } from '../units';
+import { computeRecipeNutrition } from './nutrition';
 import type { CanonicalIngredient, IngredientIndex } from '../ingredients/types';
 import type {
   AuthoredRecipe,
@@ -6,6 +7,13 @@ import type {
   RecipeIngredient,
 } from './types';
 import type { Allergen } from '../ingredients/types';
+
+/**
+ * Share of a recipe's ingredients that must carry nutrition data before the
+ * computed values are trusted over the hand-written ones. Below this the
+ * computed figure would understate the dish, so we keep the authored number.
+ */
+export const MINIMUM_NUTRITION_COVERAGE = 1;
 
 export class RecipeNormalisationError extends Error {
   constructor(
@@ -85,6 +93,13 @@ export function normaliseRecipe(authored: AuthoredRecipe, ingredients: Ingredien
   const pregnancySuitable =
     authored.pregnancySuitableOverride ?? pregnancyReasons.size === 0;
 
+  // Nutrition is computed from the ingredients wherever the catalogue can
+  // support it. The hand-written values stay on the recipe as a cross-check and
+  // as the fallback for a dish whose ingredients are not fully covered yet.
+  const lines = resolved.map((r) => r.line);
+  const computed = computeRecipeNutrition(lines, ingredients);
+  const derived = computed.coverage >= MINIMUM_NUTRITION_COVERAGE;
+
   return {
     id: authored.id,
     name: authored.name,
@@ -98,8 +113,11 @@ export function normaliseRecipe(authored: AuthoredRecipe, ingredients: Ingredien
     cuisine: authored.cuisine,
     tags: authored.tags,
     baseServings: authored.baseServings,
-    ingredients: resolved.map((r) => r.line),
-    nutritionPerServing: authored.nutritionPerServing,
+    ingredients: lines,
+    nutritionPerServing: derived ? computed.perServing : authored.nutritionPerServing,
+    authoredNutritionPerServing: authored.nutritionPerServing,
+    nutritionSource: derived ? 'derived' : 'authored',
+    nutritionCoverage: computed.coverage,
     primaryProtein: authored.primaryProtein,
     allergens: [...allergens].sort(),
     vegetarian,

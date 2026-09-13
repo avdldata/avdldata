@@ -9,6 +9,8 @@ export interface PackagingLine {
   readonly lineTotalCents: Cents;
   readonly promotionApplied: boolean;
   readonly savingsCents: Cents;
+  /** Energy this line contributes, when the offer carries nutrition data. */
+  readonly kcalContribution?: number;
 }
 
 export interface PackagingSolution {
@@ -19,6 +21,8 @@ export interface PackagingSolution {
   readonly leftoverAmount: number;
   readonly totalCents: Cents;
   readonly lines: readonly PackagingLine[];
+  /** The weighted objective this solution won on, for debugging and tests. */
+  readonly objectiveCents: number;
 }
 
 export type PackagingUnavailableReason =
@@ -33,6 +37,32 @@ export type PackagingResult =
       readonly ingredientId: IngredientId;
       readonly reason: PackagingUnavailableReason;
     };
+
+/**
+ * What "best product" means.
+ *
+ * Price dominates in V1, but the trade-off is explicit and configurable rather
+ * than baked in, so a household that would rather waste less — or pick the
+ * product with more protein per euro — is a settings change and not a rewrite.
+ */
+export interface ProductSelectionWeights {
+  /** Multiplier on the actual checkout price. */
+  readonly price: number;
+  /** What a kilo of leftover is treated as costing. */
+  readonly wastePerKiloCents: number;
+  /**
+   * Weight on nutritional quality. Zero in V1: the demo dataset only carries
+   * declared values for part of the catalogue, and scoring on a half-filled
+   * column would quietly favour whichever products happen to have data.
+   */
+  readonly nutrition: number;
+}
+
+export const DEFAULT_PRODUCT_SELECTION_WEIGHTS: ProductSelectionWeights = {
+  price: 1,
+  wastePerKiloCents: 150,
+  nutrition: 0,
+};
 
 export interface PackagingConfig {
   /**
@@ -50,6 +80,7 @@ export interface PackagingConfig {
   readonly maxVariants: number;
   /** Search-node budget; the bounded DFS gives up gracefully beyond this. */
   readonly maxSearchNodes: number;
+  readonly selection: ProductSelectionWeights;
 }
 
 export const DEFAULT_PACKAGING_CONFIG: PackagingConfig = {
@@ -57,4 +88,5 @@ export const DEFAULT_PACKAGING_CONFIG: PackagingConfig = {
   maxUnitsPerVariant: 200,
   maxVariants: 6,
   maxSearchNodes: 20_000,
+  selection: DEFAULT_PRODUCT_SELECTION_WEIGHTS,
 };

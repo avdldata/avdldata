@@ -1,11 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { buildIngredientIndex, resolveIngredientName } from '@/domain/ingredients/types';
+import {
+  buildAliasIndex,
+  buildIngredientIndex,
+  resolveIngredientName,
+} from '@/domain/ingredients/types';
 import { normaliseRecipe, RecipeNormalisationError } from '@/domain/recipes/normalise';
 import type { AuthoredRecipe } from '@/domain/recipes/types';
 import { makeIngredient } from '../support/builders';
 
+const aliases = buildAliasIndex([
+  { id: 'a1', ingredientId: 'ui', alias: 'gele ui', source: 'demo-seed' },
+  { id: 'a2', ingredientId: 'ui', alias: 'uien', source: 'demo-seed' },
+]);
+
 const ingredients = buildIngredientIndex([
-  makeIngredient('ui', { pieceWeightGrams: 110, synonyms: ['gele ui', 'uien'] }),
+  makeIngredient('ui', { pieceWeightGrams: 110 }),
   makeIngredient('melk', { baseUnit: 'ml', density: 1.03, vegan: false, allergens: ['melk'] }),
   makeIngredient('kipfilet', { vegetarian: false, vegan: false }),
   makeIngredient('gerookte-zalm', {
@@ -107,14 +116,21 @@ describe('recipe normalisation', () => {
 describe('ingredient name resolution', () => {
   const list = [...ingredients.values()];
 
-  it('matches the canonical name and its synonyms, ignoring case and accents', () => {
-    expect(resolveIngredientName('Ui', list)?.id).toBe('ui');
-    expect(resolveIngredientName('gele ui', list)?.id).toBe('ui');
-    expect(resolveIngredientName('UIEN', list)?.id).toBe('ui');
-    expect(resolveIngredientName('Gerookte zalm', list)?.id).toBe('gerookte-zalm');
+  it('matches the canonical name, ignoring case and accents', () => {
+    expect(resolveIngredientName('Ui', list, aliases)?.id).toBe('ui');
+    expect(resolveIngredientName('Gerookte zalm', list, aliases)?.id).toBe('gerookte-zalm');
+  });
+
+  it('matches an alias from the alias table', () => {
+    expect(resolveIngredientName('gele ui', list, aliases)?.id).toBe('ui');
+    expect(resolveIngredientName('UIEN', list, aliases)?.id).toBe('ui');
+  });
+
+  it('does not match an alias that is not registered', () => {
+    expect(resolveIngredientName('gele ui', list)).toBeUndefined();
   });
 
   it('returns nothing for an unknown name rather than guessing', () => {
-    expect(resolveIngredientName('draak', list)).toBeUndefined();
+    expect(resolveIngredientName('draak', list, aliases)).toBeUndefined();
   });
 });

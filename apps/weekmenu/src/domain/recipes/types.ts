@@ -67,6 +67,9 @@ export interface NutritionPerServing {
   readonly fatGrams: number;
   readonly fiberGrams: number;
   readonly saltGrams: number;
+  /** Present when the values were computed from ingredient nutrition. */
+  readonly sugarsGrams?: number;
+  readonly saturatedFatGrams?: number;
 }
 
 /** As authored in the seed — friendly units allowed. */
@@ -121,7 +124,16 @@ export interface Recipe {
   readonly tags: readonly RecipeTag[];
   readonly baseServings: number;
   readonly ingredients: readonly RecipeIngredient[];
+  /**
+   * Nutrition for one standard serving, computed from the ingredients wherever
+   * the catalogue has the data — see `computeRecipeNutrition`.
+   */
   readonly nutritionPerServing: NutritionPerServing;
+  /** The hand-written values, kept as a cross-check against the computed ones. */
+  readonly authoredNutritionPerServing: NutritionPerServing;
+  readonly nutritionSource: 'derived' | 'authored';
+  /** Fraction of the recipe's ingredients that had nutrition data (0–1). */
+  readonly nutritionCoverage: number;
   readonly primaryProtein: PrimaryProtein;
   /** Derived from the ingredients (plus any explicit extras). */
   readonly allergens: readonly Allergen[];

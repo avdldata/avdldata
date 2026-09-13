@@ -1,4 +1,5 @@
 import type { BaseUnit } from '../units';
+import type { NutritionPer100, NutritionSource } from '../nutrition/facts';
 
 /** Shopping-list grouping, in the order a Dutch supermarket is walked. */
 export const INGREDIENT_CATEGORIES = [
@@ -78,10 +79,40 @@ export interface CanonicalIngredient {
   readonly pregnancyRisks: readonly PregnancyRisk[];
   readonly vegetarian: boolean;
   readonly vegan: boolean;
-  /** Alternative spellings; the hook for automatic normalisation later. */
-  readonly synonyms: readonly string[];
   /** Staples the planner never puts on the shopping list (salt, pepper, water). */
   readonly pantryStaple?: boolean;
+  /**
+   * Generic nutrition per 100 g / 100 ml.
+   *
+   * This is the fallback used whenever a concrete product does not declare its
+   * own values, and it is what recipe nutrition is computed from. Optional in
+   * the type so an ingredient can exist before its nutrition has been imported.
+   */
+  readonly nutritionPer100?: NutritionPer100;
+  readonly nutritionSource?: NutritionSource;
+  readonly createdAt?: string;
+  readonly updatedAt?: string;
+}
+
+/**
+ * Alternative spellings for an ingredient.
+ *
+ * Kept as its own record rather than an array on the ingredient, because
+ * aliases arrive from a different place than the ingredient itself (an import,
+ * a recipe author, a supermarket feed) and each one wants its own provenance.
+ * V1 fills them by hand — deliberately no fuzzy matching.
+ */
+export interface IngredientAlias {
+  readonly id: string;
+  readonly ingredientId: IngredientId;
+  readonly alias: string;
+  readonly source: 'demo-seed' | 'handmatig' | 'import';
+}
+
+export type AliasIndex = ReadonlyMap<string, IngredientId>;
+
+export function buildAliasIndex(aliases: readonly IngredientAlias[]): AliasIndex {
+  return new Map(aliases.map((alias) => [normaliseName(alias.alias), alias.ingredientId]));
 }
 
 export type IngredientIndex = ReadonlyMap<IngredientId, CanonicalIngredient>;
@@ -93,20 +124,22 @@ export function buildIngredientIndex(
 }
 
 /**
- * Resolve a free-text ingredient name to a canonical id via its synonyms.
- * V1 only uses this for seed validation and for the ingredient picker in the UI;
- * a fuzzier resolver can be dropped in behind the same signature later.
+ * Resolve free text to a canonical ingredient, via its own name or an alias.
+ *
+ * Exact match on a normalised string only — no fuzzy matching, by design. A
+ * smarter resolver can be dropped in behind this signature later without
+ * anything else changing.
  */
 export function resolveIngredientName(
   name: string,
   ingredients: readonly CanonicalIngredient[],
+  aliases: AliasIndex = new Map(),
 ): CanonicalIngredient | undefined {
   const needle = normaliseName(name);
-  return ingredients.find(
-    (i) =>
-      normaliseName(i.canonicalName) === needle ||
-      i.synonyms.some((s) => normaliseName(s) === needle),
-  );
+  const direct = ingredients.find((i) => normaliseName(i.canonicalName) === needle);
+  if (direct) return direct;
+  const aliased = aliases.get(needle);
+  return aliased ? ingredients.find((i) => i.id === aliased) : undefined;
 }
 
 function normaliseName(value: string): string {
