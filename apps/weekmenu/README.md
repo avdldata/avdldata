@@ -90,9 +90,26 @@ node --version
 corepack enable pnpm
 ```
 
-Werkt dat niet, dan `npm install -g pnpm`.
+Werkt dat niet, dan `npm install -g pnpm`. Welke pnpm-versie je daarna krijgt
+maakt niet uit: `package.json` legt met `packageManager` de exacte versie vast
+en pnpm haalt die zelf op. Iedereen installeert dus met dezelfde pnpm als
+waarmee de lockfile gemaakt is.
 
-**3. Het project ophalen.** De app staat in de map `apps/weekmenu` op de branch
+**3. Kies eerst een goede map.** PowerShell start standaard in
+`C:\WINDOWS\system32`. Kloon daar níét: dat is een systeemmap, hij vraagt
+administratorrechten en je vervuilt je Windows-installatie. Ga eerst naar een
+gewone werkmap:
+
+```powershell
+mkdir C:\dev -Force
+cd C:\dev
+```
+
+Staat het project al in `system32`, verplaats het dan (of verwijder het en
+kloon opnieuw). Kort bij de schijfwortel blijven scheelt bovendien gedoe met
+lange padnamen, want `node_modules` wordt diep.
+
+**4. Het project ophalen.** De app staat in de map `apps/weekmenu` op de branch
 `claude/weekly-menu-optimizer-fdagbe`:
 
 ```powershell
@@ -102,7 +119,7 @@ git checkout claude/weekly-menu-optimizer-fdagbe
 cd apps\weekmenu
 ```
 
-**4. Starten:**
+**5. Starten:**
 
 ```powershell
 pnpm install
@@ -127,9 +144,14 @@ Open <http://localhost:3000> en klik op **Bekijk de demo**.
 - **PowerShell weigert scripts?** Bij "kan niet worden geladen omdat het
   uitvoeren van scripts is uitgeschakeld" helpt eenmalig:
   `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
-- **Lange padnamen.** `node_modules` wordt diep; heb je ooit problemen, zet het
-  project dan dicht bij de schijfwortel (`C:\dev\avdldata`) in plaats van diep
-  in `Documenten`.
+- **Lange padnamen.** `node_modules` wordt diep; houd het project dicht bij de
+  schijfwortel (`C:\dev\avdldata`) in plaats van diep in `Documenten` — en zeker
+  niet in `C:\WINDOWS\system32`.
+- **`pnpm install` weigert een pakket** met
+  `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION`? Dat is opzet: pnpm installeert geen
+  pakketten die korter dan een dag geleden op npm zijn gezet, als bescherming
+  tegen gekaapte releases. Zet die beveiliging niet uit — meld het, dan wordt de
+  lockfile aangepast.
 
 Alleen `pnpm db:verify` heeft daarnaast de PostgreSQL client tools nodig, en die
 stap is optioneel — de app draait volledig zonder database.

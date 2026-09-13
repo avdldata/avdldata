@@ -1,0 +1,10 @@
+# pnpm settings live here since pnpm v11; the "pnpm" field in package.json
+# and .npmrc (non-auth keys) are no longer read.
+#
+# Dependencies allowed to run install scripts. strictDepBuilds defaults to
+# true, so anything with a build script that is not listed here fails the
+# install rather than silently skipping. Add entries deliberately.
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
