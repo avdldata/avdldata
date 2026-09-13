@@ -1,0 +1,925 @@
+import type { AuthoringUnit } from '@/domain/units';
+import type {
+  AuthoredRecipe,
+  AuthoredRecipeIngredient,
+  Cuisine,
+  Difficulty,
+  NutritionPerServing,
+  PrimaryProtein,
+  RecipeTag,
+} from '@/domain/recipes/types';
+
+function li(
+  ingredientId: string,
+  amount: number,
+  unit: AuthoringUnit,
+  optional = false,
+): AuthoredRecipeIngredient {
+  return { ingredientId, amount, unit, ...(optional ? { optional: true } : {}) };
+}
+
+interface RecipeSpec {
+  readonly description: string;
+  readonly prep: number;
+  readonly cook: number;
+  readonly difficulty?: Difficulty;
+  readonly servings?: number;
+  readonly steps: readonly string[];
+  readonly ingredients: readonly AuthoredRecipeIngredient[];
+  readonly nutrition: NutritionPerServing;
+  readonly pregnancySuitableOverride?: boolean;
+}
+
+function r(
+  id: string,
+  name: string,
+  cuisine: Cuisine,
+  primaryProtein: PrimaryProtein,
+  tags: readonly RecipeTag[],
+  spec: RecipeSpec,
+): AuthoredRecipe {
+  return {
+    id,
+    name,
+    description: spec.description,
+    imageUrl: `/recipes/${id}.svg`,
+    steps: spec.steps,
+    prepMinutes: spec.prep,
+    cookMinutes: spec.cook,
+    difficulty: spec.difficulty ?? 'makkelijk',
+    cuisine,
+    tags,
+    baseServings: spec.servings ?? 4,
+    ingredients: spec.ingredients,
+    nutritionPerServing: spec.nutrition,
+    primaryProtein,
+    ...(spec.pregnancySuitableOverride !== undefined
+      ? { pregnancySuitableOverride: spec.pregnancySuitableOverride }
+      : {}),
+  };
+}
+
+const n = (
+  kcal: number,
+  proteinGrams: number,
+  carbGrams: number,
+  fatGrams: number,
+  fiberGrams: number,
+  saltGrams: number,
+): NutritionPerServing => ({ kcal, proteinGrams, carbGrams, fatGrams, fiberGrams, saltGrams });
+
+/**
+ * Demo recipe catalogue.
+ *
+ * Deliberately ordinary Dutch weeknight cooking, with heavy ingredient overlap
+ * between dishes — that overlap is what gives the optimizer something real to
+ * work with when it decides how many packs of chicken or carrots to buy.
+ */
+export const SEED_RECIPES: readonly AuthoredRecipe[] = [
+  r('spaghetti-bolognese', 'Spaghetti bolognese', 'italiaans', 'rund', ['pasta', 'rundvlees', 'comfortfood'], {
+    description: 'De klassieker: rundergehakt met tomaat, wortel en Italiaanse kruiden.',
+    prep: 10, cook: 30,
+    steps: [
+      'Snipper de ui en knoflook, snijd de wortel klein.',
+      'Bak het gehakt rul in olijfolie en schep de groenten erdoor.',
+      'Voeg tomatenblokjes, tomatenpuree en kruiden toe en laat 20 minuten pruttelen.',
+      'Kook ondertussen de spaghetti beetgaar en serveer met kaas.',
+    ],
+    ingredients: [
+      li('gehakt-rund', 400, 'g'), li('spaghetti', 350, 'g'), li('tomatenblokjes', 800, 'g'),
+      li('tomatenpuree', 70, 'g'), li('ui', 1, 'piece'), li('knoflook', 2, 'piece'),
+      li('wortel', 150, 'g'), li('olijfolie', 2, 'tbsp'), li('italiaanse-kruiden', 6, 'g'),
+      li('geraspte-kaas', 50, 'g'), li('zout', 3, 'g'), li('peper', 1, 'g'),
+    ],
+    nutrition: n(628, 34, 78, 17, 7.5, 1.8),
+  }),
+
+  r('kip-broccoli-rijst', 'Kip met broccoli en rijst', 'aziatisch', 'kip', ['rijst', 'kip', 'snel'], {
+    description: 'Snelle roerbak met kipfilet, knapperige broccoli en sojasaus.',
+    prep: 10, cook: 18,
+    steps: [
+      'Kook de rijst volgens de verpakking.',
+      'Snijd de kipfilet in blokjes en bak goudbruin.',
+      'Roerbak de broccoliroosjes en paprika 5 minuten mee.',
+      'Blus af met sojasaus en gember, serveer met de rijst.',
+    ],
+    ingredients: [
+      li('kipfilet', 400, 'g'), li('witte-rijst', 300, 'g'), li('broccoli', 500, 'g'),
+      li('paprika-rood', 1, 'piece'), li('sojasaus', 45, 'ml'), li('gember', 15, 'g'),
+      li('knoflook', 2, 'piece'), li('zonnebloemolie', 2, 'tbsp'), li('sesamzaad', 10, 'g', true),
+    ],
+    nutrition: n(575, 42, 72, 12, 6.2, 2.1),
+  }),
+
+  r('groente-lasagne', 'Groentelasagne', 'italiaans', 'zuivel', ['pasta', 'ovenschotel', 'vegetarisch', 'comfortfood'], {
+    description: 'Vegetarische lasagne met courgette, aubergine en veel kaas.',
+    prep: 20, cook: 40, difficulty: 'gemiddeld',
+    steps: [
+      'Snijd courgette en aubergine in plakken en bak kort aan.',
+      'Maak een saus van tomatenblokjes, ui, knoflook en kruiden.',
+      'Laag om laag opbouwen met lasagnebladen en saus.',
+      'Bestrooi met kaas en bak 35 minuten op 180 graden.',
+    ],
+    ingredients: [
+      li('lasagnebladen', 250, 'g'), li('courgette', 1, 'piece'), li('aubergine', 1, 'piece'),
+      li('tomatenblokjes', 800, 'g'), li('ui', 1, 'piece'), li('knoflook', 2, 'piece'),
+      li('geraspte-kaas', 150, 'g'), li('kookroom', 200, 'ml'), li('italiaanse-kruiden', 6, 'g'),
+      li('olijfolie', 2, 'tbsp'), li('zout', 3, 'g'),
+    ],
+    nutrition: n(596, 24, 63, 26, 8.1, 1.7),
+  }),
+
+  r('chili-sin-carne', 'Chili sin carne', 'mexicaans', 'peulvrucht', ['rijst', 'vegetarisch', 'eenpansgerecht', 'budget'], {
+    description: 'Stevige bonenschotel met paprika, maïs en een flinke snuf chili.',
+    prep: 10, cook: 25,
+    steps: [
+      'Fruit ui, knoflook en paprika in olijfolie.',
+      'Voeg tomatenblokjes, bonen, maïs en specerijen toe.',
+      'Laat 20 minuten sudderen tot het indikt.',
+      'Serveer met rijst.',
+    ],
+    ingredients: [
+      li('kidneybonen', 400, 'g'), li('zwarte-bonen', 400, 'g'), li('mais', 200, 'g'),
+      li('tomatenblokjes', 800, 'g'), li('paprika-rood', 1, 'piece'), li('ui', 1, 'piece'),
+      li('knoflook', 2, 'piece'), li('witte-rijst', 300, 'g'), li('komijn', 6, 'g'),
+      li('chilipoeder', 4, 'g'), li('olijfolie', 2, 'tbsp'),
+    ],
+    nutrition: n(548, 21, 96, 8, 18.4, 1.4),
+  }),
+
+  r('boerenkoolstamppot', 'Boerenkoolstamppot met spekjes', 'nederlands', 'varken', ['aardappelen', 'comfortfood'], {
+    description: 'Winterse stamppot met gebakken spekblokjes en een klontje boter.',
+    prep: 15, cook: 25,
+    steps: [
+      'Kook de aardappelen gaar met de boerenkool erbovenop.',
+      'Bak de spekblokjes uit tot ze knapperig zijn.',
+      'Stamp alles door met melk en boter.',
+      'Breng op smaak met zout en peper.',
+    ],
+    ingredients: [
+      li('aardappel', 1, 'kg'), li('boerenkool', 500, 'g'), li('spekblokjes', 200, 'g'),
+      li('melk', 100, 'ml'), li('roomboter', 30, 'g'), li('mosterd', 10, 'g', true),
+      li('zout', 4, 'g'), li('peper', 1, 'g'),
+    ],
+    nutrition: n(612, 21, 72, 26, 9.3, 2.0),
+  }),
+
+  r('zalm-uit-de-oven', 'Zalm uit de oven met groenten', 'mediterraan', 'vis', ['vis', 'aardappelen', 'ovenschotel'], {
+    description: 'Zalmfilet met geroosterde aardappelpartjes, courgette en citroen.',
+    prep: 15, cook: 30,
+    steps: [
+      'Snijd de aardappelen in partjes en rooster 15 minuten op 200 graden.',
+      'Voeg courgette en cherrytomaten toe.',
+      'Leg de zalm erbovenop met citroen en olijfolie.',
+      'Bak nog 15 minuten tot de zalm gaar is.',
+    ],
+    ingredients: [
+      li('zalmfilet', 480, 'g'), li('aardappel', 700, 'g'), li('courgette', 1, 'piece'),
+      li('cherrytomaat', 250, 'g'), li('citroen', 1, 'piece'), li('olijfolie', 3, 'tbsp'),
+      li('knoflook', 2, 'piece'), li('zout', 3, 'g'), li('peper', 1, 'g'),
+    ],
+    nutrition: n(602, 34, 45, 30, 6.0, 1.1),
+  }),
+
+  r('wraps-kip-avocado', 'Wraps met kip en avocado', 'mexicaans', 'kip', ['wraps', 'kip', 'snel'], {
+    description: 'Zachte wraps met gekruide kip, avocado, sla en yoghurtdressing.',
+    prep: 15, cook: 12,
+    steps: [
+      'Bak de kipreepjes met paprikapoeder en komijn.',
+      'Snijd sla, tomaat en avocado.',
+      'Meng yoghurt met limoensap tot een dressing.',
+      'Vul de wraps en rol ze op.',
+    ],
+    ingredients: [
+      li('kipfilet', 400, 'g'), li('wraps', 8, 'piece'), li('avocado', 2, 'piece'),
+      li('ijsbergsla', 200, 'g'), li('tomaat', 2, 'piece'), li('yoghurt', 150, 'ml'),
+      li('limoen', 1, 'piece'), li('paprikapoeder', 5, 'g'), li('komijn', 4, 'g'),
+      li('zonnebloemolie', 1, 'tbsp'),
+    ],
+    nutrition: n(624, 38, 58, 26, 9.4, 1.9),
+  }),
+
+  r('pasta-pesto-kip', 'Pasta met verse pesto en kip', 'italiaans', 'kip', ['pasta', 'kip'], {
+    description: 'Zelfgemaakte pesto van basilicum, cashewnoten en parmezaan.',
+    prep: 15, cook: 15,
+    steps: [
+      'Kook de penne beetgaar.',
+      'Maal basilicum, cashewnoten, knoflook, parmezaan en olijfolie tot pesto.',
+      'Bak de kipreepjes gaar.',
+      'Meng alles door elkaar met cherrytomaten.',
+    ],
+    ingredients: [
+      li('penne', 350, 'g'), li('kipfilet', 350, 'g'), li('verse-basilicum', 40, 'g'),
+      li('cashewnoten', 60, 'g'), li('parmezaan', 60, 'g'), li('olijfolie', 60, 'ml'),
+      li('knoflook', 2, 'piece'), li('cherrytomaat', 200, 'g'), li('zout', 3, 'g'),
+    ],
+    nutrition: n(722, 43, 68, 30, 5.4, 1.3),
+  }),
+
+  r('thaise-rode-curry-kip', 'Thaise rode curry met kip', 'aziatisch', 'kip', ['rijst', 'kip', 'eenpansgerecht'], {
+    description: 'Romige currysaus van kokosmelk met paprika en sperziebonen.',
+    prep: 12, cook: 22,
+    steps: [
+      'Bak de currypasta kort aan in olie.',
+      'Voeg de kip toe en bak rondom dicht.',
+      'Giet de kokosmelk erbij en voeg de groenten toe.',
+      'Laat 15 minuten sudderen en serveer met basmatirijst.',
+    ],
+    ingredients: [
+      li('kipdijfilet', 450, 'g'), li('kokosmelk', 400, 'ml'), li('rode-currypasta', 50, 'g'),
+      li('paprika-rood', 1, 'piece'), li('sperziebonen', 250, 'g'), li('basmatirijst', 300, 'g'),
+      li('limoen', 1, 'piece'), li('verse-koriander', 15, 'g', true), li('zonnebloemolie', 1, 'tbsp'),
+    ],
+    nutrition: n(688, 36, 74, 27, 6.8, 2.2),
+  }),
+
+  r('tofu-roerbak-mie', 'Roerbakmie met tofu', 'aziatisch', 'plantaardig-vlees', ['noedels', 'vegetarisch', 'snel'], {
+    description: 'Snelle wokschotel met tofu, spitskool, wortel en ketjap.',
+    prep: 12, cook: 15,
+    steps: [
+      'Snijd de tofu in blokjes en bak knapperig.',
+      'Wok de groenten kort en fel.',
+      'Kook de mie en schep alles door elkaar.',
+      'Breng op smaak met ketjap en sambal.',
+    ],
+    ingredients: [
+      li('tofu', 400, 'g'), li('mie', 300, 'g'), li('spitskool', 300, 'g'),
+      li('wortel', 200, 'g'), li('tauge', 150, 'g'), li('ketjap', 60, 'ml'),
+      li('sambal', 10, 'g', true), li('knoflook', 2, 'piece'), li('zonnebloemolie', 2, 'tbsp'),
+    ],
+    nutrition: n(552, 26, 76, 16, 8.2, 2.4),
+  }),
+
+  r('andijviestamppot', 'Andijviestamppot', 'nederlands', 'zuivel', ['aardappelen', 'vegetarisch', 'comfortfood', 'budget'], {
+    description: 'Rauwe andijvie door warme aardappelpuree met kaas.',
+    prep: 15, cook: 25,
+    steps: [
+      'Kook de aardappelen gaar.',
+      'Snijd de andijvie fijn.',
+      'Stamp de aardappelen met melk en boter.',
+      'Schep de rauwe andijvie en kaas erdoor.',
+    ],
+    ingredients: [
+      li('aardappel', 1, 'kg'), li('andijvie', 400, 'g'), li('melk', 125, 'ml'),
+      li('roomboter', 30, 'g'), li('geraspte-kaas', 100, 'g'), li('zout', 4, 'g'), li('peper', 1, 'g'),
+    ],
+    nutrition: n(498, 18, 72, 15, 8.0, 1.5),
+  }),
+
+  r('kabeljauw-spinazie', 'Kabeljauw met spinazie en aardappel', 'mediterraan', 'vis', ['vis', 'aardappelen'], {
+    description: 'Milde witvis met knoflookspinazie en gekookte aardappelen.',
+    prep: 10, cook: 25,
+    steps: [
+      'Kook de aardappelen gaar.',
+      'Bak de kabeljauw 3 minuten per kant.',
+      'Slink de spinazie met knoflook in olijfolie.',
+      'Serveer met citroen.',
+    ],
+    ingredients: [
+      li('kabeljauw', 500, 'g'), li('aardappel', 800, 'g'), li('spinazie', 400, 'g'),
+      li('knoflook', 3, 'piece'), li('olijfolie', 3, 'tbsp'), li('citroen', 1, 'piece'),
+      li('roomboter', 20, 'g'), li('zout', 3, 'g'), li('peper', 1, 'g'),
+    ],
+    nutrition: n(486, 35, 45, 16, 7.2, 1.2),
+  }),
+
+  r('shakshuka', 'Shakshuka', 'mediterraan', 'ei', ['vegetarisch', 'eenpansgerecht', 'snel', 'brood'], {
+    description: 'Eieren gepocheerd in een pittige tomaten-paprikasaus.',
+    prep: 10, cook: 20,
+    steps: [
+      'Fruit ui, knoflook en paprika.',
+      'Voeg tomatenblokjes, komijn en paprikapoeder toe.',
+      'Maak kuiltjes en breek de eieren erin.',
+      'Laat afgedekt garen en serveer met stokbrood.',
+    ],
+    ingredients: [
+      li('ei', 8, 'piece'), li('tomatenblokjes', 800, 'g'), li('paprika-rood', 2, 'piece'),
+      li('ui', 1, 'piece'), li('knoflook', 3, 'piece'), li('komijn', 5, 'g'),
+      li('paprikapoeder', 5, 'g'), li('stokbrood', 300, 'g'), li('olijfolie', 2, 'tbsp'),
+      li('verse-peterselie', 15, 'g', true),
+    ],
+    nutrition: n(524, 25, 55, 21, 8.6, 1.9),
+  }),
+
+  r('linzensoep', 'Stevige linzensoep', 'mediterraan', 'peulvrucht', ['soep', 'vegetarisch', 'budget'], {
+    description: 'Vullende soep van linzen, wortel, prei en tomaat.',
+    prep: 10, cook: 30,
+    steps: [
+      'Fruit ui, wortel en prei.',
+      'Voeg linzen, tomatenblokjes en bouillon toe.',
+      'Laat 25 minuten koken.',
+      'Serveer met stokbrood.',
+    ],
+    ingredients: [
+      li('linzen', 400, 'g'), li('wortel', 250, 'g'), li('prei', 1, 'piece'),
+      li('ui', 1, 'piece'), li('tomatenblokjes', 400, 'g'), li('groentebouillon', 20, 'g'),
+      li('komijn', 4, 'g'), li('olijfolie', 2, 'tbsp'), li('stokbrood', 200, 'g'),
+    ],
+    nutrition: n(452, 22, 68, 9, 15.2, 2.0),
+  }),
+
+  r('kipdij-ovenschotel', 'Kipdij-ovenschotel met groenten', 'nederlands', 'kip', ['ovenschotel', 'kip', 'aardappelen'], {
+    description: 'Alles op één plaat: kipdij, aardappel, wortel en ui uit de oven.',
+    prep: 15, cook: 40,
+    steps: [
+      'Snijd alle groenten in grove stukken.',
+      'Meng met olijfolie, paprikapoeder en oregano.',
+      'Leg de kipdijfilet erbovenop.',
+      'Bak 40 minuten op 200 graden.',
+    ],
+    ingredients: [
+      li('kipdijfilet', 500, 'g'), li('aardappel', 800, 'g'), li('wortel', 300, 'g'),
+      li('ui', 2, 'piece'), li('paprika-rood', 1, 'piece'), li('olijfolie', 3, 'tbsp'),
+      li('paprikapoeder', 6, 'g'), li('oregano', 3, 'g'), li('zout', 4, 'g'),
+    ],
+    nutrition: n(645, 38, 58, 26, 8.4, 1.7),
+  }),
+
+  r('champignonrijst', 'Romige champignonrijst', 'italiaans', 'zuivel', ['rijst', 'vegetarisch', 'comfortfood'], {
+    description: 'Rijst met gebakken champignons, room en parmezaan.',
+    prep: 10, cook: 25,
+    steps: [
+      'Bak de champignons met ui en knoflook.',
+      'Voeg de rijst toe en schenk er bouillon bij.',
+      'Roer tot de rijst gaar is.',
+      'Werk af met room en parmezaan.',
+    ],
+    ingredients: [
+      li('witte-rijst', 320, 'g'), li('champignons', 500, 'g'), li('ui', 1, 'piece'),
+      li('knoflook', 2, 'piece'), li('kookroom', 200, 'ml'), li('parmezaan', 60, 'g'),
+      li('groentebouillon', 15, 'g'), li('roomboter', 25, 'g'), li('verse-peterselie', 15, 'g', true),
+    ],
+    nutrition: n(566, 18, 72, 22, 4.6, 1.8),
+  }),
+
+  r('burrito-bowl', 'Burrito bowl', 'mexicaans', 'peulvrucht', ['rijst', 'vegetarisch', 'snel'], {
+    description: 'Rijstbowl met zwarte bonen, maïs, avocado en limoen.',
+    prep: 15, cook: 15,
+    steps: [
+      'Kook de rijst met limoenrasp.',
+      'Verwarm de bonen met komijn en paprikapoeder.',
+      'Snijd avocado, tomaat en bosui.',
+      'Bouw de bowls op en werk af met yoghurt.',
+    ],
+    ingredients: [
+      li('witte-rijst', 300, 'g'), li('zwarte-bonen', 400, 'g'), li('mais', 200, 'g'),
+      li('avocado', 2, 'piece'), li('tomaat', 2, 'piece'), li('bosui', 4, 'piece'),
+      li('limoen', 1, 'piece'), li('yoghurt', 150, 'ml'), li('komijn', 5, 'g'),
+      li('paprikapoeder', 4, 'g'),
+    ],
+    nutrition: n(604, 20, 88, 20, 15.8, 1.2),
+  }),
+
+  r('gehaktballen-groente', 'Gehaktballen met aardappel en sperziebonen', 'nederlands', 'rund', ['aardappelen', 'comfortfood'], {
+    description: 'Ouderwets lekker: zelfgedraaide gehaktballen met jus.',
+    prep: 15, cook: 30,
+    steps: [
+      'Meng het gehakt met paneermeel, ei en kruiden.',
+      'Draai ballen en bak ze rustig gaar.',
+      'Kook de aardappelen en sperziebonen.',
+      'Maak jus van het bakvet.',
+    ],
+    ingredients: [
+      li('gehakt-half', 500, 'g'), li('paneermeel', 50, 'g'), li('ei', 1, 'piece'),
+      li('aardappel', 900, 'g'), li('sperziebonen', 400, 'g'), li('ui', 1, 'piece'),
+      li('roomboter', 30, 'g'), li('mosterd', 10, 'g'), li('zout', 4, 'g'), li('peper', 2, 'g'),
+    ],
+    nutrition: n(668, 36, 58, 32, 8.0, 1.9),
+  }),
+
+  r('penne-arrabbiata', 'Penne arrabbiata', 'italiaans', 'geen', ['pasta', 'vegetarisch', 'snel', 'budget'], {
+    description: 'Pittige tomatensaus met knoflook en rode peper, klaar in 20 minuten.',
+    prep: 5, cook: 18,
+    steps: [
+      'Kook de penne beetgaar.',
+      'Fruit knoflook en rode peper in olijfolie.',
+      'Voeg passata toe en laat 10 minuten inkoken.',
+      'Meng met de pasta en werk af met basilicum.',
+    ],
+    ingredients: [
+      li('penne', 400, 'g'), li('passata', 700, 'ml'), li('knoflook', 4, 'piece'),
+      li('rode-peper', 1, 'piece'), li('olijfolie', 3, 'tbsp'), li('verse-basilicum', 20, 'g'),
+      li('parmezaan', 40, 'g', true), li('zout', 3, 'g'),
+    ],
+    nutrition: n(512, 16, 86, 12, 7.4, 1.1),
+  }),
+
+  r('spaghetti-carbonara', 'Spaghetti carbonara', 'italiaans', 'varken', ['pasta', 'comfortfood'], {
+    description: 'Romig van ei en parmezaan, met knapperige spekblokjes.',
+    prep: 10, cook: 18,
+    steps: [
+      'Kook de spaghetti.',
+      'Bak de spekblokjes knapperig.',
+      'Klop de eieren los met parmezaan en peper.',
+      'Meng alles buiten het vuur zodat het eimengsel bindt maar niet stolt.',
+    ],
+    ingredients: [
+      li('spaghetti', 400, 'g'), li('spekblokjes', 200, 'g'), li('ei', 4, 'piece'),
+      li('parmezaan', 80, 'g'), li('knoflook', 1, 'piece'), li('peper', 2, 'g'), li('zout', 2, 'g'),
+    ],
+    nutrition: n(692, 33, 76, 27, 4.0, 2.1),
+    pregnancySuitableOverride: false,
+  }),
+
+  r('griekse-salade-pita', 'Griekse salade met pitabrood', 'grieks', 'zuivel', ['salade', 'vegetarisch', 'brood', 'snel'], {
+    description: 'Frisse salade met feta, olijven en warm pitabrood.',
+    prep: 15, cook: 5,
+    steps: [
+      'Snijd komkommer, tomaat en rode ui.',
+      'Meng met olijven en feta.',
+      'Maak een dressing van olijfolie, azijn en oregano.',
+      'Serveer met geroosterd pitabrood.',
+    ],
+    ingredients: [
+      li('komkommer', 1, 'piece'), li('tomaat', 4, 'piece'), li('rode-ui', 1, 'piece'),
+      li('olijven', 150, 'g'), li('feta', 200, 'g'), li('pitabrood', 6, 'piece'),
+      li('olijfolie', 4, 'tbsp'), li('azijn', 20, 'ml'), li('oregano', 3, 'g'),
+    ],
+    nutrition: n(534, 18, 52, 28, 6.4, 2.6),
+  }),
+
+  r('moussaka', 'Moussaka', 'grieks', 'rund', ['ovenschotel', 'comfortfood'], {
+    description: 'Aubergine, gekruid gehakt en een romige laag uit de oven.',
+    prep: 25, cook: 45, difficulty: 'gemiddeld',
+    steps: [
+      'Bak de aubergineplakken goudbruin.',
+      'Bak het gehakt met ui, knoflook, kaneel en tomaat.',
+      'Maak een saus van melk, bloem en boter.',
+      'Laag alles op en bak 40 minuten op 180 graden.',
+    ],
+    ingredients: [
+      li('aubergine', 2, 'piece'), li('gehakt-rund', 450, 'g'), li('tomatenblokjes', 400, 'g'),
+      li('ui', 1, 'piece'), li('knoflook', 2, 'piece'), li('melk', 400, 'ml'),
+      li('bloem', 40, 'g'), li('roomboter', 40, 'g'), li('geraspte-kaas', 100, 'g'),
+      li('kaneel', 2, 'g'), li('olijfolie', 3, 'tbsp'),
+    ],
+    nutrition: n(658, 34, 34, 42, 7.0, 1.6),
+  }),
+
+  r('kikkererwtencurry', 'Indiase kikkererwtencurry', 'indiaas', 'peulvrucht', ['rijst', 'vegetarisch', 'eenpansgerecht', 'budget'], {
+    description: 'Kikkererwten in een kruidige tomaten-kokossaus.',
+    prep: 10, cook: 25,
+    steps: [
+      'Fruit ui, knoflook en gember met kerrie en kurkuma.',
+      'Voeg kikkererwten, tomatenblokjes en kokosmelk toe.',
+      'Laat 20 minuten sudderen.',
+      'Serveer met basmatirijst en verse koriander.',
+    ],
+    ingredients: [
+      li('kikkererwten', 800, 'g'), li('tomatenblokjes', 400, 'g'), li('kokosmelk', 400, 'ml'),
+      li('basmatirijst', 300, 'g'), li('ui', 1, 'piece'), li('knoflook', 3, 'piece'),
+      li('gember', 20, 'g'), li('kerriepoeder', 8, 'g'), li('kurkuma', 4, 'g'),
+      li('verse-koriander', 15, 'g', true), li('zonnebloemolie', 2, 'tbsp'),
+    ],
+    nutrition: n(662, 22, 92, 22, 16.0, 1.5),
+  }),
+
+  r('butter-chicken', 'Butter chicken', 'indiaas', 'kip', ['rijst', 'kip', 'comfortfood'], {
+    description: 'Milde, romige kipcurry met tomaat en yoghurt.',
+    prep: 15, cook: 30,
+    steps: [
+      'Marineer de kip in yoghurt met kerrie.',
+      'Bak de kip aan en zet apart.',
+      'Maak een saus van tomatenpuree, tomatenblokjes, boter en room.',
+      'Laat de kip in de saus garen en serveer met rijst.',
+    ],
+    ingredients: [
+      li('kipfilet', 500, 'g'), li('yoghurt', 150, 'ml'), li('tomatenblokjes', 400, 'g'),
+      li('tomatenpuree', 70, 'g'), li('kookroom', 150, 'ml'), li('roomboter', 40, 'g'),
+      li('basmatirijst', 300, 'g'), li('ui', 1, 'piece'), li('knoflook', 3, 'piece'),
+      li('gember', 15, 'g'), li('kerriepoeder', 8, 'g'),
+    ],
+    nutrition: n(714, 44, 74, 27, 5.0, 1.6),
+  }),
+
+  r('nasi-goreng', 'Nasi goreng', 'aziatisch', 'ei', ['rijst', 'eenpansgerecht', 'budget'], {
+    description: 'Gebakken rijst met ei, spitskool, wortel en ketjap.',
+    prep: 15, cook: 20,
+    steps: [
+      'Kook de rijst en laat afkoelen.',
+      'Wok de groenten met knoflook en sambal.',
+      'Bak roerei apart en schep erdoor.',
+      'Breng op smaak met ketjap.',
+    ],
+    ingredients: [
+      li('witte-rijst', 350, 'g'), li('ei', 4, 'piece'), li('spitskool', 300, 'g'),
+      li('wortel', 200, 'g'), li('ui', 1, 'piece'), li('knoflook', 3, 'piece'),
+      li('ketjap', 60, 'ml'), li('sambal', 10, 'g', true), li('zonnebloemolie', 2, 'tbsp'),
+      li('bosui', 3, 'piece', true),
+    ],
+    nutrition: n(556, 20, 86, 15, 6.4, 2.3),
+  }),
+
+  r('bami-met-kip', 'Bami met kip', 'aziatisch', 'kip', ['noedels', 'kip'], {
+    description: 'Mienoedels met kipreepjes, prei en tauge.',
+    prep: 15, cook: 18,
+    steps: [
+      'Kook de mie kort.',
+      'Bak de kipreepjes met knoflook en gember.',
+      'Wok prei, wortel en tauge mee.',
+      'Meng met de mie en ketjap.',
+    ],
+    ingredients: [
+      li('mie', 300, 'g'), li('kipfilet', 400, 'g'), li('prei', 1, 'piece'),
+      li('wortel', 200, 'g'), li('tauge', 150, 'g'), li('ketjap', 50, 'ml'),
+      li('sojasaus', 20, 'ml'), li('knoflook', 2, 'piece'), li('gember', 15, 'g'),
+      li('zonnebloemolie', 2, 'tbsp'),
+    ],
+    nutrition: n(604, 40, 76, 15, 6.8, 2.5),
+  }),
+
+  r('couscous-geroosterde-groenten', 'Couscous met geroosterde groenten', 'mediterraan', 'peulvrucht', ['vegetarisch', 'salade', 'snel'], {
+    description: 'Couscous met paprika, courgette, kikkererwten en citroen.',
+    prep: 15, cook: 25,
+    steps: [
+      'Rooster paprika, courgette en rode ui met olijfolie.',
+      'Wel de couscous met bouillon.',
+      'Meng de groenten en kikkererwten erdoor.',
+      'Werk af met citroen en peterselie.',
+    ],
+    ingredients: [
+      li('couscous', 300, 'g'), li('paprika-geel', 2, 'piece'), li('courgette', 1, 'piece'),
+      li('rode-ui', 1, 'piece'), li('kikkererwten', 400, 'g'), li('citroen', 1, 'piece'),
+      li('olijfolie', 3, 'tbsp'), li('groentebouillon', 12, 'g'), li('verse-peterselie', 20, 'g'),
+      li('komijn', 4, 'g'),
+    ],
+    nutrition: n(524, 18, 84, 13, 12.0, 1.5),
+  }),
+
+  r('quinoasalade-feta', 'Quinoasalade met feta', 'mediterraan', 'zuivel', ['salade', 'vegetarisch'], {
+    description: 'Frisse salade met quinoa, komkommer, cherrytomaat en feta.',
+    prep: 15, cook: 15,
+    steps: [
+      'Kook de quinoa en laat afkoelen.',
+      'Snijd komkommer, cherrytomaat en rode ui.',
+      'Meng met rucola en feta.',
+      'Maak een dressing van olijfolie, citroen en peper.',
+    ],
+    ingredients: [
+      li('quinoa', 280, 'g'), li('komkommer', 1, 'piece'), li('cherrytomaat', 250, 'g'),
+      li('rode-ui', 1, 'piece'), li('rucola', 100, 'g'), li('feta', 200, 'g'),
+      li('olijfolie', 4, 'tbsp'), li('citroen', 1, 'piece'), li('walnoten', 50, 'g', true),
+    ],
+    nutrition: n(566, 21, 54, 30, 8.2, 1.8),
+  }),
+
+  r('hachee', 'Hachee met aardappelpuree', 'nederlands', 'rund', ['comfortfood', 'aardappelen'], {
+    description: 'Langzaam gestoofd rundvlees met veel ui en laurier.',
+    prep: 15, cook: 120, difficulty: 'gemiddeld',
+    steps: [
+      'Braad het stoofvlees rondom aan.',
+      'Voeg veel ui, azijn, bouillon en laurier toe.',
+      'Stoof minimaal twee uur op laag vuur.',
+      'Serveer met aardappelpuree.',
+    ],
+    ingredients: [
+      li('runderstoof', 600, 'g'), li('ui', 4, 'piece'), li('aardappel', 900, 'g'),
+      li('azijn', 30, 'ml'), li('groentebouillon', 15, 'g'), li('roomboter', 40, 'g'),
+      li('melk', 100, 'ml'), li('mosterd', 15, 'g'), li('peper', 2, 'g'),
+    ],
+    nutrition: n(688, 42, 58, 30, 6.4, 1.9),
+  }),
+
+  r('pompoensoep', 'Pompoensoep met kokos', 'nederlands', 'geen', ['soep', 'vegetarisch', 'budget', 'snel'], {
+    description: 'Zijdezachte soep van pompoen, wortel en kokosmelk.',
+    prep: 15, cook: 25,
+    steps: [
+      'Snijd pompoen en wortel in blokjes.',
+      'Fruit ui en gember, voeg de groenten en bouillon toe.',
+      'Kook 20 minuten en pureer.',
+      'Roer de kokosmelk erdoor en serveer met stokbrood.',
+    ],
+    ingredients: [
+      li('pompoen', 800, 'g'), li('wortel', 250, 'g'), li('ui', 1, 'piece'),
+      li('gember', 15, 'g'), li('kokosmelk', 200, 'ml'), li('groentebouillon', 15, 'g'),
+      li('stokbrood', 250, 'g'), li('olijfolie', 2, 'tbsp'), li('kurkuma', 3, 'g'),
+    ],
+    nutrition: n(432, 11, 62, 15, 9.0, 1.7),
+  }),
+
+  r('tortilla-espanola', 'Spaanse tortilla', 'mediterraan', 'ei', ['vegetarisch', 'aardappelen', 'budget'], {
+    description: 'Dikke aardappelomelet met ui, koud of warm te eten.',
+    prep: 15, cook: 30,
+    steps: [
+      'Bak de aardappelschijfjes zacht in olijfolie.',
+      'Bak de ui mee.',
+      'Klop de eieren los en meng alles.',
+      'Bak de tortilla langzaam gaar en keer hem om.',
+    ],
+    ingredients: [
+      li('aardappel', 800, 'g'), li('ei', 8, 'piece'), li('ui', 2, 'piece'),
+      li('olijfolie', 80, 'ml'), li('ijsbergsla', 150, 'g'), li('zout', 4, 'g'), li('peper', 1, 'g'),
+    ],
+    nutrition: n(548, 21, 44, 32, 5.2, 1.4),
+  }),
+
+  r('tonijnsteak-groenten', 'Tonijnsteak met geroosterde groenten', 'mediterraan', 'vis', ['vis', 'salade'], {
+    description: 'Kort gebakken tonijnsteak met venkel, cherrytomaat en olijven.',
+    prep: 15, cook: 20, difficulty: 'gemiddeld',
+    steps: [
+      'Rooster venkel en cherrytomaten met olijfolie.',
+      'Bak de tonijnsteaks kort aan beide kanten.',
+      'Meng de olijven door de groenten.',
+      'Serveer met citroen en stokbrood.',
+    ],
+    ingredients: [
+      li('tonijnsteak', 480, 'g'), li('venkel', 2, 'piece'), li('cherrytomaat', 300, 'g'),
+      li('olijven', 100, 'g'), li('citroen', 1, 'piece'), li('olijfolie', 3, 'tbsp'),
+      li('stokbrood', 250, 'g'), li('zout', 3, 'g'),
+    ],
+    nutrition: n(576, 42, 44, 24, 7.4, 1.9),
+  }),
+
+  r('gerookte-zalm-pasta', 'Pasta met gerookte zalm', 'italiaans', 'vis', ['pasta', 'vis', 'snel'], {
+    description: 'Romige pasta met gerookte zalm, room en citroen.',
+    prep: 10, cook: 15,
+    steps: [
+      'Kook de spaghetti.',
+      'Verwarm room met citroenrasp en peper.',
+      'Roer de gerookte zalm er op het laatst door.',
+      'Meng met de pasta en rucola.',
+    ],
+    ingredients: [
+      li('spaghetti', 350, 'g'), li('gerookte-zalm', 250, 'g'), li('kookroom', 250, 'ml'),
+      li('citroen', 1, 'piece'), li('rucola', 75, 'g'), li('knoflook', 1, 'piece'),
+      li('peper', 2, 'g'), li('parmezaan', 40, 'g', true),
+    ],
+    nutrition: n(654, 33, 68, 28, 4.0, 2.2),
+  }),
+
+  r('salade-blauwe-kaas', 'Salade met blauwe kaas en walnoot', 'frans', 'zuivel', ['salade', 'vegetarisch', 'snel'], {
+    description: 'Rucola met blauwe kaas, appel, walnoten en honingdressing.',
+    prep: 15, cook: 5,
+    steps: [
+      'Rooster de walnoten kort in een droge pan.',
+      'Snijd de appel in dunne partjes.',
+      'Meng rucola, appel, blauwe kaas en walnoten.',
+      'Maak een dressing van olijfolie, azijn, honing en mosterd.',
+    ],
+    ingredients: [
+      li('rucola', 150, 'g'), li('blauwe-kaas', 150, 'g'), li('appel', 2, 'piece'),
+      li('walnoten', 80, 'g'), li('honing', 20, 'g'), li('mosterd', 10, 'g'),
+      li('olijfolie', 4, 'tbsp'), li('azijn', 20, 'ml'), li('stokbrood', 250, 'g'),
+    ],
+    nutrition: n(586, 20, 48, 34, 6.0, 2.1),
+  }),
+
+  r('lever-met-uien', 'Lever met uien en aardappel', 'nederlands', 'rund', ['aardappelen', 'budget'], {
+    description: 'Ouderwetse leverschotel met veel gebakken ui.',
+    prep: 10, cook: 25,
+    steps: [
+      'Bak de uien langzaam bruin.',
+      'Wentel de lever door bloem en bak kort.',
+      'Kook de aardappelen en sperziebonen.',
+      'Maak jus van het bakvocht.',
+    ],
+    ingredients: [
+      li('runderlever', 450, 'g'), li('ui', 3, 'piece'), li('aardappel', 900, 'g'),
+      li('sperziebonen', 350, 'g'), li('bloem', 40, 'g'), li('roomboter', 40, 'g'),
+      li('zout', 4, 'g'), li('peper', 2, 'g'),
+    ],
+    nutrition: n(586, 38, 62, 20, 7.8, 1.6),
+  }),
+
+  r('varkenshaas-champignonsaus', 'Varkenshaas met champignonsaus', 'nederlands', 'varken', ['aardappelen', 'comfortfood'], {
+    description: 'Malse varkenshaas met een romige champignonsaus.',
+    prep: 15, cook: 25,
+    steps: [
+      'Bak de varkenshaas rondom aan en laat rusten.',
+      'Bak champignons en ui in dezelfde pan.',
+      'Blus af met room en bouillon.',
+      'Serveer met aardappelen en broccoli.',
+    ],
+    ingredients: [
+      li('varkenshaas', 500, 'g'), li('champignons', 400, 'g'), li('kookroom', 200, 'ml'),
+      li('ui', 1, 'piece'), li('aardappel', 800, 'g'), li('broccoli', 400, 'g'),
+      li('groentebouillon', 10, 'g'), li('roomboter', 30, 'g'), li('peper', 2, 'g'),
+    ],
+    nutrition: n(636, 44, 52, 27, 8.6, 1.5),
+  }),
+
+  r('garnalen-knoflookpasta', 'Knoflookpasta met garnalen', 'italiaans', 'vis', ['pasta', 'vis', 'snel'], {
+    description: 'Spaghetti aglio e olio met garnalen en peterselie.',
+    prep: 10, cook: 15,
+    steps: [
+      'Kook de spaghetti.',
+      'Verhit olijfolie met veel knoflook en rode peper.',
+      'Bak de garnalen kort mee.',
+      'Meng met de pasta, citroen en peterselie.',
+    ],
+    ingredients: [
+      li('spaghetti', 350, 'g'), li('garnalen', 350, 'g'), li('knoflook', 5, 'piece'),
+      li('rode-peper', 1, 'piece'), li('olijfolie', 60, 'ml'), li('citroen', 1, 'piece'),
+      li('verse-peterselie', 20, 'g'), li('cherrytomaat', 200, 'g'),
+    ],
+    nutrition: n(598, 32, 70, 20, 4.8, 1.4),
+  }),
+
+  r('falafel-wrap', 'Falafelwrap met yoghurtsaus', 'mediterraan', 'peulvrucht', ['wraps', 'vegetarisch', 'snel'], {
+    description: 'Krokante falafel met sla, tomaat en frisse yoghurtsaus.',
+    prep: 12, cook: 15,
+    steps: [
+      'Bak of verwarm de falafel.',
+      'Snijd sla, tomaat en komkommer.',
+      'Meng yoghurt met knoflook en citroen.',
+      'Vul de wraps.',
+    ],
+    ingredients: [
+      li('falafel', 400, 'g'), li('wraps', 8, 'piece'), li('ijsbergsla', 200, 'g'),
+      li('tomaat', 3, 'piece'), li('komkommer', 1, 'piece'), li('yoghurt', 200, 'ml'),
+      li('knoflook', 1, 'piece'), li('citroen', 1, 'piece'), li('sesamzaad', 10, 'g', true),
+    ],
+    nutrition: n(578, 22, 76, 20, 12.0, 2.0),
+  }),
+
+  r('tempeh-ketjap', 'Tempeh in ketjap met rijst', 'aziatisch', 'plantaardig-vlees', ['rijst', 'vegetarisch', 'veganistisch', 'budget'], {
+    description: 'Plantaardig en vullend: tempeh gemarineerd in ketjap en knoflook.',
+    prep: 12, cook: 20,
+    steps: [
+      'Snijd de tempeh in blokjes en bak knapperig.',
+      'Voeg knoflook, gember en ketjap toe.',
+      'Wok sperziebonen en paprika mee.',
+      'Serveer met rijst.',
+    ],
+    ingredients: [
+      li('tempeh', 400, 'g'), li('witte-rijst', 300, 'g'), li('sperziebonen', 300, 'g'),
+      li('paprika-rood', 1, 'piece'), li('ketjap', 60, 'ml'), li('knoflook', 3, 'piece'),
+      li('gember', 15, 'g'), li('zonnebloemolie', 2, 'tbsp'), li('sambal', 8, 'g', true),
+    ],
+    nutrition: n(596, 30, 82, 17, 9.6, 2.2),
+  }),
+
+  r('bloemkoolcurry', 'Vegan bloemkoolcurry', 'indiaas', 'peulvrucht', ['rijst', 'vegetarisch', 'veganistisch', 'eenpansgerecht'], {
+    description: 'Bloemkool en linzen in kokoscurry, volledig plantaardig.',
+    prep: 12, cook: 28,
+    steps: [
+      'Fruit ui, knoflook en gember met kerrie.',
+      'Voeg bloemkoolroosjes, linzen en tomatenblokjes toe.',
+      'Schenk de kokosmelk erbij en laat 20 minuten sudderen.',
+      'Serveer met zilvervliesrijst.',
+    ],
+    ingredients: [
+      li('bloemkool', 700, 'g'), li('linzen', 300, 'g'), li('kokosmelk', 400, 'ml'),
+      li('tomatenblokjes', 400, 'g'), li('zilvervliesrijst', 300, 'g'), li('ui', 1, 'piece'),
+      li('knoflook', 3, 'piece'), li('gember', 20, 'g'), li('kerriepoeder', 8, 'g'),
+      li('zonnebloemolie', 2, 'tbsp'),
+    ],
+    nutrition: n(642, 24, 92, 20, 17.2, 1.3),
+  }),
+
+  r('macaronischotel', 'Macaronischotel uit de oven', 'nederlands', 'varken', ['pasta', 'ovenschotel', 'comfortfood', 'budget'], {
+    description: 'Macaroni met spekjes, paprika en een dikke laag kaas.',
+    prep: 15, cook: 30,
+    steps: [
+      'Kook de macaroni bijna gaar.',
+      'Bak spekjes, ui en paprika.',
+      'Meng met tomatenblokjes en macaroni.',
+      'Bestrooi met kaas en bak 20 minuten op 200 graden.',
+    ],
+    ingredients: [
+      li('macaroni', 400, 'g'), li('spekblokjes', 200, 'g'), li('paprika-rood', 2, 'piece'),
+      li('ui', 1, 'piece'), li('tomatenblokjes', 800, 'g'), li('geraspte-kaas', 150, 'g'),
+      li('italiaanse-kruiden', 5, 'g'), li('olijfolie', 1, 'tbsp'),
+    ],
+    nutrition: n(672, 30, 84, 24, 8.0, 2.2),
+  }),
+
+  r('gevulde-paprika', 'Gevulde paprika met gehakt en rijst', 'mediterraan', 'rund', ['ovenschotel', 'rijst'], {
+    description: 'Halve paprika gevuld met gekruid gehakt, rijst en tomaat.',
+    prep: 20, cook: 35,
+    steps: [
+      'Kook de rijst half gaar.',
+      'Bak het gehakt met ui, knoflook en oregano.',
+      'Meng met rijst en tomatenblokjes.',
+      'Vul de paprikahelften en bak 30 minuten op 190 graden.',
+    ],
+    ingredients: [
+      li('paprika-rood', 4, 'piece'), li('gehakt-rund', 400, 'g'), li('witte-rijst', 200, 'g'),
+      li('tomatenblokjes', 400, 'g'), li('ui', 1, 'piece'), li('knoflook', 2, 'piece'),
+      li('geraspte-kaas', 80, 'g'), li('oregano', 4, 'g'), li('olijfolie', 2, 'tbsp'),
+    ],
+    nutrition: n(552, 32, 52, 22, 7.2, 1.4),
+  }),
+
+  r('zoete-aardappelstoof', 'Zoete-aardappelstoof met kikkererwten', 'mediterraan', 'peulvrucht', ['eenpansgerecht', 'vegetarisch', 'veganistisch', 'budget'], {
+    description: 'Plantaardige stoof met zoete aardappel, spinazie en komijn.',
+    prep: 15, cook: 30,
+    steps: [
+      'Snijd de zoete aardappel in blokjes.',
+      'Fruit ui, knoflook en komijn.',
+      'Voeg zoete aardappel, kikkererwten en tomatenblokjes toe.',
+      'Roer op het laatst de spinazie erdoor.',
+    ],
+    ingredients: [
+      li('zoete-aardappel', 800, 'g'), li('kikkererwten', 400, 'g'), li('tomatenblokjes', 400, 'g'),
+      li('spinazie', 200, 'g'), li('ui', 1, 'piece'), li('knoflook', 3, 'piece'),
+      li('komijn', 6, 'g'), li('paprikapoeder', 4, 'g'), li('olijfolie', 2, 'tbsp'),
+      li('couscous', 200, 'g'),
+    ],
+    nutrition: n(578, 19, 100, 11, 15.6, 1.3),
+  }),
+
+  r('kipsate-rijst', 'Kipsaté met rijst en komkommer', 'aziatisch', 'kip', ['rijst', 'kip', 'comfortfood'], {
+    description: 'Kipblokjes met zelfgemaakte pindasaus en frisse komkommer.',
+    prep: 15, cook: 25,
+    steps: [
+      'Marineer de kip in ketjap en knoflook.',
+      'Bak of gril de kipblokjes gaar.',
+      'Maak pindasaus van pindakaas, ketjap, water en sambal.',
+      'Serveer met rijst en komkommer.',
+    ],
+    ingredients: [
+      li('kipfilet', 500, 'g'), li('witte-rijst', 300, 'g'), li('pindakaas', 150, 'g'),
+      li('ketjap', 50, 'ml'), li('knoflook', 3, 'piece'), li('sambal', 10, 'g', true),
+      li('komkommer', 1, 'piece'), li('zonnebloemolie', 2, 'tbsp'),
+    ],
+    nutrition: n(748, 48, 74, 28, 5.4, 2.4),
+  }),
+
+  r('bulgur-gegrilde-groenten', 'Bulgur met gegrilde groenten en feta', 'mediterraan', 'zuivel', ['vegetarisch', 'salade', 'budget'], {
+    description: 'Bulgur met courgette, paprika, rode ui en verkruimelde feta.',
+    prep: 15, cook: 25,
+    steps: [
+      'Kook de bulgur in bouillon.',
+      'Gril courgette, paprika en rode ui.',
+      'Meng alles met olijfolie en citroen.',
+      'Werk af met feta en peterselie.',
+    ],
+    ingredients: [
+      li('bulgur', 300, 'g'), li('courgette', 1, 'piece'), li('paprika-geel', 2, 'piece'),
+      li('rode-ui', 1, 'piece'), li('feta', 150, 'g'), li('olijfolie', 3, 'tbsp'),
+      li('citroen', 1, 'piece'), li('verse-peterselie', 20, 'g'), li('groentebouillon', 10, 'g'),
+    ],
+    nutrition: n(508, 18, 72, 17, 11.0, 1.6),
+  }),
+
+  r('hutspot-rundvlees', 'Hutspot met rundvlees', 'nederlands', 'rund', ['aardappelen', 'comfortfood'], {
+    description: 'Wortel, ui en aardappel gestampt, met gestoofd rundvlees.',
+    prep: 15, cook: 90, difficulty: 'gemiddeld',
+    steps: [
+      'Stoof het rundvlees 90 minuten met bouillon en laurier.',
+      'Kook aardappel, wortel en ui samen gaar.',
+      'Stamp met boter en melk.',
+      'Serveer met het vlees en de jus.',
+    ],
+    ingredients: [
+      li('runderstoof', 500, 'g'), li('aardappel', 800, 'g'), li('wortel', 500, 'g'),
+      li('ui', 2, 'piece'), li('roomboter', 40, 'g'), li('melk', 100, 'ml'),
+      li('groentebouillon', 15, 'g'), li('mosterd', 10, 'g', true), li('peper', 2, 'g'),
+    ],
+    nutrition: n(624, 38, 62, 24, 9.2, 1.8),
+  }),
+
+  r('spinazie-kikkererwtencurry', 'Spinazie-kikkererwtencurry', 'indiaas', 'peulvrucht', ['rijst', 'vegetarisch', 'snel', 'budget'], {
+    description: 'Snelle curry met spinazie, kikkererwten en kokosmelk.',
+    prep: 8, cook: 20,
+    steps: [
+      'Fruit ui, knoflook, gember en kurkuma.',
+      'Voeg kikkererwten en kokosmelk toe.',
+      'Roer de spinazie erdoor tot die geslonken is.',
+      'Serveer met basmatirijst.',
+    ],
+    ingredients: [
+      li('kikkererwten', 800, 'g'), li('spinazie', 400, 'g'), li('kokosmelk', 400, 'ml'),
+      li('basmatirijst', 300, 'g'), li('ui', 1, 'piece'), li('knoflook', 3, 'piece'),
+      li('gember', 15, 'g'), li('kurkuma', 4, 'g'), li('komijn', 5, 'g'),
+      li('zonnebloemolie', 2, 'tbsp'),
+    ],
+    nutrition: n(636, 24, 88, 21, 16.4, 1.4),
+  }),
+
+  r('vissticks-prei-ovenschotel', 'Kabeljauw-preischotel uit de oven', 'nederlands', 'vis', ['vis', 'ovenschotel', 'aardappelen'], {
+    description: 'Kabeljauw met prei, aardappelschijfjes en kaas uit de oven.',
+    prep: 20, cook: 35, difficulty: 'gemiddeld',
+    steps: [
+      'Kook de aardappelschijfjes half gaar.',
+      'Stoof de prei zacht in boter.',
+      'Leg alles in een ovenschaal met de kabeljauw.',
+      'Bestrooi met kaas en bak 30 minuten op 190 graden.',
+    ],
+    ingredients: [
+      li('kabeljauw', 500, 'g'), li('prei', 3, 'piece'), li('aardappel', 800, 'g'),
+      li('kookroom', 200, 'ml'), li('geraspte-kaas', 100, 'g'), li('roomboter', 30, 'g'),
+      li('citroen', 1, 'piece'), li('peper', 2, 'g'), li('zout', 3, 'g'),
+    ],
+    nutrition: n(598, 37, 54, 25, 7.0, 1.7),
+  }),
+
+  r('mexicaanse-gehaktschotel', 'Mexicaanse gehaktschotel', 'mexicaans', 'rund', ['ovenschotel', 'rijst', 'comfortfood'], {
+    description: 'Gehakt met bonen, maïs en rijst, afgebakken met kaas.',
+    prep: 15, cook: 30,
+    steps: [
+      'Bak het gehakt met ui, paprika en Mexicaanse kruiden.',
+      'Voeg bonen, maïs en tomatenblokjes toe.',
+      'Meng met gekookte rijst.',
+      'Bestrooi met kaas en bak 20 minuten af.',
+    ],
+    ingredients: [
+      li('gehakt-rund', 400, 'g'), li('kidneybonen', 400, 'g'), li('mais', 200, 'g'),
+      li('tomatenblokjes', 400, 'g'), li('witte-rijst', 250, 'g'), li('paprika-rood', 1, 'piece'),
+      li('ui', 1, 'piece'), li('geraspte-kaas', 100, 'g'), li('komijn', 6, 'g'),
+      li('chilipoeder', 3, 'g'), li('olijfolie', 1, 'tbsp'),
+    ],
+    nutrition: n(688, 38, 82, 22, 12.4, 1.8),
+  }),
+];
