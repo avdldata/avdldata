@@ -5,6 +5,7 @@ import { PageHeader } from '@/components/app-shell/page-header';
 import { EmptyState } from '@/components/app-shell/empty-state';
 import { Button } from '@/components/ui/button';
 import { getWeekView } from '@/features/planner/load';
+import { getChainNames } from '@/services/store-service';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
 import { WeekSummary } from '@/features/planner/week-summary';
 import { WhyPanel } from '@/features/planner/why-panel';
@@ -15,6 +16,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function WeekPage() {
   const view = await getWeekView();
+  const chainNames = await getChainNames();
 
   if (!view.plan) {
     return (
@@ -63,7 +65,7 @@ export default async function WeekPage() {
       />
 
       <div className="space-y-5">
-        <WeekSummary plan={plan} />
+        <WeekSummary plan={plan} chainNames={chainNames} />
 
         <section>
           <h2 className="mb-3 text-sm font-semibold text-ink-soft">Het menu</h2>

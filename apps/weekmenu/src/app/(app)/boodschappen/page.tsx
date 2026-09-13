@@ -5,7 +5,7 @@ import { getWeekView } from '@/features/planner/load';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
 import { buildShoppingList } from '@/features/shopping/build-list';
 import { ShoppingListView } from '@/features/shopping/shopping-list';
-import { SEED_CHAINS } from '@/data/seed/stores';
+import { getChainNames } from '@/services/store-service';
 
 export const metadata: Metadata = { title: 'Boodschappen — Weekmenu' };
 export const dynamic = 'force-dynamic';
@@ -26,10 +26,11 @@ export default async function ShoppingPage() {
     );
   }
 
-  const list = buildShoppingList(view.plan, view.stored?.checkedItemKeys ?? []);
+  const list = buildShoppingList(view.plan, view.stored?.checkedItemKeys ?? [], view.priceStats);
+  const chainNames = await getChainNames();
   const chains = view.plan.recommendedOption.chainIds.map((id) => ({
     id,
-    name: SEED_CHAINS.find((chain) => chain.id === id)?.name ?? id,
+    name: chainNames[id] ?? id,
   }));
 
   return (
@@ -38,7 +39,8 @@ export default async function ShoppingPage() {
         title="Boodschappen"
         subtitle={`${list.lineCount} producten voor zeven avondmaaltijden`}
       />
-      <ShoppingListView list={list} chains={chains} />
+      {/* Keyed on the stored plan so a newly generated week starts with a clean list. */}
+      <ShoppingListView key={view.stored?.id ?? 'geen-plan'} list={list} chains={chains} />
     </>
   );
 }

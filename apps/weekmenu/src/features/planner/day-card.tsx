@@ -21,7 +21,7 @@ export function DayCard({ day }: { day: PlannedDayResult }) {
         />
         <div className="min-w-0 flex-1 px-4 py-3">
           <p className="stat-label">{weekdayName(day.dayIndex)}</p>
-          <h3 className="mt-0.5 truncate font-semibold">{day.recipe.name}</h3>
+          <h3 className="mt-0.5 line-clamp-2 font-semibold">{day.recipe.name}</h3>
           <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-faint">
             <span className="inline-flex items-center gap-1">
               <Clock className="size-3" aria-hidden />

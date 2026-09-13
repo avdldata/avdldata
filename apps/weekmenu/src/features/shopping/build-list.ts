@@ -2,6 +2,8 @@ import type { Cents } from '@/domain/units';
 import type { WeeklyPlan } from '@/domain/optimization/types';
 import type { IngredientCategory } from '@/domain/ingredients/types';
 import type { BaseUnit } from '@/domain/units';
+import type { HistoricalPriceStats } from '@/domain/pricing/price-history';
+import { computeDealScore, NOTABLE_DEAL_SCORE } from '@/domain/pricing/deal-score';
 import { CATEGORY_ORDER } from '@/lib/format';
 
 export interface ShoppingLine {
@@ -10,6 +12,8 @@ export interface ShoppingLine {
   readonly ingredientId: string;
   readonly ingredientName: string;
   readonly productName: string;
+  readonly brandName: string;
+  readonly isPrivateLabel: boolean;
   readonly chainId: string;
   readonly units: number;
   readonly packageAmount: number;
@@ -21,6 +25,10 @@ export interface ShoppingLine {
   readonly promotionLabel?: string;
   readonly savingsCents: Cents;
   readonly checked: boolean;
+  /** 0–100 against this product's own price history; absent without history. */
+  readonly dealScore?: number;
+  readonly isLowestInWindow?: boolean;
+  readonly historyWeeks?: number;
 }
 
 export interface ShoppingGroup {
@@ -52,17 +60,21 @@ const PANTRY_CATEGORY: IngredientCategory = 'kruiden-specerijen';
 export function buildShoppingList(
   plan: WeeklyPlan,
   checkedKeys: readonly string[],
+  priceStats: ReadonlyMap<string, HistoricalPriceStats> = new Map(),
 ): ShoppingList {
   const checked = new Set(checkedKeys);
   const lines: ShoppingLine[] = [];
 
   for (const assignment of plan.recommendedOption.assignments) {
     for (const line of assignment.packaging.lines) {
+      const deal = computeDealScore(line.offer, priceStats.get(line.offer.productId));
       lines.push({
         key: `${assignment.ingredientId}:${line.offer.productId}`,
         ingredientId: assignment.ingredientId,
         ingredientName: assignment.name,
         productName: line.offer.name,
+        brandName: line.offer.brandName,
+        isPrivateLabel: line.offer.isPrivateLabel,
         chainId: assignment.chainId,
         units: line.units,
         packageAmount: line.offer.packageAmount.amount,
@@ -76,6 +88,13 @@ export function buildShoppingList(
           : {}),
         savingsCents: line.savingsCents,
         checked: checked.has(`${assignment.ingredientId}:${line.offer.productId}`),
+        ...(deal && deal.score >= NOTABLE_DEAL_SCORE
+          ? {
+              dealScore: deal.score,
+              isLowestInWindow: deal.isLowestInWindow,
+              historyWeeks: Math.round(deal.observationCount),
+            }
+          : {}),
       });
     }
   }

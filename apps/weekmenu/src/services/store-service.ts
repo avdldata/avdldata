@@ -37,6 +37,12 @@ export interface NearbyStoresInput {
 /** Chains the product wants selected by default when one is within range. */
 export const PRIORITY_CHAIN_IDS = ['lidl', 'jumbo', 'ah'] as const;
 
+/** Display names per chain id, so the UI never has to show a raw identifier. */
+export async function getChainNames(): Promise<Record<string, string>> {
+  const chains = await catalogProvider.getChains();
+  return Object.fromEntries(chains.map((chain) => [chain.id, chain.name]));
+}
+
 export async function findNearbyStores(input: NearbyStoresInput): Promise<NearbyStoreView[]> {
   const [chains, nearby] = await Promise.all([
     catalogProvider.getChains(),

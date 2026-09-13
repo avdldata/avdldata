@@ -212,6 +212,12 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
               <Stat label="Vezels" value={`${day.nutrition.fiberGrams} g`} />
               <Stat label="Zout" value={`${day.nutrition.saltGrams} g`} />
             </dl>
+            <p className="mt-4 border-t border-line pt-3 text-xs text-ink-faint">
+              {day.recipe.nutritionSource === 'derived'
+                ? 'Berekend uit de voedingswaarden van de losse ingrediënten.'
+                : 'Overgenomen uit het recept; voor dit gerecht ontbreken nog voedingswaarden van een of meer ingrediënten.'}{' '}
+              Richtwaarden, geen exacte laboratoriumbepaling.
+            </p>
           </CardContent>
         </Card>
 

@@ -9,17 +9,17 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getWeekView } from '@/features/planner/load';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
 import { WhyPanel } from '@/features/planner/why-panel';
-import { SEED_CHAINS } from '@/data/seed/stores';
+import { getChainNames } from '@/services/store-service';
 import { formatDistance, formatEuro, formatMinutes } from '@/lib/format';
 import { cn } from '@/lib/cn';
 
 export const metadata: Metadata = { title: 'Supermarkten vergelijken — Weekmenu' };
 export const dynamic = 'force-dynamic';
 
-const chainName = (id: string) => SEED_CHAINS.find((chain) => chain.id === id)?.name ?? id;
-
 export default async function StoresPage() {
   const view = await getWeekView();
+  const chainNames = await getChainNames();
+  const chainName = (id: string): string => chainNames[id] ?? id;
 
   if (!view.plan) {
     return (

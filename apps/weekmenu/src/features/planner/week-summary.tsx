@@ -12,9 +12,15 @@ import { formatDistance, formatEuro, formatQuantity, formatWeekRange } from '@/l
  * Groceries and travel are shown as two separate figures on purpose: petrol is
  * not part of a supermarket bill and the app never pretends otherwise.
  */
-export function WeekSummary({ plan }: { plan: WeeklyPlan }) {
+export function WeekSummary({
+  plan,
+  chainNames,
+}: {
+  plan: WeeklyPlan;
+  chainNames: Record<string, string>;
+}) {
   const { totals } = plan;
-  const stores = plan.recommendedOption.chainIds.length;
+  const chains = plan.recommendedOption.chainIds.map((id) => chainNames[id] ?? id);
 
   return (
     <Card>
@@ -43,11 +49,7 @@ export function WeekSummary({ plan }: { plan: WeeklyPlan }) {
             value={formatEuro(totals.perMealCents)}
             hint={`${formatEuro(totals.perPersonPerMealCents)} p.p.`}
           />
-          <Stat
-            label="Winkels"
-            value={String(stores)}
-            hint={plan.recommendedOption.chainIds.join(' + ')}
-          />
+          <Stat label="Winkels" value={String(chains.length)} hint={chains.join(' + ')} />
           <Stat
             label="Verspilling"
             value={formatQuantity(plan.waste.perishableLeftover.g, 'g')}

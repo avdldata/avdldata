@@ -1,7 +1,7 @@
 'use client';
 
-import { useOptimistic, useState, useTransition } from 'react';
-import { RotateCcw } from 'lucide-react';
+import { useState, useTransition } from 'react';
+import { RotateCcw, TrendingDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,6 +15,14 @@ export interface ChainTab {
   readonly name: string;
 }
 
+/**
+ * Ticking things off.
+ *
+ * The state is held locally and written through to the server in the
+ * background: a checklist has to respond the instant you tap it, and there is
+ * nothing to re-render on the server in between. The parent remounts this
+ * component when the plan changes, so a freshly generated week starts unticked.
+ */
 export function ShoppingListView({
   list,
   chains,
@@ -24,26 +32,27 @@ export function ShoppingListView({
 }) {
   const [tab, setTab] = useState<string>('alles');
   const [, startTransition] = useTransition();
-  const [checkedKeys, setCheckedKeys] = useOptimistic(
-    new Set(
-      list.groups.flatMap((group) => group.lines.filter((l) => l.checked).map((l) => l.key)),
-    ),
-    (current: Set<string>, update: { key: string; checked: boolean }) => {
-      const next = new Set(current);
-      if (update.checked) next.add(update.key);
-      else next.delete(update.key);
-      return next;
-    },
+  const [checkedKeys, setCheckedKeys] = useState<ReadonlySet<string>>(
+    () =>
+      new Set(
+        list.groups.flatMap((group) => group.lines.filter((l) => l.checked).map((l) => l.key)),
+      ),
   );
 
   const toggle = (key: string, checked: boolean) => {
+    setCheckedKeys((current) => {
+      const next = new Set(current);
+      if (checked) next.add(key);
+      else next.delete(key);
+      return next;
+    });
     startTransition(async () => {
-      setCheckedKeys({ key, checked });
       await toggleShoppingItemAction(key, checked);
     });
   };
 
   const reset = () => {
+    setCheckedKeys(new Set());
     startTransition(async () => {
       await clearShoppingListAction();
     });
@@ -52,7 +61,7 @@ export function ShoppingListView({
   const groups: readonly ShoppingGroup[] =
     tab === 'alles' ? list.groups : (list.byChain.get(tab) ?? []);
   const visibleTotal = groups.reduce((sum, group) => sum + group.subtotalCents, 0);
-  const done = [...checkedKeys].length;
+  const done = checkedKeys.size;
 
   return (
     <div className="space-y-4">
@@ -126,22 +135,38 @@ export function ShoppingListView({
                       aria-label={`${line.ingredientName} afvinken`}
                     />
                     <span className={cn('min-w-0 flex-1', isChecked && 'opacity-50')}>
-                      <span className="flex flex-wrap items-baseline gap-x-2">
+                      <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                         <span className={cn('font-medium', isChecked && 'line-through')}>
                           {line.units}× {line.ingredientName}
                         </span>
                         {line.promotionLabel ? (
                           <Badge variant="promo">{line.promotionLabel}</Badge>
                         ) : null}
+                        {line.isLowestInWindow ? (
+                          <Badge variant="brand">
+                            <TrendingDown className="size-3" aria-hidden />
+                            laagste prijs in {line.historyWeeks} weken
+                          </Badge>
+                        ) : line.dealScore !== undefined ? (
+                          <Badge variant="brand">onder de normale prijs</Badge>
+                        ) : null}
                       </span>
                       <span className="mt-0.5 block text-xs text-ink-faint">
-                        {line.productName} · {formatQuantity(line.packageAmount, line.unit)} per
-                        verpakking · samen {formatQuantity(line.totalAmount, line.unit)}
+                        {line.productName}
+                        {line.isPrivateLabel ? ' (huismerk)' : ''} ·{' '}
+                        {formatQuantity(line.packageAmount, line.unit)} per verpakking · samen{' '}
+                        {formatQuantity(line.totalAmount, line.unit)}
                       </span>
                       {line.leftoverAmount > 0 ? (
                         <span className="mt-0.5 block text-xs text-ink-faint">
                           Je hebt {formatQuantity(line.requiredAmount, line.unit)} nodig, dus{' '}
-                          {formatQuantity(line.leftoverAmount, line.unit)} houd je over.
+                          {/* Derive the leftover from the two numbers we actually
+                              show, so "15 g nodig van 30 g" never reads "16 g over". */}
+                          {formatQuantity(
+                            Math.max(0, line.totalAmount - Math.round(line.requiredAmount)),
+                            line.unit,
+                          )}{' '}
+                          houd je over.
                         </span>
                       ) : null}
                     </span>
