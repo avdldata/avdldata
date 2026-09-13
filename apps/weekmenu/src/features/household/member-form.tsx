@@ -69,7 +69,12 @@ export function MemberForm({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label htmlFor="ageYears">Leeftijd</Label>
-          <Input id="ageYears" inputMode="numeric" {...form.register('ageYears')} placeholder="38" />
+          <Input
+            id="ageYears"
+            inputMode="numeric"
+            {...form.register('ageYears')}
+            placeholder="38"
+          />
           <FieldError>{form.formState.errors.ageYears?.message}</FieldError>
         </div>
         <div>
@@ -87,12 +92,22 @@ export function MemberForm({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label htmlFor="heightCm">Lengte (cm)</Label>
-          <Input id="heightCm" inputMode="numeric" {...form.register('heightCm')} placeholder="175" />
+          <Input
+            id="heightCm"
+            inputMode="numeric"
+            {...form.register('heightCm')}
+            placeholder="175"
+          />
           <FieldError>{form.formState.errors.heightCm?.message}</FieldError>
         </div>
         <div>
           <Label htmlFor="weightKg">Gewicht (kg)</Label>
-          <Input id="weightKg" inputMode="numeric" {...form.register('weightKg')} placeholder="87" />
+          <Input
+            id="weightKg"
+            inputMode="numeric"
+            {...form.register('weightKg')}
+            placeholder="87"
+          />
           <FieldError>{form.formState.errors.weightKg?.message}</FieldError>
         </div>
       </div>
@@ -135,7 +150,7 @@ export function MemberForm({
         </div>
       </div>
 
-      <fieldset className="rounded-xl border border-line bg-surface-muted/60 p-4">
+      <fieldset className="border-line bg-surface-muted/60 rounded-xl border p-4">
         <label className="flex items-start gap-3">
           <input
             type="checkbox"
@@ -144,7 +159,7 @@ export function MemberForm({
           />
           <span>
             <span className="text-sm font-medium">Zwanger</span>
-            <span className="mt-0.5 block text-xs text-ink-faint">
+            <span className="text-ink-faint mt-0.5 block text-xs">
               We sluiten dan gerechten uit waarvan vaak wordt afgeraden ze tijdens de zwangerschap
               te eten. De app is geen medisch hulpmiddel.
             </span>
@@ -183,8 +198,8 @@ export function MemberForm({
                 aria-pressed={active}
                 className={
                   active
-                    ? 'rounded-[var(--radius-pill)] bg-brand px-3 py-1.5 text-sm font-medium text-brand-ink'
-                    : 'rounded-[var(--radius-pill)] border border-line-strong px-3 py-1.5 text-sm text-ink-soft hover:bg-surface-muted'
+                    ? 'bg-brand text-brand-ink rounded-[var(--radius-pill)] px-3 py-1.5 text-sm font-medium'
+                    : 'border-line-strong text-ink-soft hover:bg-surface-muted rounded-[var(--radius-pill)] border px-3 py-1.5 text-sm'
                 }
               >
                 {ALLERGEN_LABELS[allergen] ?? allergen}
@@ -196,7 +211,7 @@ export function MemberForm({
       </fieldset>
 
       {serverError ? (
-        <p role="alert" className="rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger">
+        <p role="alert" className="bg-danger-soft text-danger rounded-xl px-3 py-2 text-sm">
           {serverError}
         </p>
       ) : null}

@@ -69,10 +69,12 @@ export default async function StoresPage() {
               </div>
             </div>
 
-            <dl className="mt-4 grid grid-cols-2 gap-4 border-t border-line pt-4 sm:grid-cols-4">
+            <dl className="border-line mt-4 grid grid-cols-2 gap-4 border-t pt-4 sm:grid-cols-4">
               <div>
                 <dt className="stat-label">Winkels</dt>
-                <dd className="mt-0.5 font-semibold">{plan.recommendedOption.locationIds.length}</dd>
+                <dd className="mt-0.5 font-semibold">
+                  {plan.recommendedOption.locationIds.length}
+                </dd>
               </div>
               <div>
                 <dt className="stat-label">Rijafstand</dt>
@@ -95,9 +97,9 @@ export default async function StoresPage() {
             </dl>
 
             {bestSingle && bestSingle !== plan.recommendedOption ? (
-              <p className="mt-4 text-sm text-ink-soft">
+              <p className="text-ink-soft mt-4 text-sm">
                 Ten opzichte van alles bij {chainName(bestSingle.chainIds[0] ?? '')} scheelt dit{' '}
-                <span className="font-semibold text-brand">
+                <span className="text-brand font-semibold">
                   {formatEuro(bestSingle.groceryCents - plan.recommendedOption.groceryCents)}
                 </span>{' '}
                 aan boodschappen.
@@ -107,7 +109,7 @@ export default async function StoresPage() {
         </Card>
 
         <section>
-          <h2 className="mb-3 text-sm font-semibold text-ink-soft">Alle combinaties</h2>
+          <h2 className="text-ink-soft mb-3 text-sm font-semibold">Alle combinaties</h2>
           <ul className="space-y-2">
             {options.map((option) => {
               const isRecommended = option === plan.recommendedOption;
@@ -115,10 +117,7 @@ export default async function StoresPage() {
               return (
                 <li key={option.locationIds.join('|')}>
                   <Card
-                    className={cn(
-                      'px-4 py-3',
-                      isRecommended && 'border-brand bg-brand-soft/40',
-                    )}
+                    className={cn('px-4 py-3', isRecommended && 'border-brand bg-brand-soft/40')}
                   >
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <span className="font-medium">
@@ -133,15 +132,13 @@ export default async function StoresPage() {
                         {formatEuro(option.groceryCents)}
                       </span>
                     </div>
-                    <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-faint">
+                    <p className="text-ink-faint mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                       <span className="inline-flex items-center gap-1">
                         <Route className="size-3" aria-hidden />
                         {formatDistance(option.trip.estimatedDistanceKm)} ·{' '}
                         {formatEuro(option.trip.estimatedTravelCostCents)} reiskosten
                       </span>
-                      <span>
-                        Praktisch totaal {formatEuro(option.practicalTotalCents)}
-                      </span>
+                      <span>Praktisch totaal {formatEuro(option.practicalTotalCents)}</span>
                       {difference !== 0 ? (
                         <span className={difference < 0 ? 'text-brand' : 'text-ink-faint'}>
                           {difference < 0 ? '−' : '+'}
@@ -159,9 +156,9 @@ export default async function StoresPage() {
               );
             })}
           </ul>
-          <p className="mt-3 text-xs text-ink-faint">
-            &quot;Praktisch totaal&quot; telt boodschappen, geschatte reiskosten en de moeite van een
-            extra winkel bij elkaar op. Dat laatste stel je in bij Weekinstellingen.
+          <p className="text-ink-faint mt-3 text-xs">
+            &quot;Praktisch totaal&quot; telt boodschappen, geschatte reiskosten en de moeite van
+            een extra winkel bij elkaar op. Dat laatste stel je in bij Weekinstellingen.
           </p>
         </section>
 

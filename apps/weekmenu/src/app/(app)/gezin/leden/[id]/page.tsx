@@ -42,13 +42,13 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
               <Stat label="Eiwit" value={`${nutrition.proteinGuidelineGrams} g`} hint="per dag" />
             </dl>
             {nutrition.assumptions.length > 0 ? (
-              <ul className="mt-4 space-y-1 border-t border-line pt-3 text-xs text-ink-faint">
+              <ul className="border-line text-ink-faint mt-4 space-y-1 border-t pt-3 text-xs">
                 {nutrition.assumptions.map((assumption) => (
                   <li key={assumption}>{assumption}</li>
                 ))}
               </ul>
             ) : null}
-            <p className="mt-3 text-xs text-ink-faint">
+            <p className="text-ink-faint mt-3 text-xs">
               Dit zijn richtwaarden op basis van de Mifflin-St Jeor-formule. Geen medisch advies.
             </p>
           </CardContent>

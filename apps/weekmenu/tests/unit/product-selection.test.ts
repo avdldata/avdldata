@@ -13,9 +13,27 @@ import { makeOffer, makePromotion, onePlusOne } from '../support/builders';
  */
 describe('choosing between products for one ingredient', () => {
   const offers = [
-    makeOffer({ ingredientId: 'kipfilet', productId: 'ah-600', packAmount: 600, priceCents: 649, brandName: 'AH' }),
-    makeOffer({ ingredientId: 'kipfilet', productId: 'jumbo-300', packAmount: 300, priceCents: 310, brandName: 'Jumbo' }),
-    makeOffer({ ingredientId: 'kipfilet', productId: 'lidl-750', packAmount: 750, priceCents: 549, brandName: 'Lidl' }),
+    makeOffer({
+      ingredientId: 'kipfilet',
+      productId: 'ah-600',
+      packAmount: 600,
+      priceCents: 649,
+      brandName: 'AH',
+    }),
+    makeOffer({
+      ingredientId: 'kipfilet',
+      productId: 'jumbo-300',
+      packAmount: 300,
+      priceCents: 310,
+      brandName: 'Jumbo',
+    }),
+    makeOffer({
+      ingredientId: 'kipfilet',
+      productId: 'lidl-750',
+      packAmount: 750,
+      priceCents: 549,
+      brandName: 'Lidl',
+    }),
   ];
 
   it('finds every product that can satisfy the ingredient', () => {
@@ -31,7 +49,9 @@ describe('choosing between products for one ingredient', () => {
     ];
     const result = optimisePackaging('kipfilet', 570, withOther);
     if (result.status !== 'OK') throw new Error(result.reason);
-    expect(result.solution.lines.every((line) => line.offer.ingredientId === 'kipfilet')).toBe(true);
+    expect(result.solution.lines.every((line) => line.offer.ingredientId === 'kipfilet')).toBe(
+      true,
+    );
   });
 
   it('picks the combination with the best objective, not the smallest leftover', () => {

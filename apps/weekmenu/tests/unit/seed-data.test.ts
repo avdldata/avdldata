@@ -28,7 +28,9 @@ describe('seed data integrity', () => {
     expect(recipes.length).toBeGreaterThanOrEqual(40);
     expect(SEED_CHAINS.length).toBeGreaterThanOrEqual(4);
     expect(SEED_LOCATIONS.length).toBeGreaterThanOrEqual(4);
-    expect(promotions.filter((p) => isPromotionActive(p, TEST_DATE)).length).toBeGreaterThanOrEqual(25);
+    expect(promotions.filter((p) => isPromotionActive(p, TEST_DATE)).length).toBeGreaterThanOrEqual(
+      25,
+    );
   });
 
   it('has no duplicate ids anywhere', () => {
@@ -65,7 +67,8 @@ describe('seed data integrity', () => {
 
   it('keeps a full price history per product instead of one current price', () => {
     const perProduct = new Map<string, number>();
-    for (const o of observations) perProduct.set(o.productId, (perProduct.get(o.productId) ?? 0) + 1);
+    for (const o of observations)
+      perProduct.set(o.productId, (perProduct.get(o.productId) ?? 0) + 1);
     expect(Math.min(...perProduct.values())).toBe(SEED_HISTORY_WEEKS);
     expect(new Set(observations.map((o) => o.id)).size).toBe(observations.length);
   });
@@ -118,8 +121,9 @@ describe('seed data integrity', () => {
   });
 
   it('has at least one chain that does not stock everything', () => {
-    expect(SEED_CATALOGUE.filter((c) => c.notAtChains && c.notAtChains.length > 0).length)
-      .toBeGreaterThan(3);
+    expect(
+      SEED_CATALOGUE.filter((c) => c.notAtChains && c.notAtChains.length > 0).length,
+    ).toBeGreaterThan(3);
   });
 });
 

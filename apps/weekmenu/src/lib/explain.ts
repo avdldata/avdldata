@@ -108,7 +108,11 @@ const POSITIVE: ReadonlySet<ReasonCode> = new Set([
 
 export function reasonTone(code: ReasonCode): 'positive' | 'neutral' | 'warning' {
   if (POSITIVE.has(code)) return 'positive';
-  if (code === 'BUDGET_EXCEEDED' || code === 'ITEM_UNAVAILABLE' || code === 'NUTRITION_OFF_TARGET') {
+  if (
+    code === 'BUDGET_EXCEEDED' ||
+    code === 'ITEM_UNAVAILABLE' ||
+    code === 'NUTRITION_OFF_TARGET'
+  ) {
     return 'warning';
   }
   return 'neutral';

@@ -50,8 +50,7 @@ export function optimisePackaging(
     .filter((o) => o.packageAmount.unit === unit && o.packageAmount.amount > 0)
     .sort(
       (a, b) =>
-        a.pricePerBaseUnitCents - b.pricePerBaseUnitCents ||
-        a.productId.localeCompare(b.productId),
+        a.pricePerBaseUnitCents - b.pricePerBaseUnitCents || a.productId.localeCompare(b.productId),
     )
     .slice(0, config.maxVariants);
 

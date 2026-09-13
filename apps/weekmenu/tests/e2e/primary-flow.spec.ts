@@ -36,7 +36,15 @@ test.describe('demo household', () => {
 
     // Seven different dinners, one per weekday.
     await expect(page.getByRole('heading', { level: 3 })).toHaveCount(7);
-    for (const weekday of ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag']) {
+    for (const weekday of [
+      'Maandag',
+      'Dinsdag',
+      'Woensdag',
+      'Donderdag',
+      'Vrijdag',
+      'Zaterdag',
+      'Zondag',
+    ]) {
       await expect(page.getByText(weekday, { exact: true })).toBeVisible();
     }
 
@@ -44,7 +52,12 @@ test.describe('demo household', () => {
     await expect(page.getByText(/Arjan · \d,\d\d portie/).first()).toBeVisible();
     await expect(page.getByText(/Chimene · \d,\d\d portie/).first()).toBeVisible();
 
-    const totalBefore = euroToCents(await page.getByText(/€\s?\d+,\d\d/).first().innerText());
+    const totalBefore = euroToCents(
+      await page
+        .getByText(/€\s?\d+,\d\d/)
+        .first()
+        .innerText(),
+    );
     expect(totalBefore).toBeGreaterThan(1000);
 
     // The plan explains itself, and honours the pregnancy in the household.
@@ -88,7 +101,9 @@ test.describe('demo household', () => {
     await expect(page.getByRole('heading', { name: 'Waarom deze verdeling?' })).toBeVisible();
   });
 
-  test('shows a dish in detail, including reuse and where the nutrition came from', async ({ page }) => {
+  test('shows a dish in detail, including reuse and where the nutrition came from', async ({
+    page,
+  }) => {
     await openDemo(page);
     await ensureWeek(page);
 
@@ -96,7 +111,9 @@ test.describe('demo household', () => {
     await expect(page.getByText('Porties per persoon')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Ingrediënten' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Zo maak je het' })).toBeVisible();
-    await expect(page.getByText(/Berekend uit de voedingswaarden van de losse ingrediënten/)).toBeVisible();
+    await expect(
+      page.getByText(/Berekend uit de voedingswaarden van de losse ingrediënten/),
+    ).toBeVisible();
   });
 
   test('replaces one dish and recalculates the entire week', async ({ page }) => {
@@ -120,7 +137,12 @@ test.describe('demo household', () => {
 
     await page.goto('/week');
     await expect(page.getByRole('heading', { level: 3 })).toHaveCount(7);
-    const totalAfter = euroToCents(await page.getByText(/€\s?\d+,\d\d/).first().innerText());
+    const totalAfter = euroToCents(
+      await page
+        .getByText(/€\s?\d+,\d\d/)
+        .first()
+        .innerText(),
+    );
     expect(totalAfter).toBeGreaterThan(1000);
   });
 

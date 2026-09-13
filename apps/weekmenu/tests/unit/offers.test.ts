@@ -228,7 +228,12 @@ describe('reference price from history', () => {
     const date = new Date('2026-03-02T00:00:00Z');
     date.setUTCDate(date.getUTCDate() - weeksAgo * 7);
     const iso = date.toISOString().slice(0, 10);
-    return observation({ id: `obs-${iso}`, priceCents: cents(priceCents), validFrom: iso, observedAt: iso });
+    return observation({
+      id: `obs-${iso}`,
+      priceCents: cents(priceCents),
+      validFrom: iso,
+      observedAt: iso,
+    });
   };
 
   it('uses the median of recent observations as the normal price', () => {
@@ -271,7 +276,12 @@ describe('reference price from history', () => {
 
 describe('nutrition fallback', () => {
   const productNutrition: ProductNutrition[] = [
-    { productId: 'p1', per100: PRODUCT_NUTRITION, source: 'product-label', updatedAt: '2026-01-01T00:00:00.000Z' },
+    {
+      productId: 'p1',
+      per100: PRODUCT_NUTRITION,
+      source: 'product-label',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    },
   ];
 
   it('uses the product’s own declaration when it has one', () => {

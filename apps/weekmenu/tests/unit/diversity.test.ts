@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  DEFAULT_DIVERSITY_CONFIG,
-  type DiversityConfig,
-} from '@/domain/optimization/config';
+import { DEFAULT_DIVERSITY_CONFIG, type DiversityConfig } from '@/domain/optimization/config';
 import {
   isNearDuplicate,
   varietyScore,
@@ -26,7 +23,11 @@ const distinct = () => {
 
 const pasta = (id: string) => {
   const d = distinct();
-  return makeRecipe(id, { tags: ['pasta', d.tag], cuisine: 'italiaans', primaryProtein: d.protein });
+  return makeRecipe(id, {
+    tags: ['pasta', d.tag],
+    cuisine: 'italiaans',
+    primaryProtein: d.protein,
+  });
 };
 const kip = (id: string) => {
   const d = distinct();
@@ -75,8 +76,16 @@ describe('variety rules', () => {
   });
 
   it('spots near-duplicates that differ only in name', () => {
-    const a = makeRecipe('a', { cuisine: 'italiaans', primaryProtein: 'kip', tags: ['pasta', 'snel'] });
-    const b = makeRecipe('b', { cuisine: 'italiaans', primaryProtein: 'kip', tags: ['pasta', 'snel'] });
+    const a = makeRecipe('a', {
+      cuisine: 'italiaans',
+      primaryProtein: 'kip',
+      tags: ['pasta', 'snel'],
+    });
+    const b = makeRecipe('b', {
+      cuisine: 'italiaans',
+      primaryProtein: 'kip',
+      tags: ['pasta', 'snel'],
+    });
     expect(isNearDuplicate(a, b, config.nearDuplicateTagOverlap)).toBe(true);
     expect(violationsIfAdded([a], b, config).map((v) => v.rule)).toContain('NEAR_DUPLICATE');
   });

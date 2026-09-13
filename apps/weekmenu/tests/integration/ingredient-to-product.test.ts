@@ -3,7 +3,10 @@ import { buildIngredientIndex } from '@/domain/ingredients/types';
 import { normaliseRecipes } from '@/domain/recipes/normalise';
 import { computeRecipeNutrition, nutritionDeviation } from '@/domain/recipes/nutrition';
 import { aggregateWeekIngredients, type PlannedDay } from '@/domain/aggregation/aggregate';
-import { buildPackagingMatrix, evaluateStoreCombination } from '@/domain/optimization/store-selection';
+import {
+  buildPackagingMatrix,
+  evaluateStoreCombination,
+} from '@/domain/optimization/store-selection';
 import { DEFAULT_PACKAGING_CONFIG } from '@/domain/packaging/types';
 import { optimiseWeek } from '@/domain/optimization/week-optimizer';
 import { SEED_INGREDIENTS } from '@/data/seed/ingredients';
@@ -94,7 +97,11 @@ describe('weekly aggregation happens before any product is chosen', () => {
       const perDay = aggregateWeekIngredients([day], index);
       const dayMatrix = buildPackagingMatrix(perDay, stores, DEFAULT_PACKAGING_CONFIG);
       const evaluated = evaluateStoreCombination(perDay, stores, dayMatrix);
-      return sum + (evaluated.assignments.find((a) => a.ingredientId === 'kipfilet')?.packaging.totalCents ?? 0);
+      return (
+        sum +
+        (evaluated.assignments.find((a) => a.ingredientId === 'kipfilet')?.packaging.totalCents ??
+          0)
+      );
     }, 0);
 
     expect(combinedChicken.packaging.requiredAmount).toBeCloseTo(chicken.totalAmount, 6);

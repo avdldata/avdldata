@@ -15,7 +15,7 @@ export function Stat({
     <div className={cn('min-w-0', className)}>
       <p className="stat-label">{label}</p>
       <p className="stat-value">{value}</p>
-      {hint ? <p className="mt-0.5 truncate text-xs text-ink-faint">{hint}</p> : null}
+      {hint ? <p className="text-ink-faint mt-0.5 truncate text-xs">{hint}</p> : null}
     </div>
   );
 }

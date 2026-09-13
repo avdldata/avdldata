@@ -12,8 +12,7 @@ export function haversineKm(a: GeoPoint, b: GeoPoint): number {
   const lat1 = toRadians(a.latitude);
   const lat2 = toRadians(b.latitude);
 
-  const h =
-    Math.sin(dLat / 2) ** 2 + Math.sin(dLon / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+  const h = Math.sin(dLat / 2) ** 2 + Math.sin(dLon / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
   return 2 * EARTH_RADIUS_KM * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 

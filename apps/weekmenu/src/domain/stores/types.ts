@@ -124,12 +124,7 @@ export interface PriceObservation {
 export const PRICE_SOURCES = ['demo-seed', 'chain-api', 'folder', 'handmatig'] as const;
 export type PriceSource = (typeof PRICE_SOURCES)[number];
 
-export const PROMOTION_TYPES = [
-  'FIXED_PRICE',
-  'PERCENT_OFF',
-  'ONE_PLUS_ONE',
-  'N_FOR_X',
-] as const;
+export const PROMOTION_TYPES = ['FIXED_PRICE', 'PERCENT_OFF', 'ONE_PLUS_ONE', 'N_FOR_X'] as const;
 export type PromotionType = (typeof PROMOTION_TYPES)[number];
 
 export type PromotionParams =

@@ -47,7 +47,8 @@ export function buildLeftoverLedger(
   config: LeftoverConfig = DEFAULT_LEFTOVER_CONFIG,
 ): IngredientLeftoverLedger[] {
   return requirements.map((requirement) => {
-    const purchased = purchasedByIngredient.get(requirement.ingredientId) ?? requirement.totalAmount;
+    const purchased =
+      purchasedByIngredient.get(requirement.ingredientId) ?? requirement.totalAmount;
     let remaining = purchased;
     const days: DayLeftoverEntry[] = [];
 
@@ -102,7 +103,11 @@ function emptyAmounts(): { g: number; ml: number; piece: number } {
   return { g: 0, ml: 0, piece: 0 };
 }
 
-function addTo(target: { g: number; ml: number; piece: number }, unit: string, amount: number): void {
+function addTo(
+  target: { g: number; ml: number; piece: number },
+  unit: string,
+  amount: number,
+): void {
   if (unit === 'g') target.g += amount;
   else if (unit === 'ml') target.ml += amount;
   else target.piece += amount;

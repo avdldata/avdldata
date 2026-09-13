@@ -40,7 +40,11 @@ function candidate(
   };
 }
 
-function requirement(id: string, amount: number, category: WeekIngredientRequirement['category'] = 'overig'): WeekIngredientRequirement {
+function requirement(
+  id: string,
+  amount: number,
+  category: WeekIngredientRequirement['category'] = 'overig',
+): WeekIngredientRequirement {
   return {
     ingredientId: id,
     name: id,
@@ -63,19 +67,63 @@ describe('store combinations', () => {
    * Two complementary stores: Lidl is far cheaper on greens, Jumbo far cheaper
    * on meat. Either store alone costs €13,00; splitting costs €6,00.
    */
-  const lidl = candidate('lidl', 53.2094, 6.549, [
-    makeOffer({ ingredientId: 'groente', packAmount: 1000, priceCents: 100, chainId: 'lidl', locationId: 'lidl-1', productId: 'lidl-groente' }),
-    makeOffer({ ingredientId: 'vlees', packAmount: 1000, priceCents: 1200, chainId: 'lidl', locationId: 'lidl-1', productId: 'lidl-vlees' }),
-  ], 2.1);
-  const jumbo = candidate('jumbo', 53.2344, 6.5966, [
-    makeOffer({ ingredientId: 'groente', packAmount: 1000, priceCents: 800, chainId: 'jumbo', locationId: 'jumbo-1', productId: 'jumbo-groente' }),
-    makeOffer({ ingredientId: 'vlees', packAmount: 1000, priceCents: 500, chainId: 'jumbo', locationId: 'jumbo-1', productId: 'jumbo-vlees' }),
-  ], 3.4);
+  const lidl = candidate(
+    'lidl',
+    53.2094,
+    6.549,
+    [
+      makeOffer({
+        ingredientId: 'groente',
+        packAmount: 1000,
+        priceCents: 100,
+        chainId: 'lidl',
+        locationId: 'lidl-1',
+        productId: 'lidl-groente',
+      }),
+      makeOffer({
+        ingredientId: 'vlees',
+        packAmount: 1000,
+        priceCents: 1200,
+        chainId: 'lidl',
+        locationId: 'lidl-1',
+        productId: 'lidl-vlees',
+      }),
+    ],
+    2.1,
+  );
+  const jumbo = candidate(
+    'jumbo',
+    53.2344,
+    6.5966,
+    [
+      makeOffer({
+        ingredientId: 'groente',
+        packAmount: 1000,
+        priceCents: 800,
+        chainId: 'jumbo',
+        locationId: 'jumbo-1',
+        productId: 'jumbo-groente',
+      }),
+      makeOffer({
+        ingredientId: 'vlees',
+        packAmount: 1000,
+        priceCents: 500,
+        chainId: 'jumbo',
+        locationId: 'jumbo-1',
+        productId: 'jumbo-vlees',
+      }),
+    ],
+    3.4,
+  );
 
   const stores = [lidl, jumbo];
   const matrix = buildPackagingMatrix(requirements, stores, DEFAULT_PACKAGING_CONFIG);
 
-  const options = (input: { stores: readonly StoreCandidate[]; maxStores: number; penalty: number }) => {
+  const options = (input: {
+    stores: readonly StoreCandidate[];
+    maxStores: number;
+    penalty: number;
+  }) => {
     const localMatrix = buildPackagingMatrix(requirements, input.stores, DEFAULT_PACKAGING_CONFIG);
     return enumerateStoreOptions({
       requirements,
@@ -119,14 +167,54 @@ describe('store combinations', () => {
   it('recommends one store when the saving is trivial', () => {
     // Now the second store only saves €0,10 on the whole list.
     const nearlyIdentical = [
-      candidate('lidl', 53.2094, 6.549, [
-        makeOffer({ ingredientId: 'groente', packAmount: 1000, priceCents: 100, chainId: 'lidl', locationId: 'lidl-1', productId: 'l-g' }),
-        makeOffer({ ingredientId: 'vlees', packAmount: 1000, priceCents: 500, chainId: 'lidl', locationId: 'lidl-1', productId: 'l-v' }),
-      ], 2.1),
-      candidate('jumbo', 53.2344, 6.5966, [
-        makeOffer({ ingredientId: 'groente', packAmount: 1000, priceCents: 150, chainId: 'jumbo', locationId: 'jumbo-1', productId: 'j-g' }),
-        makeOffer({ ingredientId: 'vlees', packAmount: 1000, priceCents: 490, chainId: 'jumbo', locationId: 'jumbo-1', productId: 'j-v' }),
-      ], 3.4),
+      candidate(
+        'lidl',
+        53.2094,
+        6.549,
+        [
+          makeOffer({
+            ingredientId: 'groente',
+            packAmount: 1000,
+            priceCents: 100,
+            chainId: 'lidl',
+            locationId: 'lidl-1',
+            productId: 'l-g',
+          }),
+          makeOffer({
+            ingredientId: 'vlees',
+            packAmount: 1000,
+            priceCents: 500,
+            chainId: 'lidl',
+            locationId: 'lidl-1',
+            productId: 'l-v',
+          }),
+        ],
+        2.1,
+      ),
+      candidate(
+        'jumbo',
+        53.2344,
+        6.5966,
+        [
+          makeOffer({
+            ingredientId: 'groente',
+            packAmount: 1000,
+            priceCents: 150,
+            chainId: 'jumbo',
+            locationId: 'jumbo-1',
+            productId: 'j-g',
+          }),
+          makeOffer({
+            ingredientId: 'vlees',
+            packAmount: 1000,
+            priceCents: 490,
+            chainId: 'jumbo',
+            locationId: 'jumbo-1',
+            productId: 'j-v',
+          }),
+        ],
+        3.4,
+      ),
     ];
     const result = options({ stores: nearlyIdentical, maxStores: 2, penalty: 2.5 });
     expect(result[0]!.locationIds).toEqual(['lidl-1']);
@@ -152,9 +240,22 @@ describe('store combinations', () => {
   });
 
   it('falls back to another store when one chain does not stock an item', () => {
-    const jumboWithoutGreens = candidate('jumbo', 53.2344, 6.5966, [
-      makeOffer({ ingredientId: 'vlees', packAmount: 1000, priceCents: 500, chainId: 'jumbo', locationId: 'jumbo-1', productId: 'j-v3' }),
-    ], 3.4);
+    const jumboWithoutGreens = candidate(
+      'jumbo',
+      53.2344,
+      6.5966,
+      [
+        makeOffer({
+          ingredientId: 'vlees',
+          packAmount: 1000,
+          priceCents: 500,
+          chainId: 'jumbo',
+          locationId: 'jumbo-1',
+          productId: 'j-v3',
+        }),
+      ],
+      3.4,
+    );
     const mixed = [lidl, jumboWithoutGreens];
     const mixedMatrix = buildPackagingMatrix(requirements, mixed, DEFAULT_PACKAGING_CONFIG);
     const combination = evaluateStoreCombination(requirements, mixed, mixedMatrix);

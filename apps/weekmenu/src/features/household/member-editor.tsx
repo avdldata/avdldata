@@ -35,7 +35,7 @@ export function MemberEditor({
       />
 
       {canDelete && defaultValues?.id ? (
-        <div className="border-t border-line pt-5">
+        <div className="border-line border-t pt-5">
           <Button
             type="button"
             variant="danger"
@@ -57,7 +57,7 @@ export function MemberEditor({
             Dit gezinslid verwijderen
           </Button>
           {error ? (
-            <p role="alert" className="mt-3 text-sm text-danger">
+            <p role="alert" className="text-danger mt-3 text-sm">
               {error}
             </p>
           ) : null}

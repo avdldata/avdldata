@@ -92,7 +92,9 @@ export class SeedDataProvider
 
   // ---- NutritionDataProvider ----------------------------------------------
 
-  async getIngredientNutrition(ingredientIds?: readonly string[]): Promise<readonly IngredientNutrition[]> {
+  async getIngredientNutrition(
+    ingredientIds?: readonly string[],
+  ): Promise<readonly IngredientNutrition[]> {
     const wanted = ingredientIds?.length ? new Set(ingredientIds) : undefined;
     return SEED_INGREDIENTS.flatMap((ingredient) =>
       ingredient.nutritionPer100 && (!wanted || wanted.has(ingredient.id))
@@ -109,7 +111,9 @@ export class SeedDataProvider
 
   async getProductNutrition(productIds?: readonly string[]): Promise<readonly ProductNutrition[]> {
     const wanted = productIds?.length ? new Set(productIds) : undefined;
-    return this.catalogue.productNutrition.filter((entry) => !wanted || wanted.has(entry.productId));
+    return this.catalogue.productNutrition.filter(
+      (entry) => !wanted || wanted.has(entry.productId),
+    );
   }
 
   private async productIdsFor(query: PriceQuery): Promise<ReadonlySet<string>> {

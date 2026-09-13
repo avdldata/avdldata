@@ -50,9 +50,7 @@ export function violationsIfAdded(
   }
 
   if (candidate.primaryProtein !== 'geen') {
-    const proteinCount = chosen.filter(
-      (r) => r.primaryProtein === candidate.primaryProtein,
-    ).length;
+    const proteinCount = chosen.filter((r) => r.primaryProtein === candidate.primaryProtein).length;
     if (proteinCount + 1 > config.maxSamePrimaryProtein) {
       violations.push({
         rule: 'TOO_MUCH_SAME_PROTEIN',
@@ -115,7 +113,12 @@ export function varietyScore(recipes: readonly Recipe[]): number {
   const cuisines = new Set(recipes.map((r) => r.cuisine)).size;
   const proteins = new Set(recipes.map((r) => r.primaryProtein)).size;
   const carbs = new Set(
-    recipes.map((r) => r.tags.find((t) => ['pasta', 'rijst', 'aardappelen', 'brood', 'noedels', 'wraps'].includes(t)) ?? 'overig'),
+    recipes.map(
+      (r) =>
+        r.tags.find((t) =>
+          ['pasta', 'rijst', 'aardappelen', 'brood', 'noedels', 'wraps'].includes(t),
+        ) ?? 'overig',
+    ),
   ).size;
   const max = recipes.length;
   return (cuisines / max + proteins / max + carbs / max) / 3;

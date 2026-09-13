@@ -39,7 +39,14 @@ function authored(overrides: Partial<AuthoredRecipe> = {}): AuthoredRecipe {
     tags: [],
     baseServings: 4,
     ingredients: [{ ingredientId: 'ui', amount: 2, unit: 'piece' }],
-    nutritionPerServing: { kcal: 500, proteinGrams: 20, carbGrams: 60, fatGrams: 15, fiberGrams: 6, saltGrams: 1 },
+    nutritionPerServing: {
+      kcal: 500,
+      proteinGrams: 20,
+      carbGrams: 60,
+      fatGrams: 15,
+      fiberGrams: 6,
+      saltGrams: 1,
+    },
     primaryProtein: 'geen',
     ...overrides,
   };
@@ -90,10 +97,7 @@ describe('recipe normalisation', () => {
   });
 
   it('honours an explicit pregnancy override for a preparation risk', () => {
-    const recipe = normaliseRecipe(
-      authored({ pregnancySuitableOverride: false }),
-      ingredients,
-    );
+    const recipe = normaliseRecipe(authored({ pregnancySuitableOverride: false }), ingredients);
     expect(recipe.pregnancySuitable).toBe(false);
   });
 

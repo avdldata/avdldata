@@ -53,12 +53,12 @@ export function GenerateWeekButton({
         {pending ? 'Week samenstellen…' : label}
       </Button>
       {pending ? (
-        <p role="status" className="mt-2 text-center text-xs text-ink-faint">
+        <p role="status" className="text-ink-faint mt-2 text-center text-xs">
           We filteren recepten, schalen porties, bundelen ingrediënten en vergelijken supermarkten.
         </p>
       ) : null}
       {error ? (
-        <p role="alert" className="mt-3 rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger">
+        <p role="alert" className="bg-danger-soft text-danger mt-3 rounded-xl px-3 py-2 text-sm">
           {error}
         </p>
       ) : null}

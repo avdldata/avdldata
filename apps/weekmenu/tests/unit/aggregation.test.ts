@@ -15,7 +15,11 @@ const ingredients = buildIngredientIndex([
   makeIngredient('zout', { pantryStaple: true, perishability: 'pantry' }),
 ]);
 
-function day(dayIndex: number, lines: { id: string; perServing: number; optional?: boolean }[], servings: number): PlannedDay {
+function day(
+  dayIndex: number,
+  lines: { id: string; perServing: number; optional?: boolean }[],
+  servings: number,
+): PlannedDay {
   return {
     dayIndex,
     recipe: makeRecipe(`recipe-${dayIndex}`, {
@@ -49,13 +53,31 @@ describe('week aggregation', () => {
   });
 
   it('skips optional ingredients so they never inflate the list', () => {
-    const days = [day(0, [{ id: 'kip', perServing: 100 }, { id: 'rijst', perServing: 80, optional: true }], 2)];
+    const days = [
+      day(
+        0,
+        [
+          { id: 'kip', perServing: 100 },
+          { id: 'rijst', perServing: 80, optional: true },
+        ],
+        2,
+      ),
+    ];
     const result = aggregateWeekIngredients(days, ingredients);
     expect(result.map((r) => r.ingredientId)).toEqual(['kip']);
   });
 
   it('separates pantry staples from things you actually buy', () => {
-    const days = [day(0, [{ id: 'kip', perServing: 100 }, { id: 'zout', perServing: 2 }], 2)];
+    const days = [
+      day(
+        0,
+        [
+          { id: 'kip', perServing: 100 },
+          { id: 'zout', perServing: 2 },
+        ],
+        2,
+      ),
+    ];
     const all = aggregateWeekIngredients(days, ingredients);
     expect(all).toHaveLength(2);
     expect(purchasableRequirements(all).map((r) => r.ingredientId)).toEqual(['kip']);
@@ -67,7 +89,16 @@ describe('week aggregation', () => {
   });
 
   it('returns a stable order', () => {
-    const days = [day(0, [{ id: 'rijst', perServing: 80 }, { id: 'kip', perServing: 100 }], 2)];
+    const days = [
+      day(
+        0,
+        [
+          { id: 'rijst', perServing: 80 },
+          { id: 'kip', perServing: 100 },
+        ],
+        2,
+      ),
+    ];
     expect(aggregateWeekIngredients(days, ingredients).map((r) => r.ingredientId)).toEqual([
       'kip',
       'rijst',
@@ -86,8 +117,18 @@ describe('leftover ledger', () => {
     const ledgers = buildLeftoverLedger(requirements, new Map([['kip', 600]]));
     const kip = ledgers[0]!;
     expect(kip.purchasedAmount).toBe(600);
-    expect(kip.days[0]).toEqual({ dayIndex: 0, usedAmount: 300, remainingAmount: 300, reusedOnDays: [3] });
-    expect(kip.days[1]).toEqual({ dayIndex: 3, usedAmount: 200, remainingAmount: 100, reusedOnDays: [] });
+    expect(kip.days[0]).toEqual({
+      dayIndex: 0,
+      usedAmount: 300,
+      remainingAmount: 300,
+      reusedOnDays: [3],
+    });
+    expect(kip.days[1]).toEqual({
+      dayIndex: 3,
+      usedAmount: 200,
+      remainingAmount: 100,
+      reusedOnDays: [],
+    });
     expect(kip.finalLeftoverAmount).toBe(100);
   });
 

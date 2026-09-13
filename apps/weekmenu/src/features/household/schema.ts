@@ -58,8 +58,7 @@ export const memberFormSchema = z
 
 export type MemberFormValues = z.infer<typeof memberFormSchema>;
 
-const toNumber = (value: string): number | undefined =>
-  value === '' ? undefined : Number(value);
+const toNumber = (value: string): number | undefined => (value === '' ? undefined : Number(value));
 
 export const memberSchema = memberFormSchema.transform((values) => ({
   ...(values.id !== undefined ? { id: values.id } : {}),
@@ -105,8 +104,12 @@ export const preferenceEntrySchema = z.object({
 });
 
 export const preferencesSchema = z.object({
-  cuisines: z.array(z.object({ value: z.enum(CUISINES), level: z.enum(PREFERENCE_LEVELS) })).default([]),
-  tags: z.array(z.object({ value: z.enum(RECIPE_TAGS), level: z.enum(PREFERENCE_LEVELS) })).default([]),
+  cuisines: z
+    .array(z.object({ value: z.enum(CUISINES), level: z.enum(PREFERENCE_LEVELS) }))
+    .default([]),
+  tags: z
+    .array(z.object({ value: z.enum(RECIPE_TAGS), level: z.enum(PREFERENCE_LEVELS) }))
+    .default([]),
   ingredients: z.array(preferenceEntrySchema).default([]),
 });
 export type PreferencesInput = z.infer<typeof preferencesSchema>;

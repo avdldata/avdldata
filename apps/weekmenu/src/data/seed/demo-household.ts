@@ -64,8 +64,4 @@ export const DEMO_HOUSEHOLD: Household = {
   },
 };
 
-export const DEMO_SELECTED_LOCATION_IDS = [
-  'lidl-paterswoldseweg',
-  'jumbo-korreweg',
-  'ah-hoogkerk',
-];
+export const DEMO_SELECTED_LOCATION_IDS = ['lidl-paterswoldseweg', 'jumbo-korreweg', 'ah-hoogkerk'];

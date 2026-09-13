@@ -18,13 +18,7 @@ import { findAlternativesAction, replaceDishAction, type AlternativeView } from 
  * are recalculated and the store split is re-evaluated. That is why the price
  * difference is the real difference and not an estimate.
  */
-export function ReplaceDish({
-  dayIndex,
-  currentName,
-}: {
-  dayIndex: number;
-  currentName: string;
-}) {
+export function ReplaceDish({ dayIndex, currentName }: { dayIndex: number; currentName: string }) {
   const router = useRouter();
   const [alternatives, setAlternatives] = useState<AlternativeView[]>();
   const [error, setError] = useState<string>();
@@ -65,7 +59,7 @@ export function ReplaceDish({
 
   if (loading) {
     return (
-      <p role="status" className="py-10 text-center text-sm text-ink-faint">
+      <p role="status" className="text-ink-faint py-10 text-center text-sm">
         We rekenen drie alternatieve weken door…
       </p>
     );
@@ -73,7 +67,7 @@ export function ReplaceDish({
 
   if (error) {
     return (
-      <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger">
+      <p role="alert" className="bg-danger-soft text-danger rounded-xl px-4 py-3 text-sm">
         {error}
       </p>
     );
@@ -81,7 +75,7 @@ export function ReplaceDish({
 
   if (!alternatives || alternatives.length === 0) {
     return (
-      <p className="rounded-xl bg-surface-muted px-4 py-5 text-center text-sm text-ink-soft">
+      <p className="bg-surface-muted text-ink-soft rounded-xl px-4 py-5 text-center text-sm">
         We konden geen passend alternatief vinden dat ook binnen jullie variatieregels past.
       </p>
     );
@@ -89,8 +83,8 @@ export function ReplaceDish({
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-ink-soft">
-        In plaats van <span className="font-medium text-ink">{currentName}</span>. De prijs is het
+      <p className="text-ink-soft text-sm">
+        In plaats van <span className="text-ink font-medium">{currentName}</span>. De prijs is het
         verschil voor de héle week, dus inclusief verpakkingen die je dan wél of niet meer nodig
         hebt.
       </p>
@@ -109,14 +103,20 @@ export function ReplaceDish({
               <div className="flex items-start justify-between gap-3">
                 <h3 className="min-w-0 font-semibold">{alternative.name}</h3>
                 <Badge
-                  variant={alternative.deltaCents > 0 ? 'promo' : alternative.deltaCents < 0 ? 'brand' : 'neutral'}
+                  variant={
+                    alternative.deltaCents > 0
+                      ? 'promo'
+                      : alternative.deltaCents < 0
+                        ? 'brand'
+                        : 'neutral'
+                  }
                   className="shrink-0"
                 >
                   {formatEuroDelta(alternative.deltaCents)}
                 </Badge>
               </div>
-              <p className="mt-1 line-clamp-2 text-sm text-ink-soft">{alternative.description}</p>
-              <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-faint">
+              <p className="text-ink-soft mt-1 line-clamp-2 text-sm">{alternative.description}</p>
+              <p className="text-ink-faint mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
                 <span className="inline-flex items-center gap-1">
                   <Clock className="size-3" aria-hidden />
                   {alternative.totalMinutes} min
@@ -143,7 +143,7 @@ export function ReplaceDish({
       ))}
 
       {pending ? (
-        <p role="status" className="text-center text-xs text-ink-faint">
+        <p role="status" className="text-ink-faint text-center text-xs">
           De hele week wordt opnieuw doorgerekend…
         </p>
       ) : null}

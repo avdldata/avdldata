@@ -42,7 +42,7 @@ export default async function GeneratingPage({
       />
 
       {fout ? (
-        <p role="alert" className="mb-5 rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger">
+        <p role="alert" className="bg-danger-soft text-danger mb-5 rounded-xl px-4 py-3 text-sm">
           {fout}
         </p>
       ) : null}
@@ -52,7 +52,7 @@ export default async function GeneratingPage({
           <ol className="space-y-3">
             {STEPS.map((step, index) => (
               <li key={step} className="flex gap-3 text-sm">
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-soft text-xs font-semibold text-brand-dark">
+                <span className="bg-brand-soft text-brand-dark flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                   {index + 1}
                 </span>
                 <span className="text-ink-soft">{step}</span>

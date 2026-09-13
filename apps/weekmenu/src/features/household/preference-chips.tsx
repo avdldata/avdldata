@@ -30,7 +30,7 @@ export function PreferenceRow({
       <div
         role="radiogroup"
         aria-label={`Voorkeur voor ${label}`}
-        className="flex shrink-0 overflow-hidden rounded-[var(--radius-pill)] border border-line-strong"
+        className="border-line-strong flex shrink-0 overflow-hidden rounded-[var(--radius-pill)] border"
       >
         {LEVELS.map((option) => {
           const active = value === option.level;

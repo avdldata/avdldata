@@ -34,14 +34,14 @@ export default async function HouseholdPage() {
             <CardTitle>Gezinsleden</CardTitle>
           </CardHeader>
           <CardContent className="px-0 pb-0">
-            <ul className="divide-y divide-line border-t border-line">
+            <ul className="divide-line border-line divide-y border-t">
               {household.members.map((member) => {
                 const estimate = nutrition.find((n) => n.memberId === member.id);
                 return (
                   <li key={member.id}>
                     <Link
                       href={`/gezin/leden/${member.id}`}
-                      className="flex items-center gap-3 px-5 py-3.5 hover:bg-surface-muted"
+                      className="hover:bg-surface-muted flex items-center gap-3 px-5 py-3.5"
                     >
                       <span className="min-w-0 flex-1">
                         <span className="flex flex-wrap items-center gap-2">
@@ -58,7 +58,7 @@ export default async function HouseholdPage() {
                             </Badge>
                           ))}
                         </span>
-                        <span className="mt-0.5 block text-xs text-ink-faint">
+                        <span className="text-ink-faint mt-0.5 block text-xs">
                           {estimate
                             ? `± ${estimate.dinnerEnergyKcal} kcal per avondmaaltijd${
                                 estimate.estimateQuality !== 'high' ? ' (schatting)' : ''
@@ -66,13 +66,13 @@ export default async function HouseholdPage() {
                             : ''}
                         </span>
                       </span>
-                      <ChevronRight className="size-5 shrink-0 text-ink-faint" aria-hidden />
+                      <ChevronRight className="text-ink-faint size-5 shrink-0" aria-hidden />
                     </Link>
                   </li>
                 );
               })}
             </ul>
-            <div className="border-t border-line p-4">
+            <div className="border-line border-t p-4">
               <Button asChild variant="secondary" className="w-full">
                 <Link href="/gezin/leden/nieuw">
                   <Plus className="size-4" aria-hidden />
@@ -108,7 +108,7 @@ export default async function HouseholdPage() {
 
         <HouseholdSection household={household} />
 
-        <p className="pb-2 text-xs text-ink-faint">
+        <p className="text-ink-faint pb-2 text-xs">
           Gegevens zoals gewicht en zwangerschap zijn gevoelig. We gebruiken ze alleen om porties te
           schatten en ongeschikte gerechten uit te sluiten, en delen ze met niemand. Weekmenu is
           geen medisch hulpmiddel.

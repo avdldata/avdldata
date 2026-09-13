@@ -33,7 +33,7 @@ export function WeekSummary({
             </p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-ink-soft">{formatWeekRange(plan.startDate)}</p>
+            <p className="text-ink-soft text-sm">{formatWeekRange(plan.startDate)}</p>
             {totals.promotionSavingsCents > 0 ? (
               <Badge variant="promo" className="mt-1">
                 {formatEuro(totals.promotionSavingsCents)} aanbiedingsvoordeel
@@ -42,7 +42,7 @@ export function WeekSummary({
           </div>
         </div>
 
-        <dl className="grid grid-cols-2 gap-4 border-t border-line pt-4 sm:grid-cols-4">
+        <dl className="border-line grid grid-cols-2 gap-4 border-t pt-4 sm:grid-cols-4">
           <Stat label="Per persoon" value={formatEuro(totals.perPersonCents)} />
           <Stat
             label="Per maaltijd"
@@ -57,7 +57,7 @@ export function WeekSummary({
           />
         </dl>
 
-        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line pt-4 text-sm text-ink-soft">
+        <div className="border-line text-ink-soft mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-t pt-4 text-sm">
           <span className="inline-flex items-center gap-1.5">
             <Wallet className="size-4" aria-hidden />
             Boodschappen {formatEuro(totals.groceryCents)}
@@ -69,7 +69,7 @@ export function WeekSummary({
           </span>
           <Link
             href="/winkels"
-            className="inline-flex items-center gap-1.5 font-medium text-brand underline underline-offset-4"
+            className="text-brand inline-flex items-center gap-1.5 font-medium underline underline-offset-4"
           >
             <Store className="size-4" aria-hidden />
             Vergelijk supermarkten
@@ -77,7 +77,7 @@ export function WeekSummary({
         </div>
 
         {plan.recommendedOption.unavailable.length > 0 ? (
-          <p className="mt-4 flex items-start gap-2 rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger">
+          <p className="bg-danger-soft text-danger mt-4 flex items-start gap-2 rounded-xl px-3 py-2 text-sm">
             <Trash2 className="mt-0.5 size-4 shrink-0" aria-hidden />
             <span>
               Niet verkrijgbaar bij de gekozen winkels:{' '}

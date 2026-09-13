@@ -38,7 +38,7 @@ export function AuthForm({
         <h1 className="mt-3 text-2xl font-semibold tracking-tight">
           {isLogin ? 'Welkom terug' : 'Maak een account'}
         </h1>
-        <p className="mt-1.5 text-sm text-ink-soft">
+        <p className="text-ink-soft mt-1.5 text-sm">
           Gezond eten plannen en meteen zien waar het het goedkoopst is.
         </p>
       </div>
@@ -71,7 +71,7 @@ export function AuthForm({
             </div>
 
             {state.error ? (
-              <p role="alert" className="rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger">
+              <p role="alert" className="bg-danger-soft text-danger rounded-xl px-3 py-2 text-sm">
                 {state.error}
               </p>
             ) : null}
@@ -86,22 +86,28 @@ export function AuthForm({
           Bekijk de demo
         </Button>
       </form>
-      <p className="mt-2 text-center text-xs text-ink-faint">
+      <p className="text-ink-faint mt-2 text-center text-xs">
         De demo opent een voorbeeldhuishouden met twee personen in Groningen.
       </p>
 
-      <p className="mt-8 text-center text-sm text-ink-soft">
+      <p className="text-ink-soft mt-8 text-center text-sm">
         {isLogin ? (
           <>
             Nog geen account?{' '}
-            <Link href="/registreren" className="font-semibold text-brand underline underline-offset-4">
+            <Link
+              href="/registreren"
+              className="text-brand font-semibold underline underline-offset-4"
+            >
               Registreren
             </Link>
           </>
         ) : (
           <>
             Heb je al een account?{' '}
-            <Link href="/inloggen" className="font-semibold text-brand underline underline-offset-4">
+            <Link
+              href="/inloggen"
+              className="text-brand font-semibold underline underline-offset-4"
+            >
               Inloggen
             </Link>
           </>

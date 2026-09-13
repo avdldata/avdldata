@@ -117,9 +117,7 @@ export function buildAliasIndex(aliases: readonly IngredientAlias[]): AliasIndex
 
 export type IngredientIndex = ReadonlyMap<IngredientId, CanonicalIngredient>;
 
-export function buildIngredientIndex(
-  ingredients: readonly CanonicalIngredient[],
-): IngredientIndex {
+export function buildIngredientIndex(ingredients: readonly CanonicalIngredient[]): IngredientIndex {
   return new Map(ingredients.map((i) => [i.id, i]));
 }
 

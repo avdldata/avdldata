@@ -70,7 +70,12 @@ function toMember(row: Row, rules: readonly Row[]): HouseholdMember {
   };
 }
 
-function toHousehold(household: Row, members: readonly Row[], rules: readonly Row[], prefs: readonly Row[]): Household {
+function toHousehold(
+  household: Row,
+  members: readonly Row[],
+  rules: readonly Row[],
+  prefs: readonly Row[],
+): Household {
   return {
     id: household.id as string,
     name: household.name as string,
@@ -354,9 +359,11 @@ class SupabasePlanRepository implements PlanRepository {
     fail('weekly_plans.insert', error);
 
     const planId = (data as Row).id as string;
-    const { error: dayError } = await supabase.from('weekly_plan_days').insert(
-      plan.recipeIds.map((recipe_id, day_index) => ({ plan_id: planId, day_index, recipe_id })),
-    );
+    const { error: dayError } = await supabase
+      .from('weekly_plan_days')
+      .insert(
+        plan.recipeIds.map((recipe_id, day_index) => ({ plan_id: planId, day_index, recipe_id })),
+      );
     fail('weekly_plan_days.insert', dayError);
 
     return {

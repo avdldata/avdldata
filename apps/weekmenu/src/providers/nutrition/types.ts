@@ -11,6 +11,8 @@ import type { ProductNutrition } from '@/domain/stores/types';
  */
 export interface NutritionDataProvider {
   readonly id: string;
-  getIngredientNutrition(ingredientIds?: readonly string[]): Promise<readonly IngredientNutrition[]>;
+  getIngredientNutrition(
+    ingredientIds?: readonly string[],
+  ): Promise<readonly IngredientNutrition[]>;
   getProductNutrition(productIds?: readonly string[]): Promise<readonly ProductNutrition[]>;
 }

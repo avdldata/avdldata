@@ -168,9 +168,7 @@ describe('edge cases', () => {
     const result = optimiseWeek(input({ budget: { hardMaxCents: euros(10) } }));
     if (result.status !== 'OK') throw new Error(result.message);
     expect(result.plan.budget.met).toBe(false);
-    expect(result.plan.budget.shortfallCents).toBe(
-      result.plan.totals.groceryCents - euros(10),
-    );
+    expect(result.plan.budget.shortfallCents).toBe(result.plan.totals.groceryCents - euros(10));
     expect(result.plan.reasons.map((r) => r.code)).toContain('BUDGET_EXCEEDED');
   });
 

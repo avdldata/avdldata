@@ -47,9 +47,7 @@ export function findReplacements(input: ReplaceDishInput): ReplacementCandidate[
     .map((d) => d.recipe);
   const keptIds = new Set(keptRecipes.map((r) => r.id));
 
-  const currentIngredientIds = new Set(
-    input.currentPlan.requirements.map((r) => r.ingredientId),
-  );
+  const currentIngredientIds = new Set(input.currentPlan.requirements.map((r) => r.ingredientId));
 
   const { candidates } = filterCandidateRecipes({
     household: input.household,
@@ -94,9 +92,7 @@ export function findReplacements(input: ReplaceDishInput): ReplacementCandidate[
     results.push({
       recipe: entry.recipe,
       plan: outcome.plan,
-      deltaCents: cents(
-        outcome.plan.totals.groceryCents - input.currentPlan.totals.groceryCents,
-      ),
+      deltaCents: cents(outcome.plan.totals.groceryCents - input.currentPlan.totals.groceryCents),
       sharedIngredients: entry.shared,
       deltaKcalPerPerson: Math.round(nextPerPerson - currentPerPerson),
     });
@@ -115,7 +111,5 @@ export function findReplacements(input: ReplaceDishInput): ReplacementCandidate[
 function averagePerPersonKcal(plan: WeeklyPlan, dayIndex: number): number {
   const day = plan.days.find((d) => d.dayIndex === dayIndex);
   if (!day || day.portions.perMember.length === 0) return 0;
-  return (
-    day.portions.perMember.reduce((sum, p) => sum + p.kcal, 0) / day.portions.perMember.length
-  );
+  return day.portions.perMember.reduce((sum, p) => sum + p.kcal, 0) / day.portions.perMember.length;
 }

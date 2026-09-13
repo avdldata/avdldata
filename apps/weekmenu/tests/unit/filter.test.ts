@@ -75,7 +75,11 @@ describe('hard constraint filtering', () => {
   it('honours an EXCLUDE preference on a tag and on a cuisine', () => {
     const byTag = filterCandidateRecipes({
       household: makeHousehold({
-        preferences: { ingredients: [], cuisines: [], tags: [{ value: 'pasta', level: 'EXCLUDE' }] },
+        preferences: {
+          ingredients: [],
+          cuisines: [],
+          tags: [{ value: 'pasta', level: 'EXCLUDE' }],
+        },
       }),
       recipes: catalogue,
     });
@@ -97,7 +101,11 @@ describe('hard constraint filtering', () => {
   it('never lets a DISLIKE remove a dish — only EXCLUDE does that', () => {
     const { candidates } = filterCandidateRecipes({
       household: makeHousehold({
-        preferences: { ingredients: [], cuisines: [], tags: [{ value: 'pasta', level: 'DISLIKE' }] },
+        preferences: {
+          ingredients: [],
+          cuisines: [],
+          tags: [{ value: 'pasta', level: 'DISLIKE' }],
+        },
       }),
       recipes: catalogue,
     });

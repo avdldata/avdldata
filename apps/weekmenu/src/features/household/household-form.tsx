@@ -79,12 +79,12 @@ export function HouseholdForm({
       <input type="hidden" {...form.register('country')} />
 
       {serverError ? (
-        <p role="alert" className="rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger">
+        <p role="alert" className="bg-danger-soft text-danger rounded-xl px-3 py-2 text-sm">
           {serverError}
         </p>
       ) : null}
       {saved && !serverError ? (
-        <p role="status" className="rounded-xl bg-brand-soft px-3 py-2 text-sm text-brand-dark">
+        <p role="status" className="bg-brand-soft text-brand-dark rounded-xl px-3 py-2 text-sm">
           Opgeslagen.
         </p>
       ) : null}

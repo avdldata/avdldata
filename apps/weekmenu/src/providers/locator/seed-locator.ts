@@ -12,22 +12,18 @@ export class SeedStoreLocatorProvider implements StoreLocatorProvider {
   readonly id = 'seed';
 
   async findNearbyStores(query: NearbyStoresQuery): Promise<readonly NearbyStore[]> {
-    const allowed = query.chainIds && query.chainIds.length > 0 ? new Set(query.chainIds) : undefined;
+    const allowed =
+      query.chainIds && query.chainIds.length > 0 ? new Set(query.chainIds) : undefined;
 
     return SEED_LOCATIONS.filter((location) => !allowed || allowed.has(location.chainId))
       .map((location) => ({
         location,
         distanceKm:
           Math.round(
-            roadDistanceKm(
-              { latitude: query.latitude, longitude: query.longitude },
-              location,
-            ) * 10,
+            roadDistanceKm({ latitude: query.latitude, longitude: query.longitude }, location) * 10,
           ) / 10,
       }))
       .filter((entry) => entry.distanceKm <= query.radiusKm)
-      .sort(
-        (a, b) => a.distanceKm - b.distanceKm || a.location.id.localeCompare(b.location.id),
-      );
+      .sort((a, b) => a.distanceKm - b.distanceKm || a.location.id.localeCompare(b.location.id));
   }
 }

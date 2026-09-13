@@ -17,10 +17,7 @@ import {
   type HouseholdInput,
   type MemberFormValues,
 } from '@/features/household/schema';
-import {
-  completeOnboardingAction,
-  lookupNearbyStoresAction,
-} from '@/features/household/actions';
+import { completeOnboardingAction, lookupNearbyStoresAction } from '@/features/household/actions';
 import { cn } from '@/lib/cn';
 
 const STEPS = ['Huishouden', 'Gezinsleden', 'Voorkeuren', 'Supermarkten'] as const;
@@ -109,7 +106,7 @@ export function OnboardingFlow() {
       </ol>
 
       {error ? (
-        <p role="alert" className="mb-4 rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger">
+        <p role="alert" className="bg-danger-soft text-danger mb-4 rounded-xl px-3 py-2 text-sm">
           {error}
         </p>
       ) : null}
@@ -117,7 +114,7 @@ export function OnboardingFlow() {
       {step === 0 ? (
         <section>
           <h1 className="text-2xl font-semibold tracking-tight">Waar kook je voor?</h1>
-          <p className="mt-1.5 mb-6 text-sm text-ink-soft">
+          <p className="text-ink-soft mt-1.5 mb-6 text-sm">
             Met je postcode zoeken we straks de supermarkten bij jou in de buurt.
           </p>
           <HouseholdForm
@@ -135,7 +132,7 @@ export function OnboardingFlow() {
       {step === 1 ? (
         <section>
           <h1 className="text-2xl font-semibold tracking-tight">Wie eten er mee?</h1>
-          <p className="mt-1.5 mb-6 text-sm text-ink-soft">
+          <p className="text-ink-soft mt-1.5 mb-6 text-sm">
             Per persoon schatten we de portiegrootte. Bijzonderheden zoals allergieën of een
             zwangerschap gebruiken we om ongeschikte gerechten uit te sluiten.
           </p>
@@ -147,8 +144,10 @@ export function OnboardingFlow() {
                   <Card className="flex items-center gap-3 px-4 py-3">
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{member.name}</p>
-                      <p className="mt-0.5 flex flex-wrap gap-1.5 text-xs text-ink-faint">
-                        <span>{member.ageYears ? `${member.ageYears} jaar` : 'leeftijd onbekend'}</span>
+                      <p className="text-ink-faint mt-0.5 flex flex-wrap gap-1.5 text-xs">
+                        <span>
+                          {member.ageYears ? `${member.ageYears} jaar` : 'leeftijd onbekend'}
+                        </span>
                         <span>·</span>
                         <span>{DIET_LABELS[member.diet]}</span>
                         {member.pregnant ? (
@@ -170,7 +169,7 @@ export function OnboardingFlow() {
                         setEditingIndex(index);
                         setAddingMember(false);
                       }}
-                      className="rounded-full p-2 text-ink-soft hover:bg-surface-muted"
+                      className="text-ink-soft hover:bg-surface-muted rounded-full p-2"
                     >
                       <Pencil className="size-4" aria-hidden />
                     </button>
@@ -178,7 +177,7 @@ export function OnboardingFlow() {
                       type="button"
                       aria-label={`${member.name} verwijderen`}
                       onClick={() => setMembers((prev) => prev.filter((_, i) => i !== index))}
-                      className="rounded-full p-2 text-ink-soft hover:bg-surface-muted"
+                      className="text-ink-soft hover:bg-surface-muted rounded-full p-2"
                     >
                       <Trash2 className="size-4" aria-hidden />
                     </button>
@@ -191,7 +190,9 @@ export function OnboardingFlow() {
           {addingMember || editingIndex !== null ? (
             <Card>
               <CardHeader>
-                <CardTitle>{editingIndex !== null ? 'Gezinslid aanpassen' : 'Gezinslid toevoegen'}</CardTitle>
+                <CardTitle>
+                  {editingIndex !== null ? 'Gezinslid aanpassen' : 'Gezinslid toevoegen'}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <MemberForm
@@ -243,7 +244,7 @@ export function OnboardingFlow() {
       {step === 2 ? (
         <section>
           <h1 className="text-2xl font-semibold tracking-tight">Wat eten jullie graag?</h1>
-          <p className="mt-1.5 mb-6 text-sm text-ink-soft">
+          <p className="text-ink-soft mt-1.5 mb-6 text-sm">
             Je kunt dit later altijd aanpassen. Alles op neutraal laten mag ook.
           </p>
           <PreferencesForm
@@ -266,8 +267,10 @@ export function OnboardingFlow() {
 
       {step === 3 ? (
         <section>
-          <h1 className="text-2xl font-semibold tracking-tight">Supermarkten bij jou in de buurt</h1>
-          <p className="mt-1.5 mb-6 text-sm text-ink-soft">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Supermarkten bij jou in de buurt
+          </h1>
+          <p className="text-ink-soft mt-1.5 mb-6 text-sm">
             Vink aan waar je boodschappen wilt doen. We vergelijken alleen deze winkels.
           </p>
           <StorePicker
@@ -300,9 +303,7 @@ export function OnboardingFlow() {
             </Button>
           </div>
           {selectedStores.length === 0 ? (
-            <p className="mt-2 text-center text-xs text-ink-faint">
-              Kies minimaal één supermarkt.
-            </p>
+            <p className="text-ink-faint mt-2 text-center text-xs">Kies minimaal één supermarkt.</p>
           ) : null}
         </section>
       ) : null}

@@ -1,9 +1,4 @@
-import type {
-  Brand,
-  Product,
-  SupermarketChain,
-  SupermarketLocation,
-} from '@/domain/stores/types';
+import type { Brand, Product, SupermarketChain, SupermarketLocation } from '@/domain/stores/types';
 import type { CanonicalIngredient, IngredientAlias } from '@/domain/ingredients/types';
 
 export interface ProductSearchQuery {

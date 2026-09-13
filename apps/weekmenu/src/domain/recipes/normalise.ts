@@ -1,11 +1,7 @@
 import { toBaseQuantity } from '../units';
 import { computeRecipeNutrition } from './nutrition';
 import type { CanonicalIngredient, IngredientIndex } from '../ingredients/types';
-import type {
-  AuthoredRecipe,
-  Recipe,
-  RecipeIngredient,
-} from './types';
+import type { AuthoredRecipe, Recipe, RecipeIngredient } from './types';
 import type { Allergen } from '../ingredients/types';
 
 /**
@@ -90,8 +86,7 @@ export function normaliseRecipe(authored: AuthoredRecipe, ingredients: Ingredien
     if (!ingredient.vegan) vegan = false;
   }
 
-  const pregnancySuitable =
-    authored.pregnancySuitableOverride ?? pregnancyReasons.size === 0;
+  const pregnancySuitable = authored.pregnancySuitableOverride ?? pregnancyReasons.size === 0;
 
   // Nutrition is computed from the ingredients wherever the catalogue can
   // support it. The hand-written values stay on the recipe as a cross-check and

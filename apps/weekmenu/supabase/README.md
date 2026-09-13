@@ -2,12 +2,12 @@
 
 Three migrations and one generated seed.
 
-| Bestand | Inhoud |
-|---|---|
-| `migrations/0001_reference_data.sql` | Ingrediënten, aliassen, voedingswaarden, recepten, merken, producten, winkels, prijzen en aanbiedingen |
-| `migrations/0002_household_data.sql` | Huishoudens, gezinsleden, dieetregels, voorkeuren, instellingen, weekplannen en boodschappenlijsten |
-| `migrations/0003_rls.sql` | Row level security: referentiedata leesbaar voor ingelogde gebruikers, huishouddata alleen voor de eigenaar |
-| `seed.sql` | **Gegenereerd.** Niet in versiebeheer — maak hem met `pnpm seed:sql` |
+| Bestand                              | Inhoud                                                                                                      |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `migrations/0001_reference_data.sql` | Ingrediënten, aliassen, voedingswaarden, recepten, merken, producten, winkels, prijzen en aanbiedingen      |
+| `migrations/0002_household_data.sql` | Huishoudens, gezinsleden, dieetregels, voorkeuren, instellingen, weekplannen en boodschappenlijsten         |
+| `migrations/0003_rls.sql`            | Row level security: referentiedata leesbaar voor ingelogde gebruikers, huishouddata alleen voor de eigenaar |
+| `seed.sql`                           | **Gegenereerd.** Niet in versiebeheer — maak hem met `pnpm seed:sql`                                        |
 
 ## Zelf uitproberen
 

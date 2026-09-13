@@ -98,8 +98,8 @@ export default async function SettingsPage() {
               <div className="flex justify-between gap-3">
                 <dt className="text-ink-soft">Vervoer</dt>
                 <dd className="font-medium">
-                  {TRANSPORT_LABELS[settings.transportMode]} ·{' '}
-                  {formatEuro(settings.costPerKmCents)} per km
+                  {TRANSPORT_LABELS[settings.transportMode]} · {formatEuro(settings.costPerKmCents)}{' '}
+                  per km
                 </dd>
               </div>
             </dl>
@@ -116,7 +116,7 @@ export default async function SettingsPage() {
           <CardHeader>
             <CardTitle>Privacy</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-ink-soft">
+          <CardContent className="text-ink-soft space-y-3 text-sm">
             <p>
               We slaan alleen op wat nodig is om je week te kunnen plannen: je postcode (niet je
               exacte adres), je gezinsleden en hun voedingsgegevens, en je weekmenu&apos;s.
@@ -126,7 +126,7 @@ export default async function SettingsPage() {
               en ongeschikte gerechten uit te sluiten. Ze komen niet in logbestanden of statistieken
               terecht.
             </p>
-            <p className="font-medium text-ink">
+            <p className="text-ink font-medium">
               Weekmenu geeft richtwaarden en is geen medisch hulpmiddel.
             </p>
           </CardContent>

@@ -1,5 +1,9 @@
 import type { BaseUnit } from '../units';
-import type { CanonicalIngredient, IngredientCategory, IngredientIndex } from '../ingredients/types';
+import type {
+  CanonicalIngredient,
+  IngredientCategory,
+  IngredientIndex,
+} from '../ingredients/types';
 import type { Recipe } from '../recipes/types';
 import type { RecipePortions } from '../nutrition/portions';
 

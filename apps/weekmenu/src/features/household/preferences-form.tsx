@@ -55,13 +55,13 @@ export function PreferencesForm({
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-ink-soft">{PREFERENCE_LEGEND}</p>
+      <p className="text-ink-soft text-sm">{PREFERENCE_LEGEND}</p>
 
       <Card>
         <CardHeader>
           <CardTitle>Keukens</CardTitle>
         </CardHeader>
-        <CardContent className="divide-y divide-line">
+        <CardContent className="divide-line divide-y">
           {CUISINES.map((cuisine) => (
             <PreferenceRow
               key={cuisine}
@@ -77,7 +77,7 @@ export function PreferencesForm({
         <CardHeader>
           <CardTitle>Soorten gerechten</CardTitle>
         </CardHeader>
-        <CardContent className="divide-y divide-line">
+        <CardContent className="divide-line divide-y">
           {PREFERENCE_TAGS.map((tag) => (
             <PreferenceRow
               key={tag}
@@ -90,12 +90,12 @@ export function PreferencesForm({
       </Card>
 
       {error ? (
-        <p role="alert" className="rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger">
+        <p role="alert" className="bg-danger-soft text-danger rounded-xl px-3 py-2 text-sm">
           {error}
         </p>
       ) : null}
       {saved && !error ? (
-        <p role="status" className="rounded-xl bg-brand-soft px-3 py-2 text-sm text-brand-dark">
+        <p role="status" className="bg-brand-soft text-brand-dark rounded-xl px-3 py-2 text-sm">
           Voorkeuren opgeslagen.
         </p>
       ) : null}

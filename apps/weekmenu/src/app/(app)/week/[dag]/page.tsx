@@ -11,12 +11,7 @@ import { Stat } from '@/components/ui/stat';
 import { getWeekView } from '@/features/planner/load';
 import { WhyPanel } from '@/features/planner/why-panel';
 import { getCatalogue } from '@/services/catalogue';
-import {
-  formatDayDate,
-  formatEuro,
-  formatQuantity,
-  weekdayName,
-} from '@/lib/format';
+import { formatDayDate, formatEuro, formatQuantity, weekdayName } from '@/lib/format';
 
 export const metadata: Metadata = { title: 'Gerecht — Weekmenu' };
 export const dynamic = 'force-dynamic';
@@ -76,7 +71,7 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
             priority
           />
           <CardContent className="pt-4">
-            <p className="text-sm text-ink-soft">{day.recipe.description}</p>
+            <p className="text-ink-soft text-sm">{day.recipe.description}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Badge variant="brand">{day.recipe.cuisine}</Badge>
               {day.recipe.tags.slice(0, 4).map((tag) => (
@@ -88,14 +83,21 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
               ) : null}
             </div>
 
-            <dl className="mt-4 grid grid-cols-2 gap-4 border-t border-line pt-4 sm:grid-cols-4">
+            <dl className="border-line mt-4 grid grid-cols-2 gap-4 border-t pt-4 sm:grid-cols-4">
               <Stat label="Totale tijd" value={`${day.recipe.totalMinutes} min`} />
-              <Stat label="Kosten" value={formatEuro(day.allocatedCostCents)} hint="deel van de week" />
+              <Stat
+                label="Kosten"
+                value={formatEuro(day.allocatedCostCents)}
+                hint="deel van de week"
+              />
               <Stat
                 label="Per persoon"
                 value={formatEuro(Math.round(day.allocatedCostCents / memberCount))}
               />
-              <Stat label="Porties" value={day.portions.totalServings.toFixed(2).replace('.', ',')} />
+              <Stat
+                label="Porties"
+                value={day.portions.totalServings.toFixed(2).replace('.', ',')}
+              />
             </dl>
           </CardContent>
         </Card>
@@ -103,16 +105,16 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="size-4 text-brand" aria-hidden />
+              <Users className="text-brand size-4" aria-hidden />
               Porties per persoon
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="divide-y divide-line">
+            <ul className="divide-line divide-y">
               {day.portions.perMember.map((portion) => (
                 <li key={portion.memberId} className="flex items-center justify-between py-2.5">
                   <span className="font-medium">{portion.name}</span>
-                  <span className="text-sm text-ink-soft tabular-nums">
+                  <span className="text-ink-soft text-sm tabular-nums">
                     {portion.factor.toFixed(2).replace('.', ',')} portie · ± {portion.kcal} kcal
                     {portion.clamped ? ' (afgetopt)' : ''}
                   </span>
@@ -126,18 +128,20 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Repeat className="size-4 text-brand" aria-hidden />
+                <Repeat className="text-brand size-4" aria-hidden />
                 Wat je later deze week nog gebruikt
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2 text-sm text-ink-soft">
+              <ul className="text-ink-soft space-y-2 text-sm">
                 {reuse.map((line) => (
                   <li key={line.id}>
-                    Van de {formatQuantity(line.ledger!.purchasedAmount, line.unit)} {line.name.toLowerCase()}{' '}
-                    gebruik je vandaag {formatQuantity(line.entry!.usedAmount, line.unit)}. De overige{' '}
+                    Van de {formatQuantity(line.ledger!.purchasedAmount, line.unit)}{' '}
+                    {line.name.toLowerCase()} gebruik je vandaag{' '}
+                    {formatQuantity(line.entry!.usedAmount, line.unit)}. De overige{' '}
                     {formatQuantity(line.entry!.remainingAmount, line.unit)} gebruik je{' '}
-                    {line.entry!.reusedOnDays.map((d) => weekdayName(d).toLowerCase()).join(' en ')}.
+                    {line.entry!.reusedOnDays.map((d) => weekdayName(d).toLowerCase()).join(' en ')}
+                    .
                   </li>
                 ))}
               </ul>
@@ -150,21 +154,21 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
             <CardTitle>Ingrediënten</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="divide-y divide-line">
+            <ul className="divide-line divide-y">
               {lines.map((line) => (
                 <li key={line.id} className="py-2.5">
                   <div className="flex items-baseline justify-between gap-3">
                     <span className="min-w-0">
                       {line.name}
                       {line.optional ? (
-                        <span className="ml-2 text-xs text-ink-faint">optioneel</span>
+                        <span className="text-ink-faint ml-2 text-xs">optioneel</span>
                       ) : null}
                     </span>
                     <span className="shrink-0 font-medium tabular-nums">
                       {formatQuantity(line.todayAmount, line.unit)}
                     </span>
                   </div>
-                  <p className="mt-0.5 text-xs text-ink-faint">
+                  <p className="text-ink-faint mt-0.5 text-xs">
                     {line.perPerson
                       .map((p) => `${p.name} ${formatQuantity(p.amount, line.unit)}`)
                       .join(' · ')}
@@ -178,7 +182,7 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Clock className="size-4 text-brand" aria-hidden />
+              <Clock className="text-brand size-4" aria-hidden />
               Zo maak je het
             </CardTitle>
           </CardHeader>
@@ -186,7 +190,7 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
             <ol className="space-y-3">
               {day.recipe.steps.map((step, index) => (
                 <li key={step} className="flex gap-3 text-sm">
-                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-surface-muted text-xs font-semibold">
+                  <span className="bg-surface-muted flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                     {index + 1}
                   </span>
                   <span className="text-ink-soft">{step}</span>
@@ -199,7 +203,7 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Flame className="size-4 text-brand" aria-hidden />
+              <Flame className="text-brand size-4" aria-hidden />
               Voedingswaarde van de hele pan
             </CardTitle>
           </CardHeader>
@@ -212,7 +216,7 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
               <Stat label="Vezels" value={`${day.nutrition.fiberGrams} g`} />
               <Stat label="Zout" value={`${day.nutrition.saltGrams} g`} />
             </dl>
-            <p className="mt-4 border-t border-line pt-3 text-xs text-ink-faint">
+            <p className="border-line text-ink-faint mt-4 border-t pt-3 text-xs">
               {day.recipe.nutritionSource === 'derived'
                 ? 'Berekend uit de voedingswaarden van de losse ingrediënten.'
                 : 'Overgenomen uit het recept; voor dit gerecht ontbreken nog voedingswaarden van een of meer ingrediënten.'}{' '}

@@ -92,7 +92,10 @@ describe('trip cost', () => {
       stores: [single],
       config: {
         ...base,
-        profiles: { ...base.profiles, auto: { ...base.profiles.auto, costPerKmCents: 10 as never } },
+        profiles: {
+          ...base.profiles,
+          auto: { ...base.profiles.auto, costPerKmCents: 10 as never },
+        },
       },
     });
     const expensive = estimateTripCost({
@@ -100,11 +103,12 @@ describe('trip cost', () => {
       stores: [single],
       config: {
         ...base,
-        profiles: { ...base.profiles, auto: { ...base.profiles.auto, costPerKmCents: 50 as never } },
+        profiles: {
+          ...base.profiles,
+          auto: { ...base.profiles.auto, costPerKmCents: 50 as never },
+        },
       },
     });
-    expect(expensive.estimatedTravelCostCents).toBeGreaterThan(
-      cheap.estimatedTravelCostCents * 4,
-    );
+    expect(expensive.estimatedTravelCostCents).toBeGreaterThan(cheap.estimatedTravelCostCents * 4);
   });
 });

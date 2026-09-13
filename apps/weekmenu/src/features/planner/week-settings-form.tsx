@@ -165,7 +165,7 @@ export function WeekSettingsForm({
                   'rounded-[var(--radius-pill)] px-4 py-2 text-sm font-medium transition-colors',
                   maxStores === option.value
                     ? 'bg-brand text-brand-ink'
-                    : 'border border-line-strong text-ink-soft hover:bg-surface-muted',
+                    : 'border-line-strong text-ink-soft hover:bg-surface-muted border',
                 )}
               >
                 {option.label}
@@ -199,7 +199,7 @@ export function WeekSettingsForm({
               />
               <span>
                 <span className="block text-sm font-medium">{option.label}</span>
-                <span className="mt-0.5 block text-xs text-ink-faint">{option.description}</span>
+                <span className="text-ink-faint mt-0.5 block text-xs">{option.description}</span>
               </span>
             </label>
           ))}
@@ -228,7 +228,7 @@ export function WeekSettingsForm({
                   'rounded-[var(--radius-pill)] px-4 py-2 text-sm font-medium transition-colors',
                   budgetMode === option.value
                     ? 'bg-brand text-brand-ink'
-                    : 'border border-line-strong text-ink-soft hover:bg-surface-muted',
+                    : 'border-line-strong text-ink-soft hover:bg-surface-muted border',
                 )}
               >
                 {option.label}
@@ -301,12 +301,12 @@ export function WeekSettingsForm({
       </Card>
 
       {error ? (
-        <p role="alert" className="rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger">
+        <p role="alert" className="bg-danger-soft text-danger rounded-xl px-3 py-2 text-sm">
           {error}
         </p>
       ) : null}
       {saved && !error ? (
-        <p role="status" className="rounded-xl bg-brand-soft px-3 py-2 text-sm text-brand-dark">
+        <p role="status" className="bg-brand-soft text-brand-dark rounded-xl px-3 py-2 text-sm">
           Instellingen opgeslagen.
         </p>
       ) : null}

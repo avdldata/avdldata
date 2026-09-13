@@ -10,7 +10,7 @@ export function DayCard({ day }: { day: PlannedDayResult }) {
     <li>
       <Link
         href={`/week/${day.dayIndex}`}
-        className="card flex items-stretch gap-0 overflow-hidden transition-colors hover:border-line-strong"
+        className="card hover:border-line-strong flex items-stretch gap-0 overflow-hidden transition-colors"
       >
         <Image
           src={day.recipe.imageUrl}
@@ -22,7 +22,7 @@ export function DayCard({ day }: { day: PlannedDayResult }) {
         <div className="min-w-0 flex-1 px-4 py-3">
           <p className="stat-label">{weekdayName(day.dayIndex)}</p>
           <h3 className="mt-0.5 line-clamp-2 font-semibold">{day.recipe.name}</h3>
-          <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-faint">
+          <p className="text-ink-faint mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
             <span className="inline-flex items-center gap-1">
               <Clock className="size-3" aria-hidden />
               {day.recipe.totalMinutes} min
@@ -37,7 +37,7 @@ export function DayCard({ day }: { day: PlannedDayResult }) {
             ))}
           </p>
         </div>
-        <div className="flex items-center pr-3 text-ink-faint">
+        <div className="text-ink-faint flex items-center pr-3">
           <ChevronRight className="size-5" aria-hidden />
         </div>
       </Link>

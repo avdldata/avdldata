@@ -5,7 +5,7 @@ export function Input({ className, ...props }: ComponentProps<'input'>) {
   return (
     <input
       className={cn(
-        'h-11 w-full rounded-xl border border-line-strong bg-surface px-3.5 text-base text-ink placeholder:text-ink-faint focus:border-brand focus:outline-2 focus:outline-offset-0 focus:outline-brand/30 disabled:opacity-60',
+        'border-line-strong bg-surface text-ink placeholder:text-ink-faint focus:border-brand focus:outline-brand/30 h-11 w-full rounded-xl border px-3.5 text-base focus:outline-2 focus:outline-offset-0 disabled:opacity-60',
         className,
       )}
       {...props}
@@ -17,7 +17,7 @@ export function Select({ className, ...props }: ComponentProps<'select'>) {
   return (
     <select
       className={cn(
-        'h-11 w-full appearance-none rounded-xl border border-line-strong bg-surface bg-[length:1.1rem] bg-[right_0.75rem_center] bg-no-repeat px-3.5 pr-10 text-base text-ink focus:border-brand focus:outline-2 focus:outline-offset-0 focus:outline-brand/30',
+        'border-line-strong bg-surface text-ink focus:border-brand focus:outline-brand/30 h-11 w-full appearance-none rounded-xl border bg-[length:1.1rem] bg-[right_0.75rem_center] bg-no-repeat px-3.5 pr-10 text-base focus:outline-2 focus:outline-offset-0',
         className,
       )}
       style={{
@@ -35,9 +35,9 @@ export function Label({ className, ...props }: ComponentProps<'label'>) {
 
 export function FieldError({ children }: { children?: string }) {
   if (!children) return null;
-  return <p className="mt-1.5 text-sm text-danger">{children}</p>;
+  return <p className="text-danger mt-1.5 text-sm">{children}</p>;
 }
 
 export function Hint({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <p className={cn('mt-1.5 text-xs text-ink-faint', className)}>{children}</p>;
+  return <p className={cn('text-ink-faint mt-1.5 text-xs', className)}>{children}</p>;
 }

@@ -1,9 +1,6 @@
 import 'server-only';
 import type { Household } from '@/domain/household/types';
-import {
-  DEFAULT_OPTIMIZER_CONFIG,
-  type OptimizerConfig,
-} from '@/domain/optimization/config';
+import { DEFAULT_OPTIMIZER_CONFIG, type OptimizerConfig } from '@/domain/optimization/config';
 import { optimiseWeek, type OptimizerInput } from '@/domain/optimization/week-optimizer';
 import { findReplacements, type ReplacementCandidate } from '@/domain/optimization/replace';
 import type { OptimizerResult, WeeklyPlan } from '@/domain/optimization/types';
@@ -89,7 +86,9 @@ async function buildOptimizerInput(
     },
     startDate: context.startDate,
     today: context.today,
-    ...(context.settings.maxMinutes !== undefined ? { maxMinutes: context.settings.maxMinutes } : {}),
+    ...(context.settings.maxMinutes !== undefined
+      ? { maxMinutes: context.settings.maxMinutes }
+      : {}),
     ...(lockedRecipeIds ? { lockedRecipeIds } : {}),
     config: configFor(context.settings),
     ...(developmentLogger() ? { logger: developmentLogger()! } : {}),
@@ -158,10 +157,7 @@ export async function loadCurrentPlan(
   return { stored, result };
 }
 
-export async function persistPlan(
-  context: PlanContext,
-  plan: WeeklyPlan,
-): Promise<StoredPlan> {
+export async function persistPlan(context: PlanContext, plan: WeeklyPlan): Promise<StoredPlan> {
   const repositories = getRepositories();
   return repositories.plans.save({
     householdId: context.household.id,

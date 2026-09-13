@@ -14,7 +14,7 @@ export function CardTitle({ className, ...props }: ComponentProps<'h2'>) {
 }
 
 export function CardDescription({ className, ...props }: ComponentProps<'p'>) {
-  return <p className={cn('mt-1 text-sm text-ink-soft', className)} {...props} />;
+  return <p className={cn('text-ink-soft mt-1 text-sm', className)} {...props} />;
 }
 
 export function CardContent({ className, ...props }: ComponentProps<'div'>) {
@@ -22,5 +22,5 @@ export function CardContent({ className, ...props }: ComponentProps<'div'>) {
 }
 
 export function CardFooter({ className, ...props }: ComponentProps<'div'>) {
-  return <div className={cn('border-t border-line px-5 py-3', className)} {...props} />;
+  return <div className={cn('border-line border-t px-5 py-3', className)} {...props} />;
 }

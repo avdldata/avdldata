@@ -20,10 +20,10 @@ export function DangerZone({ isDemo }: { isDemo: boolean }) {
       </form>
 
       {confirming ? (
-        <div className="rounded-xl border border-danger/40 bg-danger-soft p-4">
-          <p className="text-sm text-danger">
-            Hiermee verwijder je je account, je huishouden, alle gezinsgegevens en je weekmenu&apos;s.
-            Dit kan niet ongedaan worden gemaakt.
+        <div className="border-danger/40 bg-danger-soft rounded-xl border p-4">
+          <p className="text-danger text-sm">
+            Hiermee verwijder je je account, je huishouden, alle gezinsgegevens en je
+            weekmenu&apos;s. Dit kan niet ongedaan worden gemaakt.
           </p>
           <div className="mt-3 flex gap-2">
             <Button
@@ -51,7 +51,7 @@ export function DangerZone({ isDemo }: { isDemo: boolean }) {
             </Button>
           </div>
           {error ? (
-            <p role="alert" className="mt-2 text-sm text-danger">
+            <p role="alert" className="text-danger mt-2 text-sm">
               {error}
             </p>
           ) : null}
@@ -60,7 +60,7 @@ export function DangerZone({ isDemo }: { isDemo: boolean }) {
         <Button
           type="button"
           variant="ghost"
-          className="w-full justify-start text-danger hover:bg-danger-soft"
+          className="text-danger hover:bg-danger-soft w-full justify-start"
           onClick={() => setConfirming(true)}
           disabled={isDemo}
         >
@@ -69,7 +69,7 @@ export function DangerZone({ isDemo }: { isDemo: boolean }) {
         </Button>
       )}
       {isDemo ? (
-        <p className="text-xs text-ink-faint">
+        <p className="text-ink-faint text-xs">
           Het demo-account kan niet worden verwijderd, zodat de demo blijft werken.
         </p>
       ) : null}

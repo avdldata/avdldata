@@ -53,7 +53,7 @@ export function StorePicker({
                 'rounded-[var(--radius-pill)] px-4 py-2 text-sm font-medium transition-colors',
                 radiusKm === radius
                   ? 'bg-brand text-brand-ink'
-                  : 'border border-line-strong text-ink-soft hover:bg-surface-muted',
+                  : 'border-line-strong text-ink-soft hover:bg-surface-muted border',
               )}
             >
               {radius} km
@@ -63,14 +63,14 @@ export function StorePicker({
       </div>
 
       {loading ? (
-        <p className="py-6 text-center text-sm text-ink-faint">Supermarkten zoeken…</p>
+        <p className="text-ink-faint py-6 text-center text-sm">Supermarkten zoeken…</p>
       ) : stores.length === 0 ? (
-        <div className="rounded-xl bg-surface-muted px-4 py-5 text-center">
+        <div className="bg-surface-muted rounded-xl px-4 py-5 text-center">
           <p className="text-sm font-medium">Geen supermarkten binnen {radiusKm} km.</p>
-          <p className="mt-1 text-sm text-ink-soft">Probeer een groter zoekgebied.</p>
+          <p className="text-ink-soft mt-1 text-sm">Probeer een groter zoekgebied.</p>
         </div>
       ) : (
-        <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
+        <ul className="divide-line border-line bg-surface divide-y rounded-xl border">
           {stores.map((store) => {
             const checked = selected.includes(store.locationId);
             return (
@@ -89,12 +89,12 @@ export function StorePicker({
                         <Badge variant="brand">aanbevolen</Badge>
                       ) : null}
                     </span>
-                    <span className="mt-0.5 flex items-center gap-1 truncate text-xs text-ink-faint">
+                    <span className="text-ink-faint mt-0.5 flex items-center gap-1 truncate text-xs">
                       <MapPin className="size-3" aria-hidden />
                       {store.name}, {store.city}
                     </span>
                   </span>
-                  <span className="shrink-0 text-sm tabular-nums text-ink-soft">
+                  <span className="text-ink-soft shrink-0 text-sm tabular-nums">
                     {formatDistance(store.distanceKm)}
                   </span>
                 </label>

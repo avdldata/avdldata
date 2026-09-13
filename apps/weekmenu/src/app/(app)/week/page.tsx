@@ -26,7 +26,7 @@ export default async function WeekPage() {
           subtitle="Klaar om zeven avondmaaltijden te plannen die passen bij jullie en bij je portemonnee?"
         />
         {view.error ? (
-          <p role="alert" className="mb-4 rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger">
+          <p role="alert" className="bg-danger-soft text-danger mb-4 rounded-xl px-3 py-2 text-sm">
             {view.error}
           </p>
         ) : null}
@@ -68,7 +68,7 @@ export default async function WeekPage() {
         <WeekSummary plan={plan} chainNames={chainNames} />
 
         <section>
-          <h2 className="mb-3 text-sm font-semibold text-ink-soft">Het menu</h2>
+          <h2 className="text-ink-soft mb-3 text-sm font-semibold">Het menu</h2>
           <ul className="space-y-3">
             {plan.days.map((day) => (
               <DayCard key={day.dayIndex} day={day} />
@@ -80,7 +80,7 @@ export default async function WeekPage() {
 
         <GenerateWeekButton label="Maak een nieuwe week" variant="secondary" />
 
-        <p className="pb-2 text-center text-xs text-ink-faint">
+        <p className="text-ink-faint pb-2 text-center text-xs">
           Porties en voedingswaarden zijn richtwaarden. Weekmenu is geen medisch hulpmiddel.
         </p>
       </div>

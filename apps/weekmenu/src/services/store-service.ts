@@ -151,4 +151,3 @@ export async function buildStoreCandidates(
 
   return { candidates, unpricedProductCount: unpriced, priceStats };
 }
-

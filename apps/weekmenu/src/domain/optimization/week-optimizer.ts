@@ -3,10 +3,7 @@ import type { Household } from '../household/types';
 import type { IngredientIndex } from '../ingredients/types';
 import type { Recipe } from '../recipes/types';
 import type { ProductOffer } from '../stores/types';
-import {
-  calculateHouseholdNutrition,
-  type MemberNutrition,
-} from '../nutrition/calculate';
+import { calculateHouseholdNutrition, type MemberNutrition } from '../nutrition/calculate';
 import { planPortions, type RecipePortions } from '../nutrition/portions';
 import {
   aggregateWeekIngredients,
@@ -489,7 +486,9 @@ function priceWeek(input: PriceWeekInput): { plan: WeeklyPlan; optionCount: numb
     allocatedCostCents: dayCosts.get(day.dayIndex) ?? ZERO_CENTS,
     nutrition: {
       kcal: Math.round(day.recipe.nutritionPerServing.kcal * day.portions.totalServings),
-      proteinGrams: round1(day.recipe.nutritionPerServing.proteinGrams * day.portions.totalServings),
+      proteinGrams: round1(
+        day.recipe.nutritionPerServing.proteinGrams * day.portions.totalServings,
+      ),
       carbGrams: round1(day.recipe.nutritionPerServing.carbGrams * day.portions.totalServings),
       fatGrams: round1(day.recipe.nutritionPerServing.fatGrams * day.portions.totalServings),
       fiberGrams: round1(day.recipe.nutritionPerServing.fiberGrams * day.portions.totalServings),
@@ -735,7 +734,12 @@ export function addDays(isoDate: string, days: number): string {
 }
 
 function failure(
-  reason: 'NO_MEMBERS' | 'NO_STORES' | 'NO_CANDIDATE_RECIPES' | 'NOT_ENOUGH_CANDIDATE_RECIPES' | 'NO_PRICEABLE_WEEK',
+  reason:
+    | 'NO_MEMBERS'
+    | 'NO_STORES'
+    | 'NO_CANDIDATE_RECIPES'
+    | 'NOT_ENOUGH_CANDIDATE_RECIPES'
+    | 'NO_PRICEABLE_WEEK',
   message: string,
   excludedRecipes: readonly ExcludedRecipe[],
 ): OptimizerResult {
@@ -745,4 +749,3 @@ function failure(
 function round1(value: number): number {
   return Math.round(value * 10) / 10;
 }
-

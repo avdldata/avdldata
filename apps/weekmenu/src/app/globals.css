@@ -59,11 +59,11 @@ body {
 
 @layer components {
   .card {
-    @apply rounded-[var(--radius-card)] border border-line bg-surface;
+    @apply border-line bg-surface rounded-[var(--radius-card)] border;
   }
 
   .field-label {
-    @apply mb-1.5 block text-sm font-medium text-ink-soft;
+    @apply text-ink-soft mb-1.5 block text-sm font-medium;
   }
 
   .stat-value {
@@ -71,7 +71,7 @@ body {
   }
 
   .stat-label {
-    @apply text-xs font-medium text-ink-faint;
+    @apply text-ink-faint text-xs font-medium;
   }
 }
 

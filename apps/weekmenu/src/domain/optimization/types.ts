@@ -127,5 +127,4 @@ export interface OptimizerFailure {
 }
 
 export type OptimizerResult =
-  | { readonly status: 'OK'; readonly plan: WeeklyPlan }
-  | OptimizerFailure;
+  { readonly status: 'OK'; readonly plan: WeeklyPlan } | OptimizerFailure;

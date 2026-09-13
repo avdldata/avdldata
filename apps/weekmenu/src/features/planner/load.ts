@@ -4,7 +4,11 @@ import type { Household } from '@/domain/household/types';
 import type { OptimizerResult, WeeklyPlan } from '@/domain/optimization/types';
 import type { HistoricalPriceStats } from '@/domain/pricing/price-history';
 import { getRepositories } from '@/data';
-import { DEFAULT_WEEK_SETTINGS, type StoredPlan, type WeekSettings } from '@/data/repositories/types';
+import {
+  DEFAULT_WEEK_SETTINGS,
+  type StoredPlan,
+  type WeekSettings,
+} from '@/data/repositories/types';
 import { requireUser } from '@/services/auth';
 import { loadContext, repriceStoredPlan, type PlanContext } from '@/services/plan-service';
 import { buildStoreCandidates } from '@/services/store-service';

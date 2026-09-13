@@ -147,7 +147,9 @@ export function evaluateStoreCombination(
 
   const categoryWinners = new Map<string, string>();
   for (const [category, byChain] of categoryTotals) {
-    const winner = [...byChain.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0];
+    const winner = [...byChain.entries()].sort(
+      (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
+    )[0];
     if (winner) categoryWinners.set(category, winner[0]);
   }
 
@@ -227,9 +229,7 @@ export function enumerateStoreOptions(input: StoreOptionsInput): StoreOption[] {
  * Visiting two branches of the same chain is pointless: prices are the same and
  * you drive twice. Keep only the nearest selected branch per chain.
  */
-export function representativeStoresPerChain(
-  stores: readonly StoreCandidate[],
-): StoreCandidate[] {
+export function representativeStoresPerChain(stores: readonly StoreCandidate[]): StoreCandidate[] {
   const nearest = new Map<string, StoreCandidate>();
   for (const store of stores) {
     const current = nearest.get(store.chain.id);
@@ -262,4 +262,3 @@ function combinations<T>(items: readonly T[], min: number, max: number): T[][] {
   walk(0);
   return result.filter((c) => c.length >= min);
 }
-

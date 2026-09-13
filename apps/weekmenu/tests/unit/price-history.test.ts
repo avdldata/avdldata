@@ -74,12 +74,20 @@ describe('price history', () => {
 
 describe('reference price', () => {
   it('is the historical median, not the current price', () => {
-    const stats = getHistoricalPriceStats('p1', [weekly(2, 599), weekly(1, 599), weekly(0, 449)], window);
+    const stats = getHistoricalPriceStats(
+      'p1',
+      [weekly(2, 599), weekly(1, 599), weekly(0, 449)],
+      window,
+    );
     expect(referencePriceCents(stats, cents(449))).toBe(599);
   });
 
   it('never sits below the current price, so no discount is invented', () => {
-    const stats = getHistoricalPriceStats('p1', [weekly(2, 399), weekly(1, 399), weekly(0, 599)], window);
+    const stats = getHistoricalPriceStats(
+      'p1',
+      [weekly(2, 399), weekly(1, 399), weekly(0, 599)],
+      window,
+    );
     expect(referencePriceCents(stats, cents(599))).toBe(599);
   });
 

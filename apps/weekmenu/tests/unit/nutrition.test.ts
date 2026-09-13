@@ -27,7 +27,13 @@ describe('Mifflin-St Jeor', () => {
 describe('member nutrition', () => {
   it('applies the activity factor and the dinner share', () => {
     const result = calculateMemberNutrition(
-      makeMember({ sex: 'man', heightCm: 175, weightKg: 87, ageYears: 38, activityLevel: 'licht-actief' }),
+      makeMember({
+        sex: 'man',
+        heightCm: 175,
+        weightKg: 87,
+        ageYears: 38,
+        activityLevel: 'licht-actief',
+      }),
       TODAY,
     );
     expect(result.bmrKcal).toBe(1779);

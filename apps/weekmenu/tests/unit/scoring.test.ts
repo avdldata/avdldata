@@ -50,7 +50,11 @@ describe('preference scoring', () => {
   });
 
   it('is neutral when nothing is liked or disliked', () => {
-    const score = scoreRecipePreferences(recipe, { ingredients: [], cuisines: [], tags: [] }, weights);
+    const score = scoreRecipePreferences(
+      recipe,
+      { ingredients: [], cuisines: [], tags: [] },
+      weights,
+    );
     expect(score.penaltyCents).toBe(0);
   });
 
@@ -91,11 +95,20 @@ describe('nutrition scoring', () => {
 
   const onTargetDay = {
     recipe: makeRecipe('good', {
-      nutritionPerServing: { kcal: 600, proteinGrams: 40, carbGrams: 60, fatGrams: 18, fiberGrams: 12, saltGrams: 1.2 },
+      nutritionPerServing: {
+        kcal: 600,
+        proteinGrams: 40,
+        carbGrams: 60,
+        fatGrams: 18,
+        fiberGrams: 12,
+        saltGrams: 1.2,
+      },
     }),
     portions: {
       recipeId: 'good',
-      perMember: [{ memberId: 'a', name: 'A', factor: 1.2, kcal: 720, targetKcal: 720, clamped: false }],
+      perMember: [
+        { memberId: 'a', name: 'A', factor: 1.2, kcal: 720, targetKcal: 720, clamped: false },
+      ],
       totalServings: 1.2,
     },
   };
@@ -116,11 +129,23 @@ describe('nutrition scoring', () => {
       ...onTargetDay,
       portions: {
         ...onTargetDay.portions,
-        perMember: [{ memberId: 'a', name: 'A', factor: 0.6, kcal: 360, targetKcal: 720, clamped: true }],
+        perMember: [
+          { memberId: 'a', name: 'A', factor: 0.6, kcal: 360, targetKcal: 720, clamped: true },
+        ],
       },
     };
-    const good = scoreNutrition({ days: [onTargetDay], members, nutritionConfig: DEFAULT_NUTRITION_CONFIG, weights });
-    const bad = scoreNutrition({ days: [offTarget], members, nutritionConfig: DEFAULT_NUTRITION_CONFIG, weights });
+    const good = scoreNutrition({
+      days: [onTargetDay],
+      members,
+      nutritionConfig: DEFAULT_NUTRITION_CONFIG,
+      weights,
+    });
+    const bad = scoreNutrition({
+      days: [offTarget],
+      members,
+      nutritionConfig: DEFAULT_NUTRITION_CONFIG,
+      weights,
+    });
     expect(bad.penaltyCents).toBeGreaterThan(good.penaltyCents);
     expect(bad.totalKcalDeviation).toBe(360);
   });
@@ -128,11 +153,23 @@ describe('nutrition scoring', () => {
   it('notices a protein shortfall and a salt excess', () => {
     const salty = {
       recipe: makeRecipe('salty', {
-        nutritionPerServing: { kcal: 600, proteinGrams: 3, carbGrams: 90, fatGrams: 18, fiberGrams: 1, saltGrams: 6 },
+        nutritionPerServing: {
+          kcal: 600,
+          proteinGrams: 3,
+          carbGrams: 90,
+          fatGrams: 18,
+          fiberGrams: 1,
+          saltGrams: 6,
+        },
       }),
       portions: onTargetDay.portions,
     };
-    const result = scoreNutrition({ days: [salty], members, nutritionConfig: DEFAULT_NUTRITION_CONFIG, weights });
+    const result = scoreNutrition({
+      days: [salty],
+      members,
+      nutritionConfig: DEFAULT_NUTRITION_CONFIG,
+      weights,
+    });
     expect(result.proteinShortfallGrams).toBeGreaterThan(0);
     expect(result.saltExcessGrams).toBeGreaterThan(0);
     expect(result.fiberShortfallGrams).toBeGreaterThan(0);
@@ -207,8 +244,6 @@ describe('week scoring', () => {
       nutrition: { ...nutrition, penaltyCents: euros(6) },
     });
     const pricierButBalanced = scoreWeek({ ...base, option: option(5000) });
-    expect(pricierButBalanced.totalPenaltyCents).toBeLessThan(
-      cheapButUnbalanced.totalPenaltyCents,
-    );
+    expect(pricierButBalanced.totalPenaltyCents).toBeLessThan(cheapButUnbalanced.totalPenaltyCents);
   });
 });

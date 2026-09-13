@@ -39,7 +39,14 @@ export async function lookupNearbyStoresAction(input: {
   ok: boolean;
   city?: string;
   error?: string;
-  stores?: { locationId: string; chainId: string; chainName: string; name: string; city: string; distanceKm: number }[];
+  stores?: {
+    locationId: string;
+    chainId: string;
+    chainName: string;
+    name: string;
+    city: string;
+    distanceKm: number;
+  }[];
   suggested?: string[];
 }> {
   const parsed = householdSchema
@@ -125,7 +132,7 @@ export async function completeOnboardingAction(payload: OnboardingPayload): Prom
   });
 
   const settings: WeekSettings = {
-    ...(await repositories.settings.get(saved.id)) ?? DEFAULT_WEEK_SETTINGS,
+    ...((await repositories.settings.get(saved.id)) ?? DEFAULT_WEEK_SETTINGS),
     selectedLocationIds: payload.selectedLocationIds,
     searchRadiusKm: (payload.searchRadiusKm as WeekSettings['searchRadiusKm']) ?? 10,
   };

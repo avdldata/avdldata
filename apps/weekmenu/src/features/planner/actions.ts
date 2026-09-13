@@ -25,7 +25,6 @@ export interface PlannerResult {
   readonly error?: string;
 }
 
-
 function toCents(value: string): Cents | undefined {
   if (value === '') return undefined;
   return cents(Number(value.replace(',', '.')) * 100);
@@ -165,10 +164,7 @@ export async function replaceDishAction(
 
   // Re-price the whole week before saving: a swap changes what you buy, which
   // changes packs, which can change which supermarket is cheapest.
-  const repriced = await repriceStoredPlan(
-    { ...context, startDate: stored.startDate },
-    recipeIds,
-  );
+  const repriced = await repriceStoredPlan({ ...context, startDate: stored.startDate }, recipeIds);
   if (repriced.status !== 'OK') return { ok: false, error: repriced.message };
 
   await repositories.plans.save({
