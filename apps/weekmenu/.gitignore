@@ -10,3 +10,7 @@ test-results
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+
+# Generated from src/data/seed by `pnpm seed:sql`. Anchored to the current
+# week, so it is reproducible rather than versioned.
+supabase/seed.sql
