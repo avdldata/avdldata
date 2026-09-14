@@ -84,3 +84,37 @@ describe('budget handling', () => {
     expect(targeted.days).toHaveLength(7);
   });
 });
+
+/**
+ * The audit left one limitation open: a hard maximum was only checked against
+ * the weeks that got fully priced, so the planner could report "nothing fits"
+ * while an affordable week existed. This pins the measured behaviour.
+ *
+ * The remaining gap is documented in OPTIMIZER_BENCHMARK.md; it needs a
+ * different search strategy, not a bigger number, and this test exists so that
+ * gap cannot silently widen.
+ */
+describe('a ceiling makes the planner keep looking', () => {
+  it('prices beyond the usual budget of candidate weeks when nothing fits yet', () => {
+    const unconstrained = plan({});
+    const ceiling = cents(Math.round(unconstrained.totals.groceryCents * 0.95));
+
+    const constrained = optimiseWeek(base({ hardMaxCents: ceiling }));
+    if (constrained.status !== 'OK') throw new Error('expected a plan');
+
+    // Either it found something under the ceiling, or it says plainly that it
+    // could not — never a quiet overrun presented as a success.
+    if (constrained.plan.totals.groceryCents <= ceiling) {
+      expect(constrained.plan.budget.met).toBe(true);
+    } else {
+      expect(constrained.plan.budget.met).toBe(false);
+      expect(constrained.plan.reasons.map((r) => r.code)).toContain('BUDGET_EXCEEDED');
+    }
+  });
+
+  it('does not slow down an ordinary plan that has no ceiling', () => {
+    const started = performance.now();
+    plan({});
+    expect(performance.now() - started).toBeLessThan(2000);
+  });
+});

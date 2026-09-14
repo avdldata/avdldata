@@ -123,3 +123,75 @@ export function varietyScore(recipes: readonly Recipe[]): number {
   const max = recipes.length;
   return (cuisines / max + proteins / max + carbs / max) / 3;
 }
+
+/**
+ * The arrangement of these dishes that breaks the fewest variety rules.
+ *
+ * Only "no more than N of the same cuisine in a row" depends on the order; every
+ * other rule counts over the whole set. So a week can carry a repetition penalty
+ * purely because of the order it happened to be built in — a penalty nobody
+ * chose and the user cannot see the point of.
+ *
+ * Branch and bound over the permutations, pruning as soon as the partial
+ * arrangement has already broken as many rules as the best complete one found.
+ * Adding a dish can only add violations, so that bound is sound, and with seven
+ * dishes the search is exact rather than merely good.
+ *
+ * Exactness matters beyond tidiness: the benchmark compares this optimizer with
+ * an exhaustive solver that calls the very same function. An earlier version
+ * bailed out and returned the caller's own order when no clean arrangement
+ * existed, which made the answer depend on who was asking — and let the
+ * heuristic "beat" the exhaustive optimum on two seeds. A comparison where the
+ * two sides disagree about the score measures nothing.
+ */
+export function bestOrdering(
+  recipes: readonly Recipe[],
+  config: DiversityConfig,
+  maxNodes = 200_000,
+): readonly Recipe[] {
+  if (recipes.length < 2) return recipes;
+
+  // Sorted by id so the answer depends on the set alone, never on the order it
+  // arrived in.
+  const pool = [...recipes].sort((a, b) => a.id.localeCompare(b.id));
+  let best: readonly Recipe[] = pool;
+  let bestViolations = weekDiversityViolations(pool, config).length;
+  if (bestViolations === 0) return pool;
+
+  const used = new Array<boolean>(pool.length).fill(false);
+  const current: Recipe[] = [];
+  let nodes = 0;
+
+  const walk = (violationsSoFar: number): boolean => {
+    if (nodes > maxNodes) return false;
+    nodes += 1;
+
+    if (current.length === pool.length) {
+      if (violationsSoFar < bestViolations) {
+        bestViolations = violationsSoFar;
+        best = [...current];
+      }
+      return bestViolations === 0;
+    }
+
+    for (let index = 0; index < pool.length; index += 1) {
+      if (used[index]) continue;
+      const candidate = pool[index]!;
+      const added = violationsIfAdded(current, candidate, config).length;
+      // More dishes can only add violations, so a partial arrangement that is
+      // already this bad cannot become better than the incumbent.
+      if (violationsSoFar + added >= bestViolations) continue;
+
+      used[index] = true;
+      current.push(candidate);
+      const done = walk(violationsSoFar + added);
+      current.pop();
+      used[index] = false;
+      if (done) return true;
+    }
+    return false;
+  };
+
+  walk(0);
+  return best;
+}

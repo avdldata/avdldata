@@ -131,7 +131,17 @@ export type PromotionParams =
   | { readonly type: 'FIXED_PRICE'; readonly unitPriceCents: Cents }
   | { readonly type: 'PERCENT_OFF'; readonly percent: number }
   | { readonly type: 'ONE_PLUS_ONE' }
-  | { readonly type: 'N_FOR_X'; readonly bundleSize: number; readonly bundlePriceCents: Cents };
+  | { readonly type: 'N_FOR_X'; readonly bundleSize: number; readonly bundlePriceCents: Cents }
+  /**
+   * Every nth item is discounted: "2e halve prijs" is `{ nth: 2, percent: 50 }`
+   * and "3e gratis" is `{ nth: 3, percent: 100 }`.
+   *
+   * This is the shape `PERCENT_OFF` cannot express. A percentage off with a
+   * minimum quantity discounts *every* pack you buy, which is a different and
+   * cheaper offer than discounting only the second one — modelling the Dutch
+   * standard that way understates the bill.
+   */
+  | { readonly type: 'BUY_NTH_DISCOUNT'; readonly nth: number; readonly percent: number };
 
 export interface Promotion {
   readonly id: string;

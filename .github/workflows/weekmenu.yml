@@ -1,0 +1,198 @@
+name: Weekmenu
+
+# Every push to main and every pull request against it. Nothing else — a
+# workflow that runs on branches nobody reviews only teaches people to ignore
+# the red cross.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/weekmenu/**'
+      - '.github/workflows/weekmenu.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/weekmenu/**'
+      - '.github/workflows/weekmenu.yml'
+
+# A second push to the same branch cancels the first: reviewing the results of
+# a commit that has already been replaced wastes both runners and attention.
+concurrency:
+  group: weekmenu-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: apps/weekmenu
+
+env:
+  # The app runs entirely on its seed in demo mode. CI therefore needs no
+  # secrets at all, and must not gain any: a pipeline that only passes with
+  # production credentials cannot be run by a contributor, and a pull request
+  # from a fork would silently skip the very checks it needs most.
+  DATA_ADAPTER: demo
+  # Node's own test-friendly defaults; nothing here reads a developer's machine.
+  CI: 'true'
+  NEXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  verify:
+    name: Typecheck, lint, format and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # pnpm before Node, so actions/setup-node can find it and wire up its
+      # store cache. The version comes from the `packageManager` field in
+      # apps/weekmenu/package.json — the same pin developers get through
+      # corepack, so CI and a laptop resolve identical dependencies.
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: apps/weekmenu/package.json
+
+      - name: Install Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/weekmenu/pnpm-lock.yaml
+
+      # --frozen-lockfile is the whole point: if the lockfile does not already
+      # satisfy package.json the install fails instead of quietly resolving
+      # something new. That is what makes this run reproducible rather than
+      # merely repeatable.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm test
+      - run: pnpm build
+
+      # Keep the build so the end-to-end job does not rebuild it. Node modules
+      # are not shared: the e2e job installs from the same lockfile, which is
+      # cheap with the store cache and keeps the two jobs independent.
+      - name: Upload the build
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekmenu-build
+          path: |
+            apps/weekmenu/.next
+            !apps/weekmenu/.next/cache
+          retention-days: 3
+          if-no-files-found: error
+
+  e2e:
+    name: End-to-end
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: apps/weekmenu/package.json
+
+      - name: Install Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/weekmenu/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download the build
+        uses: actions/download-artifact@v4
+        with:
+          name: weekmenu-build
+          path: apps/weekmenu/.next
+
+      # Cache the browser binary, not the browser install step: Playwright
+      # refuses to run against a version it did not install, and downloading
+      # ~150 MB on every run is the slowest thing in this pipeline.
+      - name: Cache the Playwright browser
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('apps/weekmenu/pnpm-lock.yaml') }}
+
+      - name: Install Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Install the browser's system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps chromium
+
+      # The demo store lives in a JSON file under .data. A checkout never has
+      # one, and the Playwright global setup deletes it anyway — but deleting it
+      # here as well makes the guarantee explicit rather than implied.
+      - name: Start from an empty demo store
+        run: rm -rf .data test-results playwright-report
+
+      - name: Run the end-to-end suite
+        run: pnpm test:e2e
+
+      # Traces and screenshots are the difference between "CI is red again" and
+      # a diagnosis. Uploaded only on failure, because a green run's artefacts
+      # are noise nobody opens.
+      - name: Upload failure artefacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failures
+          path: |
+            apps/weekmenu/test-results
+            apps/weekmenu/playwright-report
+          retention-days: 14
+          if-no-files-found: warn
+
+  benchmark:
+    name: Optimizer quality
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: apps/weekmenu/package.json
+
+      - name: Install Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/weekmenu/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # A short run on every commit: enough to catch a correctness regression or
+      # a collapse in solution quality, short enough that nobody starts skipping
+      # it. The full 500-scenario run lives in OPTIMIZER_BENCHMARK.md and is
+      # refreshed deliberately, not on every push.
+      - name: Benchmark the optimizer against the exhaustive solver
+        run: pnpm bench 120
+
+      - name: Upload the benchmark output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: optimizer-benchmark
+          path: apps/weekmenu/benchmark.json
+          retention-days: 14
+          if-no-files-found: ignore

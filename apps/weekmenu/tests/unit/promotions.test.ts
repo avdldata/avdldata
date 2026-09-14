@@ -124,3 +124,61 @@ describe('promotion pricing', () => {
     expect(() => priceForUnits(offer, -1)).toThrow(RangeError);
   });
 });
+
+describe('every nth item discounted', () => {
+  /**
+   * The Dutch classic the model could not express until now. A percentage off
+   * with a minimum quantity discounts *every* pack, which is a different and
+   * much cheaper offer than discounting only the second one — using it for
+   * "2e halve prijs" understates the bill by a quarter.
+   */
+  const offer = makeOffer({ packAmount: 400, priceCents: 300 });
+
+  const secondHalfPrice = makePromotion({ type: 'BUY_NTH_DISCOUNT', nth: 2, percent: 50 });
+  const thirdFree = makePromotion({ type: 'BUY_NTH_DISCOUNT', nth: 3, percent: 100 });
+
+  it('charges full price for a single pack', () => {
+    expect(priceForUnits({ ...offer, promotion: secondHalfPrice }, 1)).toBe(300);
+  });
+
+  it('halves only the second pack', () => {
+    // Not 300: that would be half off both.
+    expect(priceForUnits({ ...offer, promotion: secondHalfPrice }, 2)).toBe(450);
+  });
+
+  it('starts a fresh pair at the third pack', () => {
+    expect(priceForUnits({ ...offer, promotion: secondHalfPrice }, 3)).toBe(750);
+    expect(priceForUnits({ ...offer, promotion: secondHalfPrice }, 4)).toBe(900);
+  });
+
+  it('gives the third one away without touching the first two', () => {
+    expect(priceForUnits({ ...offer, promotion: thirdFree }, 2)).toBe(600);
+    expect(priceForUnits({ ...offer, promotion: thirdFree }, 3)).toBe(600);
+    expect(priceForUnits({ ...offer, promotion: thirdFree }, 6)).toBe(1200);
+  });
+
+  it('respects a minimum quantity like every other promotion', () => {
+    const fromThree = makePromotion(
+      { type: 'BUY_NTH_DISCOUNT', nth: 2, percent: 50 },
+      {
+        minUnits: 3,
+      },
+    );
+    expect(priceForUnits({ ...offer, promotion: fromThree }, 2)).toBe(600);
+    expect(priceForUnits({ ...offer, promotion: fromThree }, 3)).toBe(750);
+  });
+
+  it('never charges more than the shelf price', () => {
+    const uselessOffer = makePromotion({ type: 'BUY_NTH_DISCOUNT', nth: 9, percent: 10 });
+    for (let units = 1; units <= 5; units += 1) {
+      expect(priceForUnits({ ...offer, promotion: uselessOffer }, units)).toBe(300 * units);
+    }
+  });
+
+  it('reports the saving against the shelf price, not the reference price', () => {
+    const withPromotion = { ...offer, promotion: secondHalfPrice };
+    expect(promotionApplies(withPromotion, 2)).toBe(true);
+    expect(promotionSavings(withPromotion, 2)).toBe(150);
+    expect(promotionSavings(withPromotion, 1)).toBe(0);
+  });
+});

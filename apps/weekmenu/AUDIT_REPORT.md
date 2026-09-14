@@ -262,17 +262,17 @@ _Opgelost._ `extraStorePenaltyFor()` valt terug op de middelste instelling.
 
 ### P2 — deels opgelost, rest genoteerd
 
-| #    | Bevinding                                                                                                                                                                  | Status                |
-| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
-| P2-1 | `resolveAge` negeerde de meegegeven config en gebruikte altijd de default                                                                                                  | opgelost              |
-| P2-2 | Zonder coördinaten werd (0, 0) als thuisadres doorgegeven, wat elke winkel 5.900 km ver maakte                                                                             | opgelost              |
-| P2-3 | `maxStores: 0` werd stil als 1 behandeld in plaats van "alle geselecteerde ketens"                                                                                         | opgelost              |
-| P2-4 | Het grootboek deed alsof een onverkrijgbaar ingredient precies genoeg was ingekocht                                                                                        | opgelost              |
-| P2-5 | Vijf `export *`-barrels die niets importeerde                                                                                                                              | verwijderd            |
-| P2-6 | Het scherm Supermarkten rekende zelf de goedkoopste winkel uit in plaats van `plan.cheapestOption` te gebruiken, en zette goedkoopst en advies niet expliciet naast elkaar | opgelost              |
-| P2-7 | Een 20 px hoge inline link op mobiel                                                                                                                                       | opgelost              |
-| P2-8 | `PERCENT_OFF` met `minUnits: 2` modelleert "beide pakken 50 % korting", niet "2e halve prijs"                                                                              | open, zie beperkingen |
-| P2-9 | Tien veganistische recepten is aan de magere kant                                                                                                                          | open, zie beperkingen |
+| #    | Bevinding                                                                                                                                                                  | Status                       |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| P2-1 | `resolveAge` negeerde de meegegeven config en gebruikte altijd de default                                                                                                  | opgelost                     |
+| P2-2 | Zonder coördinaten werd (0, 0) als thuisadres doorgegeven, wat elke winkel 5.900 km ver maakte                                                                             | opgelost                     |
+| P2-3 | `maxStores: 0` werd stil als 1 behandeld in plaats van "alle geselecteerde ketens"                                                                                         | opgelost                     |
+| P2-4 | Het grootboek deed alsof een onverkrijgbaar ingredient precies genoeg was ingekocht                                                                                        | opgelost                     |
+| P2-5 | Vijf `export *`-barrels die niets importeerde                                                                                                                              | verwijderd                   |
+| P2-6 | Het scherm Supermarkten rekende zelf de goedkoopste winkel uit in plaats van `plan.cheapestOption` te gebruiken, en zette goedkoopst en advies niet expliciet naast elkaar | opgelost                     |
+| P2-7 | Een 20 px hoge inline link op mobiel                                                                                                                                       | opgelost                     |
+| P2-8 | `PERCENT_OFF` met `minUnits: 2` modelleert "beide pakken 50 % korting", niet "2e halve prijs"                                                                              | opgelost: `BUY_NTH_DISCOUNT` |
+| P2-9 | Tien veganistische recepten is aan de magere kant                                                                                                                          | opgelost: nu zeventien       |
 
 ---
 
@@ -399,32 +399,63 @@ volgorde waarin winkels en recepten worden aangeleverd.
 
 ## Bekende beperkingen
 
-Deze staan bewust open. Geen ervan blokkeert doorbouwen.
+### Opgelost na de audit
 
-1. **"2e halve prijs" kan niet correct gemodelleerd worden.** `PERCENT_OFF` met
-   `minUnits: 2` geeft korting op _beide_ pakken. De echte Nederlandse actie geeft
-   korting op het tweede. Dat vraagt een eigen promotietype; buiten scope van deze
-   audit. Het misleidende commentaar bij `minUnits` is wel rechtgezet.
-2. **Tien veganistische recepten,** waarvan zeven op peulvruchten. Werkt sinds
-   P0-3, maar zo'n week herhaalt zichzelf. Recepten schrijven is content, geen
-   audit.
-3. **Een hard budgetmaximum kijkt naar de twintig volledig doorgerekende weken.**
-   Zie boven.
-4. **`ProductSelectionWeights.nutrition` staat op nul.** Bewust: maar 78 van de 728
+De vier onderstaande stonden hier open; ze zijn inmiddels weg. De volledige
+meting staat in [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md).
+
+1. ~~**"2e halve prijs" kan niet correct gemodelleerd worden.**~~ Er is een
+   generiek promotietype `BUY_NTH_DISCOUNT` bijgekomen: `{ nth: 2, percent: 50 }`
+   is "2e halve prijs", `{ nth: 3, percent: 100 }` is "3e gratis". Alleen elke
+   n-de verpakking krijgt korting, en een groep begint daarna opnieuw. Zeven
+   tests, inclusief het geval dat het mis ging: twee pakken van € 3,00 kosten
+   € 4,50 en niet € 3,00.
+2. ~~**Tien veganistische recepten, waarvan zeven op peulvruchten.**~~ Nu
+   zeventien, verdeeld over peulvrucht (8), plantaardig vlees (5) en
+   groentegerechten zonder uitgesproken eiwitbron (4), in zes keukens. Een
+   veganistische week haalt de variatieregels nu op eigen kracht.
+3. ~~**Een hard budgetmaximum kijkt naar de twintig volledig doorgerekende
+   weken.**~~ Deels: gemeten met de uitputtende solver over 600 gevallen miste de
+   planner een betaalbare week in 14 van de 196 haalbare gevallen (7,1 %); door
+   door te zoeken zolang niets onder het plafond blijft is dat nu 8 (4,1 %). De
+   rest vraagt een andere zoekstrategie en staat in het benchmarkrapport.
+4. ~~**Geen CI.**~~ `.github/workflows/weekmenu.yml` draait op elke push en pull
+   request naar `main`: typecheck, lint, format, tests, productiebuild, de
+   Playwright-suite met traces en screenshots bij een fout, en een korte
+   optimizer-benchmark. Zonder enige secret — de app draait op zijn eigen seed,
+   dus een pull request uit een fork krijgt precies dezelfde controles.
+
+### Nog open
+
+Geen ervan blokkeert doorbouwen.
+
+1. **De optimizer haalt niet altijd het optimum.** Over 500 kleine, exact
+   oplosbare scenario's: 90 % exact, gemiddelde afwijking 0,27 %, p95 1,68 %,
+   slechtste geval 11,68 %. Dat laatste is boven de gestelde grens van 10 %. De
+   oorzaak is bekend en ontleed — de kostenschatting waarmee de zoektocht
+   kandidaten rangschikt kent de winkelverdeling niet — en het gevallenboek staat
+   vastgepind in de regressiesuite.
+2. **`ProductSelectionWeights.nutrition` staat op nul.** Bewust: maar 78 van de 728
    producten hebben etiketwaarden, en scoren op een half gevulde kolom bevoordeelt
    stilletjes de producten die toevallig data hebben.
-5. **Alle prijzen zijn demodata.** Plausibel voor Nederland, niet geverifieerd,
+3. **Alle prijzen zijn demodata.** Plausibel voor Nederland, niet geverifieerd,
    niet van een supermarkt. Zo staat het ook in de UI.
-6. **Eén filiaal per keten.** Bewuste beperking tegen combinatorische explosie;
+4. **Eén filiaal per keten.** Bewuste beperking tegen combinatorische explosie;
    het model kent wel prijzen per locatie.
-7. **Geen CI.** Alles draait lokaal via `pnpm verify`. Bij meerdere ontwikkelaars
-   is dat te weinig.
-8. **De app is geen medisch hulpmiddel.** Porties zijn richtwaarden op basis van
+5. **De benchmark meet alleen kleine werelden.** Twaalf recepten is wat een
+   uitputtende solver aankan. Of de kwaliteit standhoudt bij vijftig kandidaten
+   is niet gemeten en valt met deze methode ook niet te meten.
+6. **De app is geen medisch hulpmiddel.** Porties zijn richtwaarden op basis van
    Mifflin-St Jeor en populatie-gemiddelden. Dat staat in de UI en in de docs.
 
 ---
 
 ## Aanbevolen volgende stap
+
+> **Bijgewerkt na de vervolgopdracht.** CI staat er, en de optimizer is
+> kwantitatief doorgemeten: zie [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md).
+> De aanbeveling hieronder is wat er toen stond; punt 1 en 2 zijn gedaan, punt 3
+> is gedeeltelijk gedaan (zeven vegan recepten erbij).
 
 **Zet CI op voordat er functionaliteit bij komt.**
 

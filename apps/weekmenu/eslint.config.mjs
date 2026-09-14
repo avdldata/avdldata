@@ -63,6 +63,39 @@ const domainLayerRule = {
   },
 };
 
+/**
+ * The exhaustive reference solver exists to measure the production optimizer,
+ * not to run beside it. Its cost grows as C(n, 7), so a stray import from a
+ * page would turn a snappy screen into a hang under exactly the conditions
+ * nobody tests: a large catalogue. Tests, benchmarks and scripts may use it;
+ * everything that ships to a user may not.
+ */
+const referenceSolverRule = {
+  files: [
+    'src/app/**/*.{ts,tsx}',
+    'src/features/**/*.{ts,tsx}',
+    'src/services/**/*.ts',
+    'src/data/**/*.ts',
+  ],
+  rules: {
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: [
+              '@/domain/optimization/reference-solver',
+              '**/domain/optimization/reference-solver',
+            ],
+            message:
+              'The exhaustive solver is for tests and benchmarks only — it is exponential by design. Use optimiseWeek.',
+          },
+        ],
+      },
+    ],
+  },
+};
+
 const config = [
   ...nextCoreWebVitals,
   ...nextTypescript,
@@ -87,6 +120,7 @@ const config = [
     },
   },
   domainLayerRule,
+  referenceSolverRule,
   {
     // Seed and build scripts are command-line tools; printing is the point.
     files: ['scripts/**/*.ts'],

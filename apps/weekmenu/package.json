@@ -21,7 +21,9 @@
     "seed:sql": "tsx scripts/generate-seed-sql.ts",
     "verify": "pnpm typecheck && pnpm lint && pnpm test",
     "seed:images": "tsx scripts/generate-recipe-images.ts",
-    "db:verify": "pnpm seed:sql && tsx scripts/db-verify.ts"
+    "db:verify": "pnpm seed:sql && tsx scripts/db-verify.ts",
+    "bench": "tsx scripts/benchmark-optimizer.ts",
+    "bench:perf": "tsx scripts/benchmark-performance.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

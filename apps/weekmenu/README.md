@@ -48,14 +48,23 @@ niets geïnstalleerd hebt.
 | --------------------------- | ---------------------------------------------------- |
 | `pnpm dev`                  | Ontwikkelserver, demo-modus                          |
 | `pnpm build` / `pnpm start` | Productiebuild draaien                               |
-| `pnpm test`                 | 214 unit- en integratietests                         |
+| `pnpm test`                 | Unit- en integratietests                             |
 | `pnpm test:e2e`             | Playwright: de volledige primaire flow               |
 | `pnpm typecheck`            | TypeScript strict                                    |
 | `pnpm lint`                 | ESLint, inclusief de laaggrens rond `src/domain`     |
+| `pnpm format:check`         | Prettier controleren zonder te schrijven             |
 | `pnpm verify`               | Typecheck, lint en tests achter elkaar               |
+| `pnpm bench [n]`            | Optimizer versus uitputtend zoeken, n scenario's     |
+| `pnpm bench:perf`           | Hoe lang een week plannen duurt                      |
 | `pnpm seed:sql`             | `supabase/seed.sql` genereren uit de TypeScript-seed |
 | `pnpm seed:images`          | Placeholder-illustraties per recept                  |
 | `pnpm db:verify`            | Migraties en seed in een PostgreSQL laden            |
+
+Elke push en pull request naar `main` draait typecheck, lint, format, tests,
+productiebuild, de Playwright-suite en een korte optimizer-benchmark — zie
+[.github/workflows/weekmenu.yml](../../.github/workflows/weekmenu.yml). CI
+gebruikt geen enkele secret: de app draait volledig op zijn eigen seed, dus een
+pull request uit een fork krijgt precies dezelfde controles.
 
 ## Omgevingsvariabelen
 
@@ -181,14 +190,15 @@ is, komt uit data, regels en berekeningen.
 
 ## Verder lezen
 
-|                                    |                                                     |
-| ---------------------------------- | --------------------------------------------------- |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Lagen, providers, adapters, privacy                 |
-| [DATA_MODEL.md](DATA_MODEL.md)     | Waarom ingredient, product en prijs gescheiden zijn |
-| [OPTIMIZER.md](OPTIMIZER.md)       | De pijplijn, de scorefunctie, complexiteit          |
-| [DATABASE.md](DATABASE.md)         | Schema, constraints, row level security             |
-| [DATA_SOURCES.md](DATA_SOURCES.md) | Hoe je NEVO, GS1 of een prijsfeed aansluit          |
-| [AUDIT_REPORT.md](AUDIT_REPORT.md) | Wat een kritische doorlichting van V1 opleverde     |
+|                                                  |                                                     |
+| ------------------------------------------------ | --------------------------------------------------- |
+| [ARCHITECTURE.md](ARCHITECTURE.md)               | Lagen, providers, adapters, privacy                 |
+| [DATA_MODEL.md](DATA_MODEL.md)                   | Waarom ingredient, product en prijs gescheiden zijn |
+| [OPTIMIZER.md](OPTIMIZER.md)                     | De pijplijn, de scorefunctie, complexiteit          |
+| [DATABASE.md](DATABASE.md)                       | Schema, constraints, row level security             |
+| [DATA_SOURCES.md](DATA_SOURCES.md)               | Hoe je NEVO, GS1 of een prijsfeed aansluit          |
+| [AUDIT_REPORT.md](AUDIT_REPORT.md)               | Wat een kritische doorlichting van V1 opleverde     |
+| [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md) | Hoe dicht de optimizer bij het echte optimum komt   |
 
 ## Wat V1 bewust niet doet
 

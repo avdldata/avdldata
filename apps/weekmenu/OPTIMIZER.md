@@ -78,24 +78,37 @@ deelweken bewaard blijven. Twee dingen maken dit werkbaar:
   volgorde kosten hetzelfde. Zonder die deduplicatie loopt de beam vol met
   varianten van één menu en houd je drie echte weken over in plaats van veertig.
 
-Variatieregels werken als poort tijdens het bouwen: maximaal twee pastagerechten,
-één soep, drie keer hetzelfde hoofdeiwit, twee keer dezelfde keuken achter
-elkaar, geen duplicaten en geen bijna-identieke gerechten. Allemaal instelbaar
-in `DiversityConfig`.
+Variatieregels zijn er ook: maximaal twee pastagerechten, één soep, drie keer
+hetzelfde hoofdeiwit, twee keer dezelfde keuken achter elkaar, geen duplicaten en
+geen bijna-identieke gerechten. Allemaal instelbaar in `DiversityConfig`.
 
-**Variatie is een voorkeur, geen regel.** De poort is een zoektruc — veel
-goedkoper dan elke eentonige week volledig doorrekenen en dan wegstrepen — maar
-voor een huishouden met weinig geschikte gerechten kán er geen week bestaan die
-alle variatieregels haalt. Veganistisch is het duidelijkste geval: tien van de
-negenenveertig gerechten blijven over en zeven daarvan zijn peulvruchten, dus
-"maximaal drie keer hetzelfde hoofdeiwit" en "hoogstens één soep" sluiten samen
-elke week van zeven uit.
+**Variatie wordt beprijsd, niet verboden.** Elke overtreding kost tijdens het
+zoeken exact wat `repetitionPerViolation` er later in de scorefunctie voor
+rekent, zodat de zoektocht de afweging zelf maakt.
 
-Daarom draait de zoektocht zo nodig een tweede keer zónder poort. De herhaling
-wordt dan beprijsd door `repetitionPerViolation` in de scorefunctie — waar hij
-hoort — en de week krijgt de reason `VARIETY_COMPROMISED` mee, zodat de gebruiker
-leest waarom zijn week zichzelf herhaalt. Een variatieregel mag de keuze
-versmallen, nooit blokkeren.
+Dat was een veto en dat kostte kwaliteit. Meten liet zien wat: in de drie
+slechtste gevallen leverde de zoektocht keurig een week met nul overtredingen,
+terwijl het optimum één tot vijf overtredingen had en € 6 tot € 13 goedkoper was
+— en de zoektocht kon zo'n week niet eens bouwen. Over 500 scenario's ging de
+gemiddelde afwijking van 1,31 % naar 0,27 % en het slechtste geval van 17,5 %
+naar 11,7 % (zie [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md)).
+
+Het lost ook een gebruikersprobleem op dat eerder een apart lapmiddel nodig had:
+een huishouden met weinig geschikte gerechten kan een week krijgen die de regels
+niet haalt, in plaats van geen week. Bij een veganistisch huishouden bijvoorbeeld
+blijven zeventien van de zesenvijftig gerechten over, waarvan acht op
+peulvruchten — soms past "hoogstens drie keer hetzelfde hoofdeiwit" gewoon niet.
+De week krijgt dan de reason `VARIETY_COMPROMISED` mee, zodat de gebruiker leest
+waarom hij zichzelf herhaalt.
+
+**De volgorde wordt apart geoptimaliseerd.** Van alle variatieregels hangt er
+precies één van de volgorde af: "hoogstens N keer dezelfde keuken achter elkaar".
+Dezelfde zeven gerechten anders gerangschikt kunnen dus een andere
+herhalingsboete dragen — een boete die niemand koos. `bestOrdering` zoekt met
+branch and bound de rangschikking met de minste overtredingen; met zeven
+gerechten is dat exact en in microseconden klaar. Alleen bij "vervang dit
+gerecht" gebeurt dit niet: dan liggen de dagen vast omdat de gebruiker ze zelf
+heeft gekozen.
 
 ## 9. Aggregatie
 
@@ -300,6 +313,24 @@ Twee dingen houden dat zo: de prijshistorie wordt één keer per product
 geïndexeerd in plaats van per product doorzocht, en verpakkingskosten worden per
 (ingredient, winkel) één keer berekend en daarna door alle winkelcombinaties
 hergebruikt.
+
+## Hoe goed is deze zoektocht eigenlijk?
+
+Naast de productiezoektocht staat een uitputtende referentie-solver die op kleine
+datasets élke geldige week doorrekent. Beide gebruiken exact dezelfde
+beoordeling — `evaluateWeek` en `selectBestPlan` — dus het verschil tussen hun
+uitkomsten is puur het verschil tussen de zoekstrategieën.
+
+Over 500 geseede scenario's: 90 % exact optimaal, gemiddelde afwijking 0,27 %,
+p95 1,68 %, slechtste geval 11,68 %. Nul correctheidsfouten.
+
+Draaien met `pnpm bench 500`. Het volledige verslag, inclusief de ontleding van
+het slechtste geval en een verbetering die het regressiecorpus tegenhield, staat
+in [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md).
+
+De solver zelf staat in `src/domain/optimization/reference-solver.ts` en is met
+een ESLint-regel afgeschermd van de applicatie: hij is exponentieel van opzet en
+hoort alleen in tests, benchmarks en tooling.
 
 ## Determinisme
 

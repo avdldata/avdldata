@@ -64,6 +64,16 @@ function promotionalPrice(promotion: Promotion, offer: ProductOffer, units: numb
       const remainder = units - bundles * params.bundleSize;
       return cents(bundles * params.bundlePriceCents + remainder * offer.unitPriceCents);
     }
+
+    case 'BUY_NTH_DISCOUNT': {
+      // Only every nth pack is discounted. Three packs on "2e halve prijs" is
+      // full + half + full, not three halves — the discount does not carry over
+      // into the next group.
+      const discounted = Math.floor(units / params.nth);
+      const full = units - discounted;
+      const discountedUnitPrice = cents(offer.unitPriceCents * (1 - params.percent / 100));
+      return cents(full * offer.unitPriceCents + discounted * discountedUnitPrice);
+    }
   }
 }
 

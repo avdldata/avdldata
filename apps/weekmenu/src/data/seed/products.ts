@@ -25,8 +25,8 @@ const CHAINS: readonly DemoChainId[] = ['ah', 'jumbo', 'lidl', 'plus'];
  * would always tell the same story and the split-the-shopping logic would never
  * be exercised. So:
  *
- *   Lidl   — clearly cheapest on produce, bread and tins, dearest on meat.
- *   Jumbo  — clearly cheapest on meat, fish and dairy.
+ *   Lidl   — clearly cheapest on produce and bread, dearest on meat.
+ *   Jumbo  — clearly cheapest on meat, fish, dairy and tins.
  *   Albert Heijn — the highest shelf prices overall, but cheapest on herbs and
  *            spices, and the chain that runs the loudest promotions.
  *   PLUS   — a little above Jumbo everywhere.
@@ -42,21 +42,21 @@ const CHAIN_CATEGORY_MULTIPLIER: Readonly<
   Record<DemoChainId, Readonly<Record<IngredientCategory, number>>>
 > = {
   lidl: {
-    'groente-fruit': 0.82,
-    'vlees-vis-vega': 1.12,
-    zuivel: 1.04,
-    'brood-granen': 0.86,
-    conserven: 0.84,
-    'kruiden-specerijen': 0.94,
+    'groente-fruit': 0.8,
+    'vlees-vis-vega': 1.14,
+    zuivel: 1.06,
+    'brood-granen': 0.84,
+    conserven: 1.04,
+    'kruiden-specerijen': 0.96,
     overig: 0.9,
   },
   jumbo: {
-    'groente-fruit': 1.02,
-    'vlees-vis-vega': 0.88,
-    zuivel: 0.9,
-    'brood-granen': 1.0,
-    conserven: 1.02,
-    'kruiden-specerijen': 1.0,
+    'groente-fruit': 1.04,
+    'vlees-vis-vega': 0.86,
+    zuivel: 0.88,
+    'brood-granen': 1.02,
+    conserven: 0.8,
+    'kruiden-specerijen': 1.02,
     overig: 1.0,
   },
   ah: {
