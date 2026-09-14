@@ -7,8 +7,9 @@
  * not. Ingredients that already have enough good alternatives are marked as
  * such and pushed down, since the goal was never to classify a whole catalogue.
  *
- *   pnpm match:review                     the ingredients worth deciding
- *   pnpm match:review -- --ingredient ui  every candidate for one ingredient
+ *   pnpm match:review                       the ingredients worth deciding
+ *   pnpm match:review -- --chain jumbo      the same, for the second chain
+ *   pnpm match:review -- --ingredient ui    every candidate for one ingredient
  *   pnpm match:review -- --band LOW
  */
 import { resolvePackage } from '../src/domain/ingestion/package-parser';
@@ -29,6 +30,7 @@ const only =
 const bandFilter =
   args.indexOf('--band') !== -1 ? (args[args.indexOf('--band') + 1] as ReviewBand) : undefined;
 const limit = args.indexOf('--limit') !== -1 ? Number(args[args.indexOf('--limit') + 1]) : 12;
+const chainId = args.indexOf('--chain') !== -1 ? args[args.indexOf('--chain') + 1]! : 'ah';
 
 interface RawProduct {
   n?: string;
@@ -40,7 +42,11 @@ const chains = JSON.parse(readFileSync('data/external/checkjebon-snapshot.json',
   n?: string;
   d?: RawProduct[];
 }[];
-const ah = chains.find((c) => c.n === 'ah')!;
+const chain = chains.find((c) => c.n === chainId);
+if (!chain) {
+  console.log(`\n  Geen "${chainId}" in de momentopname.\n`);
+  process.exit(2);
+}
 
 const phrases = buildIngredientPhrases(SEED_INGREDIENTS, SEED_INGREDIENT_ALIASES);
 const names = new Map(SEED_INGREDIENTS.map((i) => [i.id, i.canonicalName]));
@@ -68,8 +74,8 @@ interface Candidate {
 const approved = new Map<string, { count: number; sizes: Set<number> }>();
 const review = new Map<string, Candidate[]>();
 
-for (const product of ah.d ?? []) {
-  const productId = `ah:${product.l ?? product.n ?? ''}`;
+for (const product of chain.d ?? []) {
+  const productId = `${chainId}:${product.l ?? product.n ?? ''}`;
   const match = matchProduct(
     { productId, productName: product.n ?? '' },
     phrases,
@@ -146,7 +152,9 @@ const totalCandidates = [...review.values()].reduce((sum, list) => sum + list.le
 const inBand = (band: ReviewBand) =>
   rows.filter((r) => r.band === band).reduce((sum, r) => sum + r.candidates.length, 0);
 
-console.log(`\nReviewwachtrij — ${totalCandidates} producten, ${rows.length} ingrediënten\n`);
+console.log(
+  `\nReviewwachtrij ${chainId.toUpperCase()} — ${totalCandidates} producten, ${rows.length} ingrediënten\n`,
+);
 console.log(`  recept-relevant        ${totalCandidates - inBand('IRRELEVANT')}`);
 console.log(`  hoge prioriteit        ${inBand('HIGH')}`);
 console.log(`  gemiddelde prioriteit  ${inBand('MEDIUM')}`);
@@ -210,11 +218,19 @@ const reachable = rows
   .sort((a, b) => b.uses - a.uses);
 
 console.log('  Hoeveel beoordelingen tot welke gewogen dekking\n');
-console.log(`    nu                     ${((coveredUses / totalUses) * 100).toFixed(1)}%`);
+const startPercent = (coveredUses / totalUses) * 100;
+console.log(`    nu                     ${startPercent.toFixed(1)}%`);
 let running = coveredUses;
 let reviews = 0;
-const targets = [96, 97, 98, 99];
+// One ladder for both chains, so the two are read on the same scale. Jumbo
+// starts lower than Albert Heijn, so the lower rungs matter there and are
+// already passed here.
+const targets = [90, 95, 97, 99];
 let nextTarget = 0;
+while (nextTarget < targets.length && startPercent >= targets[nextTarget]!) {
+  console.log(`    ${targets[nextTarget]}%                    0 beoordelingen (al gehaald)`);
+  nextTarget += 1;
+}
 for (const item of reachable) {
   if (nextTarget >= targets.length) break;
   running += item.uses;

@@ -1,4 +1,4 @@
-import { cents, type Cents, ZERO_CENTS } from '../units';
+import { cents, type BaseUnit, type Cents, ZERO_CENTS } from '../units';
 import {
   belowReferenceSavings,
   priceForUnits,
@@ -44,13 +44,25 @@ export function optimisePackaging(
   requiredAmount: number,
   offers: readonly ProductOffer[],
   config: PackagingConfig = DEFAULT_PACKAGING_CONFIG,
+  /**
+   * The unit `requiredAmount` is expressed in.
+   *
+   * Optional only so that the many callers who already guarantee the match do
+   * not have to be rewritten; pass it and the solver will refuse to price a
+   * pack measured in something else. Without it, a requirement of 186 grams met
+   * by a pack of "1 stuk" is silently read as 186 pieces — a shopping list that
+   * looks entirely normal apart from costing €146,94 for peppers. The ingestion
+   * layer converts packs into the ingredient's unit so this never fires in
+   * practice; it is here so that a future source cannot make it fire quietly.
+   */
+  requiredUnit?: BaseUnit,
 ): PackagingResult {
   const relevant = offers.filter((o) => o.ingredientId === ingredientId);
   if (relevant.length === 0) {
     return { status: 'UNAVAILABLE', ingredientId, reason: 'NO_PRODUCTS' };
   }
 
-  const unit = relevant[0]!.packageAmount.unit;
+  const unit = requiredUnit ?? relevant[0]!.packageAmount.unit;
   const variants = [...relevant]
     .filter((o) => o.packageAmount.unit === unit && o.packageAmount.amount > 0)
     .sort(

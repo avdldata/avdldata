@@ -112,6 +112,7 @@ export function buildPackagingMatrix(
           requirement.totalAmount,
           store.offers,
           config,
+          requirement.unit,
         );
         cache?.set(key, solved);
       }

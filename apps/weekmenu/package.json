@@ -31,6 +31,7 @@
     "data:coverage": "tsx scripts/probe-coverage.ts",
     "data:jumbo": "tsx scripts/probe-jumbo.ts",
     "data:week": "tsx scripts/real-data-week.ts",
+    "data:scenarios": "tsx scripts/two-chain-scenarios.ts",
     "match:eval": "tsx scripts/eval-matching.ts",
     "match:review": "tsx scripts/review-queue.ts",
     "match:weeks": "tsx scripts/validate-real-weeks.ts",
