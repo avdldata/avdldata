@@ -301,7 +301,6 @@ export const GOLDEN_EXAMPLES: readonly GoldenExample[] = CORPUS.trim()
   .split('\n')
   .map((line) => {
     const [code, productName, ingredientId] = line.split('|');
-    const label: GoldenLabel =
-      code === 'V' ? 'VALID' : code === 'I' ? 'INVALID' : 'AMBIGUOUS';
+    const label: GoldenLabel = code === 'V' ? 'VALID' : code === 'I' ? 'INVALID' : 'AMBIGUOUS';
     return { productName: productName!.trim(), ingredientId: ingredientId!.trim(), label };
   });

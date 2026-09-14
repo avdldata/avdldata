@@ -18,14 +18,21 @@ import { SEED_INGREDIENTS, SEED_INGREDIENT_ALIASES } from '../src/data/seed/ingr
 import { SEED_RECIPES } from '../src/data/seed/recipes';
 
 const args = process.argv.slice(2);
-const only = args.indexOf('--ingredient') !== -1 ? args[args.indexOf('--ingredient') + 1] : undefined;
+const only =
+  args.indexOf('--ingredient') !== -1 ? args[args.indexOf('--ingredient') + 1] : undefined;
 const limit = args.indexOf('--limit') !== -1 ? Number(args[args.indexOf('--limit') + 1]) : 20;
 const chainName = args.indexOf('--chain') !== -1 ? args[args.indexOf('--chain') + 1]! : 'ah';
 
-interface RawProduct { n?: string; l?: string; p?: number; s?: string }
-const chains = JSON.parse(
-  readFileSync('data/external/checkjebon-snapshot.json', 'utf8'),
-) as { n?: string; d?: RawProduct[] }[];
+interface RawProduct {
+  n?: string;
+  l?: string;
+  p?: number;
+  s?: string;
+}
+const chains = JSON.parse(readFileSync('data/external/checkjebon-snapshot.json', 'utf8')) as {
+  n?: string;
+  d?: RawProduct[];
+}[];
 const chain = chains.find((c) => c.n === chainName);
 if (!chain) throw new Error(`geen keten "${chainName}"`);
 

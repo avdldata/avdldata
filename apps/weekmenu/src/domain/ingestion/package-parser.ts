@@ -184,7 +184,8 @@ export function parsePackage(raw: string | undefined | null): PackageParseResult
         raw: original,
       };
     }
-    if (count <= 0 || amount <= 0) return { status: 'FAILED', reason: 'UNRECOGNISED', raw: original };
+    if (count <= 0 || amount <= 0)
+      return { status: 'FAILED', reason: 'UNRECOGNISED', raw: original };
     const per = amount * unit.factor;
     return {
       status: 'OK',

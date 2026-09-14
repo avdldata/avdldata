@@ -1,10 +1,6 @@
 import type { CanonicalIngredient, IngredientId } from '../ingredients/types';
 import { INGREDIENT_ALIASES, INGREDIENT_SAFE_WORDS, type AliasType } from './ingredient-aliases';
-import {
-  DISQUALIFYING_WORDS,
-  isIgnorableWord,
-  PRESERVING_WORDS,
-} from './matching-vocabulary';
+import { DISQUALIFYING_WORDS, isIgnorableWord, PRESERVING_WORDS } from './matching-vocabulary';
 
 /**
  * Decide which canonical ingredient a supermarket product can stand in for.
@@ -114,7 +110,9 @@ export function buildIngredientPhrases(
   // over "rijst". Specificity beats brevity, always.
   return [...byId.entries()].map(([id, phrases]) => {
     const seen = new Set<string>();
-    const unique = phrases.filter((p) => p.phrase !== '' && !seen.has(p.phrase) && seen.add(p.phrase));
+    const unique = phrases.filter(
+      (p) => p.phrase !== '' && !seen.has(p.phrase) && seen.add(p.phrase),
+    );
     return { id, phrases: unique.sort((a, b) => b.phrase.length - a.phrase.length) };
   });
 }
@@ -155,7 +153,9 @@ export function matchProduct(
   }
   if (!best) return undefined;
 
-  const reasons: MatchReason[] = [best.type === 'CANONICAL' ? 'NORMALIZED_EXACT_MATCH' : 'EXACT_ALIAS'];
+  const reasons: MatchReason[] = [
+    best.type === 'CANONICAL' ? 'NORMALIZED_EXACT_MATCH' : 'EXACT_ALIAS',
+  ];
 
   // Everything the product name says *beyond* the ingredient. A word only
   // counts against a match when it is extra: "sojasaus" contains "saus" and is
@@ -209,7 +209,10 @@ export function matchProduct(
     confidence: unexplained.length === 1 ? 0.6 : 0.35,
     matchMethod: 'NORMALIZED_NAME',
     status: 'NEEDS_REVIEW',
-    reasons: [...reasons, unexplained.length === 1 ? 'UNKNOWN_MODIFIER' : 'AMBIGUOUS_COMPOUND_PRODUCT'],
+    reasons: [
+      ...reasons,
+      unexplained.length === 1 ? 'UNKNOWN_MODIFIER' : 'AMBIGUOUS_COMPOUND_PRODUCT',
+    ],
     rationale: `naam bevat daarnaast "${unexplained.join(' ')}" — onbekend, dus niet automatisch goedgekeurd`,
     matchedPhrase: best.phrase,
     unexplainedWords: unexplained,

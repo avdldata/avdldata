@@ -143,7 +143,9 @@ for (const chain of chains) {
 // Which ingredients nobody stocks is the actionable list: those are the recipes
 // that cannot be priced for real, whichever chain you shop at.
 const nowhere = mustBuy.filter((id) => !results.some((r) => r.usable.has(id)));
-console.log(`\n  Ingrediënten zonder één bruikbaar product bij welke keten dan ook: ${nowhere.length}`);
+console.log(
+  `\n  Ingrediënten zonder één bruikbaar product bij welke keten dan ook: ${nowhere.length}`,
+);
 if (nowhere.length > 0) {
   const names = new Map(SEED_INGREDIENTS.map((i) => [i.id, i.canonicalName]));
   for (const id of nowhere.slice(0, 30)) console.log(`    ${id.padEnd(28)} ${names.get(id) ?? ''}`);
@@ -170,7 +172,10 @@ const allIds = SEED_INGREDIENTS.filter((i) => !i.pantryStaple).map((i) => i.id);
 
 console.log('\n  Drie soorten dekking, per keten\n');
 const head2 =
-  '  ' + 'keten'.padEnd(12) + 'alle ingr.'.padStart(12) + 'receptingr.'.padStart(13) +
+  '  ' +
+  'keten'.padEnd(12) +
+  'alle ingr.'.padStart(12) +
+  'receptingr.'.padStart(13) +
   'gewogen'.padStart(10);
 console.log(head2);
 console.log('  ' + '-'.repeat(head2.length - 2));
@@ -180,11 +185,11 @@ for (const r of results) {
   const weighted =
     totalUses === 0
       ? 0
-      : [...usage.entries()]
-          .filter(([id]) => r.usable.has(id))
-          .reduce((sum, [, n]) => sum + n, 0) / totalUses;
+      : [...usage.entries()].filter(([id]) => r.usable.has(id)).reduce((sum, [, n]) => sum + n, 0) /
+        totalUses;
   console.log(
-    '  ' + r.chain.padEnd(12) +
+    '  ' +
+      r.chain.padEnd(12) +
       `${(all * 100).toFixed(1)}%`.padStart(12) +
       `${(used * 100).toFixed(1)}%`.padStart(13) +
       `${(weighted * 100).toFixed(1)}%`.padStart(10),

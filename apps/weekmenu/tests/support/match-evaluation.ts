@@ -35,7 +35,11 @@ export interface MatchEvaluation {
   readonly recall: number;
   readonly f1: number;
   readonly falsePositiveExamples: readonly { example: GoldenExample; reason: string }[];
-  readonly falseNegativeExamples: readonly { example: GoldenExample; status: string; reason: string }[];
+  readonly falseNegativeExamples: readonly {
+    example: GoldenExample;
+    status: string;
+    reason: string;
+  }[];
 }
 
 export function evaluateMatcher(

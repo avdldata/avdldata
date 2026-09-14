@@ -28,10 +28,17 @@ import { SEED_RECIPES } from '../src/data/seed/recipes';
 import { DEMO_HOUSEHOLD } from '../src/data/seed/demo-household';
 import type { ConveniencePreference } from '../src/domain/optimization/config';
 
-interface RawProduct { n?: string; l?: string; p?: number; s?: string }
-const chains = JSON.parse(
-  readFileSync('data/external/checkjebon-snapshot.json', 'utf8'),
-) as { n?: string; c?: string; d?: RawProduct[] }[];
+interface RawProduct {
+  n?: string;
+  l?: string;
+  p?: number;
+  s?: string;
+}
+const chains = JSON.parse(readFileSync('data/external/checkjebon-snapshot.json', 'utf8')) as {
+  n?: string;
+  c?: string;
+  d?: RawProduct[];
+}[];
 const chain = chains.find((c) => c.n === 'ah')!;
 
 const ingredientIndex = buildIngredientIndex(SEED_INGREDIENTS);
@@ -47,7 +54,11 @@ for (const product of chain.d ?? []) {
   const name = product.n ?? '';
   const match = matchProduct({ productId, productName: name }, phrases, PRODUCT_MATCH_OVERRIDES);
   if (!match) continue;
-  verdicts.set(productId, { status: match.status, ingredientId: match.canonicalIngredientId, name });
+  verdicts.set(productId, {
+    status: match.status,
+    ingredientId: match.canonicalIngredientId,
+    name,
+  });
 
   const approved = match.status === 'AUTO_APPROVED' || match.status === 'APPROVED';
   if (!approved) continue;
@@ -107,8 +118,14 @@ let planned = 0;
 
 console.log(`\nTwintig echte AH-weken — ${offers.length} goedgekeurde producten in de poel\n`);
 const head =
-  '  ' + 'scenario'.padEnd(10) + 'leden'.padStart(7) + 'gemak'.padStart(16) +
-  'regels'.padStart(8) + 'ontbreekt'.padStart(11) + 'totaal'.padStart(10) + 'ms'.padStart(8);
+  '  ' +
+  'scenario'.padEnd(10) +
+  'leden'.padStart(7) +
+  'gemak'.padStart(16) +
+  'regels'.padStart(8) +
+  'ontbreekt'.padStart(11) +
+  'totaal'.padStart(10) +
+  'ms'.padStart(8);
 console.log(head);
 console.log('  ' + '-'.repeat(head.length - 2));
 
@@ -161,7 +178,8 @@ for (const scenario of scenarios) {
   }
 
   console.log(
-    '  ' + scenario.label.padEnd(10) +
+    '  ' +
+      scenario.label.padEnd(10) +
       String(scenario.members.length).padStart(7) +
       scenario.conveniencePreference.padStart(16) +
       String(lines.length).padStart(8) +
@@ -184,14 +202,20 @@ console.log(`  latency slechtste    ${durations.at(-1)!.toFixed(0)} ms`);
 // Every distinct product the twenty weeks actually bought, for a human to read.
 if (process.argv.includes('--products')) {
   const bought = new Map<string, string>();
-  for (const [id, v] of verdicts) if (v.status === 'AUTO_APPROVED' || v.status === 'APPROVED') bought.set(id, v.name);
+  for (const [id, v] of verdicts)
+    if (v.status === 'AUTO_APPROVED' || v.status === 'APPROVED') bought.set(id, v.name);
   const used = new Map<string, string>();
   for (const scenario of scenarios) {
     const result = optimiseWeek({
       household: { ...DEMO_HOUSEHOLD, members: scenario.members },
-      recipes, ingredients: ingredientIndex, stores: [store], maxStores: 1,
-      conveniencePreference: scenario.conveniencePreference, budget: {},
-      startDate: scenario.startDate, today: new Date(`${scenario.startDate}T09:00:00Z`),
+      recipes,
+      ingredients: ingredientIndex,
+      stores: [store],
+      maxStores: 1,
+      conveniencePreference: scenario.conveniencePreference,
+      budget: {},
+      startDate: scenario.startDate,
+      today: new Date(`${scenario.startDate}T09:00:00Z`),
     });
     if (result.status !== 'OK') continue;
     for (const a of result.plan.recommendedOption.assignments)

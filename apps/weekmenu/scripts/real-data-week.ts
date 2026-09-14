@@ -31,8 +31,18 @@ const wanted = chainArg !== -1 ? args[chainArg + 1]! : 'ah';
 const fileArg = args.indexOf('--file');
 const path = fileArg !== -1 ? args[fileArg + 1]! : 'data/external/checkjebon-snapshot.json';
 
-interface RawProduct { n?: string; l?: string; p?: number; s?: string }
-interface RawChain { n?: string; c?: string; u?: string; d?: RawProduct[] }
+interface RawProduct {
+  n?: string;
+  l?: string;
+  p?: number;
+  s?: string;
+}
+interface RawChain {
+  n?: string;
+  c?: string;
+  u?: string;
+  d?: RawProduct[];
+}
 
 const chains = JSON.parse(readFileSync(path, 'utf8')) as RawChain[];
 const chain = chains.find((c) => c.n === wanted);

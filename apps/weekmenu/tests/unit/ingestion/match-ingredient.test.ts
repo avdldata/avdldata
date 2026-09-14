@@ -20,7 +20,7 @@ describe('matching a supermarket product to a recipe ingredient', () => {
     expect(result?.canonicalIngredientId).toBe('gehakt-rund');
   });
 
-  it('sees through the shop\'s own branding', () => {
+  it("sees through the shop's own branding", () => {
     // "AH Terra Biologische tofu" is tofu; the rest is the shop talking.
     const result = match('AH Biologisch Knoflook');
     expect(result?.status).toBe('AUTO_APPROVED');
