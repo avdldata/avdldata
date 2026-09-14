@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { PageHeader } from '@/components/app-shell/page-header';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
 
 export const metadata: Metadata = { title: 'Week samenstellen — Weekmenu' };
@@ -64,9 +63,9 @@ export default async function GeneratingPage({
 
       <div className="mt-5 space-y-3">
         <GenerateWeekButton label={fout ? 'Opnieuw proberen' : 'Maak mijn week'} />
-        <Button asChild variant="ghost" className="w-full">
-          <Link href="/week/instellingen">Instellingen aanpassen</Link>
-        </Button>
+        <ButtonLink href="/week/instellingen" variant="ghost" className="w-full">
+          Instellingen aanpassen
+        </ButtonLink>
       </div>
     </>
   );

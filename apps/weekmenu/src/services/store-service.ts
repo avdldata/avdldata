@@ -74,7 +74,8 @@ export function defaultSelectedLocationIds(stores: readonly NearbyStoreView[]): 
 
 export interface StoreCandidatesInput {
   readonly locationIds: readonly string[];
-  readonly home: { latitude: number; longitude: number };
+  /** Absent when the household has no coordinates yet; distances are 0 then. */
+  readonly home?: { latitude: number; longitude: number };
   readonly onDate: string;
 }
 
@@ -144,7 +145,7 @@ export async function buildStoreCandidates(
     candidates.push({
       location,
       chain,
-      distanceKm: Math.round(roadDistanceKm(input.home, location) * 10) / 10,
+      distanceKm: input.home ? Math.round(roadDistanceKm(input.home, location) * 10) / 10 : 0,
       offers: resolved.offers,
     });
   }

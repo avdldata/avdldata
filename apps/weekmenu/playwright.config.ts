@@ -47,7 +47,11 @@ export default defineConfig({
   webServer: {
     command: `pnpm build && pnpm start --port ${PORT}`,
     url: baseURL,
-    reuseExistingServer: !process.env.CI,
+    // Never reuse a server between runs. The demo store keeps the database in
+    // memory, so `globalSetup` wiping the file leaves a running server serving
+    // whatever the previous run left behind — including a household a failed
+    // test never cleaned up. That turns an unrelated failure into a mystery.
+    reuseExistingServer: false,
     timeout: 300_000,
     env: {
       DATA_ADAPTER: 'demo',

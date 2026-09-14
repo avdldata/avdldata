@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { PageHeader } from '@/components/app-shell/page-header';
-import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getRepositories } from '@/data';
 import { requireUser } from '@/services/auth';
@@ -103,12 +102,14 @@ export default async function SettingsPage() {
                 </dd>
               </div>
             </dl>
-            <Button asChild variant="secondary" className="mt-4 w-full justify-between">
-              <Link href="/week/instellingen">
-                Aanpassen
-                <ChevronRight className="size-5" aria-hidden />
-              </Link>
-            </Button>
+            <ButtonLink
+              href="/week/instellingen"
+              variant="secondary"
+              className="mt-4 w-full justify-between"
+            >
+              Aanpassen
+              <ChevronRight className="size-5" aria-hidden />
+            </ButtonLink>
           </CardContent>
         </Card>
 

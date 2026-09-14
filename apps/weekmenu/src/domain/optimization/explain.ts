@@ -112,10 +112,17 @@ function storeReasons(input: WeekReasonInput, chainName: (id: string) => string)
     }
   }
 
-  for (const [category, chainId] of [...input.option.categoryWinners.entries()]
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .slice(0, 3)) {
+  // One category per chain, so the list says something ("Lidl for vegetables,
+  // Jumbo for meat") instead of naming the same shop three times.
+  const namedChains = new Set<string>();
+  const categoryClaims = [...input.option.categoryWinners.entries()].sort((a, b) =>
+    a[0].localeCompare(b[0]),
+  );
+  for (const [category, chainId] of categoryClaims) {
+    if (namedChains.has(chainId)) continue;
+    namedChains.add(chainId);
     reasons.push(reason('CHEAPEST_STORE_FOR_CATEGORY', { category, store: chainName(chainId) }));
+    if (namedChains.size >= 3) break;
   }
 
   if (input.option.trip.estimatedDistanceKm <= 6) {
@@ -128,16 +135,23 @@ function storeReasons(input: WeekReasonInput, chainName: (id: string) => string)
 }
 
 function promotionReasons(input: WeekReasonInput): Reason[] {
+  // Strictly what the promotion knocks off the shelf price. Using the saving
+  // against the reference price would let "dat scheelt € 2,00" stand next to an
+  // offer that is worth forty cents, because the product also happens to be
+  // cheaper this week than it usually is.
   const promoted = input.option.assignments
     .flatMap((a) => a.packaging.lines.map((line) => ({ name: a.name, line })))
-    .filter((entry) => entry.line.promotionApplied && entry.line.savingsCents > 0)
-    .sort((a, b) => b.line.savingsCents - a.line.savingsCents || a.name.localeCompare(b.name));
+    .filter((entry) => entry.line.promotionApplied && entry.line.promotionSavingsCents > 0)
+    .sort(
+      (a, b) =>
+        b.line.promotionSavingsCents - a.line.promotionSavingsCents || a.name.localeCompare(b.name),
+    );
 
   return promoted.slice(0, 3).map((entry) =>
     reason('PROMOTION_USED', {
       ingredient: entry.name,
       product: entry.line.offer.name,
-      savingCents: entry.line.savingsCents,
+      savingCents: entry.line.promotionSavingsCents,
       label: entry.line.offer.promotion?.label ?? 'aanbieding',
     }),
   );
@@ -223,9 +237,21 @@ function safetyReasons(input: WeekReasonInput): Reason[] {
 }
 
 function varietyReasons(input: WeekReasonInput): Reason[] {
-  if (input.diversityViolations.length > 0) return [];
   const cuisines = new Set(input.recipes.map((r) => r.cuisine)).size;
   const proteins = new Set(input.recipes.map((r) => r.primaryProtein)).size;
+
+  // Say it out loud when the week repeats itself. A household with few eligible
+  // dishes gets a plan rather than a refusal, but not without being told why it
+  // looks the way it does.
+  if (input.diversityViolations.length > 0) {
+    return [
+      reason('VARIETY_COMPROMISED', {
+        violations: input.diversityViolations.length,
+        cuisines,
+        proteins,
+      }),
+    ];
+  }
   return [reason('GOOD_VARIETY', { cuisines, proteins })];
 }
 

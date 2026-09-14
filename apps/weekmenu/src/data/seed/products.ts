@@ -20,50 +20,62 @@ const CHAINS: readonly DemoChainId[] = ['ah', 'jumbo', 'lidl', 'plus'];
 /**
  * Per-chain price positioning.
  *
- * Lidl is cheapest on produce, dairy and pantry goods; Jumbo is sharpest on
- * meat and fish; Albert Heijn is the most expensive shelf price but runs the
- * loudest promotions; PLUS sits just above Jumbo. This is what makes
- * "Lidl + Jumbo together beat any single store" true in the demo data, and it
- * is the shape a real price feed tends to have.
+ * Every chain has to genuinely own something, or the demo has nothing to
+ * demonstrate: if one shop were cheapest in every aisle the comparison screen
+ * would always tell the same story and the split-the-shopping logic would never
+ * be exercised. So:
+ *
+ *   Lidl   — clearly cheapest on produce, bread and tins, dearest on meat.
+ *   Jumbo  — clearly cheapest on meat, fish and dairy.
+ *   Albert Heijn — the highest shelf prices overall, but cheapest on herbs and
+ *            spices, and the chain that runs the loudest promotions.
+ *   PLUS   — a little above Jumbo everywhere.
+ *
+ * The gaps are wide enough that "Lidl + Jumbo together beat either alone" is
+ * true, and small enough that a single trip can still win once travel and the
+ * hassle of a second stop are priced in. That is the shape a real price feed
+ * has, and it is what makes both answers reachable from the same dataset.
+ *
+ * These are made-up numbers for a demo, not observed supermarket prices.
  */
 const CHAIN_CATEGORY_MULTIPLIER: Readonly<
   Record<DemoChainId, Readonly<Record<IngredientCategory, number>>>
 > = {
   lidl: {
     'groente-fruit': 0.82,
-    'vlees-vis-vega': 0.97,
-    zuivel: 0.85,
+    'vlees-vis-vega': 1.12,
+    zuivel: 1.04,
     'brood-granen': 0.86,
     conserven: 0.84,
-    'kruiden-specerijen': 0.88,
-    overig: 0.88,
+    'kruiden-specerijen': 0.94,
+    overig: 0.9,
   },
   jumbo: {
-    'groente-fruit': 1.0,
-    'vlees-vis-vega': 0.91,
-    zuivel: 1.0,
-    'brood-granen': 0.98,
-    conserven: 1.0,
-    'kruiden-specerijen': 0.99,
+    'groente-fruit': 1.02,
+    'vlees-vis-vega': 0.88,
+    zuivel: 0.9,
+    'brood-granen': 1.0,
+    conserven: 1.02,
+    'kruiden-specerijen': 1.0,
     overig: 1.0,
   },
   ah: {
-    'groente-fruit': 1.09,
-    'vlees-vis-vega': 1.06,
-    zuivel: 1.06,
-    'brood-granen': 1.07,
+    'groente-fruit': 1.06,
+    'vlees-vis-vega': 0.99,
+    zuivel: 1.02,
+    'brood-granen': 1.05,
     conserven: 1.06,
-    'kruiden-specerijen': 1.05,
-    overig: 1.06,
+    'kruiden-specerijen': 0.86,
+    overig: 1.04,
   },
   plus: {
-    'groente-fruit': 1.05,
-    'vlees-vis-vega': 1.02,
-    zuivel: 1.03,
-    'brood-granen': 1.04,
-    conserven: 1.03,
-    'kruiden-specerijen': 1.03,
-    overig: 1.03,
+    'groente-fruit': 1.0,
+    'vlees-vis-vega': 0.95,
+    zuivel: 0.98,
+    'brood-granen': 1.02,
+    conserven: 1.0,
+    'kruiden-specerijen': 0.98,
+    overig: 1.02,
   },
 };
 

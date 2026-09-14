@@ -18,6 +18,24 @@ export const EXTRA_STORE_PENALTY_BY_PREFERENCE: Readonly<Record<ConveniencePrefe
   gemak: euros(8),
 };
 
+export const DEFAULT_CONVENIENCE_PREFERENCE: ConveniencePreference = 'gebalanceerd';
+
+/**
+ * The extra-store allowance for a preference, tolerating a value the type
+ * system cannot vouch for.
+ *
+ * Settings are persisted as JSON and outlive the code that wrote them: a
+ * preference renamed in a later version would otherwise reach the objective
+ * function as `undefined`, turn the whole score into NaN and take week
+ * generation down. Falling back to the middle setting is the honest answer.
+ */
+export function extraStorePenaltyFor(preference: string): Cents {
+  return (
+    EXTRA_STORE_PENALTY_BY_PREFERENCE[preference as ConveniencePreference] ??
+    EXTRA_STORE_PENALTY_BY_PREFERENCE[DEFAULT_CONVENIENCE_PREFERENCE]
+  );
+}
+
 export interface DiversityConfig {
   readonly maxPastaDishes: number;
   readonly maxSoupDishes: number;

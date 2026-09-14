@@ -188,6 +188,7 @@ is, komt uit data, regels en berekeningen.
 | [OPTIMIZER.md](OPTIMIZER.md)       | De pijplijn, de scorefunctie, complexiteit          |
 | [DATABASE.md](DATABASE.md)         | Schema, constraints, row level security             |
 | [DATA_SOURCES.md](DATA_SOURCES.md) | Hoe je NEVO, GS1 of een prijsfeed aansluit          |
+| [AUDIT_REPORT.md](AUDIT_REPORT.md) | Wat een kritische doorlichting van V1 opleverde     |
 
 ## Wat V1 bewust niet doet
 

@@ -66,6 +66,9 @@ export function explainReason(reason: Reason): string {
     case 'GOOD_VARIETY':
       return `Gevarieerde week: ${num(p.cuisines)} verschillende keukens en ${num(p.proteins)} verschillende eiwitbronnen.`;
 
+    case 'VARIETY_COMPROMISED':
+      return `Deze week herhaalt zichzelf op ${num(p.violations)} punt${num(p.violations) === 1 ? '' : 'en'}. Met jullie dieetregels blijven er te weinig gerechten over om alle variatieregels te halen; we kiezen dan liever voor een volledige week dan voor geen week.`;
+
     case 'PREFERRED_RECIPE':
       return `Past bij jullie voorkeuren: ${str(p.terms)}.`;
 
@@ -111,7 +114,8 @@ export function reasonTone(code: ReasonCode): 'positive' | 'neutral' | 'warning'
   if (
     code === 'BUDGET_EXCEEDED' ||
     code === 'ITEM_UNAVAILABLE' ||
-    code === 'NUTRITION_OFF_TARGET'
+    code === 'NUTRITION_OFF_TARGET' ||
+    code === 'VARIETY_COMPROMISED'
   ) {
     return 'warning';
   }

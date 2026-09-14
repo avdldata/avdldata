@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { euros } from '@/domain/units';
 import { DEFAULT_NUTRITION_CONFIG } from '@/domain/nutrition/config';
-import { DEFAULT_OBJECTIVE_WEIGHTS } from '@/domain/optimization/config';
+import { DEFAULT_OBJECTIVE_WEIGHTS, extraStorePenaltyFor } from '@/domain/optimization/config';
 import { scoreNutrition, scoreRecipePreferences, scoreWeek } from '@/domain/optimization/scoring';
 import type { StoreOption } from '@/domain/optimization/store-selection';
 import type { WasteSummary } from '@/domain/aggregation/leftovers';
@@ -24,6 +24,7 @@ function option(groceryCents: number, overrides: Partial<StoreOption> = {}): Sto
     unavailable: [],
     groceryCents: euros(groceryCents / 100),
     promotionSavingsCents: euros(0),
+    belowReferenceSavingsCents: euros(0),
     purchasedByIngredient: new Map(),
     categoryWinners: new Map(),
     trip: {
@@ -36,6 +37,8 @@ function option(groceryCents: number, overrides: Partial<StoreOption> = {}): Sto
     },
     extraStorePenaltyCents: euros(0),
     practicalTotalCents: euros(groceryCents / 100 + 0.92),
+    unavailablePenaltyCents: euros(0),
+    comparableTotalCents: euros(groceryCents / 100 + 0.92),
     ...overrides,
   };
 }
@@ -245,5 +248,15 @@ describe('week scoring', () => {
     });
     const pricierButBalanced = scoreWeek({ ...base, option: option(5000) });
     expect(pricierButBalanced.totalPenaltyCents).toBeLessThan(cheapButUnbalanced.totalPenaltyCents);
+  });
+});
+
+describe('settings that outlive the code that wrote them', () => {
+  it('falls back to the middle allowance for an unknown convenience preference', () => {
+    // Persisted settings are JSON: a preference renamed in a later version must
+    // not reach the objective function as undefined and NaN the whole score.
+    expect(extraStorePenaltyFor('gebalanceerd')).toBe(euros(2.5));
+    expect(extraStorePenaltyFor('laagste-prijs')).toBe(euros(0));
+    expect(extraStorePenaltyFor('een-instelling-uit-2029')).toBe(euros(2.5));
   });
 });

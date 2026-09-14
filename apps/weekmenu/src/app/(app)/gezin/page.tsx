@@ -4,7 +4,7 @@ import { ChevronRight, Heart, Plus, SlidersHorizontal } from 'lucide-react';
 import { calculateHouseholdNutrition } from '@/domain/nutrition/calculate';
 import { PageHeader } from '@/components/app-shell/page-header';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getRepositories } from '@/data';
 import { requireUser } from '@/services/auth';
@@ -73,36 +73,34 @@ export default async function HouseholdPage() {
               })}
             </ul>
             <div className="border-line border-t p-4">
-              <Button asChild variant="secondary" className="w-full">
-                <Link href="/gezin/leden/nieuw">
-                  <Plus className="size-4" aria-hidden />
-                  Gezinslid toevoegen
-                </Link>
-              </Button>
+              <ButtonLink href="/gezin/leden/nieuw" variant="secondary" className="w-full">
+                <Plus className="size-4" aria-hidden />
+                Gezinslid toevoegen
+              </ButtonLink>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-5">
-            <Button asChild variant="ghost" className="w-full justify-between">
-              <Link href="/gezin/voorkeuren">
-                <span className="inline-flex items-center gap-2">
-                  <Heart className="size-4" aria-hidden />
-                  Smaakvoorkeuren
-                </span>
-                <ChevronRight className="size-5" aria-hidden />
-              </Link>
-            </Button>
-            <Button asChild variant="ghost" className="mt-1 w-full justify-between">
-              <Link href="/week/instellingen">
-                <span className="inline-flex items-center gap-2">
-                  <SlidersHorizontal className="size-4" aria-hidden />
-                  Winkels, budget en gemak
-                </span>
-                <ChevronRight className="size-5" aria-hidden />
-              </Link>
-            </Button>
+            <ButtonLink href="/gezin/voorkeuren" variant="ghost" className="w-full justify-between">
+              <span className="inline-flex items-center gap-2">
+                <Heart className="size-4" aria-hidden />
+                Smaakvoorkeuren
+              </span>
+              <ChevronRight className="size-5" aria-hidden />
+            </ButtonLink>
+            <ButtonLink
+              href="/week/instellingen"
+              variant="ghost"
+              className="mt-1 w-full justify-between"
+            >
+              <span className="inline-flex items-center gap-2">
+                <SlidersHorizontal className="size-4" aria-hidden />
+                Winkels, budget en gemak
+              </span>
+              <ChevronRight className="size-5" aria-hidden />
+            </ButtonLink>
           </CardContent>
         </Card>
 

@@ -83,6 +83,20 @@ Variatieregels werken als poort tijdens het bouwen: maximaal twee pastagerechten
 elkaar, geen duplicaten en geen bijna-identieke gerechten. Allemaal instelbaar
 in `DiversityConfig`.
 
+**Variatie is een voorkeur, geen regel.** De poort is een zoektruc — veel
+goedkoper dan elke eentonige week volledig doorrekenen en dan wegstrepen — maar
+voor een huishouden met weinig geschikte gerechten kán er geen week bestaan die
+alle variatieregels haalt. Veganistisch is het duidelijkste geval: tien van de
+negenenveertig gerechten blijven over en zeven daarvan zijn peulvruchten, dus
+"maximaal drie keer hetzelfde hoofdeiwit" en "hoogstens één soep" sluiten samen
+elke week van zeven uit.
+
+Daarom draait de zoektocht zo nodig een tweede keer zónder poort. De herhaling
+wordt dan beprijsd door `repetitionPerViolation` in de scorefunctie — waar hij
+hoort — en de week krijgt de reason `VARIETY_COMPROMISED` mee, zodat de gebruiker
+leest waarom zijn week zichzelf herhaalt. Een variatieregel mag de keuze
+versmallen, nooit blokkeren.
+
 ## 9. Aggregatie
 
 De zeven gerechten worden opgeteld per canonical ingredient, in basiseenheden.
@@ -116,6 +130,18 @@ node-budget als vangnet. Een winkel verkoopt in de praktijk twee tot vijf
 varianten van een ingredient, dus de zoektocht is in microseconden klaar; de
 grens voorkomt alleen dat een pathologische catalogus ontploft.
 
+**Prijs stijgt niet met het aantal pakken, en daar moet het snoeien tegen
+kunnen.** Bij "vanaf 3 stuks € 0,45" kosten drie pakken minder dan twee. Snoeien
+op de prijs van precies n pakken zou dan juist het aantal wegknippen dat wint —
+in een fuzztest tegen een uitputtende zoektocht ging dat mis bij 6 % van de
+catalogi met aanbiedingen, in het ergste geval € 3,72 betalen waar € 1,35 kon.
+De grens kijkt daarom naar het goedkoopste dat élk aantal vanaf n nog kan
+opleveren (een suffixminimum over de kostentabel), en de zoekruimte reikt altijd
+tot voorbij het minimumaantal van een aanbieding — anders is "vanaf 4 stuks"
+onzichtbaar voor een week die aan één pak genoeg heeft. `packaging-optimality.test.ts`
+vergelijkt de uitkomst met een uitputtende zoektocht over 400 gegenereerde
+catalogi.
+
 **De doelfunctie is instelbaar.** `ProductSelectionWeights` weegt prijs,
 verspilling en voedingskwaliteit tegen elkaar af:
 
@@ -136,6 +162,14 @@ aanbiedingsvormen kent: vaste actieprijs, percentage, 1+1 gratis en N voor X,
 elk met een minimum aantal en een geldigheidsvenster. Een aanbieding wordt
 alleen toegepast als hij echt goedkoper is.
 
+**Korting en meevaller zijn twee dingen.** `promotionSavings` is wat de
+aanbieding afhaalt van de schapprijs van vandaag; `belowReferenceSavings` is hoe
+veel goedkoper de regel is dan de referentieprijs (de mediaan van recente
+waarnemingen). Alleen het eerste getal mag onder het woord "aanbiedingsvoordeel"
+staan. Ze door elkaar halen laat de app claimen dat een actie € 2,00 scheelt
+terwijl hij € 0,40 waard is en het product simpelweg deze week wat goedkoper op
+het schap ligt.
+
 ## 12–13. Winkels
 
 Binnen een gekozen set winkels is de goedkoopste keuze per ingredient
@@ -147,6 +181,16 @@ Alle combinaties tot `maxStores` worden uitgeput. Met hoogstens één filiaal pe
 keten (twee winkels van dezelfde keten bezoeken heeft geen zin) en drie winkels
 maximaal zijn dat er hooguit een paar dozijn. De aanbeveling is daarmee
 aantoonbaar de beste onder de gestelde doelfunctie.
+
+**Een combinatie die iets niet kan leveren, kan nooit winnen op prijs.** Een
+winkel die de zalm niet verkoopt heeft een lagere rekening omdat hij minder
+koopt, niet omdat hij goedkoper is. Combinaties worden daarom eerst gesorteerd op
+het aantal ontbrekende producten en pas daarna op prijs. Dat is bewust géén
+strafbedrag: een pak zalm kost meer dan elk bedrag dat je daar redelijk voor zou
+invullen, dus zou een boete altijd te laag of te hoog staan. Onvolledige
+combinaties blijven wel in de lijst — als geen enkele winkelset alles kan
+leveren, is de minst slechte nog steeds het antwoord — en `cheapestOption` slaat
+ze over zolang er een volledige combinatie bestaat.
 
 Reiskosten komen van `TripCostCalculator`: hemelsbrede afstand maal een
 wegfactor, langs de winkels in nearest-neighbour-volgorde en terug naar huis.
@@ -218,7 +262,15 @@ afwijken van de berekening, en vertalen betekent één bestand aanpassen.
 Codes onder meer: `REUSED_LEFTOVER`, `PROMOTION_USED`, `BULK_PACKAGE_CHEAPER`,
 `STORE_CONSOLIDATION`, `EXTRA_STORE_WORTH_IT`, `EXTRA_STORE_NOT_WORTH_IT`,
 `CHEAPEST_STORE_FOR_CATEGORY`, `NUTRITION_ON_TARGET`, `PREGNANCY_SAFE`,
-`ALLERGY_SAFE`, `GOOD_VARIETY`, `BUDGET_MET`, `BUDGET_EXCEEDED`.
+`ALLERGY_SAFE`, `GOOD_VARIETY`, `VARIETY_COMPROMISED`, `BUDGET_MET`,
+`BUDGET_EXCEEDED`.
+
+**Een claim moet ergens op slaan.** `CHEAPEST_STORE_FOR_CATEGORY` zegt "Jumbo is
+deze week het voordeligst voor vlees en vis". Dat mag alleen als het is
+uitgerekend: de behoefte van die categorie wordt bij elke keten apart afgerekend
+en de claim verschijnt pas als minstens twee ketens de hele categorie kunnen
+leveren en er één strikt goedkoper uit komt. Zonder die vergelijking is de zin
+bij een week bij één winkel triviaal waar en dus betekenisloos.
 
 ## Gerecht vervangen
 

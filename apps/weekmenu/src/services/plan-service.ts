@@ -56,13 +56,12 @@ async function buildOptimizerInput(
   lockedRecipeIds?: ReadonlyMap<number, string>,
 ): Promise<OptimizerInput> {
   const catalogue = getCatalogue();
-  const home = {
-    latitude: context.household.location.latitude ?? 0,
-    longitude: context.household.location.longitude ?? 0,
-  };
+  const { latitude, longitude } = context.household.location;
   const { candidates } = await buildStoreCandidates({
     locationIds: context.settings.selectedLocationIds,
-    home,
+    // Without coordinates there is no distance to compute. Passing (0, 0) would
+    // put the household in the Atlantic and make every shop 5.900 km away.
+    ...(latitude !== undefined && longitude !== undefined ? { home: { latitude, longitude } } : {}),
     onDate: context.startDate,
   });
 

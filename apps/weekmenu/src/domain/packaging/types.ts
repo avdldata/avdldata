@@ -8,7 +8,19 @@ export interface PackagingLine {
   readonly units: number;
   readonly lineTotalCents: Cents;
   readonly promotionApplied: boolean;
+  /**
+   * Everything this line is cheaper than usual: the reference price (the median
+   * of recent observations) minus what you pay. Includes an ordinary price drop.
+   */
   readonly savingsCents: Cents;
+  /**
+   * The part of `savingsCents` a promotion is responsible for: today's shelf
+   * price times the units, minus what the register actually charges.
+   *
+   * Kept apart because calling a price dip an "aanbieding" overstates what the
+   * offer does — the UI may only use this number under that word.
+   */
+  readonly promotionSavingsCents: Cents;
   /** Energy this line contributes, when the offer carries nutrition data. */
   readonly kcalContribution?: number;
 }

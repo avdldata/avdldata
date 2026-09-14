@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Clock, Flame, Repeat, Users } from 'lucide-react';
 import { PageHeader } from '@/components/app-shell/page-header';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Stat } from '@/components/ui/stat';
 import { getWeekView } from '@/features/planner/load';
@@ -227,9 +226,14 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
 
         <WhyPanel reasons={day.reasons} title="Waarom dit gerecht?" />
 
-        <Button asChild variant="secondary" size="lg" className="w-full">
-          <Link href={`/week/${dayIndex}/vervangen`}>Vervang dit gerecht</Link>
-        </Button>
+        <ButtonLink
+          href={`/week/${dayIndex}/vervangen`}
+          variant="secondary"
+          size="lg"
+          className="w-full"
+        >
+          Vervang dit gerecht
+        </ButtonLink>
       </div>
     </>
   );

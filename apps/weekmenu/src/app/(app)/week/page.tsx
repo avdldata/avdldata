@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { SlidersHorizontal } from 'lucide-react';
 import { PageHeader } from '@/components/app-shell/page-header';
 import { EmptyState } from '@/components/app-shell/empty-state';
-import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 import { getWeekView } from '@/features/planner/load';
 import { getChainNames } from '@/services/store-service';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
@@ -36,12 +35,10 @@ export default async function WeekPage() {
           action={<GenerateWeekButton />}
         />
         <div className="mt-4 text-center">
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/week/instellingen">
-              <SlidersHorizontal className="size-4" aria-hidden />
-              Eerst je weekinstellingen nakijken
-            </Link>
-          </Button>
+          <ButtonLink href="/week/instellingen" variant="ghost" size="sm">
+            <SlidersHorizontal className="size-4" aria-hidden />
+            Eerst je weekinstellingen nakijken
+          </ButtonLink>
         </div>
       </>
     );
@@ -55,12 +52,10 @@ export default async function WeekPage() {
         title="Mijn week"
         subtitle={`${plan.days.length} avondmaaltijden voor ${view.household.members.length} personen`}
         action={
-          <Button asChild variant="secondary" size="sm">
-            <Link href="/week/instellingen">
-              <SlidersHorizontal className="size-4" aria-hidden />
-              Instellingen
-            </Link>
-          </Button>
+          <ButtonLink href="/week/instellingen" variant="secondary" size="sm">
+            <SlidersHorizontal className="size-4" aria-hidden />
+            Instellingen
+          </ButtonLink>
         }
       />
 

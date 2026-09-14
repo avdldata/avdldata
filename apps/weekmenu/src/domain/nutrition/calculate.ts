@@ -40,7 +40,7 @@ export function calculateMemberNutrition(
   const assumptions: string[] = [];
   let quality: EstimateQuality = 'high';
 
-  const age = resolveAge(member, today);
+  const age = resolveAge(member, today, config);
   if (age.assumed) {
     assumptions.push(`Leeftijd onbekend, we rekenen met ${age.value} jaar.`);
     quality = 'medium';

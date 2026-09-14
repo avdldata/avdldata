@@ -67,9 +67,11 @@ export function WeekSummary({
             Reiskosten {formatEuro(totals.travelCents)} ·{' '}
             {formatDistance(plan.recommendedOption.trip.estimatedDistanceKm)}
           </span>
+          {/* The padding is the point: a 20 px inline link is a miss waiting to
+              happen on a phone, and the negative margin keeps it where it was. */}
           <Link
             href="/winkels"
-            className="text-brand inline-flex items-center gap-1.5 font-medium underline underline-offset-4"
+            className="text-brand -my-1.5 inline-flex min-h-8 items-center gap-1.5 py-1.5 font-medium underline underline-offset-4"
           >
             <Store className="size-4" aria-hidden />
             Vergelijk supermarkten

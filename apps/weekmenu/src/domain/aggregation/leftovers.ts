@@ -47,8 +47,10 @@ export function buildLeftoverLedger(
   config: LeftoverConfig = DEFAULT_LEFTOVER_CONFIG,
 ): IngredientLeftoverLedger[] {
   return requirements.map((requirement) => {
-    const purchased =
-      purchasedByIngredient.get(requirement.ingredientId) ?? requirement.totalAmount;
+    // No entry means no store in the chosen set could supply it, so nothing was
+    // bought. Falling back to "exactly what we needed" would hide the gap and
+    // report zero leftover for an ingredient that is simply missing.
+    const purchased = purchasedByIngredient.get(requirement.ingredientId) ?? 0;
     let remaining = purchased;
     const days: DayLeftoverEntry[] = [];
 

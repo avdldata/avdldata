@@ -138,7 +138,13 @@ export interface Promotion {
   readonly productId: ProductId;
   readonly scope: PriceScope;
   readonly params: PromotionParams;
-  /** The promotion only kicks in from this many units (e.g. "2e halve prijs"). */
+  /**
+   * The promotion only applies from this many units ("vanaf 3 stuks").
+   *
+   * Note what this does NOT model: a PERCENT_OFF with minUnits 2 discounts both
+   * packs, so it is "2 stuks, beide 50% korting" and not "2e halve prijs". The
+   * latter needs its own promotion type; see DATA_SOURCES.md.
+   */
   readonly minUnits: number;
   readonly validFrom: string;
   readonly validUntil: string;

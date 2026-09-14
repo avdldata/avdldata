@@ -132,6 +132,7 @@ describe('store combinations', () => {
       home,
       maxStores: input.maxStores,
       extraStorePenaltyCents: euros(input.penalty),
+      unavailableItemPenaltyCents: euros(6),
       tripConfig: DEFAULT_TRIP_COST_CONFIG,
     });
   };

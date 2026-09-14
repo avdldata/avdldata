@@ -1,5 +1,10 @@
 import { cents, type Cents, ZERO_CENTS } from '../units';
-import { priceForUnits, promotionApplies, promotionSavings } from '../pricing/promotions';
+import {
+  belowReferenceSavings,
+  priceForUnits,
+  promotionApplies,
+  promotionSavings,
+} from '../pricing/promotions';
 import type { ProductOffer } from '../stores/types';
 import type { IngredientId } from '../ingredients/types';
 import {
@@ -77,7 +82,12 @@ export function optimisePackaging(
   const maxUnits = variants.map((variant) =>
     Math.min(
       config.maxUnitsPerVariant,
-      Math.ceil(requiredAmount / variant.packageAmount.amount) + config.promotionSlackUnits,
+      Math.max(
+        Math.ceil(requiredAmount / variant.packageAmount.amount) + config.promotionSlackUnits,
+        // A "vanaf 4 stuks" deal is invisible if we only ever price the packs we
+        // strictly need. Reach far enough to see the first full bundle.
+        promotionReach(variant),
+      ),
     ),
   );
 
@@ -86,6 +96,20 @@ export function optimisePackaging(
     const row: number[] = new Array(maxUnits[i]! + 1);
     for (let n = 0; n <= maxUnits[i]!; n += 1) row[n] = priceForUnits(variant, n);
     return row;
+  });
+
+  // Cost is NOT monotone in the number of packs: "vanaf 3 stuks €0,80" makes
+  // three packs cheaper than two. Pruning on the cost of exactly n packs would
+  // therefore cut away the quantity that wins. suffixMin[i][n] is the cheapest
+  // any quantity >= n can be, which is a sound floor to prune against.
+  const suffixMinCost = costTable.map((row) => {
+    const suffix: number[] = new Array(row.length);
+    let best = Number.POSITIVE_INFINITY;
+    for (let n = row.length - 1; n >= 0; n -= 1) {
+      best = Math.min(best, row[n]!);
+      suffix[n] = best;
+    }
+    return suffix;
   });
 
   // Admissible lower bound: the cheapest achievable cost per base unit across
@@ -146,13 +170,16 @@ export function optimisePackaging(
     const variant = variants[index]!;
     const packSize = variant.packageAmount.amount;
     const needed = Math.ceil(remaining / packSize);
-    const limit = Math.min(maxUnits[index]!, needed + config.promotionSlackUnits);
+    const limit = Math.min(
+      maxUnits[index]!,
+      Math.max(needed + config.promotionSlackUnits, promotionReach(variant)),
+    );
 
     for (let n = 0; n <= limit; n += 1) {
+      // Stop only when no quantity at or above n can still beat the incumbent.
+      if (weights.price * (spent + suffixMinCost[index]![n]!) >= bestObjective) break;
       counts[index] = n;
-      const nextSpent = spent + costTable[index]![n]!;
-      if (weights.price * nextSpent >= bestObjective) break; // costs only grow with n
-      search(index + 1, purchased + n * packSize, nextSpent);
+      search(index + 1, purchased + n * packSize, spent + costTable[index]![n]!);
       if (exhausted) break;
     }
     counts[index] = 0;
@@ -186,7 +213,8 @@ export function optimisePackaging(
       units,
       lineTotalCents: lineTotal,
       promotionApplied: promotionApplies(offer, units),
-      savingsCents: promotionSavings(offer, units),
+      savingsCents: belowReferenceSavings(offer, units),
+      promotionSavingsCents: promotionSavings(offer, units),
       ...(offer.nutritionPer100
         ? { kcalContribution: Math.round((offer.nutritionPer100.kcal * amount) / 100) }
         : {}),
@@ -213,6 +241,22 @@ export function optimisePackaging(
         : Math.round(objectiveOf(total, purchasedAmount)),
     },
   };
+}
+
+/**
+ * The smallest number of packs at which this offer's promotion is fully in
+ * play: its minimum quantity, rounded up to a whole bundle for an "N voor €X".
+ * Zero when there is no promotion.
+ *
+ * Without this the search would never price a "vanaf 4 stuks" deal for a week
+ * that happens to need only one pack — and that deal can genuinely be cheaper.
+ */
+function promotionReach(offer: ProductOffer): number {
+  const promotion = offer.promotion;
+  if (!promotion) return 0;
+  const bundleSize = promotion.params.type === 'N_FOR_X' ? promotion.params.bundleSize : 1;
+  const units = Math.max(promotion.minUnits, bundleSize);
+  return bundleSize > 1 ? Math.ceil(units / bundleSize) * bundleSize : units;
 }
 
 function buildFallback(

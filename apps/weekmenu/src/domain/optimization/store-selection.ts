@@ -35,9 +35,16 @@ export interface StoreCombination {
   readonly assignments: readonly IngredientAssignment[];
   readonly unavailable: readonly UnavailableItem[];
   readonly groceryCents: Cents;
+  /** Only what promotions knock off the shelf price — never a mere price drop. */
   readonly promotionSavingsCents: Cents;
+  /** What the basket is below its reference prices, promotions included. */
+  readonly belowReferenceSavingsCents: Cents;
   readonly purchasedByIngredient: ReadonlyMap<string, number>;
-  /** Cheapest single store per shopping category, for the explanation. */
+  /**
+   * Per shopping category, the chain that is genuinely cheapest for this week's
+   * requirements — filled in by `enumerateStoreOptions`, which is the only place
+   * that can see every candidate store. Empty when there is nothing to compare.
+   */
   readonly categoryWinners: ReadonlyMap<string, string>;
 }
 
@@ -46,6 +53,21 @@ export interface StoreOption extends StoreCombination {
   readonly extraStorePenaltyCents: Cents;
   /** groceries + travel + the "extra store is a hassle" allowance. */
   readonly practicalTotalCents: Cents;
+  /**
+   * What the items this combination cannot supply are charged at when ranking.
+   *
+   * Kept apart from `practicalTotalCents` on purpose: that number is what the
+   * week actually costs you and must stay comparable to the shop receipt. This
+   * one only exists to rank options against each other.
+   */
+  readonly unavailablePenaltyCents: Cents;
+  /**
+   * The ranking key: practical total plus the unavailability charge.
+   *
+   * Without it a store that simply does not stock the salmon looks cheaper than
+   * one that stocks everything, because the salmon is missing from its bill.
+   */
+  readonly comparableTotalCents: Cents;
 }
 
 export type PackagingMatrix = ReadonlyMap<string, ReadonlyMap<string, PackagingResult>>;
@@ -92,9 +114,9 @@ export function evaluateStoreCombination(
   const assignments: IngredientAssignment[] = [];
   const unavailable: UnavailableItem[] = [];
   const purchased = new Map<string, number>();
-  const categoryTotals = new Map<string, Map<string, number>>();
   const lineTotals: Cents[] = [];
-  const savings: Cents[] = [];
+  const promotionSavings: Cents[] = [];
+  const referenceSavings: Cents[] = [];
 
   for (const requirement of requirements) {
     const row = matrix.get(requirement.ingredientId);
@@ -132,26 +154,12 @@ export function evaluateStoreCombination(
     });
     purchased.set(requirement.ingredientId, best.solution.purchasedAmount);
     lineTotals.push(best.solution.totalCents);
-    savings.push(sumCents(best.solution.lines.map((l) => l.savingsCents)));
-
-    const byCategory = categoryTotals.get(requirement.category) ?? new Map<string, number>();
-    byCategory.set(
-      best.store.chain.id,
-      (byCategory.get(best.store.chain.id) ?? 0) + best.solution.totalCents,
-    );
-    categoryTotals.set(requirement.category, byCategory);
+    promotionSavings.push(sumCents(best.solution.lines.map((l) => l.promotionSavingsCents)));
+    referenceSavings.push(sumCents(best.solution.lines.map((l) => l.savingsCents)));
   }
 
   const usedLocationIds = [...new Set(assignments.map((a) => a.locationId))].sort();
   const usedChainIds = [...new Set(assignments.map((a) => a.chainId))].sort();
-
-  const categoryWinners = new Map<string, string>();
-  for (const [category, byChain] of categoryTotals) {
-    const winner = [...byChain.entries()].sort(
-      (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
-    )[0];
-    if (winner) categoryWinners.set(category, winner[0]);
-  }
 
   return {
     locationIds: usedLocationIds,
@@ -159,10 +167,53 @@ export function evaluateStoreCombination(
     assignments,
     unavailable,
     groceryCents: sumCents(lineTotals),
-    promotionSavingsCents: sumCents(savings),
+    promotionSavingsCents: sumCents(promotionSavings),
+    belowReferenceSavingsCents: sumCents(referenceSavings),
     purchasedByIngredient: purchased,
-    categoryWinners,
+    categoryWinners: new Map(),
   };
+}
+
+/**
+ * Which chain is really cheapest per shopping category, this week.
+ *
+ * Priced by asking what this week's requirements in that category would cost at
+ * each single chain, so the answer survives the question "cheaper than what?".
+ * A category is left out unless at least two chains can supply all of it and one
+ * of them is strictly cheaper — otherwise there is no claim to make.
+ */
+export function cheapestChainPerCategory(
+  requirements: readonly WeekIngredientRequirement[],
+  stores: readonly StoreCandidate[],
+  matrix: PackagingMatrix,
+): Map<string, string> {
+  const categories = [...new Set(requirements.map((r) => r.category))].sort();
+  const winners = new Map<string, string>();
+
+  for (const category of categories) {
+    const inCategory = requirements.filter((r) => r.category === category);
+    const totals: { chainId: string; total: number }[] = [];
+
+    for (const store of stores) {
+      let total = 0;
+      let complete = true;
+      for (const requirement of inCategory) {
+        const result = matrix.get(requirement.ingredientId)?.get(store.location.id);
+        if (!result || result.status !== 'OK') {
+          complete = false;
+          break;
+        }
+        total += result.solution.totalCents;
+      }
+      if (complete) totals.push({ chainId: store.chain.id, total });
+    }
+
+    if (totals.length < 2) continue;
+    totals.sort((a, b) => a.total - b.total || a.chainId.localeCompare(b.chainId));
+    if (totals[0]!.total < totals[1]!.total) winners.set(category, totals[0]!.chainId);
+  }
+
+  return winners;
 }
 
 export interface StoreOptionsInput {
@@ -172,6 +223,8 @@ export interface StoreOptionsInput {
   readonly home: GeoPoint;
   readonly maxStores: number;
   readonly extraStorePenaltyCents: Cents;
+  /** What one item this combination cannot supply costs it in the ranking. */
+  readonly unavailableItemPenaltyCents: Cents;
   readonly tripConfig: TripCostConfig;
 }
 
@@ -185,6 +238,7 @@ export interface StoreOptionsInput {
  */
 export function enumerateStoreOptions(input: StoreOptionsInput): StoreOption[] {
   const subsets = combinations(input.stores, 1, Math.max(1, input.maxStores));
+  const categoryWinners = cheapestChainPerCategory(input.requirements, input.stores, input.matrix);
   const seen = new Map<string, StoreOption>();
 
   for (const subset of subsets) {
@@ -205,19 +259,37 @@ export function enumerateStoreOptions(input: StoreOptionsInput): StoreOption[] {
     });
     const extraStores = Math.max(0, combination.locationIds.length - 1);
     const extraStorePenalty = cents(extraStores * input.extraStorePenaltyCents);
+    const practicalTotal = cents(
+      combination.groceryCents + trip.estimatedTravelCostCents + extraStorePenalty,
+    );
+    const unavailablePenalty = cents(
+      combination.unavailable.length * input.unavailableItemPenaltyCents,
+    );
 
     seen.set(key, {
       ...combination,
+      categoryWinners,
       trip,
       extraStorePenaltyCents: extraStorePenalty,
-      practicalTotalCents: cents(
-        combination.groceryCents + trip.estimatedTravelCostCents + extraStorePenalty,
-      ),
+      practicalTotalCents: practicalTotal,
+      unavailablePenaltyCents: unavailablePenalty,
+      comparableTotalCents: cents(practicalTotal + unavailablePenalty),
     });
   }
 
+  // Completeness comes first, and not as a penalty you could out-price: the
+  // user asked for these seven dishes, so a combination that cannot deliver one
+  // of them is not the best way to shop for them, however low its bill looks.
+  // Any charge per missing item would just be a number to tune — and a pack of
+  // salmon costs more than any such charge would sensibly be.
+  //
+  // Incomplete combinations stay in the list (they are still worth showing when
+  // nothing can supply everything) and are ranked among themselves on the
+  // comparable total, which does price the gaps.
   return [...seen.values()].sort(
     (a, b) =>
+      a.unavailable.length - b.unavailable.length ||
+      a.comparableTotalCents - b.comparableTotalCents ||
       a.practicalTotalCents - b.practicalTotalCents ||
       a.groceryCents - b.groceryCents ||
       a.locationIds.length - b.locationIds.length ||

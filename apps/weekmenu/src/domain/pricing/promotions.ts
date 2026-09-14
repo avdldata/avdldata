@@ -77,10 +77,27 @@ export function promotionApplies(offer: ProductOffer, units: number): boolean {
   return priceForUnits(offer, units) < cents(offer.unitPriceCents * units);
 }
 
-/** How much the promotion saves at this quantity (never negative). */
+/**
+ * What the promotion itself saves at this quantity, against today's shelf price.
+ *
+ * This is the only number that may be presented as "aanbiedingsvoordeel". A
+ * product that simply happens to be cheaper this week than it usually is has a
+ * saving, but not a promotion — see `belowReferenceSavings`.
+ */
 export function promotionSavings(offer: ProductOffer, units: number): Cents {
   if (units === 0) return ZERO_CENTS;
-  const plain = cents(offer.normalUnitPriceCents * units);
+  const shelf = cents(offer.unitPriceCents * units);
   const paid = priceForUnits(offer, units);
-  return cents(Math.max(0, plain - paid));
+  return cents(Math.max(0, shelf - paid));
+}
+
+/**
+ * How much cheaper this line is than the reference price — the median of recent
+ * observations — which folds in both a promotion and an ordinary price drop.
+ */
+export function belowReferenceSavings(offer: ProductOffer, units: number): Cents {
+  if (units === 0) return ZERO_CENTS;
+  const reference = cents(offer.normalUnitPriceCents * units);
+  const paid = priceForUnits(offer, units);
+  return cents(Math.max(0, reference - paid));
 }

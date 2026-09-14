@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Check, Route } from 'lucide-react';
 import { PageHeader } from '@/components/app-shell/page-header';
 import { EmptyState } from '@/components/app-shell/empty-state';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 import { Card, CardContent } from '@/components/ui/card';
 import { getWeekView } from '@/features/planner/load';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
@@ -39,6 +38,16 @@ export default async function StoresPage() {
   const bestSingle = options
     .filter((option) => option.locationIds.length === 1)
     .sort((a, b) => a.groceryCents - b.groceryCents)[0];
+
+  const cheapestIsElsewhere =
+    plan.cheapestOption.locationIds.join('|') !== plan.recommendedOption.locationIds.join('|');
+  const groceryGap = plan.recommendedOption.groceryCents - plan.cheapestOption.groceryCents;
+  const extraKm =
+    Math.round(
+      (plan.cheapestOption.trip.estimatedDistanceKm -
+        plan.recommendedOption.trip.estimatedDistanceKm) *
+        10,
+    ) / 10;
 
   return (
     <>
@@ -108,6 +117,33 @@ export default async function StoresPage() {
           </CardContent>
         </Card>
 
+        {/* The cheapest basket and the one we advise are two different answers,
+            and hiding that would be the dishonest part. Show both, with the
+            difference spelled out, and let the reader decide. */}
+        {cheapestIsElsewhere ? (
+          <Card>
+            <CardContent className="pt-5">
+              <p className="stat-label">Puur op boodschappenprijs</p>
+              <div className="mt-1 flex flex-wrap items-baseline justify-between gap-2">
+                <span className="font-medium">
+                  {plan.cheapestOption.chainIds.map(chainName).join(' + ')}
+                </span>
+                <span className="text-lg font-semibold tabular-nums">
+                  {formatEuro(plan.cheapestOption.groceryCents)}
+                </span>
+              </div>
+              <p className="text-ink-soft mt-2 text-sm">
+                Dat is {formatEuro(groceryGap)} goedkoper aan boodschappen, maar{' '}
+                {formatDistance(extraKm)} extra rijden langs{' '}
+                {plan.cheapestOption.locationIds.length} winkels. Inclusief reiskosten kom je op{' '}
+                {formatEuro(plan.cheapestOption.practicalTotalCents)} tegenover{' '}
+                {formatEuro(plan.recommendedOption.practicalTotalCents)} — daarom adviseren we de
+                bovenste.
+              </p>
+            </CardContent>
+          </Card>
+        ) : null}
+
         <section>
           <h2 className="text-ink-soft mb-3 text-sm font-semibold">Alle combinaties</h2>
           <ul className="space-y-2">
@@ -176,9 +212,9 @@ export default async function StoresPage() {
           title="Waarom deze verdeling?"
         />
 
-        <Button asChild variant="secondary" className="w-full">
-          <Link href="/week/instellingen">Winkels of gemak aanpassen</Link>
-        </Button>
+        <ButtonLink href="/week/instellingen" variant="secondary" className="w-full">
+          Winkels of gemak aanpassen
+        </ButtonLink>
       </div>
     </>
   );

@@ -14,7 +14,7 @@ import {
 import { buildLeftoverLedger, summariseWaste } from '../aggregation/leftovers';
 import {
   DEFAULT_OPTIMIZER_CONFIG,
-  EXTRA_STORE_PENALTY_BY_PREFERENCE,
+  extraStorePenaltyFor,
   type ConveniencePreference,
   type OptimizerConfig,
 } from './config';
@@ -101,6 +101,10 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
     return failure('NO_STORES', 'Selecteer minimaal één supermarkt in de buurt.', []);
   }
 
+  // "No maximum" is expressed as every selected chain, not as zero — a zero that
+  // quietly became one would cap the plan to a single shop without saying so.
+  const maxStores = input.maxStores > 0 ? Math.min(input.maxStores, stores.length) : stores.length;
+
   const memberNutrition = calculateHouseholdNutrition(
     input.household.members,
     input.today,
@@ -157,27 +161,44 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
     memberNutrition,
   }).slice(0, Math.max(config.search.candidatesPerSlot, config.days * 4));
 
-  const weeks = beamSearch({
+  const searchInput = {
     pool,
     config,
     ...(input.lockedRecipeIds ? { locked: input.lockedRecipeIds } : {}),
     amountsByRecipe,
     referenceOffers,
     preferencePenalties,
-  });
+  };
 
-  log('search', { weeksGenerated: weeks.length, pool: pool.length });
+  // Variety is a preference, not a rule. Inside the search it is enforced as a
+  // gate because that is far cheaper than scoring every repetitive week — but a
+  // household with a narrow set of eligible dishes (vegan, several allergies)
+  // can have no week at all that satisfies it. Refusing to plan for them would
+  // turn a nice-to-have into a wall, so we drop the gate and let the objective
+  // function price the repetition instead, which is what it is there for.
+  let weeks = beamSearch({ ...searchInput, enforceDiversity: true });
+  let varietyRelaxed = false;
+  if (weeks.length === 0) {
+    weeks = beamSearch({ ...searchInput, enforceDiversity: false });
+    varietyRelaxed = weeks.length > 0;
+  }
+
+  log('search', {
+    weeksGenerated: weeks.length,
+    pool: pool.length,
+    varietyRelaxed: varietyRelaxed ? 1 : 0,
+  });
 
   if (weeks.length === 0) {
     return failure(
       'NOT_ENOUGH_CANDIDATE_RECIPES',
-      'We konden geen week samenstellen die aan de variatieregels voldoet.',
+      `Er passen maar ${candidates.length} recepten bij jullie instellingen; daar krijgen we geen week van ${config.days} verschillende gerechten uit.`,
       excluded,
     );
   }
 
   // ---- 5. full pricing of the most promising weeks -------------------------
-  const extraStorePenalty = EXTRA_STORE_PENALTY_BY_PREFERENCE[input.conveniencePreference];
+  const extraStorePenalty = extraStorePenaltyFor(input.conveniencePreference);
   const home = {
     latitude: input.household.location.latitude ?? stores[0]!.location.latitude,
     longitude: input.household.location.longitude ?? stores[0]!.location.longitude,
@@ -205,7 +226,7 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
       ingredients: input.ingredients,
       stores,
       matrixHome: home,
-      maxStores: input.maxStores,
+      maxStores,
       extraStorePenalty,
       budget: input.budget,
       startDate: input.startDate,
@@ -232,6 +253,9 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
     input.budget.hardMaxCents === undefined
       ? evaluated
       : evaluated.filter((e) => e.plan.totals.groceryCents <= input.budget.hardMaxCents!);
+  if (input.budget.hardMaxCents !== undefined) {
+    log('budget', { evaluated: evaluated.length, withinHardMax: withinHardMax.length });
+  }
 
   const pool2 = withinHardMax.length > 0 ? withinHardMax : evaluated;
   pool2.sort(
@@ -306,6 +330,12 @@ interface BeamSearchInput {
   amountsByRecipe: ReadonlyMap<string, ReadonlyMap<string, number>>;
   referenceOffers: ReadonlyMap<string, ProductOffer>;
   preferencePenalties: ReadonlyMap<string, number>;
+  /**
+   * Whether the variety rules veto a candidate outright. False on the second
+   * pass, for households whose eligible dishes cannot satisfy them at all; the
+   * objective function then prices the repetition instead of forbidding it.
+   */
+  enforceDiversity: boolean;
 }
 
 /**
@@ -337,6 +367,7 @@ function beamSearch(input: BeamSearchInput): BeamState[] {
         // A locked day comes from the user's existing plan; the variety rules
         // must not veto a choice they already made.
         if (
+          input.enforceDiversity &&
           lockedId === undefined &&
           violationsIfAdded(state.recipes, candidate, config.diversity).length > 0
         ) {
@@ -430,15 +461,29 @@ function priceWeek(input: PriceWeekInput): { plan: WeeklyPlan; optionCount: numb
     home: input.matrixHome,
     maxStores: input.maxStores,
     extraStorePenaltyCents: input.extraStorePenalty,
+    unavailableItemPenaltyCents: config.weights.unavailableItemPenalty,
     tripConfig: config.trip,
   });
 
   if (options.length === 0) return undefined;
 
-  const recommended = options[0]!;
-  const cheapest = [...options].sort(
-    (a, b) => a.groceryCents - b.groceryCents || a.locationIds.length - b.locationIds.length,
-  )[0]!;
+  // "Cheapest" has to mean cheapest for the same shopping list. A combination
+  // that leaves items out has a lower bill only because it buys less, so it can
+  // never be the cheapest option unless no combination can supply everything.
+  const byGrocery = (a: StoreOption, b: StoreOption): number =>
+    a.groceryCents - b.groceryCents || a.locationIds.length - b.locationIds.length;
+  const complete = options.filter((option) => option.unavailable.length === 0);
+  const cheapest = [...(complete.length > 0 ? complete : options)].sort(byGrocery)[0]!;
+
+  // A hard maximum is the user saying "never above this". Before writing a menu
+  // off as too expensive we shop for it differently: take the best-ranked
+  // combination that stays under the ceiling, rather than the most convenient
+  // one. Only when no combination fits does the week itself become the problem.
+  const hardMax = input.budget.hardMaxCents;
+  const recommended =
+    hardMax !== undefined && options[0]!.groceryCents > hardMax
+      ? (options.find((option) => option.groceryCents <= hardMax) ?? options[0]!)
+      : options[0]!;
 
   const leftovers = buildLeftoverLedger(
     requirements,
