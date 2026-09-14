@@ -17,17 +17,24 @@ dezelfde week.
  5  voedingsbehoefte per persoon
  6  harde dieetregels toepassen        ── filter, geen strafpunt
  7  kandidaatrecepten scoren
- 8  weekmenu's samenstellen             ── beam search
+ 8  weekmenu's samenstellen             ── stage A: beam search
  9  ingrediënten van de héle week aggregeren
 10  verpakkingscombinaties bepalen
-11  prijzen en aanbieding doorrekenen
-12  winkelcombinaties vergelijken
+11  prijzen en aanbieding doorrekenen     stage B: de twintig beste
+12  winkelcombinaties vergelijken         volledig doorrekenen
 13  reisafstand en extra-winkel-penalty
 14  verspilling berekenen
 15  totaalscore
-16  beste week kiezen
-17  uitleggen waarom
+16  gerechten ruilen en herprijzen      ── stage C: local search
+17  beste week kiezen
+18  uitleggen waarom
 ```
+
+Stap 8, 11-15 en 16 zijn drie verschillende soorten werk, en ze staan bewust in
+drie bestanden: `candidates.ts` bedenkt weken, `evaluate-week.ts` beoordeelt er
+één, `local-search.ts` verbetert de beste. Die scheiding is niet cosmetisch — hij
+maakt meetbaar of een gemiste optimale week nooit bedacht werd of wel bedacht
+maar niet beoordeeld, en dat zijn twee problemen met tegengestelde oplossingen.
 
 Stap 9 vóór stap 10 is de kern. Als je per recept inkoopt, rond je zeven keer
 naar boven af; door eerst op te tellen rond je één keer af. Er is een
@@ -64,12 +71,14 @@ onmogelijke combinatie kan uitleggen wat er in de weg zit.
 Let op het verschil tussen DISLIKE en EXCLUDE: het eerste is een duwtje in de
 scorefunctie, het tweede een harde regel.
 
-## 7–8. Weken samenstellen met beam search
+## 7–8. Stage A: weken samenstellen met beam search
 
 Recepten worden eerst afzonderlijk gescoord op een ruwe kostenschatting,
 voorkeuren en hoe goed de porties uitkomen. De beste ~28 vormen de kandidatenpoel.
+Gemeten: die poel gooit nooit een gerecht van het optimum weg, dus hem groter
+maken doet niets.
 
-Daarna wordt de week slot voor slot opgebouwd, waarbij per stap de beste 40
+Daarna wordt de week slot voor slot opgebouwd, waarbij per stap de beste N
 deelweken bewaard blijven. Twee dingen maken dit werkbaar:
 
 - **De schatting rondt af op hele verpakkingen.** Daardoor ziet de zoektocht al
@@ -109,6 +118,59 @@ branch and bound de rangschikking met de minste overtredingen; met zeven
 gerechten is dat exact en in microseconden klaar. Alleen bij "vervang dit
 gerecht" gebeurt dit niet: dan liggen de dagen vast omdat de gebruiker ze zelf
 heeft gekozen.
+
+**Waarom drie breedtes en niet één.** Recall gemeten per breedte: 40 haalt het
+optimum in 93,3 % van de scenario's binnen, 100 in 98,3 %, 200 in 99,2 % — en 400
+voegt niets meer toe. Er zijn weken die deze zoekvorm op géén enkele breedte
+bouwt: een deelmenu dat er na drie gerechten onaantrekkelijk uitziet kan als
+complete week het beste zijn. Breder zoeken heeft dus een plafond dat onder de
+honderd procent ligt, en dat is precies waarom stage C bestaat.
+
+Belangrijker nog: **breder is niet betrouwbaar beter.** Op een wereld van 100
+recepten leverde breedte 40 een week van 1914, breedte 100 er een van 1992 en
+breedte 200 er een van 1552. De breedte bepaalt welke deelweken elk slot
+overleven, en welke breedte gelijk heeft hangt van het scenario af. Daarom draait
+de zoektocht er drie — 40, 100 en 200 — en tapt hij ze om de beurt af in plaats
+van ze samen te voegen en opnieuw op schatting te sorteren; dat laatste zou de
+hele shortlist teruggeven aan de breedte die toevallig de laagste schattingen
+produceert.
+
+## 16. Stage C: gerechten ruilen
+
+Neem de beste doorgerekende week, ruil één gerecht, en reken de nieuwe week
+opnieuw volledig door. Houd de beste verbetering, herhaal tot niets meer
+verbetert. Daarna hetzelfde met twee gerechten tegelijk.
+
+**Elke buur gaat door de volledige `evaluateWeek`**, nooit door de goedkope
+schatting van stage A. Dat is de dure keuze en de enige eerlijke: juist de
+blindheid van die schatting voor winkelverdeling, verpakkingen en aanbiedingen
+is de oorzaak die dit moet repareren. De meting was ondubbelzinnig — in elk
+slecht geval verschilde het optimum in precies één gerecht, en het hele verschil
+zat in de boodschappenrekening.
+
+Dit haalt ook weken binnen die de beam niet kán bouwen, en dat is niet hetzelfde
+als "de beam iets breder maken".
+
+Vier details die ertoe doen:
+
+- **Vanaf de beste twee weken, niet alleen de beste.** Een hebzuchtige wandeling
+  erft het geluk van waar hij begint. Op grote werelden haalde één startpunt drie
+  scenario's niet die twee startpunten wel halen.
+- **Vastgezette dagen worden nooit geruild.** Bij "vervang dit gerecht" liggen de
+  andere zes dagen vast en dat blijft zo, hoeveel beter een ruil ook zou zijn.
+- **Het budget wordt tussen rondes besteed, nooit middenin.** Halverwege stoppen
+  zou van "beste verbetering" stilletjes "beste verbetering onder maandag,
+  dinsdag en de helft van woensdag" maken.
+- **Zolang een hard budgetplafond niet gehaald is, telt de rekening en niet de
+  score.** Anders loopt de zoektocht naar een mooiere week die net zo
+  onbetaalbaar is. Zodra iets past, beslist de volledige score weer.
+
+Een buur wordt overgeslagen als een **bewijsbare** ondergrens al boven de
+huidige beste week ligt (`lower-bound.ts`): goedkoopste verpakking per
+ingrediënt bij welke winkel dan ook, plus voeding, herhaling en voorkeuren
+exact; reiskosten, verspilling en alle andere nooit-negatieve termen weggelaten.
+Geverifieerd op 4.078 complete weken zonder één overschrijding. Dat levert geen
+minder werk op maar dieper zoeken binnen hetzelfde budget.
 
 ## 9. Aggregatie
 
@@ -298,21 +360,29 @@ die je toch al doet, vergelijkbare voedingswaarde en voorkeuren.
 
 ## Complexiteit en snelheid
 
-| Fase              | Orde                                    | In de praktijk    |
-| ----------------- | --------------------------------------- | ----------------- |
-| Filteren          | O(recepten × regels)                    | 49 recepten       |
-| Beam search       | O(dagen × beam × poel × ingrediënten)   | 7 × 40 × 28 × ~30 |
-| Verpakkingen      | O(weken × ingrediënten × winkels × DFS) | 20 × ~30 × 3      |
-| Winkelcombinaties | O(weken × 2^winkels)                    | 20 × ≤ 41         |
+| Fase              | Orde                                    | In de praktijk     |
+| ----------------- | --------------------------------------- | ------------------ |
+| Filteren          | O(recepten × regels)                    | 51 recepten        |
+| Stage A beam      | O(dagen × beam × poel × ingrediënten)   | 7 × 100 × 28 × ~30 |
+| Stage B pricing   | O(weken × ingrediënten × winkels × DFS) | 20 × ~74 × 3       |
+| Winkelcombinaties | O(weken × 2^winkels)                    | 20 × ≤ 2^3         |
+| Stage C ruilen    | O(starts × (budget + dagen × poel))     | 2 × (200 + 250)    |
 
-Gemeten op de demodataset (728 producten, 8.736 prijswaarnemingen, drie
-winkels): **80 ms** om de offers samen te stellen en **101 ms** om de week te
-optimaliseren. De testsuite bewaakt de grens van 2 seconden.
+Elke fase heeft een harde bovengrens uit de configuratie, niet uit geluk met de
+data. Gemeten op de demodataset (728 producten, 8.736 prijswaarnemingen, drie
+winkels): **1,45 s** om de week te optimaliseren, waarvan het leeuwendeel naar
+het ruilen gaat. De testsuite bewaakt de grens van 2 seconden.
 
-Twee dingen houden dat zo: de prijshistorie wordt één keer per product
-geïndexeerd in plaats van per product doorzocht, en verpakkingskosten worden per
-(ingredient, winkel) één keer berekend en daarna door alle winkelcombinaties
-hergebruikt.
+Dat is een bewuste ruil: kwaliteit gaat vóór honderd milliseconden latency, en
+dit is wat die kwaliteit kost. In
+[OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md) staan drie knoppen die elk 25 tot
+40 procent teruggeven, met de gemeten prijs erbij.
+
+Vier dingen houden het binnen de perken: de prijshistorie wordt één keer per
+product geïndexeerd; verpakkingskosten worden per (ingredient, hoeveelheid,
+winkel) gecachet en over alle doorgerekende weken hergebruikt; de uitleg wordt
+alleen voor de winnende week gebouwd in plaats van voor alle honderden
+kandidaten; en de ondergrens slaat buren over die toch niet kunnen winnen.
 
 ## Hoe goed is deze zoektocht eigenlijk?
 
@@ -321,12 +391,20 @@ datasets élke geldige week doorrekent. Beide gebruiken exact dezelfde
 beoordeling — `evaluateWeek` en `selectBestPlan` — dus het verschil tussen hun
 uitkomsten is puur het verschil tussen de zoekstrategieën.
 
-Over 500 geseede scenario's: 90 % exact optimaal, gemiddelde afwijking 0,27 %,
-p95 1,68 %, slechtste geval 11,68 %. Nul correctheidsfouten.
+Over 500 geseede scenario's: **100 % exact optimaal**, nul correctheidsfouten,
+62,6 ms tegen 266,5 ms voor de uitputtende solver. Daarvóór, met alleen de beam:
+90 % exact en een slechtste geval van 11,68 %.
 
-Draaien met `pnpm bench 500`. Het volledige verslag, inclusief de ontleding van
-het slechtste geval en een verbetering die het regressiecorpus tegenhield, staat
-in [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md).
+Eén nuance hoort bij dat cijfer: het geldt voor werelden van 7 tot 12 recepten,
+het formaat waarop een uitputtende solver nog meekan. Voor 25 tot 250 recepten
+is er geen optimum meer om tegen af te zetten; daar wordt gemeten tegen een
+gecommit corpus van de beste score die ooit gehaald is, en tegen de vorige
+optimizer op dezelfde seeds (3,5 % tot 8,6 % betere weken).
+
+Draaien met `pnpm bench 500`, `pnpm bench:recall`, `pnpm bench:ablation`,
+`pnpm bench:budget` en `pnpm bench:large`. Het volledige verslag — waar optimale
+weken verdwenen, wat elke stap oplevert, en twee metingen die zelf kapot bleken —
+staat in [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md).
 
 De solver zelf staat in `src/domain/optimization/reference-solver.ts` en is met
 een ESLint-regel afgeschermd van de applicatie: hij is exponentieel van opzet en

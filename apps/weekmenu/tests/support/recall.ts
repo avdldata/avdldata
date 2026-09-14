@@ -73,7 +73,7 @@ export function measureRecall(seed: number, options: ScenarioOptions = {}): Reca
   const generateAt = (beamWidth: number): { rank: number | undefined; poolIds: Set<string> } => {
     const config: OptimizerConfig = {
       ...baseConfig,
-      search: { ...baseConfig.search, beamWidth },
+      search: { ...baseConfig.search, beamWidths: [beamWidth] },
     };
     const generated = generateCandidateWeeks({
       candidates: prepared.candidates,
@@ -95,7 +95,7 @@ export function measureRecall(seed: number, options: ScenarioOptions = {}): Reca
   const presentAt = new Map<number, boolean>();
   for (const width of RECALL_WIDTHS) presentAt.set(width, generateAt(width).rank !== undefined);
 
-  const atDefault = generateAt(baseConfig.search.beamWidth);
+  const atDefault = generateAt(Math.max(...baseConfig.search.beamWidths));
   const wide = generateAt(WIDE_BEAM);
 
   const inPool = exhaustive.plan.days.every((day) => atDefault.poolIds.has(day.recipe.id));
@@ -159,10 +159,7 @@ export interface RecallSummary {
   readonly measurements: readonly RecallMeasurement[];
 }
 
-export function runRecall(
-  seeds: readonly number[],
-  options: ScenarioOptions = {},
-): RecallSummary {
+export function runRecall(seeds: readonly number[], options: ScenarioOptions = {}): RecallSummary {
   const measurements: RecallMeasurement[] = [];
   let skipped = 0;
 

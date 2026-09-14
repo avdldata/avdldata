@@ -141,8 +141,20 @@ export interface LocalSearchConfig {
 export interface SearchConfig {
   /** Candidate recipes considered per day slot. */
   readonly candidatesPerSlot: number;
-  /** Beam width for the partial-week search. */
-  readonly beamWidth: number;
+  /**
+   * Beam widths for the partial-week search — one search per width, merged.
+   *
+   * Not a single number, because the benchmark showed that a wider beam is not
+   * reliably a better one. On a 100-recipe world, width 40 produced a week
+   * scoring 1914 and width 100 one scoring 1992; at width 200 it was 1552.
+   * Widening changes *which* partial weeks survive each slot, and that can
+   * throw away a menu that only looks good once it is complete.
+   *
+   * Running two widths and interleaving their results costs a second beam pass
+   * — cheap next to pricing a week — and means the shortlist is never at the
+   * mercy of one arbitrary cut-off.
+   */
+  readonly beamWidths: readonly number[];
   /** Complete weeks that get the full pricing treatment. */
   readonly fullyEvaluatedWeeks: number;
   /** Swap-one-dish refinement of the best fully priced week. */
@@ -154,32 +166,42 @@ export interface SearchConfig {
  *
  * The ablation (see OPTIMIZER_BENCHMARK.md) settled three questions:
  *
- * `beamWidth` 100 rather than 40. Widening the beam alone barely helps — 89 %
- * to 90 % exact — because the true optimum sits at a median rank of 41 among
- * the weeks the beam produces, so you would have to price hundreds of them to
- * collect it. Widening it *underneath* the swap refinement is a different
- * story: it changes which twenty weeks get priced, and so where the refinement
- * starts from. That took the worst case from 4,4 % to 1,8 % for about five
- * milliseconds.
+ * `beamWidths` [40, 100] rather than a single 40. Widening the beam alone
+ * barely helps — 89 % to 90 % exact — because the true optimum sits at a median
+ * rank of 41 among the weeks the beam produces, so you would have to price
+ * hundreds of them to collect it. Widening it *underneath* the swap refinement
+ * is a different story: it changes which twenty weeks get priced, and so where
+ * the refinement starts from. That took the worst case from 4,4 % to 1,8 %.
+ *
+ * Three widths rather than the best one, because there is no best one. On a
+ * 100-recipe world width 40 reached a week scoring 1914, width 100 one scoring
+ * 1992, and width 200 one scoring 1552 — the widths disagree, and which is
+ * right depends on the scenario. Running all three and interleaving their
+ * results costs two extra beam passes, which is cheap next to pricing a week,
+ * and removes the arbitrary cut-off from the answer.
  *
  * `fullyEvaluatedWeeks` stays at 20. Raising it to 50 or 100 costs two to three
  * times the runtime and, with the refinement in play, measured slightly *worse*
  * — a better starting week can still walk into a worse local optimum. More work
  * for less quality is an easy call.
  *
- * `maxEvaluations` 200. The refinement converges long before that in the small
- * worlds; the cap exists for large catalogues, where a sweep is wider.
+ * `maxEvaluations` 200 and `maxTwoSwapEvaluations` 200. The refinement
+ * converges long before either in the small worlds; the caps exist for large
+ * catalogues, where a sweep is much wider. They are what keeps the biggest
+ * measured catalogue under two seconds.
+ *
+ * `restarts` 2 — see the field's own note.
  */
 export const DEFAULT_SEARCH_CONFIG: SearchConfig = {
   candidatesPerSlot: 25,
-  beamWidth: 100,
+  beamWidths: [40, 100, 200],
   fullyEvaluatedWeeks: 20,
   localSearch: {
     enabled: true,
     maxIterations: 8,
     maxEvaluations: 200,
     twoSwap: true,
-    maxTwoSwapEvaluations: 250,
+    maxTwoSwapEvaluations: 200,
     restarts: 2,
   },
 };

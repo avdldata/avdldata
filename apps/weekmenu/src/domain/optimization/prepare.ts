@@ -36,7 +36,8 @@ export interface PreparedOptimization {
 
 export interface PreparationFailure {
   readonly status: 'FAILED';
-  readonly reason: 'NO_MEMBERS' | 'NO_STORES' | 'NO_CANDIDATE_RECIPES' | 'NOT_ENOUGH_CANDIDATE_RECIPES';
+  readonly reason:
+    'NO_MEMBERS' | 'NO_STORES' | 'NO_CANDIDATE_RECIPES' | 'NOT_ENOUGH_CANDIDATE_RECIPES';
   /** How many recipes survived the filter, for the caller's message. */
   readonly candidateCount: number;
   readonly excluded: readonly ExcludedRecipe[];

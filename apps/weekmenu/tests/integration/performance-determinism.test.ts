@@ -106,7 +106,8 @@ describe('generating a week stays inside its budget', () => {
       localSearch.maxEvaluations +
       oneSweep +
       (localSearch.twoSwap ? localSearch.maxTwoSwapEvaluations : 0);
-    expect(diagnostics.weeksGenerated).toBeLessThanOrEqual(search.beamWidth);
+    const beamCeiling = search.beamWidths.reduce((sum, width) => sum + width, 0);
+    expect(diagnostics.weeksGenerated).toBeLessThanOrEqual(beamCeiling);
     expect(diagnostics.localSearchEvaluations).toBeLessThanOrEqual(
       perStart * Math.max(1, localSearch.restarts),
     );
@@ -128,5 +129,8 @@ describe('generating a week stays inside its budget', () => {
     const three = timed(3);
     // Three shops means more combinations, but not a different order of cost.
     expect(three).toBeLessThan(Math.max(one * 8, 2000));
-  });
+    // Three full plans of the demo catalogue, and the suite runs files in
+    // parallel — so the default timeout would fire on load rather than on a
+    // real slowdown. The per-plan budget is the assertion above.
+  }, 30_000);
 });

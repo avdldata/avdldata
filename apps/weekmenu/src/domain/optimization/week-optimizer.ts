@@ -1,7 +1,11 @@
 import type { Household } from '../household/types';
 import type { IngredientIndex } from '../ingredients/types';
 import type { Recipe } from '../recipes/types';
-import { DEFAULT_OPTIMIZER_CONFIG, type ConveniencePreference, type OptimizerConfig } from './config';
+import {
+  DEFAULT_OPTIMIZER_CONFIG,
+  type ConveniencePreference,
+  type OptimizerConfig,
+} from './config';
 import type { ExcludedRecipe } from './filter';
 import { prepareOptimization, type PreparationFailure } from './prepare';
 import { bestOrdering } from './diversity';
@@ -101,10 +105,7 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
   // each assemble their own evaluation input is two chances for the refinement
   // step to be judging a subtly different week than the search step.
   const packagingCache: PackagingCache = new Map();
-  const price = (
-    recipes: readonly Recipe[],
-    explain = false,
-  ): EvaluatedWeek | undefined =>
+  const price = (recipes: readonly Recipe[], explain = false): EvaluatedWeek | undefined =>
     evaluateWeek({
       recipes,
       packagingCache,

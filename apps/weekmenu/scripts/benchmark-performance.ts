@@ -97,13 +97,14 @@ function inflatedRecipes(factor: number): Recipe[] {
         id: `${recipe.id}-v${copy}`,
         name: `${recipe.name} ${copy}`,
         cuisine: cuisines[(cuisines.indexOf(recipe.cuisine) + copy) % cuisines.length]!,
-        primaryProtein: proteins[(proteins.indexOf(recipe.primaryProtein) + copy) % proteins.length]!,
+        primaryProtein:
+          proteins[(proteins.indexOf(recipe.primaryProtein) + copy) % proteins.length]!,
         ingredients: recipe.ingredients.map((line, position) => ({
           ...line,
           ingredientId: ingredientIds[(shift + position * 3) % ingredientIds.length]!,
           perServing: {
             ...line.perServing,
-            amount: Math.max(10, Math.round(line.perServing.amount * (0.7 + ((shift % 7) * 0.1)))),
+            amount: Math.max(10, Math.round(line.perServing.amount * (0.7 + (shift % 7) * 0.1))),
           },
         })),
       });

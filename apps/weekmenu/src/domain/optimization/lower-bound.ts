@@ -12,11 +12,7 @@ import { cents } from '../units';
 import type { OptimizerConfig } from './config';
 import { varietyScore, weekDiversityViolations } from './diversity';
 import { scoreNutrition, scoreRecipePreferences } from './scoring';
-import {
-  buildPackagingMatrix,
-  type PackagingCache,
-  type StoreCandidate,
-} from './store-selection';
+import { buildPackagingMatrix, type PackagingCache, type StoreCandidate } from './store-selection';
 
 /**
  * A floor under what a week can possibly score.
@@ -95,7 +91,9 @@ export function weekLowerBound(input: WeekLowerBoundInput): number {
   });
 
   // Reproduced exactly as `scoreWeek` builds it, nested rounding included.
-  const monotony = cents(Math.max(0, 1 - varietyScore(input.recipes)) * config.weights.monotonyPenalty);
+  const monotony = cents(
+    Math.max(0, 1 - varietyScore(input.recipes)) * config.weights.monotonyPenalty,
+  );
   const repetition = cents(
     weekDiversityViolations(input.recipes, config.diversity).length *
       config.weights.repetitionPerViolation +

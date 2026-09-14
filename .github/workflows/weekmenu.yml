@@ -188,6 +188,19 @@ jobs:
       - name: Benchmark the optimizer against the exhaustive solver
         run: pnpm bench 120
 
+      # A ceiling is a promise rather than a preference, so it is checked
+      # separately and judged pass/fail: reporting "nothing fits under 50 euro"
+      # when something does is a false statement, not a slightly worse plan.
+      - name: Check that a reachable budget ceiling is actually reached
+        run: pnpm bench:budget 60
+
+      # Above roughly two dozen recipes nothing can be verified exactly, so this
+      # guards the two things that can still be checked at that size: the same
+      # input gives the same week, and no scenario scores worse than the best
+      # result ever recorded for it.
+      - name: Check determinism and the best-known corpus on large catalogues
+        run: pnpm bench:large 6
+
       - name: Upload the benchmark output
         if: always()
         uses: actions/upload-artifact@v4

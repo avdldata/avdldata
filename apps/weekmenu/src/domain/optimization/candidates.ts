@@ -81,14 +81,37 @@ export function generateCandidateWeeks(input: CandidateGenerationInput): Candida
     memberNutrition: input.memberNutrition,
   }).slice(0, Math.max(config.search.candidatesPerSlot, config.days * 4));
 
-  const weeks = beamSearch({
-    pool,
-    config,
-    ...(input.locked ? { locked: input.locked } : {}),
-    amountsByRecipe,
-    referenceOffers,
-    preferencePenalties,
-  });
+  // One beam per configured width, interleaved rather than concatenated.
+  //
+  // Concatenating and re-sorting by estimate would quietly hand the whole
+  // shortlist back to whichever width happens to produce the lowest estimates,
+  // which is the single point of view this exists to avoid. Round-robin means
+  // every width gets its best weeks priced.
+  const reservoirs = config.search.beamWidths.map((beamWidth) =>
+    beamSearch({
+      pool,
+      config,
+      beamWidth,
+      ...(input.locked ? { locked: input.locked } : {}),
+      amountsByRecipe,
+      referenceOffers,
+      preferencePenalties,
+    }),
+  );
+
+  const weeks: CandidateWeek[] = [];
+  const seen = new Set<string>();
+  const depth = Math.max(0, ...reservoirs.map((reservoir) => reservoir.length));
+  for (let rank = 0; rank < depth; rank += 1) {
+    for (const reservoir of reservoirs) {
+      const week = reservoir[rank];
+      if (!week) continue;
+      const key = weekKey(week.recipes);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      weeks.push(week);
+    }
+  }
 
   return { weeks, pool, amountsByRecipe, preferencePenalties };
 }
@@ -133,6 +156,7 @@ interface BeamState {
 interface BeamSearchInput {
   pool: readonly Recipe[];
   config: OptimizerConfig;
+  beamWidth: number;
   locked?: ReadonlyMap<number, string>;
   amountsByRecipe: ReadonlyMap<string, ReadonlyMap<string, number>>;
   referenceOffers: ReadonlyMap<string, ProductOffer>;
@@ -224,7 +248,7 @@ function beamSearch(input: BeamSearchInput): CandidateWeek[] {
     for (const state of byEstimate) {
       const key = weekKey(state.recipes);
       if (!bySet.has(key)) bySet.set(key, state);
-      if (bySet.size >= config.search.beamWidth) break;
+      if (bySet.size >= input.beamWidth) break;
     }
     states = [...bySet.values()];
   }
@@ -272,9 +296,7 @@ function mergeAmounts(
 }
 
 /** Cheapest offer per ingredient across all allowed stores, for fast estimates. */
-export function buildReferenceOffers(
-  stores: readonly StoreCandidate[],
-): Map<string, ProductOffer> {
+export function buildReferenceOffers(stores: readonly StoreCandidate[]): Map<string, ProductOffer> {
   const best = new Map<string, ProductOffer>();
   for (const store of stores) {
     for (const offer of store.offers) {

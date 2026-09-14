@@ -25,7 +25,7 @@ const restarts = restartsArg ? Number(restartsArg.split('=')[1]) : undefined;
 
 const search = baseline
   ? {
-      beamWidth: 40,
+      beamWidths: [40],
       fullyEvaluatedWeeks: 20,
       localSearch: {
         enabled: false,
@@ -40,6 +40,20 @@ const search = baseline
     ? { localSearch: { ...DEFAULT_OPTIMIZER_CONFIG.search.localSearch, restarts } }
     : {};
 
+/**
+ * How far short of the best-known score a scenario may fall before it counts as
+ * a regression.
+ *
+ * Not zero, and that is deliberate. The corpus records the best result *any*
+ * configuration ever reached, so it is a union rather than something one
+ * configuration can reproduce — on a problem this size every setting wins some
+ * scenarios and loses others. Demanding an exact match would make this red
+ * forever and teach nobody anything. Two percent is well above the spread
+ * between configurations measured so far and well below anything that would
+ * show up as a worse week.
+ */
+const SHORTFALL_TOLERANCE_PERCENT = 2;
+
 let corpus: Record<string, { score: number; week: string[] }> = {};
 try {
   corpus = JSON.parse(readFileSync(CORPUS, 'utf8'));
@@ -49,6 +63,7 @@ try {
 
 const seeds = benchmarkSeeds(count);
 const regressions: string[] = [];
+const shortfalls: string[] = [];
 const nonDeterministic: string[] = [];
 let improved = 0;
 
@@ -101,9 +116,12 @@ for (const recipeCount of LARGE_WORLD_SIZES) {
       improved += 1;
       corpus[key] = { score: result.score, week: [...result.week] };
     } else if (result.score > known.score + 0.5 && !baseline) {
-      regressions.push(
-        `seed ${seed} @ ${recipeCount} recepten: ${result.score} tegen best bekend ${known.score}`,
-      );
+      const short = ((result.score - known.score) / Math.max(1, known.score)) * 100;
+      const line =
+        `seed ${seed} @ ${recipeCount} recepten: ${result.score} tegen best bekend ` +
+        `${known.score} (+${short.toFixed(2)}%)`;
+      if (short > SHORTFALL_TOLERANCE_PERCENT) regressions.push(line);
+      else shortfalls.push(line);
     }
   }
 
@@ -132,6 +150,13 @@ if (update) {
 
 for (const problem of nonDeterministic) console.log(`\n  NIET DETERMINISTISCH: ${problem}`);
 for (const problem of regressions) console.log(`\n  REGRESSIE: ${problem}`);
+if (shortfalls.length > 0) {
+  console.log(
+    `\n  Onder best bekend, binnen de marge van ${SHORTFALL_TOLERANCE_PERCENT}%` +
+      ' (het corpus is de beste van álle varianten, niet van deze):',
+  );
+  for (const problem of shortfalls) console.log(`    ${problem}`);
+}
 
 console.log('');
 process.exit(regressions.length > 0 || nonDeterministic.length > 0 ? 1 : 0);

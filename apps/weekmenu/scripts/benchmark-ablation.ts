@@ -25,15 +25,21 @@ const OFF = {
   restarts: 1,
 } as const;
 const on = (maxEvaluations: number, maxIterations = 8) =>
-  ({ enabled: true, maxIterations, maxEvaluations, twoSwap: false, maxTwoSwapEvaluations: 0, restarts: 1 }) as const;
+  ({
+    enabled: true,
+    maxIterations,
+    maxEvaluations,
+    twoSwap: false,
+    maxTwoSwapEvaluations: 0,
+    restarts: 1,
+  }) as const;
 const withTwoSwap = (maxTwoSwapEvaluations: number) =>
   ({ ...on(200), twoSwap: true, maxTwoSwapEvaluations }) as const;
 
-
 const VARIANTS: Variant[] = [
-  searchVariant('baseline (v1: beam 40, top-20)', { beamWidth: 40, localSearch: OFF }),
+  searchVariant('baseline (v1: beam 40, top-20)', { beamWidths: [40], localSearch: OFF }),
   searchVariant('beam 100, top-100 (alleen breder)', {
-    beamWidth: 100,
+    beamWidths: [100],
     fullyEvaluatedWeeks: 100,
     localSearch: OFF,
   }),
@@ -94,7 +100,9 @@ for (const r of results.slice(1)) {
     if (gap < base - 1e-9) better += 1;
     else if (gap > base + 1e-9) worse += 1;
   }
-  console.log(`    ${r.name.padEnd(34)} ${String(better).padStart(4)} beter  ${String(worse).padStart(4)} slechter`);
+  console.log(
+    `    ${r.name.padEnd(34)} ${String(better).padStart(4)} beter  ${String(worse).padStart(4)} slechter`,
+  );
 }
 
 console.log('');

@@ -55,6 +55,10 @@ niets geïnstalleerd hebt.
 | `pnpm format:check`         | Prettier controleren zonder te schrijven             |
 | `pnpm verify`               | Typecheck, lint en tests achter elkaar               |
 | `pnpm bench [n]`            | Optimizer versus uitputtend zoeken, n scenario's     |
+| `pnpm bench:recall [n]`     | Waar in de pijplijn een optimale week verdwijnt      |
+| `pnpm bench:ablation [n]`   | Wat elke stap van de zoektocht oplevert              |
+| `pnpm bench:budget [n]`     | Wordt een haalbaar budgetplafond ook echt gehaald    |
+| `pnpm bench:large`          | 25–250 recepten tegen het best bekende resultaat     |
 | `pnpm bench:perf`           | Hoe lang een week plannen duurt                      |
 | `pnpm seed:sql`             | `supabase/seed.sql` genereren uit de TypeScript-seed |
 | `pnpm seed:images`          | Placeholder-illustraties per recept                  |

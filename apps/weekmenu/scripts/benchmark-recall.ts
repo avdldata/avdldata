@@ -37,7 +37,8 @@ const STAGES: { stage: LostStage; what: string }[] = [
   { stage: 'TOPK', what: 'week zat in de beam, buiten de top-K' },
   { stage: 'SELECTION', what: 'volledig geprijsd en tóch verloren (BUG)' },
 ];
-for (const { stage, what } of STAGES) line(`${stage} — ${what}`, pct(summary.byStage.get(stage) ?? 0));
+for (const { stage, what } of STAGES)
+  line(`${stage} — ${what}`, pct(summary.byStage.get(stage) ?? 0));
 
 console.log('\n  Recall per beambreedte (optimum überhaupt gegenereerd)\n');
 for (const width of RECALL_WIDTHS) {
@@ -49,7 +50,8 @@ if (summary.wideRanks.length === 0) {
   line('niets gemeten', '—');
 } else {
   const ranks = summary.wideRanks;
-  const at = (p: number): number => ranks[Math.min(ranks.length - 1, Math.ceil((p / 100) * ranks.length) - 1)]!;
+  const at = (p: number): number =>
+    ranks[Math.min(ranks.length - 1, Math.ceil((p / 100) * ranks.length) - 1)]!;
   line('mediaan rang', String(at(50)));
   line('p75 rang', String(at(75)));
   line('p90 rang', String(at(90)));

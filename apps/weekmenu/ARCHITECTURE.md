@@ -44,18 +44,43 @@ geeft altijd dezelfde week.
 
 ## Domein
 
-| Module          | Verantwoordelijkheid                                                          |
-| --------------- | ----------------------------------------------------------------------------- |
-| `units/`        | `Cents` (integer eurocenten) en `Quantity` (g/ml/stuks) met één conversielaag |
-| `ingredients/`  | Canonical ingredients, aliassen, allergenen, zwangerschapsrisico's            |
-| `nutrition/`    | Voedingswaarde per 100, Mifflin-St Jeor, TDEE, portieschaling                 |
-| `recipes/`      | Receptmodel, normalisatie, afgeleide voedingswaarde                           |
-| `stores/`       | Merken, producten, prijswaarnemingen, promoties, `ProductOffer`               |
-| `pricing/`      | Promotie-engine, prijshistorie, referentieprijs, DealScore                    |
-| `packaging/`    | Goedkoopste verpakkingscombinatie per ingredient per winkel                   |
-| `aggregation/`  | Weekaggregatie en het restantenoverzicht                                      |
-| `trip/`         | Afstand en reiskosten                                                         |
-| `optimization/` | Filters, variatieregels, beam search, winkelcombinaties, scoring, uitleg      |
+| Module          | Verantwoordelijkheid                                                               |
+| --------------- | ---------------------------------------------------------------------------------- |
+| `units/`        | `Cents` (integer eurocenten) en `Quantity` (g/ml/stuks) met één conversielaag      |
+| `ingredients/`  | Canonical ingredients, aliassen, allergenen, zwangerschapsrisico's                 |
+| `nutrition/`    | Voedingswaarde per 100, Mifflin-St Jeor, TDEE, portieschaling                      |
+| `recipes/`      | Receptmodel, normalisatie, afgeleide voedingswaarde                                |
+| `stores/`       | Merken, producten, prijswaarnemingen, promoties, `ProductOffer`                    |
+| `pricing/`      | Promotie-engine, prijshistorie, referentieprijs, DealScore                         |
+| `packaging/`    | Goedkoopste verpakkingscombinatie per ingredient per winkel                        |
+| `aggregation/`  | Weekaggregatie en het restantenoverzicht                                           |
+| `trip/`         | Afstand en reiskosten                                                              |
+| `optimization/` | Filters, variatieregels, de drietrapszoektocht, winkelcombinaties, scoring, uitleg |
+
+### De optimizer is in drie soorten werk geknipt
+
+Binnen `optimization/` staan bedenken, beoordelen en verbeteren in aparte
+bestanden, en dat is geen cosmetische indeling:
+
+| Bestand               | Rol                                                                                                                                                                                                                                                                                                                         |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prepare.ts`          | Alles vóór er iets besloten wordt: voedingsbehoefte, harde filter, portieschaling. Gedeeld door de optimizer, de referentie-solver en de benchmark — het stond in drie kopieën, en drie kopieën van "wat heeft dit gezin nodig" zijn drie kansen dat de benchmark twee motoren vergelijkt die het oneens zijn over de vráág |
+| `candidates.ts`       | Stage A: kandidaatweken bedenken (beam search)                                                                                                                                                                                                                                                                              |
+| `evaluate-week.ts`    | Stage B: één week volledig beoordelen — de **enige** kopie van de objective function                                                                                                                                                                                                                                        |
+| `local-search.ts`     | Stage C: de beste weken verbeteren door gerechten te ruilen                                                                                                                                                                                                                                                                 |
+| `lower-bound.ts`      | Bewijsbare ondergrens, zodat kansloze kandidaten niet geprijsd hoeven                                                                                                                                                                                                                                                       |
+| `reference-solver.ts` | Uitputtende solver voor tests en benchmarks; met een ESLint-regel buiten de applicatielaag gehouden                                                                                                                                                                                                                         |
+
+Stage A los van stage B is wat het meetbaar maakt of een gemiste optimale week
+nooit bedacht werd of wél bedacht maar niet beoordeeld. Dat zijn twee problemen
+met tegengestelde oplossingen — meer kandidaten tegenover betere rangschikking —
+en zonder die scheiding raad je welke van de twee je hebt. De meting wees uit dat
+het de tweede was, en dat veranderde het ontwerp.
+
+Dat de optimizer en de referentie-solver `evaluateWeek` en `selectBestPlan` delen
+is een harde eis, geen nette gewoonte: zouden ze elk hun eigen oordeel hebben,
+dan meet de benchmark het verschil tussen twee meningen over "goed" in plaats van
+de kwaliteit van de zoektocht.
 
 Zie [OPTIMIZER.md](OPTIMIZER.md) voor hoe de optimizer werkt en
 [DATA_MODEL.md](DATA_MODEL.md) voor waarom ingredient, product en prijs
@@ -195,11 +220,16 @@ Gewicht en zwangerschap zijn gevoelige gegevens.
 ## Kwaliteit
 
 - TypeScript strict, inclusief `noUncheckedIndexedAccess`. Geen `any`.
-- 214 unit- en integratietests, plus 7 Playwright-scenario's over de volledige
+- 302 unit- en integratietests, plus 7 Playwright-scenario's over de volledige
   primaire flow.
 - Migraties geverifieerd tegen een echte PostgreSQL 16.
-- Een week genereren duurt ~180 ms op de demodataset; de testsuite bewaakt de
-  grens van 2 seconden.
+- De zoekkwaliteit is gemeten, niet aangenomen: over 500 geseede werelden vindt
+  de optimizer exact dezelfde week als een uitputtende solver, met nul
+  correctheidsfouten. Zie [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md).
+- Een week genereren duurt ~1,45 s op de demodataset; de testsuite bewaakt de
+  grens van 2 seconden. Dat is een bewuste ruil van latency tegen kwaliteit; de
+  knoppen om hem terug te draaien staan met hun gemeten prijs in
+  [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md).
 
 ## Wat V1 bewust niet doet
 
