@@ -30,6 +30,9 @@
     "data:probe": "tsx scripts/probe-checkjebon.ts",
     "data:coverage": "tsx scripts/probe-coverage.ts",
     "data:week": "tsx scripts/real-data-week.ts",
+    "match:eval": "tsx scripts/eval-matching.ts",
+    "match:review": "tsx scripts/review-queue.ts",
+    "match:weeks": "tsx scripts/validate-real-weeks.ts",
     "bench:perf": "tsx scripts/benchmark-performance.ts"
   },
   "dependencies": {

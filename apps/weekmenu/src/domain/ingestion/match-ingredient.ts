@@ -1,292 +1,218 @@
 import type { CanonicalIngredient, IngredientId } from '../ingredients/types';
+import { INGREDIENT_ALIASES, INGREDIENT_SAFE_WORDS, type AliasType } from './ingredient-aliases';
+import {
+  DISQUALIFYING_WORDS,
+  isIgnorableWord,
+  PRESERVING_WORDS,
+} from './matching-vocabulary';
 
 /**
  * Decide which canonical ingredient a supermarket product can stand in for.
  *
  * The governing rule is that a wrong match is worse than no match. A missing
  * product makes a week slightly more expensive or reports an item as
- * unavailable — both visible, both recoverable. A wrong one silently prices
- * "vanillekwark met suiker" as "magere kwark" and quietly changes what someone
- * eats. So everything here is built to refuse rather than to guess, and
- * anything it is not sure about goes to a human instead of into the optimizer.
+ * unavailable — visible, and recoverable. A wrong one silently prices garlic
+ * croutons as garlic and quietly changes what someone eats.
  *
- * Three things decide the outcome:
+ * So this does not score similarity. It gathers *evidence*, and the evidence
+ * decides the tier:
  *
- *   the name must contain the ingredient as whole words — "kipfilet" matches
- *   "AH Scharrel kipfilet" but never "kipfiletreepjes shoarma", because the
- *   latter is a seasoned, prepared product and not a substitute for plain
- *   chicken breast;
+ *   the product name must contain the ingredient, or one of its aliases, as
+ *   whole words;
  *
- *   a disqualifier removes the match entirely — soup, sauce and spice mixes
- *   are different foods that happen to share a word;
+ *   every remaining word is then classified. Brand, packaging and
+ *   form-preserving words are set aside — sliced onion is onion. A word naming
+ *   a different food rejects the match outright. Anything the vocabulary does
+ *   not recognise is, by default, a reason to ask a human.
  *
- *   a modifier demotes it to review — flavoured, prepared or otherwise altered
- *   versions may or may not substitute, and that is a judgement call.
+ * That last clause is what keeps precision high: the matcher never assumes a
+ * word it has not been taught is harmless. Adding vocabulary is how recall
+ * improves, and every addition is reviewable in `matching-vocabulary.ts`.
+ *
+ * Price is deliberately absent. A cheaper product is not a likelier match, and
+ * letting cost influence identity would quietly optimise the wrong thing.
  */
 
 export type MatchMethod = 'MANUAL' | 'GTIN' | 'RULE' | 'NORMALIZED_NAME' | 'MODEL_SUGGESTION';
 
 export type MatchStatus = 'AUTO_APPROVED' | 'NEEDS_REVIEW' | 'APPROVED' | 'REJECTED';
 
+/**
+ * Why the matcher decided what it did. Codes rather than prose so that a
+ * reviewer can filter on them and a test can assert on them.
+ */
+export type MatchReason =
+  | 'MANUAL_OVERRIDE'
+  | 'EXACT_ALIAS'
+  | 'NORMALIZED_EXACT_MATCH'
+  | 'BRAND_PREFIX_REMOVED'
+  | 'RETAIL_QUALIFIER_REMOVED'
+  | 'PRESERVING_MODIFIER'
+  | 'NEGATIVE_MODIFIER_FOUND'
+  | 'AMBIGUOUS_COMPOUND_PRODUCT'
+  | 'UNKNOWN_MODIFIER';
+
 export interface ProductIngredientMatch {
   readonly productId: string;
   readonly canonicalIngredientId: IngredientId;
-  /** 0–1. Only a guide for review order; never a licence to skip review. */
+  /** Derived from the evidence tier, not a free-floating similarity score. */
   readonly confidence: number;
   readonly matchMethod: MatchMethod;
   readonly status: MatchStatus;
-  /** Why it landed where it did, so a reviewer is not guessing. */
+  /** Every code that applied, in the order it was established. */
+  readonly reasons: readonly MatchReason[];
+  /** One line a human can read without knowing the codes. */
   readonly rationale: string;
+  /** The alias that matched, so a reviewer can see what was recognised. */
+  readonly matchedPhrase: string;
+  /** Words the matcher could not classify — the reason for any doubt. */
+  readonly unexplainedWords: readonly string[];
 }
-
-/**
- * Words that make a product a different food, not a variant of one.
- *
- * "Tomatensoep" contains "tomaat" and is not a tomato. This list is the
- * difference between a canonical ingredient gathering its real products and it
- * gathering every item in the shop whose name happens to contain the word.
- */
-const DISQUALIFIERS = [
-  'soep',
-  'saus',
-  'sauce',
-  'ketchup',
-  'mayonaise',
-  'dressing',
-  'kruidenmix',
-  'mix voor',
-  'smaakmaker',
-  'bouillon',
-  'blokjes bouillon',
-  'chips',
-  'snack',
-  'borrel',
-  'koek',
-  'taart',
-  'ijs ',
-  'milkshake',
-  'limonade',
-  'siroop',
-  'likeur',
-  'wijn',
-  'bier',
-  'voeding voor',
-  'kattenvoer',
-  'hondenvoer',
-  'shampoo',
-  'zeep',
-  'wasmiddel',
-  'reiniger',
-];
-
-/**
- * Retail noise that says nothing about what the food *is*.
- *
- * Nearly every product name starts with a chain or house brand and a quality
- * claim: "AH Terra Biologische tofu" is tofu. Judging how much of the name the
- * ingredient covers without discounting these would demote almost the entire
- * catalogue to manual review, because the shop's own branding is usually longer
- * than the ingredient it sells.
- */
-const RETAIL_NOISE = new Set([
-  'ah',
-  'jumbo',
-  'plus',
-  'spar',
-  'dirk',
-  'coop',
-  'aldi',
-  'lidl',
-  'vomar',
-  'poiesz',
-  'hoogvliet',
-  'dekamarkt',
-  'terra',
-  'biologisch',
-  'biologische',
-  'bio',
-  'scharrel',
-  'verse',
-  'vers',
-  'excellent',
-  'basic',
-  'huismerk',
-  'voordeel',
-  'voordeelverpakking',
-  'grootverpakking',
-  'family',
-  'pack',
-  'stuks',
-  'stuk',
-  'gram',
-  'kg',
-  'g',
-  'ml',
-  'l',
-  'naturel',
-  'original',
-  'nl',
-  'per',
-]);
-
-/**
- * Words that change the product enough to need a human, not enough to reject.
- *
- * A marinated fillet really is chicken, and really is not interchangeable with
- * plain fillet in a recipe that seasons it itself.
- */
-const NEEDS_JUDGEMENT = [
-  'gekruid',
-  'gemarineerd',
-  'gemarineerde',
-  'shoarma',
-  'kerrie',
-  'pikant',
-  'gerookt',
-  'gerookte',
-  'gebakken',
-  'gegrild',
-  'gegrilde',
-  'bereid',
-  'gevuld',
-  'gevulde',
-  'vanille',
-  'aardbei',
-  'banaan',
-  'chocolade',
-  'honing',
-  'zoet',
-  'gezoet',
-  'light',
-  'mager',
-  'vol',
-  'halfvol',
-  'diepvries',
-  'ingevroren',
-  'blik',
-  'pot',
-  'gedroogd',
-  'gedroogde',
-  'geconcentreerd',
-  'poeder',
-  'siroop',
-];
 
 export interface MatchCandidate {
   readonly productId: string;
   readonly productName: string;
 }
 
-/** A canonical ingredient plus every name it is known by. */
 export interface IngredientPhrases {
   readonly id: IngredientId;
-  readonly phrases: readonly string[];
+  readonly phrases: readonly { readonly phrase: string; readonly type: AliasType }[];
+}
+
+/**
+ * A decision a human made, which the matcher must never overrule.
+ *
+ * Keyed by product id so it survives re-imports: an approval given once stays
+ * given, and a rejection stays rejected, however the automatic rules change.
+ */
+export interface ManualOverride {
+  readonly productId: string;
+  readonly canonicalIngredientId: IngredientId;
+  readonly status: 'APPROVED' | 'REJECTED';
 }
 
 export function buildIngredientPhrases(
   ingredients: readonly CanonicalIngredient[],
   aliases: readonly { readonly ingredientId: IngredientId; readonly alias: string }[] = [],
 ): IngredientPhrases[] {
-  const byId = new Map<IngredientId, string[]>();
+  const byId = new Map<IngredientId, { phrase: string; type: AliasType }[]>();
+
   for (const ingredient of ingredients) {
-    byId.set(ingredient.id, [normalise(ingredient.canonicalName)]);
+    byId.set(ingredient.id, [{ phrase: normalise(ingredient.canonicalName), type: 'CANONICAL' }]);
   }
   for (const alias of aliases) {
-    const list = byId.get(alias.ingredientId);
-    if (list) list.push(normalise(alias.alias));
+    byId.get(alias.ingredientId)?.push({ phrase: normalise(alias.alias), type: 'SYNONYM' });
   }
-  // Longest first: "rode ui" must win over "ui" on "AH Rode ui".
-  return [...byId.entries()].map(([id, phrases]) => ({
-    id,
-    phrases: [...new Set(phrases)].sort((a, b) => b.length - a.length),
-  }));
+  for (const alias of INGREDIENT_ALIASES) {
+    byId.get(alias.canonicalIngredientId)?.push({
+      phrase: normalise(alias.phrase),
+      type: alias.type,
+    });
+  }
+
+  // Longest phrase first, so "rode ui" wins over "ui" and "zilvervliesrijst"
+  // over "rijst". Specificity beats brevity, always.
+  return [...byId.entries()].map(([id, phrases]) => {
+    const seen = new Set<string>();
+    const unique = phrases.filter((p) => p.phrase !== '' && !seen.has(p.phrase) && seen.add(p.phrase));
+    return { id, phrases: unique.sort((a, b) => b.phrase.length - a.phrase.length) };
+  });
 }
 
 export function matchProduct(
   candidate: MatchCandidate,
   ingredients: readonly IngredientPhrases[],
+  overrides: readonly ManualOverride[] = [],
 ): ProductIngredientMatch | undefined {
   const name = normalise(candidate.productName);
   if (name === '') return undefined;
 
-  let best: { id: IngredientId; phrase: string } | undefined;
+  // A human decision always wins, and is never re-litigated by a rule change.
+  const override = overrides.find((o) => o.productId === candidate.productId);
+  if (override) {
+    return {
+      productId: candidate.productId,
+      canonicalIngredientId: override.canonicalIngredientId,
+      confidence: 1,
+      matchMethod: 'MANUAL',
+      status: override.status === 'APPROVED' ? 'APPROVED' : 'REJECTED',
+      reasons: ['MANUAL_OVERRIDE'],
+      rationale: 'handmatig vastgesteld; automatische regels gelden hier niet',
+      matchedPhrase: '',
+      unexplainedWords: [],
+    };
+  }
+
+  let best: { id: IngredientId; phrase: string; type: AliasType } | undefined;
   for (const ingredient of ingredients) {
-    for (const phrase of ingredient.phrases) {
-      if (!containsWholePhrase(name, phrase)) continue;
-      if (!best || phrase.length > best.phrase.length) best = { id: ingredient.id, phrase };
+    for (const entry of ingredient.phrases) {
+      if (!containsWholePhrase(name, entry.phrase)) continue;
+      if (!best || entry.phrase.length > best.phrase.length) {
+        best = { id: ingredient.id, phrase: entry.phrase, type: entry.type };
+      }
       break;
     }
   }
   if (!best) return undefined;
 
-  // A word only disqualifies when it is *extra*. "Sojasaus" contains "saus" and
-  // is not a sauce someone poured over the ingredient — it is the ingredient.
-  // Likewise "gerookte zalm" is demoted by "gerookt" only if you forget that
-  // the canonical ingredient is itself smoked salmon. So every check below
-  // looks at what the product name says *beyond* the matched phrase.
-  const remainder = name.split(best.phrase).join(' ').replace(/\s+/g, ' ').trim();
+  const reasons: MatchReason[] = [best.type === 'CANONICAL' ? 'NORMALIZED_EXACT_MATCH' : 'EXACT_ALIAS'];
 
-  const disqualifier = DISQUALIFIERS.find((word) => remainder.includes(word));
+  // Everything the product name says *beyond* the ingredient. A word only
+  // counts against a match when it is extra: "sojasaus" contains "saus" and is
+  // the ingredient, not a sauce poured over one.
+  const leftover = removePhrase(name, best.phrase)
+    .split(' ')
+    .filter((word) => word !== '' && !/^\d+$/.test(word) && !/^\d+[a-z]*$/.test(word));
+
+  const disqualifier = leftover.find((word) => DISQUALIFYING_WORDS.has(word));
   if (disqualifier !== undefined) {
     return {
       productId: candidate.productId,
       canonicalIngredientId: best.id,
-      confidence: 0.1,
+      confidence: 0.05,
       matchMethod: 'RULE',
       status: 'REJECTED',
-      rationale: `naam bevat "${disqualifier}": een ander product, geen variant`,
+      reasons: [...reasons, 'NEGATIVE_MODIFIER_FOUND'],
+      rationale: `"${disqualifier}" maakt dit een ander product dan ${best.phrase}`,
+      matchedPhrase: best.phrase,
+      unexplainedWords: [disqualifier],
     };
   }
 
-  const modifier = NEEDS_JUDGEMENT.find((word) => containsWholePhrase(remainder, word));
-
-  // How much of the product the ingredient accounts for, counting only words
-  // that describe the food. "AH Terra Biologische tofu" is entirely tofu once
-  // the shop's branding is set aside; "AH Kipfilet kerriesalade met rozijnen"
-  // is not mostly chicken breast however you count, and that is the signal.
-  const meaningful = remainder
-    .split(' ')
-    .filter((word) => word !== '' && !RETAIL_NOISE.has(word) && !/^\d+$/.test(word));
-  const phraseWords = best.phrase.split(' ').length;
-  const coverage = phraseWords / (phraseWords + meaningful.length);
-
-  if (modifier !== undefined) {
-    return {
-      productId: candidate.productId,
-      canonicalIngredientId: best.id,
-      confidence: Math.min(0.6, 0.3 + coverage / 2),
-      matchMethod: 'NORMALIZED_NAME',
-      status: 'NEEDS_REVIEW',
-      rationale: `"${modifier}" maakt dit mogelijk een ander product dan het basisingredient`,
-    };
+  // Words this particular ingredient tolerates, which others would not.
+  const ingredientSafe = new Set(INGREDIENT_SAFE_WORDS[best.id] ?? []);
+  const unexplained = leftover.filter(
+    (word) => !isIgnorableWord(word) && !ingredientSafe.has(word),
+  );
+  if (leftover.some((word) => PRESERVING_WORDS.has(word))) reasons.push('PRESERVING_MODIFIER');
+  if (leftover.some((word) => isIgnorableWord(word) && !PRESERVING_WORDS.has(word))) {
+    reasons.push('BRAND_PREFIX_REMOVED');
   }
 
-  // Auto-approve only when nothing meaningful is left over.
-  //
-  // Anything weaker lets a different food through on a shared word, and the
-  // first real week proved it: "knoflook croutons" became garlic, "roomboter
-  // custardcakes" became butter, and "truffelsalami met parmezaanse kaas"
-  // became cheese. Each of those is one extra word away from the ingredient and
-  // none of them is a substitute for it. A missing product costs a little money
-  // and says so; a wrong one quietly changes what someone eats.
-  if (meaningful.length === 0) {
+  if (unexplained.length === 0) {
     return {
       productId: candidate.productId,
       canonicalIngredientId: best.id,
-      confidence: 0.95,
+      confidence: 0.97,
       matchMethod: 'NORMALIZED_NAME',
       status: 'AUTO_APPROVED',
-      rationale: `productnaam is precies dit ingredient, afgezien van merk- en maataanduiding`,
+      rationale: `dit is ${best.phrase}; de rest van de naam is merk, verpakking of vorm`,
+      reasons,
+      matchedPhrase: best.phrase,
+      unexplainedWords: [],
     };
   }
 
   return {
     productId: candidate.productId,
     canonicalIngredientId: best.id,
-    confidence: Math.max(0.2, Math.min(0.6, coverage)),
+    confidence: unexplained.length === 1 ? 0.6 : 0.35,
     matchMethod: 'NORMALIZED_NAME',
     status: 'NEEDS_REVIEW',
-    rationale: `naam bevat daarnaast "${meaningful.join(' ')}" — mogelijk een ander product`,
+    reasons: [...reasons, unexplained.length === 1 ? 'UNKNOWN_MODIFIER' : 'AMBIGUOUS_COMPOUND_PRODUCT'],
+    rationale: `naam bevat daarnaast "${unexplained.join(' ')}" — onbekend, dus niet automatisch goedgekeurd`,
+    matchedPhrase: best.phrase,
+    unexplainedWords: unexplained,
   };
 }
 
@@ -301,12 +227,25 @@ export function normalise(value: string): string {
 }
 
 /**
+ * Remove the matched phrase, including the plural form that actually matched,
+ * so its own words never show up as leftovers.
+ */
+function removePhrase(haystack: string, phrase: string): string {
+  for (const variant of [`${phrase}en`, `${phrase}s`, phrase]) {
+    if (containsExactPhrase(haystack, variant)) {
+      return haystack.split(variant).join(' ').replace(/\s+/g, ' ').trim();
+    }
+  }
+  return haystack;
+}
+
+/**
  * Whole-word containment, tolerating the regular Dutch plural.
  *
- * Shops write "Elstar appels" and "Scharrel eieren"; the catalogue calls them
- * "appel" and "ei". Accepting a trailing "s" or "en" closes that gap without
- * opening the door to loose matching — "ui" still must not match "bruin",
- * because the word boundary is still required on both sides.
+ * Shops write "Elstar appels" and "Scharrel eieren"; the catalogue says "appel"
+ * and "ei". Accepting a trailing "s" or "en" closes that gap without loosening
+ * anything else — the word boundary is still required on both sides, so "ui"
+ * still does not match "bruine".
  */
 function containsWholePhrase(haystack: string, phrase: string): boolean {
   return (

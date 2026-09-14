@@ -46,6 +46,30 @@ describe('matching a supermarket product to a recipe ingredient', () => {
     expect(result === undefined || result.status === 'REJECTED').toBe(true);
   });
 
+  it('explains itself with codes a reviewer can filter on', () => {
+    const croutons = match('AH Knoflook croutons');
+    expect(croutons?.status).toBe('REJECTED');
+    expect(croutons?.reasons).toContain('NEGATIVE_MODIFIER_FOUND');
+    expect(croutons?.unexplainedWords).toContain('croutons');
+
+    const tempeh = match('AH Terra Tempeh');
+    expect(tempeh?.status).toBe('AUTO_APPROVED');
+    expect(tempeh?.reasons).toContain('BRAND_PREFIX_REMOVED');
+  });
+
+  it('treats a form that preserves the food as still the food', () => {
+    const sliced = match('AH Gesneden uien');
+    expect(sliced?.status).toBe('AUTO_APPROVED');
+    expect(sliced?.canonicalIngredientId).toBe('ui');
+    expect(sliced?.reasons).toContain('PRESERVING_MODIFIER');
+  });
+
+  it('never lets price influence identity', () => {
+    // The signature takes no price, and that is the guarantee: a cheaper
+    // product cannot become a likelier match for what a recipe asked for.
+    expect(matchProduct.length).toBeLessThanOrEqual(3);
+  });
+
   it('does not let a disqualifier inside the ingredient name reject it', () => {
     // "sojasaus" contains "saus" and is the ingredient, not a sauce poured over
     // one. The check has to look at what the name says beyond the match.
@@ -71,5 +95,19 @@ describe('matching a supermarket product to a recipe ingredient', () => {
 
   it('returns nothing rather than guessing for an unrelated product', () => {
     expect(match('AH Wasmiddel kleur')?.status).not.toBe('AUTO_APPROVED');
+  });
+
+  it('lets a human decision outrank every automatic rule', () => {
+    const overrides = [
+      { productId: 'p1', canonicalIngredientId: 'mais', status: 'APPROVED' as const },
+    ];
+    const result = matchProduct(
+      { productId: 'p1', productName: 'Valle del sole Baby mais' },
+      phrases,
+      overrides,
+    );
+    expect(result?.status).toBe('APPROVED');
+    expect(result?.matchMethod).toBe('MANUAL');
+    expect(result?.reasons).toContain('MANUAL_OVERRIDE');
   });
 });

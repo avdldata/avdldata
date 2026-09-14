@@ -16,6 +16,7 @@ import {
   matchProduct,
   type ProductIngredientMatch,
 } from '../src/domain/ingestion/match-ingredient';
+import { PRODUCT_MATCH_OVERRIDES } from '../src/data/matching/overrides';
 import { SEED_INGREDIENTS, SEED_INGREDIENT_ALIASES } from '../src/data/seed/ingredients';
 import { SEED_RECIPES } from '../src/data/seed/recipes';
 
@@ -88,7 +89,11 @@ for (const chain of chains) {
 
   for (const product of products) {
     const name = product.n ?? '';
-    const match = matchProduct({ productId: product.l ?? name, productName: name }, phrases);
+    const match = matchProduct(
+      { productId: `${chain.n ?? ''}:${product.l ?? name}`, productName: name },
+      phrases,
+      PRODUCT_MATCH_OVERRIDES,
+    );
     if (!match) continue;
     matches.push(match);
 
@@ -96,7 +101,7 @@ for (const chain of chains) {
       rejected += 1;
       continue;
     }
-    if (match.status === 'AUTO_APPROVED') auto += 1;
+    if (match.status === 'AUTO_APPROVED' || match.status === 'APPROVED') auto += 1;
     else review += 1;
 
     covered.add(match.canonicalIngredientId);
@@ -105,7 +110,7 @@ for (const chain of chains) {
     const price = product.p;
     const pack = parsePackage(product.s);
     if (
-      match.status === 'AUTO_APPROVED' &&
+      (match.status === 'AUTO_APPROVED' || match.status === 'APPROVED') &&
       typeof price === 'number' &&
       Number.isFinite(price) &&
       price > 0 &&
@@ -143,6 +148,62 @@ if (nowhere.length > 0) {
   const names = new Map(SEED_INGREDIENTS.map((i) => [i.id, i.canonicalName]));
   for (const id of nowhere.slice(0, 30)) console.log(`    ${id.padEnd(28)} ${names.get(id) ?? ''}`);
   if (nowhere.length > 30) console.log(`    … en nog ${nowhere.length - 30}`);
+}
+
+// Three different questions, deliberately not collapsed into one number.
+//
+//   every canonical ingredient      how complete the catalogue is overall
+//   ingredients recipes actually use  what decides whether a week can be priced
+//   weighted by how often they appear  what it costs when one is missing
+//
+// The third matters because ingredients are not equal: no onion breaks half the
+// recipe book, no tempeh breaks one dish.
+const usage = new Map<string, number>();
+for (const recipe of SEED_RECIPES) {
+  for (const line of recipe.ingredients) {
+    if (line.optional || pantry.has(line.ingredientId)) continue;
+    usage.set(line.ingredientId, (usage.get(line.ingredientId) ?? 0) + 1);
+  }
+}
+const totalUses = [...usage.values()].reduce((sum, n) => sum + n, 0);
+const allIds = SEED_INGREDIENTS.filter((i) => !i.pantryStaple).map((i) => i.id);
+
+console.log('\n  Drie soorten dekking, per keten\n');
+const head2 =
+  '  ' + 'keten'.padEnd(12) + 'alle ingr.'.padStart(12) + 'receptingr.'.padStart(13) +
+  'gewogen'.padStart(10);
+console.log(head2);
+console.log('  ' + '-'.repeat(head2.length - 2));
+for (const r of results) {
+  const all = allIds.filter((id) => r.usable.has(id)).length / allIds.length;
+  const used = mustBuy.filter((id) => r.usable.has(id)).length / mustBuy.length;
+  const weighted =
+    totalUses === 0
+      ? 0
+      : [...usage.entries()]
+          .filter(([id]) => r.usable.has(id))
+          .reduce((sum, [, n]) => sum + n, 0) / totalUses;
+  console.log(
+    '  ' + r.chain.padEnd(12) +
+      `${(all * 100).toFixed(1)}%`.padStart(12) +
+      `${(used * 100).toFixed(1)}%`.padStart(13) +
+      `${(weighted * 100).toFixed(1)}%`.padStart(10),
+  );
+}
+
+// The ingredients whose absence hurts most: frequently used and not covered.
+const ahResult = results.find((r) => r.chain === 'ah');
+if (ahResult) {
+  const missing = [...usage.entries()]
+    .filter(([id]) => !ahResult.usable.has(id))
+    .sort((a, b) => b[1] - a[1]);
+  if (missing.length > 0) {
+    console.log('\n  Grootste gaten bij AH, naar hoe vaak recepten ze nodig hebben\n');
+    const names = new Map(SEED_INGREDIENTS.map((i) => [i.id, i.canonicalName]));
+    for (const [id, count] of missing.slice(0, 15)) {
+      console.log(`    ${String(count).padStart(3)}x  ${id.padEnd(24)} ${names.get(id) ?? ''}`);
+    }
+  }
 }
 
 console.log('');
