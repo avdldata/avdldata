@@ -136,6 +136,20 @@ export interface LocalSearchConfig {
    * again and, measured over the same worlds, finds nothing two does not.
    */
   readonly restarts: number;
+  /**
+   * Rule neighbours out with the admissible lower bound before pricing them.
+   *
+   * A pure speed knob: the bound is path-preserving, so switching it off cannot
+   * change which week comes out — only how long it takes to get there. Which
+   * way it pays depends entirely on the data. On the small synthetic worlds a
+   * full evaluation is expensive and the bound is cheap, so it wins. On the
+   * real Albert Heijn catalogue the opposite holds: an evaluation costs about
+   * 0,24 ms with a warm packaging cache while the bound costs about 0,66 ms of
+   * its own, so every neighbour it rules out costs more than it saves.
+   *
+   * Measured, not assumed — see PRODUCT_CANDIDATE_BENCHMARK.md.
+   */
+  readonly useLowerBound: boolean;
 }
 
 export interface SearchConfig {
@@ -203,6 +217,7 @@ export const DEFAULT_SEARCH_CONFIG: SearchConfig = {
     twoSwap: true,
     maxTwoSwapEvaluations: 200,
     restarts: 2,
+    useLowerBound: true,
   },
 };
 

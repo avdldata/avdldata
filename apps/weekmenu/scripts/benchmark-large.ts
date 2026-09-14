@@ -34,6 +34,7 @@ const search = baseline
         twoSwap: false,
         maxTwoSwapEvaluations: 0,
         restarts: 1,
+        useLowerBound: true,
       },
     }
   : restarts !== undefined

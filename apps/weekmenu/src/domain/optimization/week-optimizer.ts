@@ -207,7 +207,7 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
       ...(input.lockedRecipeIds ? { locked: input.lockedRecipeIds } : {}),
       alreadyPriced: seenSets,
       evaluate: price,
-      lowerBound,
+      ...(config.search.localSearch.useLowerBound ? { lowerBound } : {}),
     }),
   );
 

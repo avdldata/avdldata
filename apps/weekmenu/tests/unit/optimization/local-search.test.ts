@@ -24,6 +24,7 @@ const NO_REFINEMENT = {
   twoSwap: false,
   maxTwoSwapEvaluations: 0,
   restarts: 1,
+  useLowerBound: true,
 } as const;
 
 describe('swapping dishes never makes a week worse', () => {
@@ -131,6 +132,7 @@ describe('the bound changes the speed, not the answer', () => {
       twoSwap: false,
       maxTwoSwapEvaluations: 0,
       restarts: 1,
+      useLowerBound: true,
     } as const;
 
     for (const seed of benchmarkSeeds(12)) {

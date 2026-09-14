@@ -95,6 +95,9 @@ for (const product of chain.d ?? []) {
   });
 }
 
+// Reduction is on by default here: it is proven never to remove a better
+// product (see candidate-reduction.test.ts) and it is what makes the run fit
+// inside the latency budget.
 const store: StoreCandidate = {
   location: {
     id: `${wanted}-shadow`,

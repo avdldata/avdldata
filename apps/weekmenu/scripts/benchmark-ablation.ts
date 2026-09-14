@@ -23,6 +23,7 @@ const OFF = {
   twoSwap: false,
   maxTwoSwapEvaluations: 0,
   restarts: 1,
+  useLowerBound: true,
 } as const;
 const on = (maxEvaluations: number, maxIterations = 8) =>
   ({
@@ -32,6 +33,7 @@ const on = (maxEvaluations: number, maxIterations = 8) =>
     twoSwap: false,
     maxTwoSwapEvaluations: 0,
     restarts: 1,
+    useLowerBound: true,
   }) as const;
 const withTwoSwap = (maxTwoSwapEvaluations: number) =>
   ({ ...on(200), twoSwap: true, maxTwoSwapEvaluations }) as const;

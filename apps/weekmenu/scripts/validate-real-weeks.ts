@@ -21,6 +21,7 @@ import { optimiseWeek } from '../src/domain/optimization/week-optimizer';
 import type { StoreCandidate } from '../src/domain/optimization/store-selection';
 import type { ProductOffer } from '../src/domain/stores/types';
 import { parsePackage } from '../src/domain/ingestion/package-parser';
+import { reduceCandidates } from '../src/domain/ingestion/candidate-reduction';
 import { buildIngredientPhrases, matchProduct } from '../src/domain/ingestion/match-ingredient';
 import { PRODUCT_MATCH_OVERRIDES } from '../src/data/matching/overrides';
 import { SEED_INGREDIENTS, SEED_INGREDIENT_ALIASES } from '../src/data/seed/ingredients';
@@ -85,6 +86,10 @@ for (const product of chain.d ?? []) {
   });
 }
 
+// Candidate reduction is applied here too, so what the audit checks is exactly
+// what a real run would buy — a validation of a different pipeline validates
+// nothing.
+const reduction = reduceCandidates(offers);
 const store: StoreCandidate = {
   location: {
     id: 'ah-shadow',
@@ -99,7 +104,7 @@ const store: StoreCandidate = {
   },
   chain: { id: 'ah', name: chain.c ?? 'AH', logoUrl: '', colorHex: '#00a0e2' },
   distanceKm: 2.5,
-  offers,
+  offers: reduction.kept,
 };
 
 /** Twenty households that differ in the ways the optimizer cares about. */
@@ -116,7 +121,10 @@ const problems: string[] = [];
 let totalLines = 0;
 let planned = 0;
 
-console.log(`\nTwintig echte AH-weken — ${offers.length} goedgekeurde producten in de poel\n`);
+console.log(
+  `\nTwintig echte AH-weken — ${offers.length} goedgekeurd, ` +
+    `${reduction.kept.length} na reductie (${reduction.removed.length} gedomineerd)\n`,
+);
 const head =
   '  ' +
   'scenario'.padEnd(10) +
