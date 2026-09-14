@@ -11,7 +11,7 @@
  *   pnpm match:review -- --ingredient ui  every candidate for one ingredient
  *   pnpm match:review -- --band LOW
  */
-import { parsePackage } from '../src/domain/ingestion/package-parser';
+import { resolvePackage } from '../src/domain/ingestion/package-parser';
 import { buildIngredientPhrases, matchProduct } from '../src/domain/ingestion/match-ingredient';
 import {
   DEFAULT_SUFFICIENCY,
@@ -76,7 +76,7 @@ for (const product of ah.d ?? []) {
     PRODUCT_MATCH_OVERRIDES,
   );
   if (!match) continue;
-  const pack = parsePackage(product.s);
+  const pack = resolvePackage(product.s, product.n);
   const priced = typeof product.p === 'number' && Number.isFinite(product.p) && product.p > 0;
   const usable = pack.status === 'OK' && priced;
 

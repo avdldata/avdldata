@@ -20,7 +20,7 @@ import { normaliseRecipes } from '../src/domain/recipes/normalise';
 import { optimiseWeek } from '../src/domain/optimization/week-optimizer';
 import type { StoreCandidate } from '../src/domain/optimization/store-selection';
 import type { ProductOffer } from '../src/domain/stores/types';
-import { parsePackage } from '../src/domain/ingestion/package-parser';
+import { resolvePackage } from '../src/domain/ingestion/package-parser';
 import { reduceCandidates } from '../src/domain/ingestion/candidate-reduction';
 import { buildIngredientPhrases, matchProduct } from '../src/domain/ingestion/match-ingredient';
 import { PRODUCT_MATCH_OVERRIDES } from '../src/data/matching/overrides';
@@ -64,7 +64,7 @@ for (const product of chain.d ?? []) {
   const approved = match.status === 'AUTO_APPROVED' || match.status === 'APPROVED';
   if (!approved) continue;
 
-  const pack = parsePackage(product.s);
+  const pack = resolvePackage(product.s, product.n);
   const price = product.p;
   if (pack.status !== 'OK') continue;
   if (typeof price !== 'number' || !Number.isFinite(price) || price <= 0) continue;

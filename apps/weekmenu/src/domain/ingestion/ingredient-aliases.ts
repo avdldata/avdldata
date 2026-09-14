@@ -104,6 +104,16 @@ export const INGREDIENT_ALIASES: readonly IngredientAliasEntry[] = [
   { canonicalIngredientId: 'komijn', phrase: 'komijn', type: 'SYNONYM' },
   { canonicalIngredientId: 'geraspte-kaas', phrase: 'geraspte kaas', type: 'SYNONYM' },
   { canonicalIngredientId: 'cherrytomaat', phrase: 'cherrytomaat', type: 'SYNONYM' },
+  // The canonical names carry a form word the shops leave off: the catalogue
+  // says "Verse gember" and "Magere kwark", both chains sell "Gember" and
+  // "Kwark Mager". Found by measuring Jumbo; it was a gap in Albert Heijn too.
+  { canonicalIngredientId: 'gember', phrase: 'gember', type: 'CANONICAL' },
+  { canonicalIngredientId: 'kwark', phrase: 'kwark', type: 'CANONICAL' },
+  // Written as two words by both chains. Longest-phrase-wins then sends it to
+  // the tinned ingredient instead of to fresh tomato, which is what it is.
+  { canonicalIngredientId: 'tomatenblokjes', phrase: 'tomaten blokjes', type: 'SHOP_NAME' },
+  // Jumbo drops the inflection: "Geraspt Kaas Oud".
+  { canonicalIngredientId: 'geraspte-kaas', phrase: 'geraspt kaas', type: 'SHOP_NAME' },
 ];
 
 /**
@@ -114,6 +124,36 @@ export const INGREDIENT_ALIASES: readonly IngredientAliasEntry[] = [
  * but they would be a red flag almost anywhere else. So these allowances are
  * scoped to the ingredient they are safe for, and nowhere else.
  */
+/**
+ * Ingredients whose ordinary retail form is the dried, ground one.
+ *
+ * Herbs and spices are weighed dried in every recipe, so "gedroogde oregano"
+ * and "komijn gemalen" are simply oregano and cumin. Almost nothing else works
+ * that way, and treating "gedroogd" or "gemalen" as harmless everywhere quietly
+ * priced three things wrong:
+ *
+ *   - 500 g of dried chickpeas is not the 500 g of drained tinned chickpeas a
+ *     recipe asks for — it is roughly two and a half times as much food, for a
+ *     fraction of the price, which is exactly the kind of mistake an optimizer
+ *     is drawn to;
+ *   - a 40 g jar of garlic powder is not a bulb of garlic;
+ *   - "paprika gemalen" is a spice, and was being bought as a bell pepper.
+ *
+ * So both words are allowed here and nowhere else. The first was found while
+ * measuring Jumbo; the last two were already wrong in Albert Heijn.
+ */
+const GROUND_BY_DEFAULT: readonly string[] = [
+  'oregano',
+  'italiaanse-kruiden',
+  'paprikapoeder',
+  'komijn',
+  'kerriepoeder',
+  'kurkuma',
+  'chilipoeder',
+  'kaneel',
+  'peper',
+];
+
 export const INGREDIENT_SAFE_WORDS: Readonly<Record<string, readonly string[]>> = {
   // Cured pork is sold smoked as a matter of course.
   spekblokjes: ['gerookt', 'gerookte'],
@@ -133,4 +173,12 @@ export const INGREDIENT_SAFE_WORDS: Readonly<Record<string, readonly string[]>> 
   paneermeel: ['beschuit'],
   // Shrimp are sold raw and peeled without ceasing to be shrimp.
   garnalen: ['gepeld', 'ongepeld'],
+  // Bulgur is cracked wheat, so "tarwe" describes it rather than adding to it.
+  bulgur: ['tarwe'],
+  // Dried is the form a recipe means for a spice, and only for a spice. For
+  // 500 g of dried beans it is not: those are not the 500 g the recipe wants,
+  // which is why "gedroogd" is no longer universally form-preserving.
+  ...Object.fromEntries(
+    GROUND_BY_DEFAULT.map((id) => [id, ['gedroogd', 'gedroogde', 'gemalen'] as readonly string[]]),
+  ),
 };

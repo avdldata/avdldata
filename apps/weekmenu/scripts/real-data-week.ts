@@ -19,7 +19,7 @@ import { normaliseRecipes } from '../src/domain/recipes/normalise';
 import { optimiseWeek } from '../src/domain/optimization/week-optimizer';
 import type { StoreCandidate } from '../src/domain/optimization/store-selection';
 import type { ProductOffer } from '../src/domain/stores/types';
-import { parsePackage } from '../src/domain/ingestion/package-parser';
+import { resolvePackage } from '../src/domain/ingestion/package-parser';
 import { buildIngredientPhrases, matchProduct } from '../src/domain/ingestion/match-ingredient';
 import { SEED_INGREDIENTS, SEED_INGREDIENT_ALIASES } from '../src/data/seed/ingredients';
 import { SEED_RECIPES } from '../src/data/seed/recipes';
@@ -68,7 +68,7 @@ for (const product of chain.d ?? []) {
     rejectedMatch += 1;
     continue;
   }
-  const pack = parsePackage(product.s);
+  const pack = resolvePackage(product.s, product.n);
   if (pack.status !== 'OK') {
     rejectedPack += 1;
     continue;

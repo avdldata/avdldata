@@ -40,6 +40,16 @@ export type PackageParseFailure =
   /** Recognisably a size, but in a shape this parser does not handle. */
   | 'UNRECOGNISED';
 
+/**
+ * Where a package size came from.
+ *
+ * Kept on the result because the two sources do not deserve equal trust: a
+ * dedicated size field is what the shop says the pack is, while a size read off
+ * the end of a product name is an inference — a well-founded one, but an
+ * inference. Anything downstream that wants to treat them differently can.
+ */
+export type PackageSource = 'SIZE_FIELD' | 'NAME_SUFFIX';
+
 export interface PackageInfo {
   /** How many sub-packs the article contains. 1 for a plain pack. */
   readonly packageCount: number;
@@ -56,6 +66,7 @@ export interface PackageInfo {
   readonly approximate: boolean;
   /** The label this came from, kept verbatim for traceability. */
   readonly raw: string;
+  readonly source: PackageSource;
 }
 
 export type PackageParseResult =
@@ -159,6 +170,7 @@ export function parsePackage(raw: string | undefined | null): PackageParseResult
           totalAmount: 1,
           approximate,
           raw: original,
+          source: 'SIZE_FIELD',
         },
       };
     }
@@ -196,6 +208,7 @@ export function parsePackage(raw: string | undefined | null): PackageParseResult
         totalAmount: count * per,
         approximate,
         raw: original,
+        source: 'SIZE_FIELD',
       },
     };
   }
@@ -224,6 +237,7 @@ export function parsePackage(raw: string | undefined | null): PackageParseResult
         totalAmount: amount * unit.factor,
         approximate,
         raw: original,
+        source: 'SIZE_FIELD',
       },
     };
   }
@@ -234,4 +248,74 @@ export function parsePackage(raw: string | undefined | null): PackageParseResult
 /** Dutch labels use both "0,75" and "1.5"; the same feed contains both. */
 function toNumber(value: string): number {
   return Number(value.replace(',', '.'));
+}
+
+/**
+ * Recover a pack size from the end of a product name.
+ *
+ * Jumbo leaves the size field empty for 41,7 % of its catalogue and appends the
+ * size to the name instead: "11er Elfer Rösti Fijn Gesneden 450 g". That is not
+ * a guess to be reconstructed — the quantity is written out, in the same
+ * vocabulary the size field uses.
+ *
+ * Three rules keep this from turning into guesswork:
+ *
+ *   only the *end* of the name is considered, because that is where the
+ *   convention puts it; a quantity in the middle ("6 x Organix Knijpfruit ...")
+ *   describes the contents, not the pack;
+ *
+ *   the extracted text goes through the same parser as a real size field, so
+ *   anything it would refuse — "6+m", "12mnd", a wash-load count — is refused
+ *   here too;
+ *
+ *   a Dutch thousands separator is read as one. "3.425 g" is three thousand
+ *   four hundred grams, while "1.5 l" in the very same feed is one and a half
+ *   litres. Exactly three digits after the point decides it, which is the
+ *   convention both follow.
+ *
+ * Only ever used when the size field is empty. It never overrides what a shop
+ * actually stated.
+ */
+export function parsePackageFromName(name: string | undefined | null): PackageParseResult {
+  const text = (name ?? '').trim();
+  if (text === '') return { status: 'FAILED', reason: 'EMPTY', raw: text };
+
+  // A trailing quantity: an optional multiplier, a number, and a unit word.
+  const trailing = /(?:(\d+)\s*[x×]\s*)?(\d+(?:[.,]\d+)?)\s*([a-zA-Z]+)\.?$/.exec(text);
+  if (!trailing) return { status: 'FAILED', reason: 'UNRECOGNISED', raw: text };
+
+  const [, multiplier, rawNumber, unit] = trailing;
+  const normalisedNumber = /^\d+\.\d{3}$/.test(rawNumber!)
+    ? rawNumber!.replace('.', '') // 3.425 -> 3425
+    : rawNumber!;
+
+  const candidate = multiplier
+    ? `${multiplier} x ${normalisedNumber} ${unit}`
+    : `${normalisedNumber} ${unit}`;
+
+  const parsed = parsePackage(candidate);
+  if (parsed.status !== 'OK') return { status: 'FAILED', reason: parsed.reason, raw: text };
+
+  return {
+    status: 'OK',
+    info: { ...parsed.info, raw: text, source: 'NAME_SUFFIX' },
+  };
+}
+
+/**
+ * The package size for a product, from the best source available.
+ *
+ * The stated size field always wins; the name is only consulted when the shop
+ * left the field empty. That order matters — a shop that says "500 g" is
+ * authoritative even if its own product name says something else, and quietly
+ * preferring the inference would be a silent data override.
+ */
+export function resolvePackage(
+  sizeField: string | undefined | null,
+  productName: string | undefined | null,
+): PackageParseResult {
+  const stated = parsePackage(sizeField);
+  if (stated.status === 'OK') return stated;
+  if (stated.reason !== 'EMPTY') return stated;
+  return parsePackageFromName(productName);
 }

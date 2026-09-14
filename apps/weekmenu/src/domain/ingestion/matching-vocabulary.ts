@@ -75,6 +75,28 @@ export const BRAND_WORDS: ReadonlySet<string> = new Set([
   'streeckgenoten',
   'oma',
   'omas',
+  // A-brands. Albert Heijn's catalogue is mostly private label, so these only
+  // showed up once Jumbo was measured — but they block matches in both chains.
+  // Every one of them was checked against the products it would newly approve:
+  // a brand word is only harmless when what is left after removing it is still
+  // the ingredient. "Van de Boom" (apple juice) and "Drogheria" (ground spices)
+  // failed that check and are deliberately absent — see MATCHING.md.
+  'arla',
+  'bertolli',
+  'campina',
+  'carapelli',
+  'daawat',
+  'dari',
+  'efendi',
+  'galbani',
+  'grand',
+  'hak',
+  'heinz',
+  'italia',
+  'kanzi',
+  'lassie',
+  'lurpak',
+  'president',
 ]);
 
 /**
@@ -101,6 +123,8 @@ export const STOPWORDS: ReadonlySet<string> = new Set([
   'tot',
   'zoet',
   'zoete',
+  // "aardappelen iets kruimig" — a hedge, not a property of the food.
+  'iets',
 ]);
 
 /**
@@ -152,6 +176,24 @@ export const RETAIL_WORDS: ReadonlySet<string> = new Set([
   's',
   'm',
   'xl',
+  // Size grades and multipack notation. Jumbo puts these in the name where AH
+  // puts them in a separate size field.
+  'x',
+  'ca',
+  'groot',
+  'grote',
+  'klein',
+  'kleine',
+  'middel',
+  'medium',
+  'voordeelpak',
+  // Origin and product-line claims. "Classico", "Dolce" and "Authentieke" name
+  // a variant of the same food, the way "Griekse" already did.
+  'italiaanse',
+  'authentieke',
+  'classico',
+  'dolce',
+  'regular',
 ]);
 
 /**
@@ -172,7 +214,6 @@ export const PRESERVING_WORDS: ReadonlySet<string> = new Set([
   'voorgesneden',
   'geraspt',
   'geraspte',
-  'gemalen',
   'gepeld',
   'geschild',
   'gebroken',
@@ -224,9 +265,21 @@ export const PRESERVING_WORDS: ReadonlySet<string> = new Set([
   'vierge',
   'traditioneel',
   'vloeibaar',
-  'gedroogd',
   'vriesdroog',
   'volkoren',
+  // Inflections and forms the Jumbo data proved were missing.
+  'ongebrande',
+  'vlugkokend',
+  'vlugkokende',
+  'snelkokend',
+  'snelkokende',
+  'platte',
+  'eetrijp',
+  'flinterdun',
+  'mini',
+  // "zonder pit", "op huid": what was left in or taken out, not another food.
+  'pit',
+  'huid',
   'wit',
   'witte',
   'bruin',

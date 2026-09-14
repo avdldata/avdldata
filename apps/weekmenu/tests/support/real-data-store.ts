@@ -4,7 +4,7 @@ import { buildIngredientIndex } from '@/domain/ingredients/types';
 import { normaliseRecipes } from '@/domain/recipes/normalise';
 import type { StoreCandidate } from '@/domain/optimization/store-selection';
 import type { ProductOffer } from '@/domain/stores/types';
-import { parsePackage } from '@/domain/ingestion/package-parser';
+import { resolvePackage } from '@/domain/ingestion/package-parser';
 import { buildIngredientPhrases, matchProduct } from '@/domain/ingestion/match-ingredient';
 import { reduceCandidates } from '@/domain/ingestion/candidate-reduction';
 import { PRODUCT_MATCH_OVERRIDES } from '@/data/matching/overrides';
@@ -70,7 +70,7 @@ export function loadRealAlbertHeijn(): RealDataFixture {
     );
     if (!match || (match.status !== 'AUTO_APPROVED' && match.status !== 'APPROVED')) continue;
 
-    const pack = parsePackage(product.s);
+    const pack = resolvePackage(product.s, product.n);
     const price = product.p;
     if (pack.status !== 'OK') continue;
     if (typeof price !== 'number' || !Number.isFinite(price) || price <= 0) continue;

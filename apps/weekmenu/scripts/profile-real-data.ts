@@ -27,7 +27,7 @@ import {
   purchasableRequirements,
 } from '../src/domain/aggregation/aggregate';
 import type { ProductOffer } from '../src/domain/stores/types';
-import { parsePackage } from '../src/domain/ingestion/package-parser';
+import { resolvePackage } from '../src/domain/ingestion/package-parser';
 import { buildIngredientPhrases, matchProduct } from '../src/domain/ingestion/match-ingredient';
 import { PRODUCT_MATCH_OVERRIDES } from '../src/data/matching/overrides';
 import { SEED_INGREDIENTS, SEED_INGREDIENT_ALIASES } from '../src/data/seed/ingredients';
@@ -61,7 +61,7 @@ for (const product of chain.d ?? []) {
     PRODUCT_MATCH_OVERRIDES,
   );
   if (!match || (match.status !== 'AUTO_APPROVED' && match.status !== 'APPROVED')) continue;
-  const pack = parsePackage(product.s);
+  const pack = resolvePackage(product.s, product.n);
   const price = product.p;
   if (pack.status !== 'OK') continue;
   if (typeof price !== 'number' || !Number.isFinite(price) || price <= 0) continue;

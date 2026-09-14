@@ -10,7 +10,7 @@
  * Run with:  pnpm data:coverage
  */
 import { readFileSync } from 'node:fs';
-import { parsePackage } from '../src/domain/ingestion/package-parser';
+import { resolvePackage } from '../src/domain/ingestion/package-parser';
 import {
   buildIngredientPhrases,
   matchProduct,
@@ -108,7 +108,7 @@ for (const chain of chains) {
 
     // Optimizer-eligible: an auto-approved match, a real price, a readable pack.
     const price = product.p;
-    const pack = parsePackage(product.s);
+    const pack = resolvePackage(product.s, product.n);
     if (
       (match.status === 'AUTO_APPROVED' || match.status === 'APPROVED') &&
       typeof price === 'number' &&
