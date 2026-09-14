@@ -38,8 +38,11 @@ describe('the shopping list is the plan, not a summary of it', () => {
     expect(list.totalCents).toBe(week.totals.groceryCents);
   });
 
-  it('has one line per pack size bought, never one per recipe', () => {
-    // Two dishes using chicken must not produce two chicken lines.
+  it('has one line per pack bought, never one per recipe', () => {
+    // Two dishes using chicken must not produce two chicken lines. They may
+    // still produce two *packs* — an 800 g tin plus a 400 g tin is sometimes the
+    // cheapest way to cover the week — so the invariant is that the list mirrors
+    // the packaging, never the menu.
     const linesPerIngredient = new Map<string, number>();
     for (const group of list.groups) {
       for (const line of group.lines) {
@@ -49,10 +52,26 @@ describe('the shopping list is the plan, not a summary of it', () => {
         );
       }
     }
+
+    for (const assignment of week.recommendedOption.assignments) {
+      expect(
+        linesPerIngredient.get(assignment.ingredientId) ?? 0,
+        `${assignment.ingredientId}: the list must show exactly the packs bought`,
+      ).toBe(assignment.packaging.lines.length);
+    }
+
+    // And the packaging itself is solved once for the whole week, not per day.
     const sharedAcrossDays = week.requirements.filter((r) => r.perDay.length > 1);
     expect(sharedAcrossDays.length).toBeGreaterThan(0);
     for (const requirement of sharedAcrossDays) {
-      expect(linesPerIngredient.get(requirement.ingredientId) ?? 0).toBeLessThanOrEqual(1);
+      const assignment = week.recommendedOption.assignments.find(
+        (a) => a.ingredientId === requirement.ingredientId,
+      );
+      if (!assignment) continue;
+      expect(
+        assignment.packaging.requiredAmount,
+        `${requirement.ingredientId} was packaged per day instead of per week`,
+      ).toBeCloseTo(requirement.totalAmount, 6);
     }
   });
 

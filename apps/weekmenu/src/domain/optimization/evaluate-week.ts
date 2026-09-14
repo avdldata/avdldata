@@ -17,6 +17,7 @@ import { varietyScore, weekDiversityViolations } from './diversity';
 import {
   buildPackagingMatrix,
   enumerateStoreOptions,
+  type PackagingCache,
   type StoreCandidate,
   type StoreOption,
 } from './store-selection';
@@ -51,12 +52,28 @@ export interface WeekEvaluationInput {
   startDate: string;
   config: OptimizerConfig;
   excluded: readonly ExcludedRecipe[];
+  /**
+   * Optional memo shared across the weeks priced in one optimizer run. Purely a
+   * speed-up: the same ingredient, amount and shop always package the same way.
+   */
+  packagingCache?: PackagingCache;
+  /**
+   * Build the human-readable explanations. Default true.
+   *
+   * A search prices hundreds of weeks and shows one. The reasons are pure
+   * presentation — nothing in the score reads them — so the candidates are
+   * priced without them and the winner is priced once more with them. Skipping
+   * work whose only consumer is a screen nobody will see is not a shortcut;
+   * building it for a week that loses is the mistake.
+   */
+  explain?: boolean;
 }
 
 export function evaluateWeek(
   input: WeekEvaluationInput,
 ): { plan: WeeklyPlan; optionCount: number } | undefined {
   const { config } = input;
+  const explain = input.explain !== false;
 
   const plannedDays: PlannedDay[] = input.recipes.map((recipe, dayIndex) => ({
     dayIndex,
@@ -68,7 +85,12 @@ export function evaluateWeek(
   const requirements = purchasableRequirements(allRequirements);
   const pantryItems = allRequirements.filter((r) => r.pantryStaple);
 
-  const matrix = buildPackagingMatrix(requirements, input.stores, config.packaging);
+  const matrix = buildPackagingMatrix(
+    requirements,
+    input.stores,
+    config.packaging,
+    input.packagingCache,
+  );
   const options = enumerateStoreOptions({
     requirements,
     stores: input.stores,
@@ -154,15 +176,17 @@ export function evaluateWeek(
       fiberGrams: round1(day.recipe.nutritionPerServing.fiberGrams * day.portions.totalServings),
       saltGrams: round1(day.recipe.nutritionPerServing.saltGrams * day.portions.totalServings),
     },
-    reasons: buildDayReasons({
-      day,
-      option: recommended,
-      requirements,
-      leftovers,
-      household: input.household,
-      allocatedCostCents: dayCosts.get(day.dayIndex) ?? ZERO_CENTS,
-      memberCount,
-    }),
+    reasons: explain
+      ? buildDayReasons({
+          day,
+          option: recommended,
+          requirements,
+          leftovers,
+          household: input.household,
+          allocatedCostCents: dayCosts.get(day.dayIndex) ?? ZERO_CENTS,
+          memberCount,
+        })
+      : [],
   }));
 
   const budgetOutcome = evaluateBudget(input.budget, recommended.groceryCents);
@@ -193,18 +217,20 @@ export function evaluateWeek(
     nutrition: summariseWeekNutrition(plannedDays, input.memberNutrition),
     memberNutrition: input.memberNutrition,
     score,
-    reasons: buildWeekReasons({
-      option: recommended,
-      options,
-      waste,
-      leftovers,
-      budget: budgetOutcome,
-      nutrition: nutritionPenalty,
-      diversityViolations,
-      recipes: input.recipes,
-      household: input.household,
-      stores: input.stores,
-    }),
+    reasons: explain
+      ? buildWeekReasons({
+          option: recommended,
+          options,
+          waste,
+          leftovers,
+          budget: budgetOutcome,
+          nutrition: nutritionPenalty,
+          diversityViolations,
+          recipes: input.recipes,
+          household: input.household,
+          stores: input.stores,
+        })
+      : [],
     budget: budgetOutcome,
     excludedRecipes: input.excluded,
     diagnostics: {
@@ -212,6 +238,7 @@ export function evaluateWeek(
       candidateRecipes: 0,
       weeksGenerated: 0,
       weeksFullyEvaluated: 0,
+      localSearchEvaluations: 0,
       storeCombinationsEvaluated: options.length,
       elapsedMs: 0,
     },
@@ -238,21 +265,31 @@ export function selectBestPlan(
 ): WeeklyPlan | undefined {
   if (plans.length === 0) return undefined;
 
-  const withinHardMax =
-    budget.hardMaxCents === undefined
-      ? plans
-      : plans.filter((plan) => plan.totals.groceryCents <= budget.hardMaxCents!);
+  return [...plans].sort(comparePlans(budget))[0];
+}
 
-  const pool = withinHardMax.length > 0 ? withinHardMax : plans;
-  return [...pool].sort(
-    (a, b) =>
-      a.score.totalPenaltyCents - b.score.totalPenaltyCents ||
-      a.totals.groceryCents - b.totals.groceryCents ||
-      a.days
-        .map((d) => d.recipe.id)
-        .join('|')
-        .localeCompare(b.days.map((d) => d.recipe.id).join('|')),
-  )[0];
+/**
+ * The winner rule, as a comparator, so that everything choosing between weeks
+ * chooses the same way.
+ *
+ * A hard maximum is a promise, not a preference: any week that keeps it beats
+ * every week that breaks it, however good the latter scores. Below that the
+ * objective decides, then the actual bill, then the dish ids — the last one
+ * purely so that two equally good weeks always resolve the same way on every
+ * machine.
+ */
+export function comparePlans(budget: BudgetSettings): (a: WeeklyPlan, b: WeeklyPlan) => number {
+  const fits = (plan: WeeklyPlan): number =>
+    budget.hardMaxCents === undefined || plan.totals.groceryCents <= budget.hardMaxCents ? 0 : 1;
+
+  return (a, b) =>
+    fits(a) - fits(b) ||
+    a.score.totalPenaltyCents - b.score.totalPenaltyCents ||
+    a.totals.groceryCents - b.totals.groceryCents ||
+    a.days
+      .map((d) => d.recipe.id)
+      .join('|')
+      .localeCompare(b.days.map((d) => d.recipe.id).join('|'));
 }
 
 // ---------------------------------------------------------------------------

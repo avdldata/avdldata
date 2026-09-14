@@ -106,6 +106,18 @@ export const DEFAULT_OBJECTIVE_WEIGHTS: ObjectiveWeights = {
   monotonyPenalty: euros(6),
 };
 
+export interface LocalSearchConfig {
+  readonly enabled: boolean;
+  /** Rounds of "swap one dish and see"; each round is a full sweep. */
+  readonly maxIterations: number;
+  /**
+   * Stop starting new sweeps once this many neighbours have been priced. The
+   * sweep in progress always finishes, so the true ceiling is this plus one
+   * sweep (days × pool) — bounded, and without favouring the earlier days.
+   */
+  readonly maxEvaluations: number;
+}
+
 export interface SearchConfig {
   /** Candidate recipes considered per day slot. */
   readonly candidatesPerSlot: number;
@@ -113,12 +125,36 @@ export interface SearchConfig {
   readonly beamWidth: number;
   /** Complete weeks that get the full pricing treatment. */
   readonly fullyEvaluatedWeeks: number;
+  /** Swap-one-dish refinement of the best fully priced week. */
+  readonly localSearch: LocalSearchConfig;
 }
 
+/**
+ * Search settings, every one of them measured rather than guessed.
+ *
+ * The ablation (see OPTIMIZER_BENCHMARK.md) settled three questions:
+ *
+ * `beamWidth` 100 rather than 40. Widening the beam alone barely helps — 89 %
+ * to 90 % exact — because the true optimum sits at a median rank of 41 among
+ * the weeks the beam produces, so you would have to price hundreds of them to
+ * collect it. Widening it *underneath* the swap refinement is a different
+ * story: it changes which twenty weeks get priced, and so where the refinement
+ * starts from. That took the worst case from 4,4 % to 1,8 % for about five
+ * milliseconds.
+ *
+ * `fullyEvaluatedWeeks` stays at 20. Raising it to 50 or 100 costs two to three
+ * times the runtime and, with the refinement in play, measured slightly *worse*
+ * — a better starting week can still walk into a worse local optimum. More work
+ * for less quality is an easy call.
+ *
+ * `maxEvaluations` 200. The refinement converges long before that in the small
+ * worlds; the cap exists for large catalogues, where a sweep is wider.
+ */
 export const DEFAULT_SEARCH_CONFIG: SearchConfig = {
   candidatesPerSlot: 25,
-  beamWidth: 40,
+  beamWidth: 100,
   fullyEvaluatedWeeks: 20,
+  localSearch: { enabled: true, maxIterations: 8, maxEvaluations: 200 },
 };
 
 export interface OptimizerConfig {

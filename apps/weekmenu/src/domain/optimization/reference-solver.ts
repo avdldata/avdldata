@@ -1,12 +1,10 @@
 import type { Household } from '../household/types';
 import type { IngredientIndex } from '../ingredients/types';
-import { calculateHouseholdNutrition } from '../nutrition/calculate';
-import { planPortions, type RecipePortions } from '../nutrition/portions';
-import { DEFAULT_OPTIMIZER_CONFIG, extraStorePenaltyFor, type OptimizerConfig } from './config';
+import type { OptimizerConfig } from './config';
 import { bestOrdering } from './diversity';
 import { evaluateWeek, selectBestPlan } from './evaluate-week';
-import { filterCandidateRecipes } from './filter';
-import { representativeStoresPerChain, type StoreCandidate } from './store-selection';
+import { prepareOptimization } from './prepare';
+import type { StoreCandidate } from './store-selection';
 import type { OptimizerInput } from './week-optimizer';
 import type { WeeklyPlan } from './types';
 
@@ -68,38 +66,31 @@ export const DEFAULT_MAX_COMBINATIONS = 5_000;
 export function solveWeeklyPlanExhaustive(
   input: ExhaustiveSolverInput,
 ): ExhaustiveSolverResult | ExhaustiveSolverFailure {
-  const config = input.config ?? DEFAULT_OPTIMIZER_CONFIG;
   const limit = input.maxCombinations ?? DEFAULT_MAX_COMBINATIONS;
 
-  if (input.household.members.length === 0) {
-    return { status: 'FAILED', reason: 'NO_MEMBERS', message: 'Geen gezinsleden.' };
+  // Exactly the same preparation the production optimizer runs — same filter,
+  // same portions, same view of which shops are distinct. Anything else and the
+  // benchmark would compare two engines that disagree about the household.
+  const prepared = prepareOptimization(input);
+  if (prepared.status === 'FAILED') {
+    const reason =
+      prepared.reason === 'NO_CANDIDATE_RECIPES'
+        ? 'NOT_ENOUGH_CANDIDATE_RECIPES'
+        : prepared.reason;
+    return { status: 'FAILED', reason, message: `${prepared.reason} (${prepared.candidateCount})` };
   }
 
-  const stores = representativeStoresPerChain(input.stores);
-  if (stores.length === 0) {
-    return { status: 'FAILED', reason: 'NO_STORES', message: 'Geen winkels.' };
-  }
-  const maxStores = input.maxStores > 0 ? Math.min(input.maxStores, stores.length) : stores.length;
-
-  const memberNutrition = calculateHouseholdNutrition(
-    input.household.members,
-    input.today,
-    config.nutrition,
-  );
-
-  const { candidates, excluded } = filterCandidateRecipes({
-    household: input.household,
-    recipes: input.recipes,
-    ...(input.maxMinutes !== undefined ? { maxMinutes: input.maxMinutes } : {}),
-  });
-
-  if (candidates.length < config.days) {
-    return {
-      status: 'FAILED',
-      reason: 'NOT_ENOUGH_CANDIDATE_RECIPES',
-      message: `${candidates.length} kandidaten, ${config.days} nodig.`,
-    };
-  }
+  const {
+    config,
+    stores,
+    maxStores,
+    memberNutrition,
+    candidates,
+    excluded,
+    portionsByRecipe,
+    home,
+    extraStorePenalty,
+  } = prepared;
 
   const total = binomial(candidates.length, config.days);
   if (total > limit) {
@@ -109,17 +100,6 @@ export function solveWeeklyPlanExhaustive(
       message: `C(${candidates.length}, ${config.days}) = ${total} overschrijdt de limiet ${limit}.`,
     };
   }
-
-  const portionsByRecipe = new Map<string, RecipePortions>();
-  for (const recipe of candidates) {
-    portionsByRecipe.set(recipe.id, planPortions(recipe, memberNutrition, config.nutrition));
-  }
-
-  const home = {
-    latitude: input.household.location.latitude ?? stores[0]!.location.latitude,
-    longitude: input.household.location.longitude ?? stores[0]!.location.longitude,
-  };
-  const extraStorePenalty = extraStorePenaltyFor(input.conveniencePreference);
 
   const plans: WeeklyPlan[] = [];
   let evaluatedCount = 0;

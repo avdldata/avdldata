@@ -79,19 +79,43 @@ export type PackagingMatrix = ReadonlyMap<string, ReadonlyMap<string, PackagingR
  * instead of re-running the packaging search, which is what keeps comparing
  * dozens of store combinations cheap.
  */
+/**
+ * Memo for `optimisePackaging`, keyed by ingredient, amount and shop.
+ *
+ * How many packs of rice you buy at the Lidl depends on how much rice the week
+ * needs and on nothing else. The swap-one-dish refinement prices hundreds of
+ * weeks that differ by a single dish, so six of the seven dishes ask for the
+ * exact same amounts every time — and this is the most expensive step in
+ * pricing a week. Caching it is a memo, not an approximation: the same key
+ * always had the same answer.
+ *
+ * One cache per `optimiseWeek` call. It must not outlive the offers it was
+ * built from, which is why it is passed in rather than kept in module scope.
+ */
+export type PackagingCache = Map<string, PackagingResult>;
+
 export function buildPackagingMatrix(
   requirements: readonly WeekIngredientRequirement[],
   stores: readonly StoreCandidate[],
   config: PackagingConfig,
+  cache?: PackagingCache,
 ): PackagingMatrix {
   const matrix = new Map<string, Map<string, PackagingResult>>();
   for (const requirement of requirements) {
     const row = new Map<string, PackagingResult>();
     for (const store of stores) {
-      row.set(
-        store.location.id,
-        optimisePackaging(requirement.ingredientId, requirement.totalAmount, store.offers, config),
-      );
+      const key = `${requirement.ingredientId}|${requirement.totalAmount}|${store.location.id}`;
+      let solved = cache?.get(key);
+      if (!solved) {
+        solved = optimisePackaging(
+          requirement.ingredientId,
+          requirement.totalAmount,
+          store.offers,
+          config,
+        );
+        cache?.set(key, solved);
+      }
+      row.set(store.location.id, solved);
     }
     matrix.set(requirement.ingredientId, row);
   }

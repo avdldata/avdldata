@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { optimiseWeek } from '@/domain/optimization/week-optimizer';
+import { DEFAULT_OPTIMIZER_CONFIG } from '@/domain/optimization/config';
 import {
   demoHousehold,
   ingredientIndex,
@@ -90,10 +91,20 @@ describe('generating a week stays inside its budget', () => {
     const { diagnostics } = result.plan;
 
     // Every one of these is capped by configuration, not by luck with the data.
-    expect(diagnostics.weeksGenerated).toBeLessThanOrEqual(200);
-    expect(diagnostics.weeksFullyEvaluated).toBeLessThanOrEqual(diagnostics.weeksGenerated);
-    expect(diagnostics.storeCombinationsEvaluated).toBeLessThan(1000);
-    expect(diagnostics.candidateRecipes).toBeGreaterThan(diagnostics.weeksFullyEvaluated);
+    // The beam is bounded by its width; the refinement by its evaluation budget
+    // plus the one sweep it is always allowed to finish (seven days times the
+    // recipe pool). Neither can run away on a bigger catalogue.
+    const { search } = DEFAULT_OPTIMIZER_CONFIG;
+    const oneSweep = DEFAULT_OPTIMIZER_CONFIG.days * search.candidatesPerSlot * 2;
+    expect(diagnostics.weeksGenerated).toBeLessThanOrEqual(search.beamWidth);
+    expect(diagnostics.localSearchEvaluations).toBeLessThanOrEqual(
+      search.localSearch.maxEvaluations + oneSweep,
+    );
+    expect(diagnostics.weeksFullyEvaluated).toBeLessThanOrEqual(
+      search.fullyEvaluatedWeeks + diagnostics.localSearchEvaluations,
+    );
+    expect(diagnostics.storeCombinationsEvaluated).toBeLessThan(5000);
+    expect(diagnostics.candidateRecipes).toBeGreaterThan(0);
   });
 
   it('grows gently when more stores are in play', () => {

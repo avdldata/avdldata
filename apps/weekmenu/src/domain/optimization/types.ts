@@ -86,8 +86,12 @@ export interface WeekNutritionSummary {
 export interface OptimizerDiagnostics {
   readonly totalRecipes: number;
   readonly candidateRecipes: number;
+  /** Complete weeks stage A built. */
   readonly weeksGenerated: number;
+  /** Weeks fully priced: the stage-B shortlist plus every stage-C neighbour. */
   readonly weeksFullyEvaluated: number;
+  /** Of those, how many were swap neighbours tried by the refinement. */
+  readonly localSearchEvaluations: number;
   readonly storeCombinationsEvaluated: number;
   readonly elapsedMs: number;
 }
