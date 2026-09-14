@@ -113,11 +113,12 @@ lange padnamen, want `node_modules` wordt diep.
 `claude/weekly-menu-optimizer-fdagbe`:
 
 ```powershell
-git clone https://github.com/avdldata/avdldata.git
-cd avdldata
-git checkout claude/weekly-menu-optimizer-fdagbe
-cd apps\weekmenu
+git clone -b claude/weekly-menu-optimizer-fdagbe https://github.com/avdldata/avdldata.git
+cd avdldata\apps\weekmenu
 ```
+
+De `-b` is nodig: de map `apps/weekmenu` bestaat alleen op die branch. Kloon je
+zonder, dan land je op `main` en bestaat de map nog niet.
 
 **5. Starten:**
 
