@@ -25,6 +25,7 @@
     "bench": "tsx scripts/benchmark-optimizer.ts",
     "bench:recall": "tsx scripts/benchmark-recall.ts",
     "bench:ablation": "tsx scripts/benchmark-ablation.ts",
+    "bench:budget": "tsx scripts/benchmark-budget.ts",
     "bench:perf": "tsx scripts/benchmark-performance.ts"
   },
   "dependencies": {

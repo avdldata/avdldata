@@ -9,6 +9,7 @@ import type { PackagingCache, StoreCandidate } from './store-selection';
 import { evaluateWeek, selectBestPlan } from './evaluate-week';
 import { generateCandidateWeeks, weekKey } from './candidates';
 import { improveBySwapping, type EvaluatedWeek } from './local-search';
+import { weekLowerBound } from './lower-bound';
 import type { BudgetSettings, OptimizerResult, WeeklyPlan } from './types';
 
 export interface OptimizerLogger {
@@ -181,6 +182,17 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
     ...(input.lockedRecipeIds ? { locked: input.lockedRecipeIds } : {}),
     alreadyPriced: seenSets,
     evaluate: price,
+    lowerBound: (recipes) =>
+      weekLowerBound({
+        recipes,
+        portionsByRecipe,
+        household: input.household,
+        memberNutrition,
+        ingredients: input.ingredients,
+        stores,
+        config,
+        packagingCache,
+      }),
   });
   // Only now, once the week is decided, is it worth explaining. Every other
   // candidate was priced without its reasons.
@@ -190,6 +202,7 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
 
   log('localSearch', {
     evaluations: refined.evaluations,
+    pruned: refined.pruned,
     iterations: refined.iterations,
     improved: refined.improved ? 1 : 0,
     gainCents: stageBWinner.score.totalPenaltyCents - winner.score.totalPenaltyCents,
@@ -221,6 +234,7 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
         weeksGenerated: weeks.length,
         weeksFullyEvaluated,
         localSearchEvaluations: refined.evaluations,
+        localSearchPruned: refined.pruned,
         storeCombinationsEvaluated,
         elapsedMs,
       },

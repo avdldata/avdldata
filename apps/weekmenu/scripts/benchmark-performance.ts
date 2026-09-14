@@ -63,17 +63,50 @@ function stores(locationIds: readonly string[]): StoreCandidate[] {
 }
 
 /**
- * A bigger catalogue, built by cloning the real one under new ids.
+ * A bigger catalogue: more *different* dishes, not more copies of the same one.
  *
- * Cloning rather than inventing keeps the ingredient overlap — and therefore
- * the shape of the problem — realistic. What changes is only the number of
- * candidates the search has to sift through, which is the thing being measured.
+ * The obvious way to grow the recipe book is to clone it under new ids, and it
+ * is wrong. Clones are the same dish, so the cheapest week becomes the same
+ * pasta five nights running — which is genuinely cheap, buys one big bag of
+ * everything, and makes the optimizer look slow for the wrong reason: a handful
+ * of ingredients in enormous amounts is the hardest case for the packaging
+ * solver. The measurement then says "large catalogues are slow" when what it
+ * measured was "eating one dish all week is slow".
+ *
+ * So each copy is shifted instead: its ingredients rotate through the pantry,
+ * its cuisine and protein move on, and the amounts change. The result is a book
+ * of genuinely different dishes with a realistic ingredient overlap, which is
+ * what the search actually has to sift through.
  */
 function inflatedRecipes(factor: number): Recipe[] {
+  const ingredientIds = [...ingredientIndex.keys()].sort();
+  const cuisines = [...new Set(recipes.map((recipe) => recipe.cuisine))];
+  const proteins = [...new Set(recipes.map((recipe) => recipe.primaryProtein))];
+
   const grown: Recipe[] = [];
   for (let copy = 0; copy < factor; copy += 1) {
-    for (const recipe of recipes) {
-      grown.push(copy === 0 ? recipe : { ...recipe, id: `${recipe.id}-v${copy}` });
+    for (const [index, recipe] of recipes.entries()) {
+      if (copy === 0) {
+        grown.push(recipe);
+        continue;
+      }
+
+      const shift = copy * 7 + index;
+      grown.push({
+        ...recipe,
+        id: `${recipe.id}-v${copy}`,
+        name: `${recipe.name} ${copy}`,
+        cuisine: cuisines[(cuisines.indexOf(recipe.cuisine) + copy) % cuisines.length]!,
+        primaryProtein: proteins[(proteins.indexOf(recipe.primaryProtein) + copy) % proteins.length]!,
+        ingredients: recipe.ingredients.map((line, position) => ({
+          ...line,
+          ingredientId: ingredientIds[(shift + position * 3) % ingredientIds.length]!,
+          perServing: {
+            ...line.perServing,
+            amount: Math.max(10, Math.round(line.perServing.amount * (0.7 + ((shift % 7) * 0.1)))),
+          },
+        })),
+      });
     }
   }
   return grown;
@@ -100,6 +133,9 @@ function timed(label: string, input: OptimizerInput, runs = 5): void {
       `${samples[0]!.toFixed(0).padStart(5)} ms fastest   ` +
       `${samples.at(-1)!.toFixed(0).padStart(5)} ms slowest   ` +
       `(${warmUp.plan.diagnostics.candidateRecipes} candidates, ` +
+      `${warmUp.plan.diagnostics.weeksFullyEvaluated} weeks priced, ` +
+      `${warmUp.plan.diagnostics.localSearchEvaluations} swaps, ` +
+      `${warmUp.plan.diagnostics.localSearchPruned} pruned, ` +
       `${warmUp.plan.diagnostics.storeCombinationsEvaluated} store combinations)`,
   );
 }

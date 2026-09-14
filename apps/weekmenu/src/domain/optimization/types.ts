@@ -92,6 +92,8 @@ export interface OptimizerDiagnostics {
   readonly weeksFullyEvaluated: number;
   /** Of those, how many were swap neighbours tried by the refinement. */
   readonly localSearchEvaluations: number;
+  /** Neighbours the lower bound ruled out without pricing them. */
+  readonly localSearchPruned: number;
   readonly storeCombinationsEvaluated: number;
   readonly elapsedMs: number;
 }

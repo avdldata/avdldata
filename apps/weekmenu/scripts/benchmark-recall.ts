@@ -15,10 +15,9 @@ import { RECALL_WIDTHS, WIDE_BEAM, runRecall, type LostStage } from '../tests/su
 
 const args = process.argv.slice(2);
 const count = Number(args.find((argument) => /^\d+$/.test(argument)) ?? 200);
-const budget = args.includes('--budget');
 
 const started = Date.now();
-const summary = runRecall(benchmarkSeeds(count), budget ? { budgetFactor: 0.85 } : {});
+const summary = runRecall(benchmarkSeeds(count), {});
 const seconds = (Date.now() - started) / 1000;
 
 const line = (label: string, value: string): void => console.log(`  ${label.padEnd(30)} ${value}`);
@@ -27,7 +26,7 @@ const pct = (part: number): string =>
 
 console.log(
   `\nRecall-analyse — ${summary.measured} scenario's in ${seconds.toFixed(1)}s` +
-    `${budget ? ' (met hard budgetmaximum)' : ''}, ${summary.skipped} overgeslagen\n`,
+    `, ${summary.skipped} overgeslagen\n`,
 );
 
 console.log('  Waar verdwijnt het optimum\n');

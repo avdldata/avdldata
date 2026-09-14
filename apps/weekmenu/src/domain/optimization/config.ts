@@ -116,6 +116,14 @@ export interface LocalSearchConfig {
    * sweep (days × pool) — bounded, and without favouring the earlier days.
    */
   readonly maxEvaluations: number;
+  /**
+   * Also try replacing two dishes at once, once one-at-a-time has settled.
+   *
+   * Its own budget, because the neighbourhood is roughly the square of the
+   * one-swap one: seven days choose two, times the pool twice over.
+   */
+  readonly twoSwap: boolean;
+  readonly maxTwoSwapEvaluations: number;
 }
 
 export interface SearchConfig {
@@ -154,7 +162,13 @@ export const DEFAULT_SEARCH_CONFIG: SearchConfig = {
   candidatesPerSlot: 25,
   beamWidth: 100,
   fullyEvaluatedWeeks: 20,
-  localSearch: { enabled: true, maxIterations: 8, maxEvaluations: 200 },
+  localSearch: {
+    enabled: true,
+    maxIterations: 8,
+    maxEvaluations: 200,
+    twoSwap: true,
+    maxTwoSwapEvaluations: 250,
+  },
 };
 
 export interface OptimizerConfig {

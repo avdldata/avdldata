@@ -15,42 +15,34 @@ import { runAblation, searchVariant, type Variant } from '../tests/support/ablat
 
 const args = process.argv.slice(2);
 const count = Number(args.find((argument) => /^\d+$/.test(argument)) ?? 120);
-const budget = args.includes('--budget');
 
-const OFF = { enabled: false, maxIterations: 0, maxEvaluations: 0 } as const;
+const OFF = {
+  enabled: false,
+  maxIterations: 0,
+  maxEvaluations: 0,
+  twoSwap: false,
+  maxTwoSwapEvaluations: 0,
+} as const;
 const on = (maxEvaluations: number, maxIterations = 8) =>
-  ({ enabled: true, maxIterations, maxEvaluations }) as const;
+  ({ enabled: true, maxIterations, maxEvaluations, twoSwap: false, maxTwoSwapEvaluations: 0 }) as const;
+const withTwoSwap = (maxTwoSwapEvaluations: number) =>
+  ({ ...on(200), twoSwap: true, maxTwoSwapEvaluations }) as const;
 
 const VARIANTS: Variant[] = [
-  searchVariant('baseline (v1: beam 40, top-20)', { localSearch: OFF }),
-  searchVariant('beam 100, top-100 (wider only)', {
-    beamWidth: 100,
-    fullyEvaluatedWeeks: 100,
-    localSearch: OFF,
-  }),
-  searchVariant('1-swap, 100 eval', { localSearch: on(100) }),
-  searchVariant('1-swap, 200 eval', { localSearch: on(200) }),
-  searchVariant('top-50 + 1-swap', { fullyEvaluatedWeeks: 50, localSearch: on(200) }),
-  searchVariant('beam 100 + 1-swap', { beamWidth: 100, localSearch: on(200) }),
-  searchVariant('beam 100, top-50 + 1-swap', {
-    beamWidth: 100,
-    fullyEvaluatedWeeks: 50,
-    localSearch: on(200),
-  }),
-  searchVariant('beam 100, top-100 + 1-swap', {
-    beamWidth: 100,
-    fullyEvaluatedWeeks: 100,
-    localSearch: on(200),
-  }),
+  searchVariant('1-swap alleen', { localSearch: on(200) }),
+  searchVariant('+ 2-swap, 50 eval', { localSearch: withTwoSwap(50) }),
+  searchVariant('+ 2-swap, 100 eval', { localSearch: withTwoSwap(100) }),
+  searchVariant('+ 2-swap, 150 eval', { localSearch: withTwoSwap(150) }),
+  searchVariant('+ 2-swap, 250 eval', { localSearch: withTwoSwap(250) }),
 ];
 
 const seeds = benchmarkSeeds(count);
 const started = Date.now();
-const results = runAblation(seeds, VARIANTS, budget ? { budgetFactor: 0.85 } : {});
+const results = runAblation(seeds, VARIANTS, {});
 const seconds = (Date.now() - started) / 1000;
 
 console.log(
-  `\nAblatie — ${count} scenario's${budget ? ' met hard budgetmaximum' : ''}, ` +
+  `\nAblatie — ${count} scenario's, ` +
     `${seconds.toFixed(0)}s — elk scenario houdt zijn eigen gewichten\n`,
 );
 

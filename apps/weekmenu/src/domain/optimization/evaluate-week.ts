@@ -239,6 +239,7 @@ export function evaluateWeek(
       weeksGenerated: 0,
       weeksFullyEvaluated: 0,
       localSearchEvaluations: 0,
+      localSearchPruned: 0,
       storeCombinationsEvaluated: options.length,
       elapsedMs: 0,
     },
@@ -279,17 +280,46 @@ export function selectBestPlan(
  * machine.
  */
 export function comparePlans(budget: BudgetSettings): (a: WeeklyPlan, b: WeeklyPlan) => number {
-  const fits = (plan: WeeklyPlan): number =>
-    budget.hardMaxCents === undefined || plan.totals.groceryCents <= budget.hardMaxCents ? 0 : 1;
-
+  const fits = fitsBudget(budget);
   return (a, b) =>
     fits(a) - fits(b) ||
     a.score.totalPenaltyCents - b.score.totalPenaltyCents ||
     a.totals.groceryCents - b.totals.groceryCents ||
-    a.days
-      .map((d) => d.recipe.id)
-      .join('|')
-      .localeCompare(b.days.map((d) => d.recipe.id).join('|'));
+    byDishIds(a, b);
+}
+
+/**
+ * The comparator to use while nothing yet fits the ceiling.
+ *
+ * `comparePlans` ranks two weeks that both break the ceiling by their overall
+ * score — health, waste, variety and all. That is the right question once you
+ * are choosing what to cook, and the wrong one while you are still trying to
+ * get under a number: it will happily walk towards a nicer week that is just as
+ * unaffordable. Here the bill leads instead, so each step actually moves
+ * towards the ceiling. As soon as something fits, `fits` dominates in both
+ * orderings and the search goes back to judging quality.
+ */
+export function compareForAffordability(
+  budget: BudgetSettings,
+): (a: WeeklyPlan, b: WeeklyPlan) => number {
+  const fits = fitsBudget(budget);
+  return (a, b) =>
+    fits(a) - fits(b) ||
+    a.totals.groceryCents - b.totals.groceryCents ||
+    a.score.totalPenaltyCents - b.score.totalPenaltyCents ||
+    byDishIds(a, b);
+}
+
+function fitsBudget(budget: BudgetSettings): (plan: WeeklyPlan) => number {
+  return (plan) =>
+    budget.hardMaxCents === undefined || plan.totals.groceryCents <= budget.hardMaxCents ? 0 : 1;
+}
+
+function byDishIds(a: WeeklyPlan, b: WeeklyPlan): number {
+  return a.days
+    .map((d) => d.recipe.id)
+    .join('|')
+    .localeCompare(b.days.map((d) => d.recipe.id).join('|'));
 }
 
 // ---------------------------------------------------------------------------

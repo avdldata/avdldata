@@ -49,7 +49,10 @@ describe('the same input always gives the same week', () => {
     for (let run = 0; run < 5; run += 1) {
       expect(fingerprint(optimiseWeek(input()))).toBe(first);
     }
-  });
+    // Six full plans of the demo catalogue; the per-plan budget is asserted
+    // separately below, so the generous timeout here is only so that a genuine
+    // slowdown is reported as a slowdown rather than as a timeout.
+  }, 30_000);
 
   it('does not depend on the order the stores are handed in', () => {
     const forwards = optimiseWeek(input());
@@ -83,7 +86,7 @@ describe('generating a week stays inside its budget', () => {
     const average = (performance.now() - started) / runs;
 
     expect(average).toBeLessThan(2000);
-  });
+  }, 30_000);
 
   it('keeps the search space bounded rather than merely small', () => {
     const result = optimiseWeek(input());

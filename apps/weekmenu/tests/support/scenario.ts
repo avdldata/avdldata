@@ -9,7 +9,7 @@ import {
   type ConveniencePreference,
   type OptimizerConfig,
 } from '@/domain/optimization/config';
-import { cents, euros } from '@/domain/units';
+import { cents, euros, type Cents } from '@/domain/units';
 
 /**
  * Small, complete, exactly solvable worlds.
@@ -286,8 +286,16 @@ function member(index: number, random: SeededRandom): HouseholdMember {
 }
 
 export interface ScenarioOptions {
-  /** Force a hard budget maximum at this fraction of the unconstrained price. */
-  readonly budgetFactor?: number;
+  /**
+   * A hard ceiling on the grocery bill.
+   *
+   * Deliberately an amount rather than a "fraction of the usual price": a
+   * fraction cannot say whether the resulting problem is solvable at all, and a
+   * ceiling nobody can meet measures nothing. `tests/support/budget.ts` derives
+   * one from the exhaustive solver's cheapest week, so the ceiling is known to
+   * be reachable before the optimizer is asked to reach it.
+   */
+  readonly hardMaxCents?: Cents;
   readonly recipeCount?: number;
 }
 
@@ -363,7 +371,7 @@ export function buildScenario(seed: number, options: ScenarioOptions = {}): Scen
     stores,
     maxStores: random.int(1, storeCount),
     conveniencePreference,
-    budget: {},
+    budget: options.hardMaxCents !== undefined ? { hardMaxCents: options.hardMaxCents } : {},
     startDate: '2026-03-02',
     today: new Date('2026-03-02T09:00:00Z'),
     config,

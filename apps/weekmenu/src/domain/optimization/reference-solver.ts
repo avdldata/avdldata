@@ -39,6 +39,15 @@ export interface ExhaustiveSolverResult {
   /** How many complete weeks were priced. */
   readonly combinationsEvaluated: number;
   readonly candidateRecipes: number;
+  /**
+   * The lowest grocery bill any legal week can reach, whatever it scores.
+   *
+   * Not the winner's bill — the winner balances health, waste and variety too.
+   * This is the floor, and it is what makes a hard-budget benchmark meaningful:
+   * a ceiling at or above this number is known to be satisfiable, so failing to
+   * satisfy it is the optimizer's failure and not the scenario's.
+   */
+  readonly cheapestGroceryCents: number;
 }
 
 export interface ExhaustiveSolverFailure {
@@ -140,6 +149,10 @@ export function solveWeeklyPlanExhaustive(
     plan: best,
     combinationsEvaluated: evaluatedCount,
     candidateRecipes: candidates.length,
+    cheapestGroceryCents: plans.reduce(
+      (lowest, plan) => Math.min(lowest, plan.totals.groceryCents),
+      Number.POSITIVE_INFINITY,
+    ),
   };
 }
 
