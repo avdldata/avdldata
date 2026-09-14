@@ -124,6 +124,18 @@ export interface LocalSearchConfig {
    */
   readonly twoSwap: boolean;
   readonly maxTwoSwapEvaluations: number;
+  /**
+   * How many of the best fully priced weeks to refine, not just the best one.
+   *
+   * Swapping dishes is a greedy walk, and a greedy walk is only as good as
+   * where it starts. The large-world benchmark found a scenario where the *old*
+   * optimizer beat this one outright, purely because its narrower beam happened
+   * to hand the refinement a luckier starting week.
+   *
+   * Two fixes that case and every other one measured. Three costs half as much
+   * again and, measured over the same worlds, finds nothing two does not.
+   */
+  readonly restarts: number;
 }
 
 export interface SearchConfig {
@@ -168,6 +180,7 @@ export const DEFAULT_SEARCH_CONFIG: SearchConfig = {
     maxEvaluations: 200,
     twoSwap: true,
     maxTwoSwapEvaluations: 250,
+    restarts: 2,
   },
 };
 

@@ -79,6 +79,12 @@ const pregnant: Household = {
   ),
 };
 
+/**
+ * Each of these plans the week twice — once with the bait dish in the
+ * catalogue, once without — so a generous timeout is simply the cost of
+ * checking the real optimizer rather than a stub. What the optimizer is allowed
+ * to spend per plan is asserted in performance-determinism.test.ts.
+ */
 describe('no price can buy its way past a hard constraint', () => {
   it('leaves out a pregnancy-unsafe dish that would otherwise be the cheapest of the week', () => {
     const dish = irresistibleDish({
@@ -186,7 +192,7 @@ describe('no price can buy its way past a hard constraint', () => {
     expect(result.plan.budget.met).toBe(false);
     expect(result.plan.days.map((d) => d.recipe.id)).not.toContain(dish.id);
   });
-});
+}, 120_000);
 
 describe('a variety rule may narrow the choice, never block it', () => {
   /**

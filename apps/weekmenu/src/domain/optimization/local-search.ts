@@ -90,7 +90,6 @@ export function improveBySwapping(input: LocalSearchInput): LocalSearchResult {
   let evaluations = 0;
   let iterations = 0;
   let improved = false;
-  let exhaustedBudget: boolean;
   let storeCombinationsEvaluated = 0;
   let pruned = 0;
 
@@ -238,7 +237,8 @@ export function improveBySwapping(input: LocalSearchInput): LocalSearchResult {
     }
   }
 
-  exhaustedBudget = iterations >= settings.maxIterations || evaluations >= settings.maxEvaluations;
+  const exhaustedBudget =
+    iterations >= settings.maxIterations || evaluations >= settings.maxEvaluations;
 
   return {
     best: bestOverall,

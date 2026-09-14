@@ -44,13 +44,14 @@ for (const width of RECALL_WIDTHS) {
   line(`beamWidth ${width}`, `${(summary.recallByWidth.get(width) ?? 0).toFixed(1)}%`);
 }
 
-console.log(`\n  Hoe diep ligt het optimum (beam ${WIDE_BEAM}, alleen niet-exacte gevallen)\n`);
+console.log(`\n  Hoe diep ligt het optimum in de beam zelf (breedte ${WIDE_BEAM})\n`);
 if (summary.wideRanks.length === 0) {
-  line('geen niet-exacte gevallen', '—');
+  line('niets gemeten', '—');
 } else {
   const ranks = summary.wideRanks;
   const at = (p: number): number => ranks[Math.min(ranks.length - 1, Math.ceil((p / 100) * ranks.length) - 1)]!;
   line('mediaan rang', String(at(50)));
+  line('p75 rang', String(at(75)));
   line('p90 rang', String(at(90)));
   line('slechtste rang', String(ranks.at(-1)));
   line(`onvindbaar zelfs bij ${WIDE_BEAM}`, String(summary.lostEvenWide));

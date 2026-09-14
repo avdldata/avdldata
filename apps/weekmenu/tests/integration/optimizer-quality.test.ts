@@ -20,9 +20,11 @@ import { benchmarkSeeds, compareScenario, runBenchmark } from '../support/benchm
  * `pnpm bench 500` is the full run.
  */
 
-// Sixty is enough to catch a regression within seconds; CI runs 120 in a
-// separate job and `pnpm bench 500` is the number that goes in the report.
-const SEEDS = benchmarkSeeds(60);
+// Forty is enough to catch a regression; CI runs 120 in a separate job and
+// `pnpm bench 500` is the number that goes in the report. The search does
+// considerably more work per week than it used to, so this trades a little
+// coverage here for a suite that still runs in a coffee break.
+const SEEDS = benchmarkSeeds(40);
 
 describe('the optimizer measured against an exhaustive solver', () => {
   const summary = runBenchmark(SEEDS);
@@ -44,17 +46,17 @@ describe('the optimizer measured against an exhaustive solver', () => {
   });
 
   it('finds the exact optimum in the large majority of cases', () => {
-    expect(summary.exactPercent).toBeGreaterThan(80);
+    expect(summary.exactPercent).toBeGreaterThan(97);
   });
 
   it('stays close to the optimum on average', () => {
-    expect(summary.meanGapPercent).toBeLessThan(1);
+    expect(summary.meanGapPercent).toBeLessThan(0.2);
     expect(summary.medianGapPercent).toBe(0);
   });
 
   it('keeps the tail in hand', () => {
-    expect(summary.p95GapPercent).toBeLessThan(3);
-    expect(summary.p99GapPercent).toBeLessThan(8);
+    expect(summary.p95GapPercent).toBe(0);
+    expect(summary.p99GapPercent).toBeLessThan(1);
   });
 
   it('has no pathological case', () => {
@@ -62,7 +64,7 @@ describe('the optimizer measured against an exhaustive solver', () => {
       summary.worstGapPercent,
       `worst case ${summary.worstGapPercent.toFixed(2)}% on seed ${summary.worstSeed}` +
         (summary.worst ? ` — ${summary.worst.summary}` : ''),
-    ).toBeLessThan(12);
+    ).toBeLessThan(5);
   });
 
   it('answers far faster than the exhaustive search it is measured against', () => {
@@ -82,28 +84,25 @@ describe('the optimizer measured against an exhaustive solver', () => {
  * Reproduce one locally with:  pnpm bench 500   (and look for the seed)
  */
 describe('regression corpus: cases the fuzzer found', () => {
-  const CASES: { seed: number; what: string; maxGapPercent: number }[] = [
-    // The worst case measured over 500 scenarios: three shops but only one
-    // allowed, so the whole answer hinges on picking the right menu for the
-    // right shop.
-    { seed: 3228008, what: 'worst case: 12 dishes, 3 shops, only 1 allowed', maxGapPercent: 12 },
-    // Waste weighted heavily (€2,70/kg) against an expensive repetition
-    // penalty: the two soft costs pull in opposite directions.
-    { seed: 3869447, what: 'waste-heavy against a costly repetition penalty', maxGapPercent: 9 },
-    // A price-only household with three shops: the store combination matters
-    // more than the menu.
-    { seed: 955255, what: 'store combination dominates', maxGapPercent: 9 },
-    // One member, one shop, eleven ingredients: small amounts, so pack sizes
-    // and promotions decide everything.
-    { seed: 883984, what: 'promotion and pack-size interaction', maxGapPercent: 9 },
-    // Only seven candidate dishes, so there is exactly one possible set and the
-    // entire score difference is the order they are cooked in.
-    { seed: 250464, what: 'diversity conflict: the order is the only choice', maxGapPercent: 3 },
-    // A tight diversity configuration with few cuisines to spread across.
-    { seed: 131679, what: 'diversity conflict with three shops', maxGapPercent: 3 },
+  // Every one of these was a measured failure at some point — the worst cases
+  // over 500 scenarios under the beam-only search, with gaps from 3 % to 12 %.
+  // All of them are now solved exactly, so that is what they are pinned to:
+  // anything above zero on any of these is a regression with a seed attached,
+  // rather than a percentile nobody reads.
+  const CASES: { seed: number; what: string }[] = [
+    { seed: 3228008, what: 'was the worst of 500: 12 dishes, 3 shops, only 1 allowed' },
+    { seed: 3869447, what: 'waste-heavy against a costly repetition penalty' },
+    { seed: 955255, what: 'store combination dominates the answer' },
+    { seed: 883984, what: 'promotion and pack-size interaction' },
+    { seed: 250464, what: 'only seven eligible dishes: the order is the only choice' },
+    { seed: 131679, what: 'tight diversity configuration across three shops' },
+    { seed: 3988232, what: 'was the worst once one-swap was in: 3 shops, 2 allowed' },
+    { seed: 2420270, what: 'was the worst once two-swap was in' },
+    { seed: 377168, what: 'resisted every widening of the beam' },
+    { seed: 234626, what: 'the hardest hard-budget case measured' },
   ];
 
-  for (const { seed, what, maxGapPercent } of CASES) {
+  for (const { seed, what } of CASES) {
     it(`seed ${seed} — ${what}`, () => {
       const outcome = compareScenario(seed);
       expect(outcome.status, `seed ${seed} became uncomparable`).toBe('COMPARED');
@@ -118,7 +117,7 @@ describe('regression corpus: cases the fuzzer found', () => {
         comparison.relativeGapPercent,
         `seed ${seed}: optimum ${comparison.optimalScore}, optimizer ` +
           `${comparison.heuristicScore}, gap ${comparison.relativeGapPercent.toFixed(2)}%`,
-      ).toBeLessThanOrEqual(maxGapPercent);
+      ).toBe(0);
     }, 120_000);
   }
 });

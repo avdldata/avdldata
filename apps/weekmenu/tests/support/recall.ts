@@ -146,7 +146,14 @@ export interface RecallSummary {
   readonly byStage: ReadonlyMap<LostStage, number>;
   /** Fraction of scenarios where the optimum is generated at all, per width. */
   readonly recallByWidth: ReadonlyMap<number, number>;
-  /** How deep in the wide beam the optimum sits, over the non-exact cases. */
+  /**
+   * How deep in the wide beam the optimum sits, over every measured scenario.
+   *
+   * Measured over all of them rather than only the ones the optimizer misses:
+   * once the refinement makes it exact everywhere there are no misses left, and
+   * the question this answers — how far down the beam's own ranking the best
+   * week actually sits — is the reason the refinement exists.
+   */
   readonly wideRanks: readonly number[];
   readonly lostEvenWide: number;
   readonly measurements: readonly RecallMeasurement[];
@@ -176,18 +183,16 @@ export function runRecall(
     recallByWidth.set(width, measurements.length > 0 ? (hits / measurements.length) * 100 : 0);
   }
 
-  const imperfect = measurements.filter((m) => m.lostAt !== 'NONE');
-
   return {
     measured: measurements.length,
     skipped,
     byStage,
     recallByWidth,
-    wideRanks: imperfect
+    wideRanks: measurements
       .map((m) => m.wideRank)
       .filter((rank): rank is number => rank !== undefined)
       .sort((a, b) => a - b),
-    lostEvenWide: imperfect.filter((m) => m.wideRank === undefined).length,
+    lostEvenWide: measurements.filter((m) => m.wideRank === undefined).length,
     measurements,
   };
 }

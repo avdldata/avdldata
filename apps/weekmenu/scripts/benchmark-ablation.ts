@@ -22,18 +22,24 @@ const OFF = {
   maxEvaluations: 0,
   twoSwap: false,
   maxTwoSwapEvaluations: 0,
+  restarts: 1,
 } as const;
 const on = (maxEvaluations: number, maxIterations = 8) =>
-  ({ enabled: true, maxIterations, maxEvaluations, twoSwap: false, maxTwoSwapEvaluations: 0 }) as const;
+  ({ enabled: true, maxIterations, maxEvaluations, twoSwap: false, maxTwoSwapEvaluations: 0, restarts: 1 }) as const;
 const withTwoSwap = (maxTwoSwapEvaluations: number) =>
   ({ ...on(200), twoSwap: true, maxTwoSwapEvaluations }) as const;
 
+
 const VARIANTS: Variant[] = [
-  searchVariant('1-swap alleen', { localSearch: on(200) }),
-  searchVariant('+ 2-swap, 50 eval', { localSearch: withTwoSwap(50) }),
-  searchVariant('+ 2-swap, 100 eval', { localSearch: withTwoSwap(100) }),
-  searchVariant('+ 2-swap, 150 eval', { localSearch: withTwoSwap(150) }),
-  searchVariant('+ 2-swap, 250 eval', { localSearch: withTwoSwap(250) }),
+  searchVariant('baseline (v1: beam 40, top-20)', { beamWidth: 40, localSearch: OFF }),
+  searchVariant('beam 100, top-100 (alleen breder)', {
+    beamWidth: 100,
+    fullyEvaluatedWeeks: 100,
+    localSearch: OFF,
+  }),
+  searchVariant('+ 1-swap', { localSearch: on(200) }),
+  searchVariant('+ 2-swap', { localSearch: withTwoSwap(250) }),
+  searchVariant('+ 2 startpunten (default)', {}),
 ];
 
 const seeds = benchmarkSeeds(count);

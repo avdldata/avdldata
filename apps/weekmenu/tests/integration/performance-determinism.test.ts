@@ -98,15 +98,22 @@ describe('generating a week stays inside its budget', () => {
     // plus the one sweep it is always allowed to finish (seven days times the
     // recipe pool). Neither can run away on a bigger catalogue.
     const { search } = DEFAULT_OPTIMIZER_CONFIG;
+    const { localSearch } = search;
+    // Per refinement: the one-swap budget plus the sweep it is always allowed
+    // to finish, plus the two-swap budget. Times the number of starting weeks.
     const oneSweep = DEFAULT_OPTIMIZER_CONFIG.days * search.candidatesPerSlot * 2;
+    const perStart =
+      localSearch.maxEvaluations +
+      oneSweep +
+      (localSearch.twoSwap ? localSearch.maxTwoSwapEvaluations : 0);
     expect(diagnostics.weeksGenerated).toBeLessThanOrEqual(search.beamWidth);
     expect(diagnostics.localSearchEvaluations).toBeLessThanOrEqual(
-      search.localSearch.maxEvaluations + oneSweep,
+      perStart * Math.max(1, localSearch.restarts),
     );
     expect(diagnostics.weeksFullyEvaluated).toBeLessThanOrEqual(
       search.fullyEvaluatedWeeks + diagnostics.localSearchEvaluations,
     );
-    expect(diagnostics.storeCombinationsEvaluated).toBeLessThan(5000);
+    expect(diagnostics.storeCombinationsEvaluated).toBeLessThan(20_000);
     expect(diagnostics.candidateRecipes).toBeGreaterThan(0);
   });
 

@@ -6,7 +6,7 @@ import type { ExcludedRecipe } from './filter';
 import { prepareOptimization, type PreparationFailure } from './prepare';
 import { bestOrdering } from './diversity';
 import type { PackagingCache, StoreCandidate } from './store-selection';
-import { evaluateWeek, selectBestPlan } from './evaluate-week';
+import { comparePlans, evaluateWeek, selectBestPlan } from './evaluate-week';
 import { generateCandidateWeeks, weekKey } from './candidates';
 import { improveBySwapping, type EvaluatedWeek } from './local-search';
 import { weekLowerBound } from './lower-bound';
@@ -173,30 +173,65 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
     input.budget,
   )!;
 
-  // ---- 6. stage C: swap one dish at a time ---------------------------------
-  const refined = improveBySwapping({
-    start: { plan: stageBWinner, optionCount: 0 },
-    pool,
-    config,
-    budget: input.budget,
-    ...(input.lockedRecipeIds ? { locked: input.lockedRecipeIds } : {}),
-    alreadyPriced: seenSets,
-    evaluate: price,
-    lowerBound: (recipes) =>
-      weekLowerBound({
-        recipes,
-        portionsByRecipe,
-        household: input.household,
-        memberNutrition,
-        ingredients: input.ingredients,
-        stores,
-        config,
-        packagingCache,
-      }),
-  });
+  // ---- 6. stage C: swap dishes on the best few priced weeks ----------------
+  //
+  // Several starting points rather than one, because a greedy walk inherits the
+  // luck of where it begins: the large-world benchmark found a scenario where
+  // the *old* optimizer won outright, purely because its narrower beam handed
+  // the refinement a better week to start from. Refining the best few removes
+  // that coin toss for a near-linear amount of extra work.
+  const starts = evaluated
+    .map((entry) => entry.plan)
+    .sort(comparePlans(input.budget))
+    .slice(0, Math.max(1, config.search.localSearch.restarts));
+
+  const lowerBound = (recipes: readonly Recipe[]): number =>
+    weekLowerBound({
+      recipes,
+      portionsByRecipe,
+      household: input.household,
+      memberNutrition,
+      ingredients: input.ingredients,
+      stores,
+      config,
+      packagingCache,
+    });
+
+  const refinements = starts.map((start) =>
+    improveBySwapping({
+      start: { plan: start, optionCount: 0 },
+      pool,
+      config,
+      budget: input.budget,
+      ...(input.lockedRecipeIds ? { locked: input.lockedRecipeIds } : {}),
+      alreadyPriced: seenSets,
+      evaluate: price,
+      lowerBound,
+    }),
+  );
+
+  const refined = {
+    evaluations: refinements.reduce((sum, r) => sum + r.evaluations, 0),
+    pruned: refinements.reduce((sum, r) => sum + r.pruned, 0),
+    iterations: refinements.reduce((sum, r) => sum + r.iterations, 0),
+    improved: refinements.some((r) => r.improved),
+    storeCombinationsEvaluated: refinements.reduce(
+      (sum, r) => sum + r.storeCombinationsEvaluated,
+      0,
+    ),
+  };
+
   // Only now, once the week is decided, is it worth explaining. Every other
   // candidate was priced without its reasons.
-  const winner = (price(refined.best.plan.days.map((day) => day.recipe), true) ?? refined.best).plan;
+  const decided = selectBestPlan(
+    refinements.map((r) => r.best.plan),
+    input.budget,
+  )!;
+  const winner =
+    price(
+      decided.days.map((day) => day.recipe),
+      true,
+    )?.plan ?? decided;
   storeCombinationsEvaluated += refined.storeCombinationsEvaluated;
   const weeksFullyEvaluated = evaluated.length + refined.evaluations;
 
