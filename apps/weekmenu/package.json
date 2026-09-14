@@ -27,6 +27,9 @@
     "bench:ablation": "tsx scripts/benchmark-ablation.ts",
     "bench:budget": "tsx scripts/benchmark-budget.ts",
     "bench:large": "tsx scripts/benchmark-large.ts",
+    "data:probe": "tsx scripts/probe-checkjebon.ts",
+    "data:coverage": "tsx scripts/probe-coverage.ts",
+    "data:week": "tsx scripts/real-data-week.ts",
     "bench:perf": "tsx scripts/benchmark-performance.ts"
   },
   "dependencies": {

@@ -14,3 +14,8 @@ next-env.d.ts
 # Generated from src/data/seed by `pnpm seed:sql`. Anchored to the current
 # week, so it is reproducible rather than versioned.
 supabase/seed.sql
+
+# Externe databron-momentopnames. Niet meegecommit: ze zijn groot (10 MB per
+# stuk), veranderen dagelijks, en zijn met één commando opnieuw op te halen —
+# zie data/external/README.md.
+data/external/*.json
