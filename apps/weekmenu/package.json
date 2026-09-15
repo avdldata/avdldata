@@ -37,6 +37,7 @@
     "recipes:select": "tsx scripts/recipes-select.ts",
     "coverage:gap": "tsx scripts/coverage-gap.ts",
     "taxonomy:impact": "tsx scripts/taxonomy-impact.ts",
+    "lidl:readiness": "tsx scripts/lidl-readiness.ts",
     "identity:gap": "tsx scripts/identity-gap.ts",
     "shelf:import": "tsx scripts/shelf-import.ts",
     "promo:import": "tsx scripts/promotion-import.ts",

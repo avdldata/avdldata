@@ -49,7 +49,7 @@ export const SNAPSHOT_SOURCE = 'Checkjebon (supermarkt/checkjebon)';
 export const SNAPSHOT_DATE = '2026-09-14';
 export const SNAPSHOT_MAX_AGE_DAYS = 1;
 
-export type RealChainId = 'ah' | 'jumbo';
+export type RealChainId = 'ah' | 'jumbo' | 'lidl';
 
 /**
  * Ingredients where a shop's "stuk" is not a recipe's "stuk".
@@ -122,6 +122,12 @@ const CHAIN_PLACEMENT: Readonly<
     colorHex: '#eeb111',
     location: { latitude: 53.2194, longitude: 6.61041 },
   },
+  // ~3,1 km, a third direction, so no pair of shops is trivially on the way.
+  lidl: {
+    name: 'Lidl',
+    colorHex: '#0050aa',
+    location: { latitude: 53.2465, longitude: 6.5321 },
+  },
 };
 
 export const CHAIN_PROFILES: Readonly<
@@ -136,6 +142,11 @@ export const CHAIN_PROFILES: Readonly<
     name: CHAIN_PLACEMENT.jumbo.name,
     colorHex: CHAIN_PLACEMENT.jumbo.colorHex,
     distanceKm: Math.round(roadDistanceKm(HOME, CHAIN_PLACEMENT.jumbo.location) * 10) / 10,
+  },
+  lidl: {
+    name: CHAIN_PLACEMENT.lidl.name,
+    colorHex: CHAIN_PLACEMENT.lidl.colorHex,
+    distanceKm: Math.round(roadDistanceKm(HOME, CHAIN_PLACEMENT.lidl.location) * 10) / 10,
   },
 };
 
