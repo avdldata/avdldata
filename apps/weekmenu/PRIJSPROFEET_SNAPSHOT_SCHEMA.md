@@ -7,69 +7,105 @@ klopt.
 
 ## Van wie zijn deze veldnamen?
 
-**Van PrijsProfeet.** De officiële documentatie is extern geverifieerd, dus de
-namen hieronder zijn de echte. Dat maakt de belangrijkste eigenschap van dit
-contract mogelijk:
+**Van PrijsProfeet — en de echte export bleek anders te heten dan de
+documentatie zei.** Beide spellingen worden geaccepteerd, want beide zijn
+waargenomen: de één in de specificatie, de ander in het bestand.
+
+| documentatie              | echte export                       | wat het is                                 |
+| ------------------------- | ---------------------------------- | ------------------------------------------ |
+| `results` / `promotions`  | **`products`**                     | de lijst zelf                              |
+| `url`                     | **`product_url`**                  | de productpagina, en dus het artikelnummer |
+| `is_current_deal`         | **`is_promotional`**               | het "loopt nu"-signaal                     |
+| `promotion_text` (string) | **`promotional_keywords`** (lijst) | de schapteksten                            |
+| `price_changed_at`        | **`extracted_at`**                 | wanneer de bron het zag                    |
+
+Daarnaast draagt de echte export veertien velden die de documentatie niet noemt
+(`brand`, `image_url`, `discount_percentage`, `savings_amount`,
+`savings_percentage`, `currency`, `unit`, `retailer_category`,
+`unified_category`, `dietary_tags`, `private_label`, `nutriscore`, `folder_id`,
+`page_number`).
+
+Het schema weigerde de eerste echte export daarom, met de naam van het veld
+erbij — precies wat het hoort te doen. Daarna is het uitgebreid naar wat er
+werkelijk in staat. Het resultaat is de belangrijkste eigenschap van dit
+contract:
 
 > Een ruwe export uit de API valideert zoals hij is. Geen handmatige
 > transformatie, geen tweede vocabulaire dat synchroon gehouden moet worden.
 
 ```
-PrijsProfeet JSON  →  Zod-validatie  →  normalisatie  →  koppeling
+PrijsProfeet JSON  →  Zod-validatie  →  classificatie  →  normalisatie  →  koppeling
 ```
 
-De vorige versie van dit document beschreef ónze veldnamen, met een
-bindingstabel vol `null`s, omdat de specificatie vanuit deze omgeving niet te
-lezen was. Die tabel is weg. Wat ervoor in de plaats komt staat in
-`FIELD_BINDINGS` (`src/services/promotions/prijsprofeet-adapter.ts`) en bevat
-per veld één expliciete, geverifieerde naam.
+`FIELD_BINDINGS` in `src/services/promotions/prijsprofeet-adapter.ts` bevat per
+veld één expliciete naam; `promotionTexts()`, `productUrl()`, `isCurrentDeal()`
+en `observedAt()` in `snapshot-schema.ts` kiezen tussen de twee spellingen.
+
+Een byte-order mark aan het begin van het bestand wordt weggehaald in plaats van
+erover te struikelen: de echte export wordt op Windows gemaakt en draagt er een.
 
 ---
 
 ## De vorm van het bestand
 
-Bij voorkeur met omhulsel, want dat draagt herkomst die een kale lijst niet
-heeft:
+Zoals de echte export hem schrijft:
 
 ```json
 {
+  "fetched_at": "2026-09-15T14:25:01.0731475+02:00",
   "source": "PRIJSPROFEET",
-  "fetched_at": "2026-09-14T05:30:00.000Z",
-  "results": [ … ]
+  "products": [ … ]
 }
 ```
 
-`promotions` wordt als sleutel ook geaccepteerd, en een kale array eveneens —
-dat is nu eenmaal hoe een eerste handmatige export eruitziet, en daarop
-afketsen kost een ronde voor niets.
+`results` en `promotions` worden als sleutel ook geaccepteerd, en een kale array
+eveneens — dat is nu eenmaal hoe een eerste handmatige export eruitziet, en
+daarop afketsen kost een ronde voor niets.
 
 ## Eén record
 
+Zoals hij er echt uitziet, met de velden die iets doen vetgedrukt in de tekst
+eronder:
+
 ```json
 {
-  "product_id": "pp-4471-2026-09-14",
-  "base_product_id": "bp-77120",
-  "retailer": "Jumbo",
-  "name": "Jumbo Rundergehakt",
-  "ean": "8712345678901",
-  "quantity": "300 g",
-
-  "price": 2.49,
-  "original_price": 3.49,
-  "unit_price": 8.3,
-
-  "is_current_deal": true,
-  "promotion_status": "active",
+  "product_id": "ah_wi589397_2026-09-14",
+  "base_product_id": "ah_wi589397",
+  "name": "Hertog Jan 0.0% alcoholvrij bier",
+  "brand": "Hertog Jan",
+  "ean": "8725000663056",
+  "image_url": "https://static.ah.nl/dam/product/…",
+  "price": 0.42,
+  "original_price": 0.84,
+  "discount_percentage": 50.0,
+  "savings_amount": 0.42,
+  "savings_percentage": 50.0,
+  "currency": "EUR",
+  "quantity": "300 ml",
+  "unit": "L",
+  "unit_price": 1.4,
+  "retailer_category": null,
+  "unified_category": "bier-wijn-sterke-drank",
+  "dietary_tags": ["lactosevrij"],
+  "private_label": false,
+  "nutriscore": "b",
+  "product_url": "https://www.ah.nl/producten/product/wi589397/hertog-jan-0-0-alcoholvrij-bier",
+  "retailer": "albert_heijn",
+  "folder_id": "ah_graphql_809344_2026-09-14",
+  "page_number": null,
+  "is_promotional": true,
   "promotion_type": "one_plus_one",
-  "promotion_text": "1 + 1 gratis",
-
+  "promotion_status": "active",
+  "promotional_keywords": ["1 + 1 GRATIS", "1 + 1 gratis"],
   "valid_from": "2026-09-14",
   "valid_until": "2026-09-20",
-
-  "url": "https://www.jumbo.com/producten/jumbo-rundergehakt-300-g-128692ZK",
-  "price_changed_at": "2026-09-14T04:00:00.000Z"
+  "extracted_at": "2026-09-14T23:00:22.009000"
 }
 ```
+
+Let op dit record: `price` is 0,42 en `original_price` 0,84, terwijl het bier
+gewoon 0,84 kost en de tweede gratis is. **`price` is de effectieve prijs per
+stuk, niet de kassaprijs.** Zie "Types en waarden".
 
 ### Verplicht: twee velden
 
@@ -89,23 +125,26 @@ Wat een record daarna nog moet hebben om ergens voor te dienen, beslist de
 
 ### Optioneel, en wat elk veld oplevert
 
-| veld               | wat het oplevert                                | wat afwezigheid kost                    |
-| ------------------ | ----------------------------------------------- | --------------------------------------- |
-| `base_product_id`  | koppeling op tier 0, de stabielste              | valt terug op het winkelnummer          |
-| `product_id`       | ontdubbeling; **geen** productidentiteit        | —                                       |
-| `ean`              | koppeling op tier 2, ook tussen ketens          | tier 2 vervalt                          |
-| `url`              | het winkelartikelnummer, dus tier 1             | tier 1 vervalt vrijwel altijd           |
-| `quantity`         | maakt naamkoppeling veilig                      | naamkoppeling zakt naar review          |
-| `price`            | de prijs in dít record                          | een tekstloze aanbieding is onbruikbaar |
-| `original_price`   | van-prijs, en een percentage zonder tekst       | geen versheidssignaal                   |
-| `unit_price`       | weergave en sanity checks                       | —                                       |
-| `promotion_type`   | kiest de leesregel                              | alleen de tekst beslist                 |
-| `promotion_text`   | levert de getallen                              | bundels en n-de-korting gaan verloren   |
-| `promotion_status` | de soort van het record                         | wordt uit het venster afgeleid          |
-| `is_current_deal`  | aanvullend bronsignaal                          | —                                       |
-| `valid_from`       | zonder venster geldt de actie op elke week ooit | het record wordt niet toegepast         |
-| `valid_until`      | idem                                            | idem                                    |
-| `price_changed_at` | versheid per record                             | —                                       |
+| veld                   | wat het oplevert                                | wat afwezigheid kost                    |
+| ---------------------- | ----------------------------------------------- | --------------------------------------- |
+| `base_product_id`      | koppeling op tier 0, de stabielste              | valt terug op het winkelnummer          |
+| `product_id`           | ontdubbeling; **geen** productidentiteit        | —                                       |
+| `ean`                  | koppeling op tier 2, ook tussen ketens          | tier 2 vervalt                          |
+| `product_url`          | het winkelartikelnummer, dus tier 1             | tier 1 vervalt vrijwel altijd           |
+| `quantity`             | maakt naamkoppeling veilig                      | naamkoppeling zakt naar review          |
+| `price`                | de prijs in dít record                          | een tekstloze aanbieding is onbruikbaar |
+| `original_price`       | van-prijs, en een percentage zonder tekst       | geen versheidssignaal                   |
+| `unit_price`           | weergave en sanity checks                       | —                                       |
+| `promotion_type`       | kiest de leesregel                              | alleen de tekst beslist                 |
+| `promotional_keywords` | levert de getallen                              | bundels en n-de-korting gaan verloren   |
+| `promotion_status`     | de soort van het record                         | wordt uit het venster afgeleid          |
+| `is_promotional`       | aanvullend bronsignaal                          | —                                       |
+| `valid_from`           | zonder venster geldt de actie op elke week ooit | het record wordt niet toegepast         |
+| `valid_until`          | idem                                            | idem                                    |
+| `extracted_at`         | versheid per record                             | —                                       |
+| `brand`                | leesbaarheid in review                          | —                                       |
+| `unified_category`     | rapportage over waar de acties liggen           | —                                       |
+| overige velden         | herkomst en weergave                            | —                                       |
 
 Een ontbrekend optioneel veld is ontbrekende data, geen crash. Het record valt
 alleen om wanneer het daardoor fundamenteel onbruikbaar wordt — en dan wordt het
@@ -118,7 +157,7 @@ geteld, niet stilzwijgend weggelaten.
 Binnen één keten, in deze volgorde:
 
 ```
-base_product_id  →  winkelartikelnummer (uit url)  →  ean  →  product_id
+base_product_id  →  winkelartikelnummer (uit product_url)  →  ean  →  product_id
 ```
 
 Tussen ketens: **`ean`**, en alleen `ean`.
@@ -139,7 +178,7 @@ met elk hun eigen prijs, keten, promotie en geldigheid. De koppeling gebeurt dan
 ook per keten; een EAN trekt nooit twee aanbiedingen samen. Zou hij dat wel doen,
 dan kwam een Jumbo-korting in een AH-mandje terecht.
 
-**Het winkelartikelnummer komt uit `url`.** Dat is precies hoe onze eigen
+**Het winkelartikelnummer komt uit `product_url`.** Dat is precies hoe onze eigen
 catalogus het doet, voor 100 % van 33.390 producten:
 
 ```
@@ -228,10 +267,29 @@ Ze worden bij binnenkomst omgezet naar hele centen, want geld is overal in dit
 systeem een integer. Een waarde die geen bedrag is, is een fout en nooit een nul:
 een promotie met prijs nul is gratis.
 
-**`price` is de prijs in dít record** — de actieprijs bij een actie, de
-schapprijs bij een schaprecord. `original_price` is de van-prijs. Ze worden nooit
+**`price` is de _effectieve_ prijs per stuk, niet de kassaprijs.** Dit is de
+belangrijkste val in de hele feed, en hij is pas met echte data zichtbaar
+geworden:
+
+| record           | `original_price` | `price` | wat je bij de kassa betaalt       |
+| ---------------- | ---------------: | ------: | --------------------------------- |
+| "2 VOOR 0.99"    |           € 0,89 |  € 0,49 | € 0,99 voor twee, € 0,89 voor één |
+| "1 + 1 gratis"   |           € 0,84 |  € 0,42 | € 0,84, tweede gratis             |
+| "2e halve prijs" |           € 0,65 |  € 0,49 | € 0,65, tweede € 0,33             |
+| "25% korting"    |           € 1,19 |  € 0,89 | € 0,89                            |
+
+Alleen in de laatste rij is `price` wat één pak kost. De parser gebruikt hem
+daarom uitsluitend waar de typecode zegt dat het mechanisme per stuk is
+(`percentage`, `fixed_price`), en nergens anders. Hem als vaste prijs toepassen
+op een bundelrecord halveert de rekening voor wie er één koopt.
+
+`original_price` is de van-prijs, en die is wél per stuk. De twee worden nooit
 omgedraaid om een korting logisch te laten lijken: een actieprijs boven de
 van-prijs is een bronprobleem, en het stilzwijgend herordenen zou dat verbergen.
+
+`discount_percentage`, `savings_amount` en `savings_percentage` zijn afgeleiden
+van dezelfde effectieve prijs en worden om precies dezelfde reden nooit geprijsd
+— alleen bewaard.
 
 **`unit_price`** — alleen voor weergave, datavalidatie en sanity checks. **Nooit
 voor checkout of verpakkingsberekening.** Een kiloprijs naast "2 voor € 3"
@@ -239,13 +297,30 @@ beschrijft de bundel; hem met een aantal vermenigvuldigen prijst één pak tegen
 een korting die niet bestaat. De optimizer rekent met een concrete pakprijs plus
 promotieregels.
 
+**`promotional_keywords`** — een lijst, en niet een lijst met synoniemen. Een
+record draagt bijvoorbeeld `["Gratis bezorging bij 15 euro", "25% volume
+voordeel"]`: het ene trefwoord is geen aanbieding en het andere is er een die we
+niet kunnen prijzen. Elk trefwoord wordt apart gelezen; levert er precies één
+een mechanisme op, dan is dat het antwoord. Leveren er twee verschillende
+mechanismen op, dan wordt het record geweigerd — twee tegenstrijdige claims op
+één record is niets om tussen te kiezen. Dezelfde tekst in twee schrijfwijzen
+("25% KORTING" en "25% korting") telt als één antwoord.
+
 **Datums** — `yyyy-mm-dd`, niets anders. `20-09-2026` wordt geweigerd in plaats
 van geraden. `price_changed_at` is een tijdstempel.
 
-**`promotion_type`** — de officiële concepten zijn `percentage`, `multi_buy` en
-`one_plus_one`. Een code die we niet kennen is **geen fout**: die valt door naar
-de tekstlezer, die al tests heeft. Hem weigeren zou een nieuw promotiesoort in
-een kapotte import veranderen.
+**`promotion_type`** — in de echte export komen `percentage` (2.075),
+`one_plus_one` (1.585), `multi_buy` (1.023), `volume` (452) en `null` (55) voor.
+Alleen de eerste drie staan in de documentatie; `volume` is er een die we niet
+kennen, en dat is **geen fout**: hij valt door naar de tekstlezer, die hem
+vervolgens weigert omdat "25% volume voordeel" een staffel is met een onbekende
+drempel. Een onbekende code weigeren zou een nieuw promotiesoort in een kapotte
+import veranderen; hem gehoorzamen zou erger zijn.
+
+**De typecode is niet de waarheid.** In de echte momentopname staat
+`promotion_type: "one_plus_one"` op 300 records waarvan het schap "2e halve
+prijs" zegt en op 175 met "2+1 gratis". Daarom bepaalt de tekst het mechanisme
+en vult de code de gaten — niet andersom.
 
 ---
 

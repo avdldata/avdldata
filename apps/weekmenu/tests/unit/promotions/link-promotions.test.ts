@@ -72,14 +72,19 @@ describe('tier 1: the shop’s own article number', () => {
     expect(result.linked[0]!.matchedBy).toBe('EXACT_RETAILER_ID');
   });
 
-  it('links when one side drops the packaging code', () => {
+  it('refuses to link when only the packaging code differs', () => {
     const result = run(
-      [external({ externalProductId: 'iets-anders-genoemd-12345DS' })],
+      [external({ externalProductId: 'iets-anders-genoemd-74004DSL' })],
       [offer('jumbo:a', 'Heel andere naam', 300, 349)],
-      { 'jumbo:a': '12345ZK' },
+      { 'jumbo:a': '74004PAK' },
     );
-    // The names disagree completely; the article number decides, as it should.
-    expect(result.linked[0]?.matchedBy).toBe('EXACT_RETAILER_ID');
+    // 74004PAK is a 2,4 litre pack at € 2,69; 74004DSL is the case of four at
+    // € 10,76. This test used to assert the opposite, and the first real
+    // promotion snapshot produced exactly that mislink. Across the Jumbo
+    // catalogue 730 products share a number with a different code, routinely at
+    // six to twelve times the price.
+    expect(result.linked).toHaveLength(0);
+    expect(result.metrics.rejected.NO_CANDIDATE_PRODUCT).toBe(1);
   });
 
   it('beats a name match when the two disagree', () => {

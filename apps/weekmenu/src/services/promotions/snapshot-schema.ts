@@ -90,6 +90,9 @@ export type PromotionStatus = (typeof PROMOTION_STATUSES)[number];
 export const KNOWN_PROMOTION_TYPES = ['percentage', 'multi_buy', 'one_plus_one'] as const;
 export type KnownPromotionType = (typeof KNOWN_PROMOTION_TYPES)[number];
 
+/** A list of short strings, e.g. `promotional_keywords` and `dietary_tags`. */
+const stringList = z.array(z.string()).nullable().optional();
+
 export const prijsProfeetRecordSchema = z
   .object({
     /**
@@ -128,10 +131,90 @@ export const prijsProfeetRecordSchema = z
     valid_from: isoDate.nullable().optional(),
     valid_until: isoDate.nullable().optional(),
 
+    /**
+     * The product page.
+     *
+     * Two spellings are accepted. The documentation calls it `url`; the actual
+     * export calls it `product_url`. Both are here rather than one being
+     * "corrected" into the other, because we have seen the second and been told
+     * the first, and guessing which the next endpoint uses would cost the
+     * retailer article number — the identity tier 1 depends on.
+     */
     url: z.string().min(1).nullable().optional(),
+    product_url: z.string().min(1).nullable().optional(),
     price_changed_at: isoDateTime.nullable().optional(),
+    /** When the export was scraped. The real feed's name for the same idea. */
+    extracted_at: isoDateTime.nullable().optional(),
+
+    /*
+     * Everything below is in the real export but not in the field list the
+     * documentation gave us. It is kept, not dropped: `.strict()` would refuse
+     * the whole file otherwise, and refusing a field is not the same as it not
+     * existing. Most of it is provenance and display; two of them are load-
+     * bearing and are marked as such.
+     */
+
+    /** Load-bearing: the shelf text lives here, as a list. See `promotionTexts`. */
+    promotional_keywords: stringList,
+    /** Load-bearing: the real feed's name for `is_current_deal`. */
+    is_promotional: z.boolean().nullable().optional(),
+
+    brand: z.string().nullable().optional(),
+    image_url: z.string().nullable().optional(),
+    /**
+     * The source's own headline percentage.
+     *
+     * Provenance only, never priced. For a 1+1 record it says 50, which is the
+     * effective rate across two packs and not a discount on one — pricing a
+     * single pack off it would halve a price the till will charge in full.
+     */
+    discount_percentage: z.number().nullable().optional(),
+    savings_amount: euroAmount.nullable().optional(),
+    savings_percentage: z.number().nullable().optional(),
+    currency: z.string().nullable().optional(),
+    /** The unit `unit_price` is expressed in ("L", "kg"). Display only. */
+    unit: z.string().nullable().optional(),
+    retailer_category: z.string().nullable().optional(),
+    unified_category: z.string().nullable().optional(),
+    dietary_tags: stringList,
+    private_label: z.boolean().nullable().optional(),
+    nutriscore: z.string().nullable().optional(),
+    /** Which folder the offer came from, and where in it. Provenance. */
+    folder_id: z.string().nullable().optional(),
+    page_number: z.number().nullable().optional(),
   })
   .strict();
+
+/**
+ * The shelf texts on a record, in the order the source lists them.
+ *
+ * The documented field is `promotion_text`, a single string. The real export
+ * has `promotional_keywords`, a list — and the list is not a list of synonyms:
+ * it mixes the mechanism ("2 voor 5.99") with things that are not one at all
+ * ("Gratis bezorging bij 15 euro", "BONUS"). Both are returned, unfiltered.
+ * Deciding which of them prices anything belongs to the parser, which can say
+ * "none of these", and not to the schema, which cannot.
+ */
+export function promotionTexts(record: PrijsProfeetRecord): string[] {
+  const texts = [...(record.promotional_keywords ?? [])];
+  if (record.promotion_text) texts.push(record.promotion_text);
+  return texts.map((text) => text.trim()).filter((text) => text !== '');
+}
+
+/** The product page, whichever of the two spellings the export uses. */
+export function productUrl(record: PrijsProfeetRecord): string | undefined {
+  return record.product_url ?? record.url ?? undefined;
+}
+
+/** The source's "this is live now" flag, whichever spelling it arrives under. */
+export function isCurrentDeal(record: PrijsProfeetRecord): boolean | undefined {
+  return record.is_promotional ?? record.is_current_deal ?? undefined;
+}
+
+/** When the source last touched this record. */
+export function observedAt(record: PrijsProfeetRecord): string | undefined {
+  return record.extracted_at ?? record.price_changed_at ?? undefined;
+}
 
 export type PrijsProfeetRecord = z.infer<typeof prijsProfeetRecordSchema>;
 
@@ -145,14 +228,22 @@ export const wrappedSnapshotSchema = z
   .object({
     source: z.string().min(1).default('PRIJSPROFEET'),
     fetched_at: isoDateTime.optional(),
-    /** Either key is accepted; the feed calls them results, we call them promotions. */
+    /**
+     * Three accepted keys for the same list.
+     *
+     * `products` is what the real export writes; the other two are what the
+     * documentation and our own earlier contract used. Accepting all three costs
+     * one line and removes a whole class of "zero promotions and no error".
+     */
+    products: z.array(prijsProfeetRecordSchema).optional(),
     promotions: z.array(prijsProfeetRecordSchema).optional(),
     results: z.array(prijsProfeetRecordSchema).optional(),
   })
   .strict()
   .refine(
-    (value) => value.promotions !== undefined || value.results !== undefined,
-    'verwacht een "promotions"- of "results"-lijst',
+    (value) =>
+      value.products !== undefined || value.promotions !== undefined || value.results !== undefined,
+    'verwacht een "products"-, "promotions"- of "results"-lijst',
   );
 
 export const bareSnapshotSchema = z.array(prijsProfeetRecordSchema);
@@ -261,7 +352,7 @@ export function validateSnapshot(raw: unknown, path: string): NormalisedSnapshot
     throw new SnapshotSchemaError(path, [
       {
         path: '(root)',
-        message: 'verwacht een lijst met records, of een object met een "results"-lijst',
+        message: 'verwacht een lijst met records, of een object met een "products"-lijst',
       },
     ]);
   }
@@ -284,6 +375,6 @@ export function validateSnapshot(raw: unknown, path: string): NormalisedSnapshot
   return {
     source: data.source,
     ...(data.fetched_at ? { fetchedAt: data.fetched_at } : {}),
-    records: data.results ?? data.promotions ?? [],
+    records: data.products ?? data.results ?? data.promotions ?? [],
   };
 }

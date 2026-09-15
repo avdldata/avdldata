@@ -34,11 +34,19 @@ export function snapshotPresent(path = DEFAULT_SNAPSHOT_PATH): boolean {
  * recomputing it per call would be the same work thirty times over.
  */
 export function retailerIdIndex(
-  chains: readonly { chainId: string; reducedOffers: readonly ProductOffer[] }[],
+  chains: readonly {
+    chainId: string;
+    allOffers?: readonly ProductOffer[];
+    reducedOffers: readonly ProductOffer[];
+  }[],
 ): Map<string, string> {
   const index = new Map<string, string>();
   for (const chain of chains) {
-    for (const offer of chain.reducedOffers) {
+    // Indexed over every matched offer, not only the ones that survived
+    // candidate reduction. The index is keyed by product id, so a superset
+    // costs nothing — and linking against the reduced set only would hide
+    // promotions on products that reduction dropped at shelf price.
+    for (const offer of chain.allOffers ?? chain.reducedOffers) {
       const id = extractRetailerProductId(
         chain.chainId,
         offer.productId.slice(chain.chainId.length + 1),

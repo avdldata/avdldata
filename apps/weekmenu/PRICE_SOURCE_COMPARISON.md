@@ -1,16 +1,45 @@
 # Normale prijs: Checkjebon tegenover de promotiebron
 
-## Status: niet gemeten, wel gebouwd
+## Status: gemeten op de echte momentopname
 
-Deze vergelijking vraagt om twee bronnen die allebei een normale prijs noemen
-voor hetzelfde product. Er is er één. PrijsProfeet is vanuit deze omgeving niet
-te bereiken — de egress-proxy weigert de host met 403 op CONNECT — dus er is
-geen tweede prijs om tegenaan te houden. Het bewijs staat in
-[PRIJSPROFEET_INTEGRATION.md](PRIJSPROFEET_INTEGRATION.md).
+Twee bronnen die allebei een normale prijs noemen voor hetzelfde product, over
+de 52 producten waar ze elkaar raken. Bron: PrijsProfeet, 5.190 records,
+opgehaald 15 september 2026 (`pnpm promo:prices`).
 
-Wat er wél is: `pnpm promo:prices` draait de vergelijking volledig, zodra er een
-momentopname in `data/external/promotions-snapshot.json` staat. Er is niets meer
-aan te bouwen; er is alleen data voor nodig.
+|                             | Albert Heijn (28) |  Jumbo (24) |
+| --------------------------- | ----------------: | ----------: |
+| identiek                    |       15 (53,6 %) | 23 (95,8 %) |
+| ≤ € 0,05 verschil           |         1 (3,6 %) |           0 |
+| ≤ 5 % verschil              |        4 (14,3 %) |   1 (4,2 %) |
+| > 5 % verschil              |        5 (17,9 %) |           0 |
+| > 25 % (uitschieter)        |        3 (10,7 %) |           0 |
+| mediaan verschil            |            € 0,00 |      € 0,00 |
+| gemiddeld verschil          |            € 0,00 |    − € 0,00 |
+| bron hoger / gelijk / lager |        7 / 15 / 6 |  0 / 23 / 1 |
+
+De drie uitschieters, allemaal bij Albert Heijn:
+
+| product                               | Checkjebon | PrijsProfeet | verschil |
+| ------------------------------------- | ---------: | -----------: | -------: |
+| Grand' Italia Spaghetti volkoren      |     € 1,45 |       € 1,99 |   + 37 % |
+| Grand' Italia Spaghetti half volkoren |     € 1,45 |       € 1,99 |   + 37 % |
+| AH Winterpeen                         |     € 1,05 |       € 1,39 |   + 32 % |
+
+**Wat dit zegt.** Jumbo is het in 96 % van de gevallen met zichzelf eens; Albert
+Heijn in 54 %. Bij AH staat de bron zeven keer hoger en zes keer lager, dus het
+is geen systematische achterstand van één van de twee maar ruis rond dezelfde
+prijs — met drie uitschieters waar de twee bronnen echt iets anders beweren.
+
+**Wat dit niet zegt.** Welke van de twee gelijk heeft. Dat is hiervandaan niet
+vast te stellen, en daarom wordt er ook niets mee gedaan: PrijsProfeet
+overschrijft Checkjebon nergens, beide houden hun eigen herkomst, en het
+verschil wordt gerapporteerd. Een verschil van 37 % op spaghetti is een reden om
+te gaan kijken, niet om een getal te vervangen.
+
+52 producten is een kleine steekproef. Dat is geen keuze maar de omvang van de
+overlap: onze catalogus telt 50 ingrediënten, en van 5.190 aanbiedingen raken er
+52 een product dat wij kunnen kopen. Zie
+[PROMOTION_VALUE_BENCHMARK.md](PROMOTION_VALUE_BENCHMARK.md), deel B.
 
 ---
 

@@ -1,157 +1,232 @@
 # Datakwaliteit van de promotiebron
 
-## Status: geen data, dus geen kwaliteitscijfers
+Gemeten op de echte momentopname: **5.190 records, 3.052 Albert Heijn en 2.138
+Jumbo**, opgehaald 15 september 2026. Reproduceren met
+`pnpm promo:import data/external/promotions-snapshot.json`.
 
-Dit document hoort de tabel te bevatten die stap 17 vraagt: opgehaalde
-promoties, actief versus komend, retailer-ID-dekking, GTIN-dekking,
-verpakkingsdekking, exacte koppelingen, review, unmatched, ondersteunde en
-niet-ondersteunde promotietypen — per keten.
+## Wat het bestand bevat
 
-**Al die cellen zijn leeg, en het zou oneerlijk zijn ze te vullen.** PrijsProfeet
-is vanuit deze omgeving niet bereikbaar: de egress-proxy weigert de host met 403
-op CONNECT, voordat er een verbinding is. Het volledige bewijs, inclusief wat er
-verder gecontroleerd is, staat in
-[PRIJSPROFEET_INTEGRATION.md](PRIJSPROFEET_INTEGRATION.md).
+|                             | Albert Heijn | Jumbo |    totaal |
+| --------------------------- | -----------: | ----: | --------: |
+| records                     |        3.052 | 2.138 | **5.190** |
+| `active`                    |        3.052 | 1.415 |     4.467 |
+| `upcoming`                  |            0 |   723 |       723 |
+| `historical`                |            0 |     0 |         0 |
+| `shelf`                     |            0 |     0 |         0 |
+| promotie zonder venster     |            0 |     0 |         0 |
+| zonder bruikbare identiteit |            0 |     0 |         0 |
+| duplicaten samengevoegd     |            — |     — |         0 |
 
-Een getal in een van deze cellen zou een gok zijn die er over drie maanden
-uitziet als een meting. Dus staat er niets.
+Nul overgeslagen records, nul duplicaten, nul records zonder identiteit. Alle
+5.190 zijn gedekt: 4.467 lopen nu, 723 beginnen later.
 
-Wat sinds de vorige ronde wél veranderd is: de **veldnamen** zijn geen onbekende
-meer. De officiële documentatie is extern geverifieerd, dus het schema accepteert
-een ruwe export zonder transformatie. Dat verplaatst de blokkade van "we weten
-niet hoe de data eruitziet" naar "we hebben de data niet" — een kleinere
-blokkade, maar nog steeds een blokkade.
+## Identiteitsdekking
+
+| identiteit                              | Albert Heijn | Jumbo |
+| --------------------------------------- | -----------: | ----: |
+| `base_product_id`                       |        100 % | 100 % |
+| winkelartikelnummer (uit `product_url`) |        100 % | 100 % |
+| `ean`                                   |         84 % |  99 % |
+| `product_id`                            |        100 % | 100 % |
+| verpakking (`quantity`)                 |        100 % |  93 % |
+| normale prijs (`original_price`)        |        100 % |  99 % |
+| promotietekst                           |        100 % | 100 % |
+| typecode                                |         99 % |  99 % |
+
+**Het winkelartikelnummer is voor 100 % leesbaar uit `product_url`, aan beide
+kanten.** Dat was de belangrijkste onbekende van de vorige fase en het antwoord
+is zo goed als het kon zijn: van de 5.190 aanbiedingen leverden er 5.190 een
+artikelnummer op, en 51,6 % (AH) respectievelijk 91,7 % (Jumbo) van die nummers
+bestaat ook in de Checkjebon-catalogus. De rest zijn producten die Checkjebon
+niet draagt — bier, snacks, nieuwe lijnen.
+
+`base_product_id` staat op 100 %, maar levert **nul** koppelingen op: onze kant
+kent geen keten-interne sleutel, dus de tier bestaat en blijft leeg tot er
+goedgekeurde koppelingen uit een eerdere momentopname bewaard worden.
+
+## Promotietypen
+
+| type                        |     Albert Heijn |          Jumbo |
+| --------------------------- | ---------------: | -------------: |
+| `PERCENT_OFF`               |     887 (29,1 %) |   530 (24,8 %) |
+| `N_FOR_X`                   |     606 (19,9 %) |   413 (19,3 %) |
+| `ONE_PLUS_ONE`              |     544 (17,8 %) |   558 (26,1 %) |
+| `FIXED_PRICE`               |     362 (11,9 %) |   300 (14,0 %) |
+| `BUY_NTH_DISCOUNT`          |      172 (5,6 %) |   311 (14,5 %) |
+| **`UNSUPPORTED_PROMOTION`** | **481 (15,8 %)** | **26 (1,2 %)** |
+
+**4.683 van 5.190 (90,2 %) is te modelleren.** Het gat tussen 15,8 % en 1,2 %
+is bijna helemaal het "volume voordeel" van Albert Heijn, dat Jumbo niet
+gebruikt.
+
+## Koppeling aan onze producten
+
+|                                           | Albert Heijn |  Jumbo |
+| ----------------------------------------- | -----------: | -----: |
+| aangeboden                                |        3.052 |  2.138 |
+| `EXACT_STABLE_ID`                         |            0 |      0 |
+| `EXACT_RETAILER_ID`                       |           28 |     24 |
+| `EXACT_GTIN`                              |            0 |      0 |
+| `NAME_PACKAGE`                            |            0 |      0 |
+| `NEEDS_REVIEW`                            |            0 |      0 |
+| geen kandidaatproduct                     |        3.024 |  2.114 |
+| **unieke interne producten met promotie** |       **28** | **24** |
+
+**Auto-link precision: 52/52 = 100 %.** Alle 52 met de hand nagelopen, 0 WRONG,
+0 AMBIGUOUS. De reviewwachtrij is leeg — niet omdat er niets te reviewen viel,
+maar omdat elke koppeling op een exact artikelnummer tot stand kwam.
+
+De opdracht vroeg om 100 AH- en 100 Jumbo-koppelingen om te labelen. Er zijn er
+52 in totaal, en dat zijn ze allemaal; meer bestaan er niet in deze
+momentopname.
+
+**Eén koppeling was fout en is gerepareerd**: Jumbo `74004PAK` (pak van 2,4
+liter, € 2,69) werd gekoppeld aan `74004DSL` (doos van vier, € 10,76), omdat de
+linker het artikelnummer zónder verpakkingscode vergeleek. 730 Jumbo-producten
+(4,2 %) delen zo'n nummer. De volledige lijst van gevonden fouten staat in
+[PROMOTION_VALUE_BENCHMARK.md](PROMOTION_VALUE_BENCHMARK.md), deel B.
+
+## De trechter, in één blok
+
+```
+5.190  aanbiedingen in de momentopname
+4.683  te modelleren                                 90,2 %
+   52  raken een product dat wij kunnen kopen         1,0 %
+  0,6  belanden gemiddeld in een weekmandje
+```
+
+De knijp zit niet in het inlezen, het koppelen of het prijzen. Hij zit in onze
+eigen catalogus: 50 ingrediënten, 1.022 gematchte producten van de 33.390 die
+Checkjebon draagt. Wat dat betekent voor de waarde van promoties staat in
+[PROMOTION_VALUE_BENCHMARK.md](PROMOTION_VALUE_BENCHMARK.md), deel B.
 
 ---
 
-## Wat er in plaats daarvan klaarstaat
+## Het winkelartikelnummer, aan beide kanten
 
-`pnpm promo:import <export>.json` produceert precies deze tabel, per keten, en
-`pnpm promo:probe` doet hetzelfde voor een momentopname die al op de vaste plek
-staat. Eén commando, en het antwoordt op alle velden die de opdracht noemt,
-inclusief de identiteitsdekking (`base_product_id` / winkelartikelnummer / EAN /
-`product_id`) waarmee de koppelstrategie empirisch te beoordelen is. Het contract
-voor dat bestand staat in
-[PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md).
-
-De import splitst de records bovendien naar soort — promotie, schapprijs,
-historisch, zonder venster, zonder identiteit — zodat "weinig promoties" en "veel
-records die geen promotie zijn" niet op elkaar lijken.
-
-De uitvoer heeft deze vorm:
+Checkjebon geeft per keten een URL-prefix en per product een slug; PrijsProfeet
+geeft een `product_url`. Beide dragen het artikelnummer van de winkel:
 
 ```
-Promotiemomentopname — <n> aanbiedingen, ketens ah, jumbo
-
-  AH — <n> aanbiedingen, <m> bekeken
-
-    base_product_id   ....   ..%
-    winkelartikelnr.  ....   ..%
-    EAN               ....   ..%
-    product_id        ....   ..%
-    productnaam       ....   ..%
-    verpakking        ....   ..%
-    normale prijs     ....   ..%
-    actieprijs        ....   ..%
-    promotietekst     ....   ..%
-    validFrom         ....   ..%
-    validUntil        ....   ..%
-
-    winkel-product-ID herkenbaar   ../..   (bepaalt of tier 1 bruikbaar is)
-    promotietype leesbaar          ../..
-      ONE_PLUS_ONE            ..
-      N_FOR_X                 ..
-      BUY_NTH_DISCOUNT        ..
-      PERCENT_OFF             ..
-      FIXED_PRICE             ..
-      NIET: UNSUPPORTED_PROMOTION  ..
-
-  Koppeling aan onze producten
-
-    keten    aangeboden  base_id  winkel-id   EAN  naam+maat  review   niet
-    ah              ...          ...    ...        ...     ...    ...
-    jumbo           ...          ...    ...        ...     ...    ...
+https://www.ah.nl/producten/product/wi104081/bonduelle-kikkererwten
+                                     ^^^^^^^^
+https://www.jumbo.com/producten/jumbo-kikkererwten-400-g-81319ZK
+                                                         ^^^^^^^^
 ```
 
-Aanwezigheid wordt geteld, niet aangenomen: een veld dat er staat maar altijd
-leeg is, telt als afwezig — want dat is wat het stroomafwaarts waard is.
+Gemeten over beide volledige verzamelingen, niet over een handvol voorbeelden:
 
----
+|                                  | Albert Heijn |     Jumbo |
+| -------------------------------- | -----------: | --------: |
+| onze producten                   |       16.173 |    17.217 |
+| ID leesbaar uit de slug          |    **100 %** | **100 %** |
+| ID uniek binnen de keten         |           ja |        ja |
+| aanbiedingen in de momentopname  |        3.052 |     2.138 |
+| ID leesbaar uit `product_url`    |    **100 %** | **100 %** |
+| ID bestaat ook in onze catalogus |       51,6 % |    91,7 % |
 
-## Wat we wél weten over de koppelbaarheid
+De grote onbekende van de vorige fase — gebruikt PrijsProfeet dezelfde
+identiteit? — is beantwoord met **ja, volledig**. De koppeling is daarmee een
+gelijkheidstest en geen benadering, en dat is precies wat de 100 % precision
+verklaart.
 
-Eén helft van het koppelingsprobleem is los van de promotiebron te meten, en
-dat is gedaan.
+### Eén ding bleek niet uniek genoeg
 
-**Het winkelproduct-ID zit in onze eigen data, voor elk product.** Checkjebon
-geeft per keten een URL-prefix en per product een slug, en daar staat het
-artikelnummer van de winkel in:
+Het **nummer zonder verpakkingscode** is geen identiteit. In de
+Jumbo-catalogus delen 730 producten (4,2 %) een nummer met een andere code:
 
-```
-https://www.ah.nl/producten/product/  +  wi104081/bonduelle-kikkererwten
-                                         ^^^^^^^^
-https://www.jumbo.com/producten/  +  jumbo-kikkererwten-400-g-81319ZK
-                                                              ^^^^^^^^
-```
+| id          | product                                        |   prijs |
+| ----------- | ---------------------------------------------- | ------: |
+| `74004PAK`  | Campina Verse Halfvolle Melk Voordeelpak 2,4 L |  € 2,69 |
+| `74004DSL`  | Campina Halfvolle Melk Voordeelpack 4 × 2,4 L  | € 10,76 |
+| `167833PAK` | Campina Langlekker Halfvolle Melk 1,5 L        |  € 2,59 |
+| `167833KSL` | dezelfde melk, 8 × 1,5 L                       | € 22,32 |
 
-Gecontroleerd tegen de hele momentopname, niet tegen een handvol voorbeelden:
+De linker accepteerde tot deze fase een match op het nummer alleen. Dat leverde
+één foute koppeling op in de 53, en is verwijderd — de volledige id, of niets.
 
-|                          | Albert Heijn |     Jumbo |
-| ------------------------ | -----------: | --------: |
-| producten                |       16.173 |    17.217 |
-| ID leesbaar uit de slug  |    **100 %** | **100 %** |
-| ID uniek binnen de keten |           ja |        ja |
+### Wat de EAN nog kan opleveren
 
-Dat betekent dat tier 1 aan **onze** kant volledig beschikbaar is. Of hij
-bruikbaar is hangt af van één ding dat alleen de bron kan beantwoorden: gebruikt
-PrijsProfeet dezelfde identiteit? Zo ja, dan is de koppeling vrijwel triviaal.
-Zo nee, dan valt alles terug op naam plus verpakking, en dan wordt de dekking
-fors lager en de reviewwachtrij fors langer. Dat is de belangrijkste onbekende
-van deze fase.
-
-Wat de bron aan onze kant oplost: **de EAN**. Checkjebon heeft er geen, dus tier
-2 was dood gewicht. PrijsProfeets `shelf`-records dragen er wél een, en die
-hangen via hetzelfde winkelartikelnummer aan onze producten — `eanIndexFromShelf`
-oogst ze en de GTIN-tier komt daarmee tot leven. Hoe vaak dat lukt is een meting,
-geen aanname, en hij staat in de importrapportage.
-
-Wat we over de tegenpartij niet weten en niet gaan raden: de feitelijke
-EAN-dekking, de verpakkingsdekking, en of de promotietekst gestructureerd of vrij
-is.
+Checkjebon draagt geen EAN, dus de GTIN-tier staat op nul. PrijsProfeets
+`shelf`-records dragen er wél een en hangen via hetzelfde artikelnummer aan onze
+producten; `eanIndexFromShelf` oogst ze. **Deze momentopname bevat geen
+`shelf`-records** (alleen `active` en `upcoming`), dus dat pad is gebouwd en
+getest maar nog niet gevoed. Een export die ook schapprijzen meeneemt maakt de
+GTIN-tier bruikbaar.
 
 ---
 
 ## Wat de parser aankan
 
-Dit staat wél vast, want het is getest tegen de vormen die Nederlandse
-supermarkten drukken — en die zijn niet bronafhankelijk.
+Getest tegen de vormen die Nederlandse supermarkten drukken, en inmiddels tegen
+de 160 verschillende teksten die daadwerkelijk in de momentopname staan.
 
-| vorm                              | leest als                      |   ondersteund   |
-| --------------------------------- | ------------------------------ | :-------------: |
-| `1 + 1 gratis`                    | `ONE_PLUS_ONE`                 |       ja        |
-| `2 + 1 gratis`                    | `BUY_NTH_DISCOUNT nth 3, 100%` |       ja        |
-| `2 voor € 5`                      | `N_FOR_X`                      |       ja        |
-| `25% korting`                     | `PERCENT_OFF`                  |       ja        |
-| `2e halve prijs`                  | `BUY_NTH_DISCOUNT nth 2, 50%`  |       ja        |
-| `3e gratis`                       | `BUY_NTH_DISCOUNT nth 3, 100%` |       ja        |
-| `nu € 2,49`                       | `FIXED_PRICE`                  |       ja        |
-| `van € 4,29 voor € 2,99`          | `FIXED_PRICE € 2,99`           |       ja        |
-| `2 + 2 gratis`                    | —                              | **nee**, expres |
-| `2e halve prijs met bonuskaart`   | —                              | **nee**, expres |
-| `1+1 gratis bij aankoop van € 20` | —                              | **nee**, expres |
-| `alleen online 20% korting`       | —                              | **nee**, expres |
-| `feestweek voordeel`              | —                              |       nee       |
+| vorm                           | leest als                       | records |   ondersteund   |
+| ------------------------------ | ------------------------------- | ------: | :-------------: |
+| `25% korting`                  | `PERCENT_OFF 25`                |   1.417 |       ja        |
+| `1 + 1 gratis`                 | `ONE_PLUS_ONE`                  |   1.102 |       ja        |
+| `2 voor € 5,99`                | `N_FOR_X`                       |   1.019 |       ja        |
+| `VOOR 0,99`                    | `FIXED_PRICE € 0,99`            |     662 |       ja        |
+| `2e halve prijs`               | `BUY_NTH_DISCOUNT nth 2, 50 %`  |     300 |       ja        |
+| `2 + 1 gratis`                 | `BUY_NTH_DISCOUNT nth 3, 100 %` |     175 |       ja        |
+| `3e gratis`                    | `BUY_NTH_DISCOUNT nth 3, 100 %` |       — |       ja        |
+| `van € 4,29 voor € 2,99`       | `FIXED_PRICE € 2,99`            |       — |       ja        |
+| `nu € 2,49`                    | `FIXED_PRICE`                   |       — |       ja        |
+| `1 voor 3,79`                  | `FIXED_PRICE € 3,79`            |       4 |       ja        |
+| `25% volume voordeel`          | —                               |     458 | **nee**, expres |
+| `1,00 korting`                 | —                               |      31 |     **nee**     |
+| `100 GRAM VOOR 1.69`           | —                               |      18 | **nee**, expres |
+| `2+3 gratis`, `10+2 gratis`    | —                               |      12 | **nee**, expres |
+| `Gratis bezorging bij 15 euro` | —                               |     446 | **nee**, expres |
+| `BONUS` op zichzelf            | —                               |     ~30 |     **nee**     |
+| `2 + 2 gratis`                 | —                               |       — | **nee**, expres |
+| `… met bonuskaart`             | —                               |       — | **nee**, expres |
+| `… bij aankoop van € 20`       | —                               |       — | **nee**, expres |
+| `alleen online 20% korting`    | —                               |       — | **nee**, expres |
 
-De vier expliciete weigeringen zijn de kern van het ontwerp. `2 + 2 gratis`
-korting twee van elke vier, en dat kan geen van de vijf bestaande
-promotietypen zeggen; het als `BUY_NTH_DISCOUNT` prijzen zou drie van de vier in
-rekening brengen. De andere drie hebben een voorwaarde die de optimizer niet kan
-waarmaken — een klantenkaart, een besteddrempel, een online-kanaal — en een
-prijs die je niet krijgt is geen prijs.
+Vier weigeringen verdienen hun uitleg, en drie ervan zijn er gekomen omdat de
+echte data ze afdwong:
+
+**`… % volume voordeel` (458 records).** Een staffel: de korting geldt pas vanaf
+een aantal dat de feed nergens noemt. De parser las dit tot deze fase als een
+vlak percentage, wat één los pak met een kwart kortte. Verreweg de grootste bron
+van te-lage prijzen in de hele momentopname.
+
+**`100 GRAM VOOR 1.69` (18 records).** Een prijs per gewicht. Als pakprijs
+gelezen kost een grillworst van 300 gram plots een derde.
+
+**`Gratis bezorging bij …` (446 records).** Bezorging is geen productprijs, en
+deze tekst staat bovendien vrijwel altijd naast een echte actie — waardoor het
+belangrijkste werk van de parser is om hem te negeren zonder de actie ernaast
+mee te nemen.
+
+**`1,00 korting` (31 records).** Een bedrag eraf. Daar hebben we geen
+promotietype voor; het is af te leiden uit de twee prijzen, maar niet zonder aan
+te nemen dat de korting per stuk geldt. Dat is 0,6 % van de records niet waard.
 
 Alles wat niet met zekerheid te structureren is, wordt `UNSUPPORTED_PROMOTION`:
 bewaard met de originele tekst, de bron, de identiteit en de geldigheid, maar
 **niet toegepast in de prijsberekening**. Fail closed.
+
+### De typecode van de bron is niet de waarheid
+
+De bron zet `promotion_type: "one_plus_one"` op 300 records waarvan het schap
+"2e halve prijs" zegt, en op 175 waarvan het "2+1 gratis" zegt. Dat zijn drie
+verschillende aanbiedingen. De regel is daarom: **de tekst bepaalt het
+mechanisme, de code vult gaten**. Zou de code winnen, dan werd een kwart korting
+als de helft geprijsd, op 475 records.
+
+De keerzijde: een record waarvan de tekst niets zegt (`BONUS`) valt terug op de
+code, en `one_plus_one` is op zichzelf ondubbelzinnig genoeg om te gebruiken.
+
+### `price` is geen kassaprijs
+
+In deze feed is `price` de **effectieve** prijs per stuk. Een record met
+"2 VOOR 0.99" draagt `price: 0.49`; een record met "2e halve prijs" draagt drie
+kwart van de schapprijs. Dat is geen fout van de bron — het is een handige
+vergelijkingsmaat — maar het is niet wat één pak bij de kassa kost. De parser
+gebruikt hem daarom alleen waar de code zegt dat het mechanisme per stuk is
+(`percentage`, `fixed_price`), en nergens anders.
 
 ---
 
@@ -186,28 +261,48 @@ actieweken op één product niet als duplicaat samenvallen.
 
 ---
 
-## De golden set die stap 18 vraagt
+## De golden set
 
-Stap 18 vraagt om 100 echte AH- en 100 echte Jumbo-promotiekoppelingen,
-handmatig gelabeld, met een auto-applied precision van ≥ 99 %.
+Gevraagd: 100 echte AH- en 100 echte Jumbo-koppelingen, met de hand gelabeld,
+auto-applied precision ≥ 99 %.
 
-**Die is er niet, en kan er niet zijn.** Een golden set van promotiekoppelingen
-bestaat uit echte promoties naast echte producten; met gemodelleerde promoties
-zou hij meten of het model bij zichzelf past. Dat is een cirkel, geen meting.
+**Geleverd: alle 52 die er zijn, 52/52 CORRECT, precision 100 %.** Er bestaan er
+geen 200 — de momentopname raakt 52 producten die onze catalogus kan kopen, en
+dat is de hele populatie, niet een steekproef eruit.
 
-Wat de plaats ervan inneemt tot er data is:
+|                       |  AH | Jumbo | totaal |
+| --------------------- | --: | ----: | -----: |
+| automatisch toegepast |  28 |    24 |     52 |
+| CORRECT               |  28 |    24 | **52** |
+| WRONG                 |   0 |     0 |      0 |
+| AMBIGUOUS             |   0 |     0 |      0 |
+| naar review           |   0 |     0 |      0 |
 
-- **144 tests** over de promotiepijplijn, waarvan de meerderheid gaat over wat
-  er _niet_ gekoppeld of _niet_ geprijsd wordt — inclusief de vier soorten
-  records die de bron publiceert en de acht fixtures die de identiteitsregels
-  vastpinnen;
-- de koppelingsregels zijn zo gebouwd dat de twee automatische tiers per
-  definitie exact zijn — een artikelnummer of een GTIN is gelijk of niet. De
-  enige tier waar precision een empirische vraag is, is `NAME_PACKAGE`, en die
-  eist naam én verpakking identiek;
-- de **inverse** is wel gemeten: 100 % van onze eigen producten levert een
-  leesbaar, uniek winkelartikelnummer, dus als de bron dat ook doet is tier 1
-  geen benadering maar een gelijkheidstest.
+Gecontroleerd op elk van de gevraagde valkuilen:
 
-Zodra er promoties zijn is de golden set een middag werk en `pnpm promo:probe`
-levert de steekproef om uit te labelen.
+| valkuil                        | wat er in de 52 zat                                                                                                             | oordeel                                                  |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| zelfde naam, andere verpakking | Conimex Ketjap manis 250 ml én 500 ml, allebei apart gekoppeld                                                                  | correct                                                  |
+| multipacks                     | `74004PAK` tegenover `74004DSL`                                                                                                 | **fout gevonden, gerepareerd**                           |
+| huismerk tegenover A-merk      | AH Rundergehakt tegenover Grand' Italia penne                                                                                   | correct                                                  |
+| smaakvarianten                 | Yum Yum eend / kip / garnaal / rund / groente / curry, zes aparte koppelingen                                                   | correct                                                  |
+| vleesvarianten                 | AH Spekreepjes gerookt, Mager spekblokjes, Biologisch spekreepjes                                                               | correct                                                  |
+| zuivelvarianten                | Campina Volle Yoghurt 1 L tegenover Halfvolle                                                                                   | correct                                                  |
+| babyvoeding                    | geen in de 52; het filter uit de vorige fase staat er nog                                                                       | n.v.t.                                                   |
+| groente tegenover samengesteld | AH Bloemkool, AH Sperziebonen tegenover Jumbo Gesneden snijbonen                                                                | correct                                                  |
+| gram tegenover stuk            | AH Bloemkool (wij 700 g, bron "1 stuk"), Jumbo Avocado (wij 340 g, bron "2 stuks"), Santa Maria wraps (wij 8 stuks, bron 320 g) | correct — gekoppeld op artikelnummer, niet op verpakking |
+| knoflookbol tegenover teen     | geen knoflook in de aanbieding; `RETAIL_PIECE_IS_NOT_RECIPE_PIECE` staat er nog                                                 | n.v.t.                                                   |
+| verpakkingseenheden            | zie multipacks                                                                                                                  | **fout gevonden, gerepareerd**                           |
+
+De drie "gram tegenover stuk"-gevallen verdienen een woord, want ze zien er
+verkeerd uit en zijn het niet. De twee bronnen beschrijven dezelfde verpakking
+anders — Checkjebon zegt 700 gram bloemkool, PrijsProfeet zegt één stuk. Omdat
+de koppeling op het artikelnummer gaat en niet op de verpakking, wordt de
+aanbieding toegepast op ónze verpakking, en die is het getal waarmee de
+verpakkings- en portiewiskunde toch al rekent. Waren we op naam plus verpakking
+gaan koppelen, dan waren deze drie juist afgeketst.
+
+Daarnaast: **159 tests** over de promotiepijplijn, waarvan de meerderheid gaat
+over wat er _niet_ gekoppeld en _niet_ geprijsd wordt, inclusief vijftien die
+alleen bestaan omdat echte data een fout blootlegde
+(`tests/unit/promotions/real-snapshot-regressions.test.ts`).

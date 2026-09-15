@@ -25,9 +25,10 @@
 import { optimiseWeek, type OptimizerInput } from '../src/domain/optimization/week-optimizer';
 import type { StoreCandidate } from '../src/domain/optimization/store-selection';
 import { promotionSavings } from '../src/domain/pricing/promotions';
+import { reduceCandidates } from '../src/domain/ingestion/candidate-reduction';
 import { applyPromotions } from '../src/services/promotions/apply-promotions';
 import { linkPromotions, toCandidate } from '../src/services/promotions/link-promotions';
-import type { ExternalPromotion } from '../src/services/promotions/types';
+import type { ExternalPromotion, PromotionCandidate } from '../src/services/promotions/types';
 import { loadRealChains, type RealChainId } from '../tests/support/real-data-store';
 import { loadSnapshotFromDisk, retailerIdIndex } from '../tests/support/promotion-snapshot';
 import { identityCoverage } from '../src/services/promotions/load-snapshot';
@@ -76,22 +77,49 @@ const retailerIdByProduct = retailerIdIndex(fixture.chains);
  * and is untouched, and the ON and OFF runs of a week share the same date. The
  * comparison stays like for like; only the calendar is made relevant.
  */
-function coveredDates(promotions: readonly ExternalPromotion[]): string[] {
-  const days = new Set<string>();
+function coveredDates(promotions: readonly ExternalPromotion[]): {
+  days: string[];
+  perDay: Map<string, number>;
+  dropped: string[];
+} {
+  const perDay = new Map<string, number>();
   for (const promotion of promotions) {
     if (!promotion.validFrom || !promotion.validUntil) continue;
     const cursor = new Date(`${promotion.validFrom}T00:00:00Z`);
     const end = new Date(`${promotion.validUntil}T00:00:00Z`);
     // A folder longer than a month is a data problem, not a range to walk.
     for (let guard = 0; cursor <= end && guard < 60; guard += 1) {
-      days.add(cursor.toISOString().slice(0, 10));
+      const day = cursor.toISOString().slice(0, 10);
+      perDay.set(day, (perDay.get(day) ?? 0) + 1);
       cursor.setUTCDate(cursor.getUTCDate() + 1);
     }
   }
-  return [...days].sort();
+
+  /*
+   * Only the days the folder actually covers.
+   *
+   * The real snapshot runs from 9 September to 6 October, but that range is not
+   * one folder: 4.400 offers are in force in the middle week and about seventy
+   * in the last, which are the tail of a handful of long-running offers. Ask
+   * the planner to shop on 3 October and it is not measuring a quiet week, it
+   * is measuring a folder that has expired.
+   *
+   * A snapshot is one folder period, so the days kept are the ones carrying at
+   * least a quarter of the peak day's offers. The threshold is stated rather
+   * than tuned, the dropped days are printed, and both numbers appear in the
+   * report — picking the single best day would flatter the result exactly as
+   * much as including a month of tail would flatten it.
+   */
+  const peak = Math.max(0, ...perDay.values());
+  const days = [...perDay.keys()].filter((day) => (perDay.get(day) ?? 0) >= peak * 0.25).sort();
+  const dropped = [...perDay.keys()].filter((day) => !days.includes(day)).sort();
+  return { days, perDay, dropped };
 }
 
-const snapshotDays = REAL ? coveredDates(realPromotions) : [];
+const coverage = REAL
+  ? coveredDates(realPromotions)
+  : { days: [], perDay: new Map<string, number>(), dropped: [] };
+const snapshotDays = coverage.days;
 
 interface Setup {
   readonly key: 'AH' | 'JUMBO' | 'BEIDE';
@@ -104,6 +132,36 @@ const SETUPS: readonly Setup[] = [
   { key: 'JUMBO', label: 'alleen Jumbo', chains: ['jumbo'], maxStores: 1 },
   { key: 'BEIDE', label: 'AH + Jumbo', chains: ['ah', 'jumbo'], maxStores: 2 },
 ];
+
+/**
+ * Normalised promotion candidates, computed once.
+ *
+ * `toCandidate` parses a package and a promotion text per record. With a real
+ * snapshot that is 5.190 records, and the run asks for them six times a week
+ * over fifty weeks — a million and a half parses to produce the same 5.190
+ * answers. The modelled path still builds a fresh draw per week, so the cache
+ * is keyed by the list it was handed rather than assuming there is only one.
+ */
+const candidateCache = new Map<readonly ExternalPromotion[], readonly PromotionCandidate[]>();
+let candidateCacheHits = 0;
+let candidateCacheMisses = 0;
+let candidateMs = 0;
+/** Time spent linking, applying and reducing: the promotion resolution cost. */
+let resolutionMs = 0;
+
+function candidatesFor(promotions: readonly ExternalPromotion[]): readonly PromotionCandidate[] {
+  const hit = candidateCache.get(promotions);
+  if (hit) {
+    candidateCacheHits += 1;
+    return hit;
+  }
+  const started = performance.now();
+  const candidates = promotions.map(toCandidate);
+  candidateMs += performance.now() - started;
+  candidateCacheMisses += 1;
+  candidateCache.set(promotions, candidates);
+  return candidates;
+}
 
 function promotionsFor(
   scenario: WeekScenario,
@@ -151,17 +209,35 @@ function storesFor(
     const chain = fixture.chains.find((c) => c.chainId === chainId)!;
     if (!enabled) return chain.store;
 
+    /*
+     * Promotions are attached to every matched offer, and only then is the
+     * candidate set reduced.
+     *
+     * The order matters and the real snapshot proved it. `reduceCandidates`
+     * already refuses to drop a promoted product — its price depends on how
+     * many you buy, so no single comparison can rule it out — but that guard is
+     * useless if reduction runs first, because nothing is promoted yet. Linking
+     * against the reduced set instead lost 26 of the 57 promotions that reach
+     * our catalogue at all: 46 %, all of them silently.
+     *
+     * The OFF baseline is untouched by this. With no promotions to attach,
+     * reducing the same offers gives exactly the set `chain.store` already
+     * carries, so the two runs still differ in one thing only.
+     */
+    const started = performance.now();
     const linked = linkPromotions({
       chainId,
-      candidates: promotions.map(toCandidate),
-      offers: chain.reducedOffers,
+      candidates: candidatesFor(promotions),
+      offers: chain.allOffers,
       retailerIdByProduct,
     }).linked;
-    const resolved = applyPromotions(chain.reducedOffers, linked, {
+    const resolved = applyPromotions(chain.allOffers, linked, {
       shoppingDate: scenario.startDate,
     });
+    const store = { ...chain.store, offers: reduceCandidates(resolved.offers).kept };
+    resolutionMs += performance.now() - started;
     applied += resolved.applied;
-    return { ...chain.store, offers: resolved.offers };
+    return store;
   });
   return { stores, applied };
 }
@@ -251,8 +327,16 @@ console.log(
 
 if (REAL) {
   console.log(
-    `  De momentopname dekt ${snapshotDays.length} dag(en): ` +
-      `${snapshotDays[0] ?? '—'} t/m ${snapshotDays.at(-1) ?? '—'}.\n` +
+    `  De momentopname dekt ${snapshotDays.length} folderdag(en): ` +
+      `${snapshotDays[0] ?? '—'} t/m ${snapshotDays.at(-1) ?? '—'} ` +
+      `(${Math.max(0, ...coverage.perDay.values())} aanbiedingen op de drukste dag).\n` +
+      (coverage.dropped.length > 0
+        ? `  ${coverage.dropped.length} dagen buiten de folder overgeslagen ` +
+          `(${coverage.dropped[0]} t/m ${coverage.dropped.at(-1)}, ` +
+          `${Math.min(...coverage.dropped.map((d) => coverage.perDay.get(d) ?? 0))}–` +
+          `${Math.max(...coverage.dropped.map((d) => coverage.perDay.get(d) ?? 0))} aanbiedingen per dag):\n` +
+          '  dat is de staart van een handvol langlopende acties, geen folder.\n'
+        : '') +
       '  De winkeldata van de scenario\u2019s liggen binnen dat venster; huishoudens en\n' +
       '  receptkeuzes blijven exact dezelfde als in de no-promotions baseline.\n',
   );
@@ -275,8 +359,11 @@ for (const rate of rates) {
   const winsOn: Record<string, number> = {};
   const multiStoreOff: number[] = [];
   const multiStoreOn: number[] = [];
+  const grossOff: number[] = [];
+  const grossOn: number[] = [];
   const menuChanges = { same: 0, one: 0, more: 0 };
   const promotionCounts: number[] = [];
+  const lineCounts: number[] = [];
   const promotionShare: number[] = [];
   const perChainSavings: Record<string, number> = { ah: 0, jumbo: 0 };
   const latencyOn: number[] = [];
@@ -324,6 +411,11 @@ for (const rate of rates) {
     // The product question: what does a second shop save, with and without.
     multiStoreOff.push(off.get('AH')!.practical - off.get('BEIDE')!.practical);
     multiStoreOn.push(on.get('AH')!.practical - on.get('BEIDE')!.practical);
+    // Gross is the shopping bill alone; practical adds the trip and the cost of
+    // a second stop. Reported apart because the second shop is the one place
+    // where the two answer differently, and only one of them is what you pay.
+    grossOff.push(off.get('AH')!.grocery - off.get('BEIDE')!.grocery);
+    grossOn.push(on.get('AH')!.grocery - on.get('BEIDE')!.grocery);
 
     const before = off.get('BEIDE')!.menu.split('|');
     const after = on.get('BEIDE')!.menu.split('|');
@@ -334,6 +426,7 @@ for (const rate of rates) {
 
     const both = on.get('BEIDE')!;
     promotionCounts.push(both.linesOnPromotion);
+    lineCounts.push(both.lines);
     promotionShare.push(both.lines === 0 ? 0 : both.linesOnPromotion / both.lines);
     for (const chainId of ['ah', 'jumbo'] as const) {
       const single = on.get(chainId === 'ah' ? 'AH' : 'JUMBO')!;
@@ -383,8 +476,10 @@ for (const rate of rates) {
   console.log(savingHeader);
   console.log('    ' + '-'.repeat(savingHeader.length - 4));
   for (const [label, values] of [
-    ['zonder promoties', multiStoreOff],
-    ['met promoties', multiStoreOn],
+    ['bruto, zonder promoties', grossOff],
+    ['bruto, met promoties', grossOn],
+    ['praktisch, zonder promoties', multiStoreOff],
+    ['praktisch, met promoties', multiStoreOn],
   ] as const) {
     console.log(
       '    ' +
@@ -422,6 +517,9 @@ for (const rate of rates) {
   console.log('\n  Promotiegebruik, AH + Jumbo\n');
   console.log(`    toegepaste promoties per week      ${mean(promotionCounts).toFixed(1)}`);
   console.log(`    aandeel gekochte regels in actie   ${(mean(promotionShare) * 100).toFixed(1)}%`);
+  console.log(
+    `    weken met minstens één promotie    ${promotionCounts.filter((n) => n > 0).length}/${measured}`,
+  );
   console.log(`    promotievoordeel per week          ${euro(mean(savings.BEIDE!))}`);
   console.log(
     `    waarvan bij AH alleen              ${euro(perChainSavings.ah! / Math.max(1, measured))}`,
@@ -430,17 +528,68 @@ for (const rate of rates) {
     `    waarvan bij Jumbo alleen           ${euro(perChainSavings.jumbo! / Math.max(1, measured))}`,
   );
 
+  console.log('\n  Promotievoordeel per week, verdeling\n');
+  const distHeader =
+    '    ' +
+    'opstelling'.padEnd(24) +
+    'gem.'.padStart(10) +
+    'mediaan'.padStart(10) +
+    'p75'.padStart(9) +
+    'p90'.padStart(9) +
+    'max'.padStart(9);
+  console.log(distHeader);
+  console.log('    ' + '-'.repeat(distHeader.length - 4));
+  for (const setup of SETUPS) {
+    const values = savings[setup.key]!;
+    console.log(
+      '    ' +
+        setup.label.padEnd(24) +
+        euro(mean(values)).padStart(10) +
+        euro(quantile(values, 0.5)).padStart(10) +
+        euro(quantile(values, 0.75)).padStart(9) +
+        euro(quantile(values, 0.9)).padStart(9) +
+        euro(Math.max(0, ...values)).padStart(9),
+    );
+  }
+
   console.log('\n  Verandert het menu door promoties?\n');
   console.log(`    zelfde menu           ${menuChanges.same}/${measured}`);
   console.log(`    1 gerecht anders      ${menuChanges.one}/${measured}`);
   console.log(`    2 of meer anders      ${menuChanges.more}/${measured}`);
 
-  console.log('\n  Latency\n');
+  console.log('\n  Latency, per weekplanning\n');
+  for (const [label, values] of [
+    ['zonder promoties', latencyOff],
+    ['met promoties', latencyOn],
+  ] as const) {
+    console.log(
+      `    ${label.padEnd(20)} gem. ${mean(values).toFixed(0).padStart(4)} ms` +
+        `   mediaan ${quantile(values, 0.5).toFixed(0).padStart(4)} ms` +
+        `   p95 ${quantile(values, 0.95).toFixed(0).padStart(4)} ms` +
+        `   slechtste ${Math.max(0, ...values)
+          .toFixed(0)
+          .padStart(5)} ms`,
+    );
+  }
+
+  const resolutions = candidateCacheHits + candidateCacheMisses;
+  console.log('\n  Promotieresolutie, buiten de optimizer om\n');
   console.log(
-    `    zonder promoties   gem. ${mean(latencyOff).toFixed(0)} ms   p95 ${quantile(latencyOff, 0.95).toFixed(0)} ms`,
+    `    normaliseren (toCandidate)         ${candidateMs.toFixed(0)} ms totaal, ` +
+      `${candidateCacheMisses}x berekend`,
   );
   console.log(
-    `    met promoties      gem. ${mean(latencyOn).toFixed(0)} ms   p95 ${quantile(latencyOn, 0.95).toFixed(0)} ms`,
+    `    cache hit rate                     ` +
+      `${resolutions === 0 ? '—' : `${((candidateCacheHits / resolutions) * 100).toFixed(1)}%`} ` +
+      `(${candidateCacheHits}/${resolutions})`,
+  );
+  console.log(
+    `    koppelen + toepassen + reduceren   ${resolutionMs.toFixed(0)} ms totaal, ` +
+      `${(resolutionMs / Math.max(1, measured)).toFixed(1)} ms per week`,
+  );
+  console.log(
+    `    verpakkingsregels per week         ${mean(lineCounts).toFixed(1)} ` +
+      `(waarvan ${mean(promotionCounts).toFixed(1)} in de aanbieding)`,
   );
 }
 

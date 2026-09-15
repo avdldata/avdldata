@@ -91,7 +91,11 @@ export function loadPrijsProfeetSnapshot(
   }
 
   const importedAt = (options.now?.() ?? new Date()).toISOString();
-  const text = options.readFile(path);
+  // A byte-order mark, stripped rather than tripped over. The real export is
+  // produced on Windows and carries one; `JSON.parse` refuses it with a message
+  // about an unexpected token that says nothing about what to do. It is not a
+  // content difference, so it is not worth a failure.
+  const text = options.readFile(path).replace(/^\uFEFF/, '');
 
   let parsed: unknown;
   try {

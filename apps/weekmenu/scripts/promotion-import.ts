@@ -211,7 +211,7 @@ const retailerIdByProduct = retailerIdIndex(fixture.chains);
 // Shelf records are used here for exactly one thing: they carry the EAN that
 // Checkjebon lacks, which is what makes the GTIN tier reachable at all. They
 // never become a promotion.
-const allOffers = fixture.chains.flatMap((chain) => [...chain.reducedOffers]);
+const allOffers = fixture.chains.flatMap((chain) => [...chain.allOffers]);
 const shelfLinks = linkShelfPrices(outcome.shelfPrices, allOffers, retailerIdByProduct);
 const gtinByProduct = eanIndexFromShelf(shelfLinks);
 
@@ -234,7 +234,11 @@ for (const chain of fixture.chains) {
   const result = linkPromotions({
     chainId: chain.chainId,
     candidates,
-    offers: chain.reducedOffers,
+    // Every matched offer, not only what survived candidate reduction:
+    // reduction happens on shelf price and would hide promotions on products
+    // it dropped. The benchmark attaches promotions before reducing for the
+    // same reason.
+    offers: chain.allOffers,
     retailerIdByProduct,
     gtinByProduct,
   });
@@ -320,6 +324,7 @@ console.log(`
 
     pnpm promo:bench     50 weken, ON tegenover OFF, op deze momentopname
 
-  Zolang die niet op echte data gedraaid is blijft de stand in
-  PROMOTION_VALUE_BENCHMARK.md: REAL PROMOTION VALUE — NOT YET MEASURED.
+  De stand van die meting staat in PROMOTION_VALUE_BENCHMARK.md, deel B — en
+  alleen daar. Een import telt records; wat ze aan de weekprijs veranderen is
+  een andere vraag met een andere run.
 `);

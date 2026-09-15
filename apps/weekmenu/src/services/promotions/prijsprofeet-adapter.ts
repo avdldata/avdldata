@@ -1,7 +1,11 @@
 import {
   classifyRecord,
+  isCurrentDeal,
   KNOWN_PROMOTION_TYPES,
+  observedAt,
+  productUrl,
   PROMOTION_STATUSES,
+  promotionTexts,
   recordId,
   SUPPORTED_RETAILERS,
   validateSnapshot,
@@ -172,7 +176,7 @@ export function identityKey(record: PrijsProfeetRecord): string | undefined {
 export function retailerProductIdOf(record: PrijsProfeetRecord): string | undefined {
   const chainId = normaliseRetailer(record.retailer);
   if (!chainId) return undefined;
-  const fromUrl = extractRetailerProductId(chainId, record.url);
+  const fromUrl = extractRetailerProductId(chainId, productUrl(record));
   if (fromUrl) return fromUrl.id;
   const fromProductId = extractRetailerProductId(chainId, record.product_id);
   if (fromProductId) return fromProductId.id;
@@ -216,6 +220,7 @@ export function toExternalPromotion(
 ): ExternalPromotion {
   const chainId = normaliseRetailer(record.retailer) ?? record.retailer;
   const retailerProductId = retailerProductIdOf(record);
+  const texts = promotionTexts(record);
   return {
     externalPromotionId: recordId(record),
     source,
@@ -232,19 +237,20 @@ export function toExternalPromotion(
     ...(record.original_price != null ? { regularPriceCents: record.original_price } : {}),
     ...(record.price != null ? { promotionalPriceCents: record.price } : {}),
     ...(record.unit_price != null ? { unitPriceCents: record.unit_price } : {}),
+    ...(record.brand ? { brand: record.brand } : {}),
     ...(record.promotion_type ? { promotionTypeCode: record.promotion_type } : {}),
-    ...(record.promotion_text ? { promotionText: record.promotion_text } : {}),
+    ...(texts.length > 0 ? { promotionText: texts[0], promotionTexts: texts } : {}),
     ...(neutralStatus(record.promotion_status)
       ? { promotionStatus: neutralStatus(record.promotion_status) }
       : {}),
     // Recorded, never obeyed: `is_current_deal` was true at the moment the feed
     // was built, and the week being planned is not that moment. The shopping
     // date against the window decides.
-    ...(record.is_current_deal != null ? { isActive: record.is_current_deal } : {}),
+    ...(isCurrentDeal(record) != null ? { isActive: isCurrentDeal(record) } : {}),
     ...(record.valid_from ? { validFrom: record.valid_from } : {}),
     ...(record.valid_until ? { validUntil: record.valid_until } : {}),
-    ...(record.url ? { url: record.url } : {}),
-    ...(record.price_changed_at ? { priceChangedAt: record.price_changed_at } : {}),
+    ...(productUrl(record) ? { url: productUrl(record) } : {}),
+    ...(observedAt(record) ? { priceChangedAt: observedAt(record) } : {}),
     fetchedAt,
   };
 }
@@ -259,7 +265,7 @@ export function toExternalPromotion(
 export function toShelfPrice(
   record: PrijsProfeetRecord,
   source: string,
-  observedAt: string,
+  readAt: string,
 ): ExternalShelfPrice {
   const chainId = normaliseRetailer(record.retailer) ?? record.retailer;
   return {
@@ -270,9 +276,9 @@ export function toShelfPrice(
     ...(record.quantity ? { packageText: record.quantity } : {}),
     ...(record.price != null ? { priceCents: record.price } : {}),
     ...(record.unit_price != null ? { unitPriceCents: record.unit_price } : {}),
-    ...(record.url ? { url: record.url } : {}),
-    ...(record.price_changed_at ? { priceChangedAt: record.price_changed_at } : {}),
-    observedAt,
+    ...(productUrl(record) ? { url: productUrl(record) } : {}),
+    ...(observedAt(record) ? { priceChangedAt: observedAt(record) } : {}),
+    observedAt: readAt,
   };
 }
 
@@ -422,5 +428,13 @@ export function mapResponse(
   });
 }
 
-export { classifyRecord, KNOWN_PROMOTION_TYPES, PROMOTION_STATUSES, recordId, SUPPORTED_RETAILERS };
+export {
+  classifyRecord,
+  KNOWN_PROMOTION_TYPES,
+  PROMOTION_STATUSES,
+  promotionTexts,
+  productUrl,
+  recordId,
+  SUPPORTED_RETAILERS,
+};
 export type { PrijsProfeetRecord, PromotionStatus, RecordUse, SupportedRetailer };

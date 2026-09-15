@@ -3,7 +3,7 @@ import { normalise } from '@/domain/ingestion/match-ingredient';
 import { resolvePackage } from '@/domain/ingestion/package-parser';
 import type { ProductOffer, Promotion } from '@/domain/stores/types';
 import { parseTypedPromotion } from './parse-promotion-text';
-import { extractRetailerProductId, sameRetailerProduct } from './retailer-id';
+import { extractRetailerProductId } from './retailer-id';
 import type {
   ExternalPromotion,
   LinkedPromotion,
@@ -45,7 +45,7 @@ export function toCandidate(external: ExternalPromotion): PromotionCandidate {
     extractRetailerProductId(external.chainId, external.externalProductId);
   const parsed = parseTypedPromotion(
     external.promotionTypeCode,
-    external.promotionText,
+    external.promotionTexts ?? external.promotionText,
     external.promotionalPriceCents,
     external.regularPriceCents,
   );
@@ -80,6 +80,7 @@ export function toCandidate(external: ExternalPromotion): PromotionCandidate {
     ...(external.promotionTypeCode ? { promotionTypeCode: external.promotionTypeCode } : {}),
     ...(external.promotionStatus ? { promotionStatus: external.promotionStatus } : {}),
     originalText: external.promotionText ?? '',
+    ...(external.promotionTexts ? { originalTexts: external.promotionTexts } : {}),
     ...(parsed.status === 'OK' ? { params: parsed.params } : { unsupportedReason: parsed.reason }),
     validFrom,
     validUntil,
@@ -254,28 +255,18 @@ function findProduct(
     }
   }
 
-  // Tier 1: the shop's own number. Both the full id and the bare article
-  // number are tried, because a feed may quote either.
-  for (const key of [candidate.retailerProductId, candidate.retailerArticleNumber]) {
+  // Tier 1: the shop's own number, in full.
+  //
+  // Only the complete id — the bare article number is deliberately not tried.
+  // Jumbo's trailing packaging code separates a pack from the case it ships in
+  // ("74004PAK" € 2,69 against "74004DSL" € 10,76), and matching without it put
+  // a case promotion on a single pack in the very first real snapshot.
+  for (const key of [candidate.retailerProductId]) {
     if (!key) continue;
     const exact = index.byRetailerId.get(key.toLowerCase());
     if (exact?.length === 1) return { tier: 'EXACT_RETAILER_ID', offer: exact[0]! };
     if (exact && exact.length > 1) {
       return { tier: undefined, reason: 'AMBIGUOUS_PRODUCT', nearest: exact.map((o) => o.name) };
-    }
-    // Fall back to comparing article numbers when the full ids differ only in
-    // their packaging code.
-    for (const [storedKey, offers] of index.byRetailerId) {
-      if (
-        !sameRetailerProduct(
-          { id: storedKey, numeric: numericOf(storedKey) },
-          { id: key, numeric: numericOf(key) },
-        )
-      ) {
-        continue;
-      }
-      if (offers.length === 1) return { tier: 'EXACT_RETAILER_ID', offer: offers[0]! };
-      return { tier: undefined, reason: 'AMBIGUOUS_PRODUCT', nearest: offers.map((o) => o.name) };
     }
   }
 
@@ -309,11 +300,6 @@ function findProduct(
   }
 
   return { tier: undefined, reason: 'NO_CANDIDATE_PRODUCT', nearest: [] };
-}
-
-function numericOf(id: string): string | undefined {
-  const match = /(\d{1,10})/.exec(id);
-  return match?.[1];
 }
 
 /** A window is usable when it exists, parses, and does not run backwards. */

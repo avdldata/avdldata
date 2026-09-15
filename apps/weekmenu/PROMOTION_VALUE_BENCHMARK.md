@@ -1,25 +1,32 @@
 # Wat aanbiedingen aan de weekprijs veranderen
 
-## REAL PROMOTION VALUE: NOT YET MEASURED
+## REAL PROMOTION VALUE: MEASURED
+
+Gemeten op de echte PrijsProfeet-momentopname van 15 september 2026: **5.190
+records, 3.052 Albert Heijn en 2.138 Jumbo**, over dezelfde vijftig scenario's
+als de no-promotions baseline.
+
+> **Echte aanbiedingen verlagen de weekprijs met gemiddeld € 0,32 op een
+> boodschappenmand van € 42,85 — 0,7 %.** De mediaan is € 0,00: in 31 van de 50
+> weken staat er niets in de aanbieding dat het weekmenu nodig heeft.
+
+Dat cijfer is laag, en het is **geen oordeel over de promotielaag**. De
+oorzaak is meetbaar en zit ergens anders: van 5.190 aanbiedingen raken er 52 een
+product dat onze receptencatalogus überhaupt kan kopen. Zie
+[Waarom het cijfer zo laag is](#waarom-het-cijfer-zo-laag-is) — dat is de
+belangrijkste uitkomst van deze fase.
 
 Dit document heeft twee delen die niet vermengd mogen worden.
 
-| deel                                              | status     | mag gebruikt worden voor                                                                                                     |
-| ------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| **Deel A — Synthetic promotion sensitivity test** | uitgevoerd | aantonen dát de promotie-engine werkt, dat de optimizer op promoties reageert, en dat menu- en winkelkeuze kúnnen veranderen |
-| **Deel B — Real snapshot results**                | **leeg**   | de enige plek waar een uitspraak over de financiële waarde van echte promoties mag komen                                     |
+| deel                                              | status         | mag gebruikt worden voor                                                                                                     |
+| ------------------------------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Deel A — Synthetic promotion sensitivity test** | uitgevoerd     | aantonen dát de promotie-engine werkt, dat de optimizer op promoties reageert, en dat menu- en winkelkeuze kúnnen veranderen |
+| **Deel B — Real snapshot results**                | **uitgevoerd** | de enige plek waar een uitspraak over de financiële waarde van echte promoties mag komen                                     |
 
-**Deel A is een technische gevoeligheidstest, geen productbewijs.** De promoties
-erin zijn gemodelleerd. Ze mogen niet gebruikt worden om te concluderen hoeveel
-echte aanbiedingen opleveren, en al helemaal niet om te concluderen dat ze
-weinig opleveren. Dat oordeel kan pas na een run met echte, asymmetrische AH- en
-Jumbo-promoties.
-
-De reden dat deel B leeg is: PrijsProfeet is vanuit deze omgeving niet
-bereikbaar (403 op CONNECT via de egress-proxy, zie
-[PRIJSPROFEET_INTEGRATION.md](PRIJSPROFEET_INTEGRATION.md)). Zodra er een export
-in `data/external/promotions-snapshot.json` staat, draait `pnpm promo:bench`
-automatisch de echte benchmark en vult deel B zich met metingen.
+**Deel A blijft een technische gevoeligheidstest, geen productbewijs.** De
+promoties erin zijn gemodelleerd op 15 % van het assortiment — vier keer zoveel
+als de werkelijkheid op onze producten oplevert. De cijfers uit deel A en deel B
+staan niet naast elkaar in één tabel, met opzet.
 
 ---
 
@@ -276,114 +283,385 @@ Wat deel A wél laat zien, en wat overeind blijft:
   demping is een eigenschap van de optimizer, niet van het model, en blijft dus
   ook bij echte data gelden.
 
-De financiële vraag — loont een tweede supermarkt met echte aanbiedingen —
-staat open. **REAL PROMOTION VALUE: NOT YET MEASURED.**
+De financiële vraag — loont een tweede supermarkt met echte aanbiedingen — is
+inmiddels beantwoord, en niet hier. Zie deel B: praktisch **− € 0,18** per week.
+
+Twee voorspellingen uit deel A zijn door deel B bevestigd: er wordt veel minder
+in de actie gekocht dan er in de actie is (1,9 % van de regels), en promoties
+maken de tweede winkel niet waardevoller. De derde — dat aanbiedingen het menu
+sturen — is ook bevestigd, maar zwakker: 7 van de 50 weken in plaats van 17,
+omdat er in werkelijkheid veel minder relevante actie is dan het model aannam.
 
 ---
 
 # Deel B — Real snapshot results
 
-**Leeg.** Er is nog geen `data/external/promotions-snapshot.json`.
+**Bron.** `data/external/promotions-snapshot.json`, PrijsProfeet, opgehaald
+2026-09-15T14:25 (+02:00). 5.190 records: 3.052 Albert Heijn, 2.138 Jumbo. Geen
+enkel record overgeslagen, geen enkel record geraden — wat er niet in past wordt
+geteld en gerapporteerd.
 
-Zodra die er is, vult `pnpm promo:bench` dit deel met, per keten en per
-opstelling:
-
-- promotieaantallen, actief tegenover komend, en identiteitsdekking
-  (stable id / retailer id / GTIN);
-- koppeldekking per tier en de precision van de automatisch toegepaste
-  koppelingen;
-- gemiddelde, mediaan, p90 en maximum van de promotiebesparing;
-- praktische multi-store besparing vóór en met promoties, en het aantal weken
-  boven € 1 / € 2,50 / € 5 / € 7,50 / € 10;
-- winkelwinnaars zonder en met promoties;
-- menuverandering;
-- latency.
-
-Dezelfde vijftig scenario's als de bestaande no-promotions baseline, met
-dezelfde huishoudens en receptkeuzes. Alleen de winkeldata schuiven mee naar
-binnen het venster dat de snapshot dekt — anders valt bijna elke week buiten
-elke folder en meet de vergelijking de kalender in plaats van de aanbiedingen.
-
-De volledige checklist voor die run staat onderaan in
-[PRIJSPROFEET_INTEGRATION.md](PRIJSPROFEET_INTEGRATION.md).
-
----
-
----
-
-# Slotantwoord — zonder snapshot
-
-De opdracht vraagt in dit geval om elf antwoorden, en niet om een
-productconclusie.
-
-**1. Schema geïmplementeerd?** Ja, en inmiddels op de **officiële veldnamen**.
-De documentatie is extern geverifieerd, dus `snapshot-schema.ts` accepteert een
-ruwe export zonder handmatige transformatie, met Zod-validatie en strikte
-afwijzing van onbekende velden. `FIELD_BINDINGS` in de adapter bevat per veld één
-expliciete geverifieerde naam; de tabel met `null`s uit de vorige ronde is weg.
-
-**2. Welke velden ondersteund?** `product_id`, `base_product_id`, `retailer`,
-`name`, `ean`, `quantity`, `price`, `original_price`, `unit_price`,
-`is_current_deal`, `promotion_status`, `promotion_type`, `promotion_text`,
-`valid_from`, `valid_until`, `url`, `price_changed_at`. Verplicht zijn er twee —
-`retailer` en `name` — omdat de feed vier soorten records draagt die legitiem
-verschillen; wat een record waard is beslist de classificatie, niet het schema.
-Wat elk gemis kost staat in
-[PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md).
-
-**3. Snapshot loader werkt?** Ja. `loadPrijsProfeetSnapshot(path)` leest,
-valideert en normaliseert, met omhulsel of als kale array. Bewezen end-to-end op
-een tijdelijke testexport van 80 records over beide ketens: 100 % gekoppeld op
-retailer-ID, alle vijf promotietypen gelezen. Die testexport is daarna
-verwijderd — hij stond in de weg als iemand hem voor echt zou aanzien.
-
-**4. AH/Jumbo-filtering werkt?** Ja. Andere ketens worden geteld en
-overgeslagen; een onbekende _spelling_ van een keten die we wél dekken wordt
-geweigerd, want dat is drift en geen ruis.
-
-**5. Product linking tiers klaar?** Ja, in de volgorde die de opdracht vraagt:
-`EXACT_STABLE_ID` → `EXACT_RETAILER_ID` → `EXACT_GTIN` → `NAME_PACKAGE` →
-`NEEDS_REVIEW`. Niets fuzzy, en review wordt nooit automatisch toegepast.
-`NAME_PACKAGE` eist naam én verpakking identiek. Aan onze kant is het
-winkelartikelnummer voor 100 % van de 33.390 producten leesbaar en uniek.
-
-**6. Promotion mapping klaar?** Ja. De typecodes uit de opdracht
-(`one_plus_one`, `multi_buy`, `percentage`, `fixed_price`, `nth_discount`)
-kiezen de leesregel; de tekst levert de getallen. Een `multi_buy` zonder
-bundelgrootte wordt niet toegepast. Een onbekende code valt door naar de
-tekstlezer.
-
-**7. Validity klaar?** Ja. De winkeldatum beslist, nooit de draaidatum. Een
-aanbieding die maandag afloopt telt niet voor zaterdag; een die maandag begint
-telt wél voor maandag. `active` / `upcoming` / `expired` worden uit het venster
-afgeleid, niet uit de vlag van de bron — die was waar toen de export gemaakt
-werd.
-
-**8. Fallback zonder data werkt?** Ja. Geen bestand betekent één logregel,
-`PrijsProfeet snapshot unavailable; continuing without promotions`, en de week
-plant door op Checkjebon-schapprijzen. Geen crash. Ook getest voor offline,
-timeout, rate limit, malformed, verlopen, onbekend product, dubbel en
-overlappend.
-
-**9. Welke tests toegevoegd?** 103 over de promotielaag, van de 508 in totaal:
-17 tekstparser, 9 retailer-ID (waarvan drie tegen de volledige catalogus van
-33.390 producten), 22 koppeling, 19 geldigheid en cache, 13 promotie-engine,
-23 snapshot-schema en loader. De meerderheid gaat over wat er _niet_ gekoppeld
-of _niet_ geprijsd wordt. De eerder gevonden correctheidsfouten — gram versus
-stuks, gebroken verpakkingsaantallen, knoflookbol versus teen, babyvoeding
-versus groente, verpakkingsmaat — zijn opnieuw gepind vanuit de promotiekant.
-
-**10. REAL PROMOTION VALUE: NOT YET MEASURED.**
-
-**11. Wat is er nodig om verder te gaan?** Eén bestand — een ruwe export uit de
-PrijsProfeet-API, in hun eigen veldnamen. Dan:
+Reproduceren:
 
 ```bash
-pnpm promo:import <export>.json
+pnpm promo:import data/external/promotions-snapshot.json
 pnpm promo:prices
 pnpm promo:bench
 ```
 
-en vult deel B zich met echte cijfers. Alternatief: `prijsprofeet.nl` op de
-egress-allowlist van deze omgeving. De veldnamen zijn niet langer een openstaande
-vraag.
+## Wat er in de momentopname zit
+
+|                             | Albert Heijn | Jumbo |    totaal |
+| --------------------------- | -----------: | ----: | --------: |
+| records                     |        3.052 | 2.138 | **5.190** |
+| `active`                    |        3.052 | 1.415 |     4.467 |
+| `upcoming`                  |            0 |   723 |       723 |
+| `historical`                |            0 |     0 |         0 |
+| `shelf`                     |            0 |     0 |         0 |
+| zonder geldigheidsvenster   |            0 |     0 |         0 |
+| zonder bruikbare identiteit |            0 |     0 |         0 |
+| duplicaten samengevoegd     |            — |     — |         0 |
+
+Identiteitsdekking:
+
+| identiteit                              | Albert Heijn | Jumbo |
+| --------------------------------------- | -----------: | ----: |
+| `base_product_id`                       |        100 % | 100 % |
+| winkelartikelnummer (uit `product_url`) |        100 % | 100 % |
+| `ean`                                   |         84 % |  99 % |
+| `product_id`                            |        100 % | 100 % |
+| verpakking (`quantity`)                 |        100 % |  93 % |
+| normale prijs (`original_price`)        |        100 % |  99 % |
+| promotietekst                           |        100 % | 100 % |
+| typecode                                |         99 % |  99 % |
+
+De folder loopt van 9 september tot en met 22 september; daarbuiten liggen nog
+198 dagen met 2–93 langlopende acties, die als staart worden overgeslagen omdat
+ze geen folder zijn.
+
+## Promotietypen
+
+| type                 |     Albert Heijn |          Jumbo |
+| -------------------- | ---------------: | -------------: |
+| `PERCENT_OFF`        |     887 (29,1 %) |   530 (24,8 %) |
+| `N_FOR_X`            |     606 (19,9 %) |   413 (19,3 %) |
+| `ONE_PLUS_ONE`       |     544 (17,8 %) |   558 (26,1 %) |
+| `FIXED_PRICE`        |     362 (11,9 %) |   300 (14,0 %) |
+| `BUY_NTH_DISCOUNT`   |      172 (5,6 %) |   311 (14,5 %) |
+| **niet ondersteund** | **481 (15,8 %)** | **26 (1,2 %)** |
+
+**4.683 van 5.190 (90,2 %) is te modelleren.** Wat overblijft, met aantallen:
+
+| tekst                                                                            | records | waarom niet                                                 |
+| -------------------------------------------------------------------------------- | ------: | ----------------------------------------------------------- |
+| `… % volume voordeel`                                                            |     458 | een staffel waarvan de bron de drempel niet noemt           |
+| `1,00 korting`, `1 EURO KORTING`                                                 |      31 | een bedrag eraf, en wij hebben geen `AMOUNT_OFF`            |
+| `100 GRAM VOOR 1.69`                                                             |      18 | een prijs per gewicht, geen pakprijs                        |
+| `2+3 gratis`, `10+2 gratis`                                                      |      12 | meer dan één gratis per groep — geen bestaand type zegt dat |
+| overig (`BONUS` zonder mechanisme, `Gratis glas bij 1 sixpack`, `5,99 per kilo`) |     ~26 | geen mechanisme, of niet per pak                            |
+
+Het verschil tussen 15,8 % en 1,2 % is bijna volledig het "volume voordeel" van
+Albert Heijn, dat Jumbo niet gebruikt.
+
+## Koppeling aan onze producten
+
+|                                           | Albert Heijn |  Jumbo |
+| ----------------------------------------- | -----------: | -----: |
+| aangeboden                                |        3.052 |  2.138 |
+| `EXACT_STABLE_ID`                         |            0 |      0 |
+| `EXACT_RETAILER_ID`                       |       **28** | **24** |
+| `EXACT_GTIN`                              |            0 |      0 |
+| `NAME_PACKAGE`                            |            0 |      0 |
+| `NEEDS_REVIEW`                            |            0 |      0 |
+| geen kandidaatproduct                     |        3.024 |  2.114 |
+| unieke interne producten met een promotie |           28 |     24 |
+
+`EXACT_STABLE_ID` staat op nul omdat Checkjebon geen `base_product_id` van de
+keten draagt; de tier bestaat, maar onze kant kan hem nog niet vullen.
+`EXACT_GTIN` staat op nul omdat de momentopname alleen `active`- en
+`upcoming`-records bevat en geen `shelf`-records, en die laatste zijn de bron
+waaruit we EAN's zouden oogsten.
+
+**Auto-link precision: 52/52 = 100 %** (28 AH + 24 Jumbo, alle 52 met de hand
+nagelopen, 0 WRONG, 0 AMBIGUOUS). De opdracht vroeg om 100 + 100; er zijn er 52,
+en dat zijn ze allemaal.
+
+Gecontroleerd op de gevraagde valkuilen: dezelfde naam met een andere
+verpakking, multipacks, huismerk tegenover A-merk, smaakvarianten
+(Yum Yum eend/kip/garnaal), vleesvarianten (biologisch tegenover regulier
+spek/gehakt), zuivelvarianten, babyvoeding, groente tegenover samengesteld,
+gram tegenover stuk (AH Bloemkool: wij 700 g, bron "1 stuk" — zelfde
+artikelnummer, dus zelfde product), knoflookbol tegenover teen, en
+verpakkingseenheden.
+
+Die laatste leverde de enige fout op, en die is gerepareerd:
+
+> **Jumbo 74004PAK** is een pak Campina halfvolle melk van 2,4 liter voor
+> € 2,69. **Jumbo 74004DSL** is de doos van vier voor € 10,76. Onze linker
+> accepteerde een match op het artikelnummer zónder de verpakkingscode, en
+> plakte de dooskorting op het losse pak. In de Jumbo-catalogus delen **730
+> producten (4,2 %)** een nummer met een andere verpakkingscode, routinematig
+> met zes tot twaalf keer het prijsverschil.
+
+Zie [Vijf fouten die echte data vond](#vijf-fouten-die-echte-data-vond).
+
+## Normale prijs: Checkjebon tegenover PrijsProfeet
+
+Voor de 52 exact gekoppelde producten:
+
+|                             | Albert Heijn (28) |  Jumbo (24) |
+| --------------------------- | ----------------: | ----------: |
+| identiek                    |       15 (53,6 %) | 23 (95,8 %) |
+| ≤ € 0,05 verschil           |         1 (3,6 %) |           0 |
+| ≤ 5 % verschil              |        4 (14,3 %) |   1 (4,2 %) |
+| > 5 % verschil              |        5 (17,9 %) |           0 |
+| > 25 % (uitschieter)        |        3 (10,7 %) |           0 |
+| mediaan verschil            |            € 0,00 |      € 0,00 |
+| bron hoger / gelijk / lager |        7 / 15 / 6 |  0 / 23 / 1 |
+
+De drie uitschieters:
+
+| product                               | Checkjebon | PrijsProfeet |
+| ------------------------------------- | ---------: | -----------: |
+| Grand' Italia Spaghetti volkoren      |     € 1,45 |       € 1,99 |
+| Grand' Italia Spaghetti half volkoren |     € 1,45 |       € 1,99 |
+| AH Winterpeen                         |     € 1,05 |       € 1,39 |
+
+Jumbo is het vrijwel overal met zichzelf eens; Albert Heijn niet. **PrijsProfeet
+overschrijft Checkjebon nergens.** Beide bronnen houden hun eigen herkomst, het
+verschil wordt gerapporteerd en niet opgelost — welke van de twee gelijk heeft
+is hiervandaan niet vast te stellen.
+
+## Vijftig weken, promoties AAN tegenover UIT
+
+Gemiddelde week, praktische kosten:
+
+| opstelling          |  zonder |     met |     verschil | mist |
+| ------------------- | ------: | ------: | -----------: | ---: |
+| alleen Albert Heijn | € 42,85 | € 42,79 |       € 0,06 |  1,2 |
+| alleen Jumbo        | € 45,23 | € 44,52 |       € 0,71 |  1,8 |
+| AH + Jumbo          | € 42,85 | € 42,97 | **− € 0,12** |  0,9 |
+
+Het promotievoordeel zelf, per week:
+
+| opstelling          |       gem. |    mediaan |        p75 |        p90 |        max |
+| ------------------- | ---------: | ---------: | ---------: | ---------: | ---------: |
+| alleen Albert Heijn |     € 0,20 |     € 0,00 |     € 0,00 |     € 0,70 |     € 1,96 |
+| alleen Jumbo        |     € 0,21 |     € 0,00 |     € 0,58 |     € 0,58 |     € 1,24 |
+| **AH + Jumbo**      | **€ 0,32** | **€ 0,00** | **€ 0,66** | **€ 0,90** | **€ 1,56** |
+
+- toegepaste promoties per week: **0,6**
+- aandeel gekochte regels in de aanbieding: **1,9 %** (0,6 van 28,2 regels)
+- weken met minstens één promotie: **19 van 50**
+
+## Wat twee winkels opleveren
+
+|                             |         gem. | mediaan |    p75 |    p90 |     max |
+| --------------------------- | -----------: | ------: | -----: | -----: | ------: |
+| bruto, zonder promoties     |       € 1,17 |  € 1,23 | € 2,58 | € 3,93 | € 10,07 |
+| bruto, met promoties        |       € 1,06 |  € 0,65 | € 2,58 | € 3,93 | € 10,07 |
+| praktisch, zonder promoties |       € 0,00 |  € 0,00 | € 1,60 | € 2,58 | € 10,07 |
+| praktisch, met promoties    | **− € 0,18** |  € 0,00 | € 1,23 | € 2,52 | € 10,07 |
+
+Weken waarin twee winkels praktisch minstens dit opleveren:
+
+| drempel   | zonder promoties | met promoties |
+| --------- | ---------------: | ------------: |
+| ≥ € 1,00  |            14/50 |         14/50 |
+| ≥ € 2,50  |             7/50 |          6/50 |
+| ≥ € 5,00  |             2/50 |          2/50 |
+| ≥ € 7,50  |             1/50 |          1/50 |
+| ≥ € 10,00 |             1/50 |          1/50 |
+
+**Echte aanbiedingen maken de tweede winkel niet waardevoller — ze maken hem
+iets minder waardevol.** Bruto zakt het voordeel van € 1,17 naar € 1,06,
+praktisch van € 0,00 naar − € 0,18. De reden is niet ingewikkeld: de
+aanbiedingen die onze producten raken liggen deels bij dezelfde keten die toch
+al won, dus ze verlagen de rekening van de goedkoopste enkele winkel net zo goed
+als die van de combinatie — terwijl de tweede winkel nog steeds zijn eigen
+reiskosten heeft. Deel A voorspelde dit met gemodelleerde data; deel B bevestigt
+het met echte.
+
+## Waar de week gekocht wordt
+
+| winkels      | zonder promoties | met promoties |
+| ------------ | ---------------: | ------------: |
+| alleen AH    |               25 |            24 |
+| alleen Jumbo |               12 |            13 |
+| AH + Jumbo   |               13 |            13 |
+
+Eén week van de vijftig wisselt van winkel door de aanbiedingen. Ze verplaatsen
+de keuze dus wel, maar niet vaak.
+
+## Menu
+
+|                  | weken |
+| ---------------- | ----: |
+| identiek menu    | 43/50 |
+| 1 gerecht anders |  3/50 |
+| 2 of meer anders |  4/50 |
+
+In **7 van de 50 weken** kiest de optimizer een ander gerecht omdat de
+ingrediënten ervan in de aanbieding zijn. Dat is het kanaal waarlangs promoties
+waarde toevoegen zonder dat een tweede winkel nodig is, en het is met 14 % van
+de weken het levendigste effect dat we meten — groter dan de winkelwissel.
+
+## Geldigheid
+
+Toegepast op de winkeldatum, niet op de draaidatum van het script:
+
+| winkeldatum | toegepaste promoties |
+| ----------- | -------------------: |
+| 2026-08-01  |                    0 |
+| 2026-09-08  |                    0 |
+| 2026-09-14  |                   41 |
+| 2026-09-16  |                   39 |
+| 2026-09-21  |                   11 |
+| 2026-11-01  |                    0 |
+
+Een `upcoming` promotie wordt vanzelf geldig zodra de winkeldatum in het venster
+valt — de 723 Jumbo-records met status `upcoming` doen op 16 september gewoon
+mee. Buiten elk venster is het antwoord nul, niet "de laatste die we zagen".
+`historical` en `shelf` bestaan in deze momentopname niet, en zouden hoe dan ook
+de importer niet verlaten.
+
+## Snelheid
+
+|                  |     gem. |  mediaan |      p95 | slechtste |
+| ---------------- | -------: | -------: | -------: | --------: |
+| zonder promoties | 1.701 ms | 1.631 ms | 3.227 ms |  3.795 ms |
+| met promoties    | 1.711 ms | 1.655 ms | 3.223 ms |  3.963 ms |
+
+Promoties kosten de optimizer **10 ms op 1.700** — binnen de ruis. Het echte
+werk zit ernaast en is apart gemeten:
+
+| stap                                        | kosten                              |
+| ------------------------------------------- | ----------------------------------- |
+| normaliseren (`toCandidate`, 5.190 records) | 53 ms, één keer                     |
+| cache hit rate                              | 99,5 % (199/200)                    |
+| koppelen + toepassen + kandidaatreductie    | 22,1 ms per week                    |
+| verpakkingsregels per week                  | 28,2 (waarvan 0,6 in de aanbieding) |
+
+De p95 van 3,2 s ligt boven het streefgetal van 3 s uit de Jumbo-fase. Dat komt
+niet door de promoties — de OFF-run zit op dezelfde 3,2 s — maar doordat deze
+run per opstelling over álle gematchte offers reduceert in plaats van over een
+vooraf gereduceerde set. Er is in deze fase bewust niets geoptimaliseerd; dit is
+een meting.
+
+## Waarom het cijfer zo laag is
+
+Dit is de belangrijkste uitkomst, en hij gaat niet over promoties.
+
+```
+5.190  aanbiedingen in de momentopname
+4.683  daarvan te modelleren                     (90,2 %)
+  ...  maar:
+   52  raken een product dat wij kunnen kopen     (1,0 %)
+  0,6  belanden gemiddeld in een weekmandje
+```
+
+De trechter knijpt niet bij het inlezen, niet bij het koppelen en niet bij het
+prijzen. Hij knijpt bij **onze eigen catalogus**: 50 ingrediënten, 1.022
+gematchte producten van de 33.390 die Checkjebon draagt. Alles daarbuiten kan
+geen aanbieding gebruiken, hoe goed die ook is.
+
+En de aanbiedingen liggen ook nog eens niet waar een weekmenu ze nodig heeft:
+
+| categorie                  | aandeel van alle 5.190 aanbiedingen |
+| -------------------------- | ----------------------------------: |
+| drogisterij                |                              15,2 % |
+| huishouden                 |                              13,1 % |
+| soepen, conserven, sauzen  |                              12,0 % |
+| pasta, rijst, wereldkeuken |                               9,0 % |
+| snoep, koek, chips         |                               8,1 % |
+| bier, wijn, sterke drank   |                               8,1 % |
+| frisdrank                  |                               6,4 % |
+| **groente en fruit**       |                           **4,0 %** |
+| **vis**                    |                           **1,0 %** |
+| **vlees**                  |                           **0,9 %** |
+
+**28,3 % van alle aanbiedingen is non-food.** Verse groente, vlees en vis samen
+— de categorieën waar een weekmenu op draait — zijn **6,0 %**. Van alle
+aanbiedingen valt 43,6 % in een categorie die op een menu zou kunnen staan, maar
+de zwaartepunten liggen bij houdbaar en bij merkartikelen: 83,2 % is A-merk.
+
+Wat dat betekent voor de productbeslissing staat in het slotantwoord hieronder.
+
+## Vijf fouten die echte data vond
+
+Alle vijf zaten in code die zijn eigen tests doorstond. Vier van de vijf maakten
+het plan **goedkoper** dan de kassa — de richting waarin een fout niet opvalt.
+
+| #   | wat er misging                                                                                                                              | omvang                                                                     |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| 1   | `74004PAK` (pak, € 2,69) gekoppeld aan `74004DSL` (doos van vier, € 10,76): het artikelnummer werd zonder verpakkingscode vergeleken        | 730 Jumbo-producten (4,2 %) delen zo'n nummer; 1 fout in de 53 koppelingen |
+| 2   | `promotion_type: "one_plus_one"` gehoorzaamd terwijl het schap "2e halve prijs" zegt — een kwart korting geprijsd als de helft              | 300 records; nog eens 175 met "2+1 gratis"                                 |
+| 3   | `… % volume voordeel` gelezen als een vlak percentage, terwijl het een staffel is met een onbekende drempel                                 | 458 records                                                                |
+| 4   | `price` gebruikt als kassaprijs, terwijl het in deze feed de _effectieve_ prijs per stuk is (een "2 VOOR 0.99"-record draagt `price: 0.49`) | zou elke onleesbare bundeltekst gehalveerd hebben                          |
+| 5   | `100 GRAM VOOR 1.69` gelezen als pakprijs bij een grillworst van 300 gram                                                                   | 18 records                                                                 |
+
+Plus één die wel luid faalde, zoals bedoeld: het bestand begint met een BOM en
+bevat achttien velden die de documentatie niet noemt, waaronder
+`product_url` in plaats van `url`, `is_promotional` in plaats van
+`is_current_deal`, `promotional_keywords` (een _lijst_) in plaats van
+`promotion_text`, en `products` in plaats van `results`. Het schema weigerde het
+bestand met de naam van het veld erbij, en dat is precies wat het hoort te doen.
+
+Alle vijf zijn gerepareerd en vastgelegd in
+`tests/unit/promotions/real-snapshot-regressions.test.ts`.
+
+---
+
+# Slotantwoord — met snapshot
+
+**1. Werkt de promotielaag op echte data?** Ja. 5.190 records ingelezen, nul
+stilzwijgend overgeslagen, 90,2 % van de promoties te modelleren, 100 %
+precision op de 52 automatische koppelingen. De laag is niet de bottleneck.
+
+**2. Wat leveren echte promoties op?** € 0,32 per week gemiddeld op € 42,85,
+mediaan € 0,00, p90 € 0,90, maximum € 1,56. In 19 van 50 weken is er iets;
+in 31 weken niets.
+
+**3. Maken ze de tweede winkel waardevoller?** Nee, iets minder waardevol:
+praktisch van € 0,00 naar − € 0,18 gemiddeld. Het aantal weken boven € 1 blijft
+14 van 50, boven € 2,50 zakt van 7 naar 6.
+
+**4. Waar zit dan wel het effect?** In het menu: 7 van de 50 weken kiest de
+optimizer een ander gerecht omdat de ingrediënten in de aanbieding zijn. Dat is
+het enige kanaal dat noemenswaardig beweegt, en het kost geen tweede winkel.
+
+**5. Waarom is het bedrag zo klein?** Niet door de promotielaag. Van 5.190
+aanbiedingen raken er 52 een product dat onze 50 ingrediënten kunnen kopen, en
+de aanbiedingen liggen bovendien scheef: 28,3 % non-food, 6,0 % verse groente,
+vlees en vis samen. Een weekmenuplanner met een kleine, verse, huismerkgerichte
+catalogus vangt structureel weinig van een folder die om drogisterij, huishouden
+en A-merken draait.
+
+**6. Wat zou het cijfer wél verhogen?** In deze volgorde:
+
+1. **Meer ingrediënten en recepten.** De trechter knijpt bij 1.022 van 33.390
+   producten. Dit is verreweg de grootste hefboom en hij vraagt geen nieuwe
+   databron.
+2. **`shelf`-records opvragen.** Die dragen EAN's die Checkjebon mist, en
+   daarmee komt de GTIN-tier tot leven — nu nul.
+3. **Een `AMOUNT_OFF`-promotietype**, goed voor 31 records nu.
+4. **Een derde keten.** Zie hieronder.
+
+**7. Is een derde supermarkt logisch?** **Nee, nu niet.** De tweede winkel
+levert praktisch € 0,00 op zonder promoties en − € 0,18 met. Een derde keten
+verdubbelt het koppelwerk en de reiskosten om te concurreren met een tweede die
+zichzelf al niet terugverdient. Eerst de catalogus vergroten; dan pas opnieuw
+meten of een extra keten iets toevoegt.
+
+**8. Zijn er nieuwe correctheidsfouten gevonden?** Ja, vijf — allemaal in code
+die zijn eigen tests doorstond, en vier ervan maakten het plan goedkoper dan de
+kassa. Ze staan hierboven en zijn vastgelegd in regressietests.
+
+**9. Deel A tegenover deel B.** Deel A modelleerde 15 % van het assortiment in
+de aanbieding en vond € 1,10–€ 2,70 per week. Deel B meet 1,9 % van de gekochte
+regels en vindt € 0,32. Het verschil is geen fout in deel A — het is precies
+waarvoor een gevoeligheidstest dient: hij gaf een curve, en de werkelijkheid
+blijkt aan de linkerkant ervan te liggen.
+
+**REAL PROMOTION VALUE: MEASURED** — € 0,32 per week, gemeten op 5.190 echte
+PrijsProfeet-records over 50 weken.

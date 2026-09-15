@@ -133,6 +133,16 @@ export interface ExternalPromotion {
   /** The shelf text: "1 + 1 gratis", "2e halve prijs". */
   readonly promotionText?: string;
   /**
+   * Every shelf text the source attached, when it publishes more than one.
+   *
+   * A list rather than a joined string, because the entries are independent
+   * claims and not one sentence: the real feed mixes the mechanism with a
+   * delivery threshold and a programme name. Joining them first would make
+   * "2 voor 5.99 | Gratis bezorging bij 15 euro" one unparseable text instead
+   * of one readable claim and one to ignore.
+   */
+  readonly promotionTexts?: readonly string[];
+  /**
    * Where the source says the offer sits relative to its window.
    *
    * Three values, on purpose, even where a source publishes more. A source that
@@ -218,6 +228,8 @@ export interface PromotionCandidate {
   readonly promotionTypeCode?: string;
   readonly promotionStatus?: 'active' | 'upcoming' | 'expired';
   readonly originalText: string;
+  /** Every text the source gave, kept for review and provenance. */
+  readonly originalTexts?: readonly string[];
   /** Which file this record came from, so a wrong line can be found again. */
   readonly sourceFile?: string;
   /** When we read the file. Distinct from when the source built it. */

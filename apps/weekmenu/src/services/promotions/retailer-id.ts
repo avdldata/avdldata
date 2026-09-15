@@ -29,10 +29,9 @@ export interface RetailerProductId {
    * extra.
    *
    * Jumbo appends a packaging code — "707266STK" is article 707266 in a
-   * "stuk" pack. A second source may quote either form, so both are kept and
-   * the linker may try both. Whether PrijsProfeet uses one, the other, or
-   * neither is not something this repository can establish; see
-   * PRIJSPROFEET_INTEGRATION.md.
+   * "stuk" pack. Kept for reporting and for reading a slug, but **not** used
+   * for identity: 730 Jumbo products share a number with a different code, and
+   * a case of six is not the pack. See `sameRetailerProduct`.
    */
   readonly numeric?: string;
 }
@@ -88,16 +87,31 @@ export function extractRetailerProductId(
 /**
  * Do two retailer identifiers refer to the same product?
  *
- * Equal on the full id is the strong answer. Equal on the article number alone
- * is accepted too, because a feed that drops the packaging code is still naming
- * the same article — but only when both sides actually have one, so an
- * undefined never matches an undefined.
+ * The full id, and only the full id.
+ *
+ * This used to accept a match on the article number alone, on the reasoning
+ * that a feed dropping Jumbo's packaging code was still naming the same
+ * article. The first real promotion snapshot showed that reasoning to be
+ * wrong, and expensively so:
+ *
+ *   74004PAK   Campina Verse Halfvolle Melk Voordeelpak 2,4 L    € 2,69
+ *   74004DSL   Campina Halfvolle Melk Voordeelpack 4 x 2,4 L     € 10,76
+ *
+ * The suffix is not decoration, it is the difference between a pack and the
+ * case it ships in. Across the Jumbo catalogue 730 products — 4,2 % — share a
+ * number with a different packaging code, routinely at six to twelve times the
+ * price. A promotion on the case landing on the single pack is a discount that
+ * does not exist, and it is the kind that never announces itself.
+ *
+ * Nothing is lost by dropping it. Every URL in the real snapshot yields the
+ * complete id, for 100 % of 5.190 records, so the fallback was answering a
+ * question nobody asked. Albert Heijn is unaffected either way: its extractor
+ * refuses a bare number, so a numeric-only AH id never reaches here.
  */
 export function sameRetailerProduct(
   a: RetailerProductId | undefined,
   b: RetailerProductId | undefined,
 ): boolean {
   if (!a || !b) return false;
-  if (a.id.toLowerCase() === b.id.toLowerCase()) return true;
-  return a.numeric !== undefined && b.numeric !== undefined && a.numeric === b.numeric;
+  return a.id.toLowerCase() === b.id.toLowerCase();
 }

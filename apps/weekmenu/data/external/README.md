@@ -26,3 +26,33 @@ pnpm data:week       # een echte week door de optimizer, in schaduwmodus
 De datum van de momentopname is de commitdatum van dat bestand in de
 Checkjebon-repository; de data zelf bevat geen tijdstempel per product. Wat dat
 betekent voor versheid staat in `../../CHECKJEBON_VALIDATION.md`.
+
+## PrijsProfeet
+
+Aanbiedingen van Albert Heijn en Jumbo. **Niet meegecommit**, om twee redenen:
+het bestand is ruim 11 MB en de gebruiksvoorwaarden van de gratis laag verbieden
+expliciet het bouwen van een volledige databasekopie. Een werkmomentopname van
+één folderperiode is iets anders dan zo'n kopie, maar hij hoort niet in een
+repository thuis.
+
+Zet een export neer als `data/external/promotions-snapshot.json` en lees hem in:
+
+```bash
+pnpm promo:import data/external/promotions-snapshot.json
+```
+
+Dat valideert het bestand, telt wat erin zit, koppelt het aan onze producten en
+schrijft een rapport naar `promotions-import-report.json`. Daarna:
+
+```bash
+pnpm promo:prices    # normale prijs tegenover Checkjebon
+pnpm promo:bench     # 50 weken, promoties aan tegenover uit
+```
+
+De momentopname waarop `PROMOTION_VALUE_BENCHMARK.md` deel B gebaseerd is:
+5.190 records (3.052 AH, 2.138 Jumbo), opgehaald 2026-09-15T14:25+02:00,
+folderperiode 9 t/m 22 september 2026.
+
+Bronvermelding is verplicht op de gratis laag en staat in
+`src/services/promotions/attribution.ts`. Het veldcontract staat in
+`../../PRIJSPROFEET_SNAPSHOT_SCHEMA.md`.

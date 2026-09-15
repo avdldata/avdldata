@@ -55,17 +55,18 @@ describe('the shop’s own product number', () => {
     expect(extractRetailerProductId('lidl', 'whatever-12345AB')).toBeUndefined();
   });
 
-  it('matches on the full id or on the article number, never on nothing', () => {
-    const full = { id: '128692ZK', numeric: '128692' };
-    expect(sameRetailerProduct(full, { id: '128692ZK', numeric: '128692' })).toBe(true);
-    // A feed that quotes only the article number still names the same article.
-    expect(sameRetailerProduct(full, { id: '128692' })).toBe(false);
-    expect(sameRetailerProduct(full, { id: '128692', numeric: '128692' })).toBe(true);
-    expect(sameRetailerProduct(full, { id: '128692DS', numeric: '128692' })).toBe(true);
-    expect(sameRetailerProduct(full, { id: '999999ZK', numeric: '999999' })).toBe(false);
-    // Two unknowns are not a match.
+  it('matches on the full id and on nothing else', () => {
+    expect(
+      sameRetailerProduct(extractJumboProductId('x-128692ZK'), extractJumboProductId('128692ZK')),
+    ).toBe(true);
+    // The packaging code is not decoration. In the Jumbo catalogue 74004PAK is
+    // a 2,4 litre pack at € 2,69 and 74004DSL is the case of four at € 10,76 —
+    // 730 products share a number this way, so matching on the number alone
+    // puts a case promotion on a single pack.
+    expect(
+      sameRetailerProduct(extractJumboProductId('74004PAK'), extractJumboProductId('74004DSL')),
+    ).toBe(false);
     expect(sameRetailerProduct(undefined, undefined)).toBe(false);
-    expect(sameRetailerProduct({ id: 'x' }, { id: 'y' })).toBe(false);
   });
 });
 

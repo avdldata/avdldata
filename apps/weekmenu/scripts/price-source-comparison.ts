@@ -59,7 +59,7 @@ for (const chain of fixture.chains) {
   const result = linkPromotions({
     chainId: chain.chainId,
     candidates: promotions.map(toCandidate),
-    offers: chain.reducedOffers,
+    offers: chain.allOffers,
     retailerIdByProduct,
   });
 
@@ -114,14 +114,17 @@ for (const chain of fixture.chains) {
   const median = sorted[Math.floor(sorted.length / 2)]!;
   const mean = differences.reduce((sum, d) => sum + d, 0) / differences.length;
   console.log(
-    `\n    mediaan verschil ${(median / 100).toFixed(2)}, ` +
-      `gemiddeld ${(mean / 100).toFixed(2)} (bron min Checkjebon)`,
+    `\n    mediaan verschil € ${(median / 100).toFixed(2)}, ` +
+      `gemiddeld € ${(mean / 100).toFixed(2)} (bron min Checkjebon)`,
   );
   // A consistent sign is the interesting part: it means one source lags the
-  // other systematically rather than both being noisy.
+  // other systematically rather than both being noisy. Equal is counted on its
+  // own — folding it in with "lower" turns agreement into a disagreement.
   const higher = differences.filter((d) => d > 0).length;
+  const equal = differences.filter((d) => d === 0).length;
   console.log(
-    `    bron hoger in ${higher}, lager in ${differences.length - higher} van ${differences.length}`,
+    `    bron hoger in ${higher}, gelijk in ${equal}, ` +
+      `lager in ${differences.length - higher - equal} van ${differences.length}`,
   );
 
   if (outliers.length > 0) {
