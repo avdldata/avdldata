@@ -168,6 +168,33 @@ Midden-Oosters) levert deze shortlist bijna niets, en **33 van de 96 zijn soep**
 Dat is geen fout in de diversity-term van de score. Het is wat er in de bronnen
 zit die we mogen gebruiken.
 
+## Het licentiebesluit dat nog openstaat
+
+De selectie bevat 74 ForkRecipe-kandidaten onder CC BY-SA 4.0. Die licentie is
+besmettelijk: wie de tekst overneemt, moet zijn eigen afgeleide onder dezelfde
+voorwaarden delen. Daarom draagt de staging **geen** instructieteksten en is dit
+een besluit dat bewust genomen moet worden, niet een gevolg van wat er toevallig
+is binnengehaald.
+
+|                     | **A — share-alike accepteren**                                               | **B — alleen publiek domein**    |
+| ------------------- | ---------------------------------------------------------------------------- | -------------------------------- |
+| wat je gebruikt     | ForkRecipe-tekst én archieftekst                                             | alleen archieftekst (pre-1931)   |
+| wat je moet doen    | de afgeleide receptteksten onder CC BY-SA 4.0 publiceren, met bronvermelding | niets; publiek domein bindt niet |
+| wat je krijgt       | 7 van de 8 GOOD-recepten in de audit                                         | 1 van de 8                       |
+| commerciële release | tekst blijft CC BY-SA; de rest van de app niet                               | vrij                             |
+| risico              | share-alike moet correct worden nageleefd, ook bij latere bewerking          | geen licentierisico              |
+
+**Advies: B, en de ForkRecipe-recepten als _structuurbron_ gebruiken in plaats
+van als tekstbron.** De ingrediëntenlijst met hoeveelheden is een verzameling
+feiten en draagt geen auteursrecht; de bereidingstekst wel. Zeven goede
+gerechten overschrijven met zelfgeschreven instructies kost een uur en haalt de
+share-alike-verplichting volledig weg. Bij 96 kandidaten is dat een reëel
+alternatief; bij 3.000 zou het dat niet zijn.
+
+Dit besluit hoeft pas te vallen als er daadwerkelijk recepten naar productie
+gaan. Zolang de staging alleen structuur bevat, is er niets gepubliceerd en is
+er niets te repareren.
+
 ## Conclusie
 
 De pijplijn werkt: bronnen worden ingelezen, geparseerd, geclassificeerd,
