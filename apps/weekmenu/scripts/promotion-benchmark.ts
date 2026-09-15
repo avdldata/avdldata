@@ -31,6 +31,7 @@ import { linkPromotions, toCandidate } from '../src/services/promotions/link-pro
 import type { ExternalPromotion, PromotionCandidate } from '../src/services/promotions/types';
 import { loadRealChains, type RealChainId } from '../tests/support/real-data-store';
 import { loadSnapshotFromDisk, retailerIdIndex } from '../tests/support/promotion-snapshot';
+import { loadCrosswalks } from '../tests/support/identity-crosswalk';
 import { identityCoverage } from '../src/services/promotions/load-snapshot';
 import { weekScenarios, type WeekScenario } from '../tests/support/week-scenarios';
 import { EVEN_MIX, modelPromotions } from '../tests/support/modelled-promotions';
@@ -62,6 +63,17 @@ const fixture = loadRealChains(['ah', 'jumbo']);
 const ah = fixture.chains.find((c) => c.chainId === 'ah')!;
 const jumbo = fixture.chains.find((c) => c.chainId === 'jumbo')!;
 const retailerIdByProduct = retailerIdIndex(fixture.chains);
+
+/*
+ * The identity crosswalk, if there is one.
+ *
+ * It moves links from the retailer-id tier to the stable-id tier, which is
+ * where they belong: an article number can be reissued and a base id is what
+ * the source calls permanent. It does not, on this data, create any link that
+ * was not already there — both sides carry the complete article number for
+ * 100 % of records. See IDENTITY_BRIDGE.md.
+ */
+const identity = REAL ? loadCrosswalks(fixture.chains) : undefined;
 
 /**
  * The days a real snapshot can actually say something about.
@@ -230,6 +242,12 @@ function storesFor(
       candidates: candidatesFor(promotions),
       offers: chain.allOffers,
       retailerIdByProduct,
+      ...(identity
+        ? {
+            stableIdByProduct: identity.stableIdByProduct,
+            gtinByProduct: identity.gtinByProduct,
+          }
+        : {}),
     }).linked;
     const resolved = applyPromotions(chain.allOffers, linked, {
       shoppingDate: scenario.startDate,
@@ -340,6 +358,13 @@ if (REAL) {
       '  De winkeldata van de scenario\u2019s liggen binnen dat venster; huishoudens en\n' +
       '  receptkeuzes blijven exact dezelfde als in de no-promotions baseline.\n',
   );
+  if (identity) {
+    const links = identity.crosswalks.reduce((n, c) => n + c.links.length, 0);
+    console.log(
+      `  Identity crosswalk: ${links} producten verrijkt uit ${identity.sources.join(' + ')}\n` +
+        `    ${identity.stableIdByProduct.size} met base_product_id, ${identity.gtinByProduct.size} met EAN\n`,
+    );
+  }
   console.log('  Wat de momentopname draagt\n');
   for (const row of identityCoverage(realPromotions)) {
     console.log(

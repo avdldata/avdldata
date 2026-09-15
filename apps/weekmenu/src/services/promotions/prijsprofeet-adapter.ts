@@ -430,7 +430,9 @@ export function mapResponse(
 
 export {
   classifyRecord,
+  isCurrentDeal,
   KNOWN_PROMOTION_TYPES,
+  observedAt,
   PROMOTION_STATUSES,
   promotionTexts,
   productUrl,

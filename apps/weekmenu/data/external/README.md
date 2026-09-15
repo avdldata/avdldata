@@ -56,3 +56,29 @@ folderperiode 9 t/m 22 september 2026.
 Bronvermelding is verplicht op de gratis laag en staat in
 `src/services/promotions/attribution.ts`. Het veldcontract staat in
 `../../PRIJSPROFEET_SNAPSHOT_SCHEMA.md`.
+
+## PrijsProfeet — schapdata
+
+Gewone schapprijzen, geen aanbiedingen. Ze dragen een EAN en een stabiele
+sleutel voor producten die **niet** in de folder staan, en dat is de enige reden
+om ze op te halen. Ook niet meegecommit, om dezelfde twee redenen als hierboven.
+
+Ophalen op een Windows-machine:
+
+```powershell
+cd <repo>\apps\weekmenu
+.\scripts\fetch-shelf-snapshot.ps1
+```
+
+Inlezen:
+
+```bash
+pnpm shelf:import data/external/shelf-snapshot.json
+```
+
+Dat valideert, herkent de schaprecords, bouwt de identity crosswalk en schrijft
+hem naar `identity-crosswalk.json`. Wat dat oplevert — en wat niet — staat in
+`../../IDENTITY_BRIDGE.md`.
+
+**Een schaprecord wordt nooit een korting.** Het krijgt een ander type en geen
+enkele stap stroomafwaarts van de promotie-engine accepteert dat type.

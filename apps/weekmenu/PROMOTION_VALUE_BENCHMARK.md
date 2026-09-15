@@ -1,20 +1,28 @@
 # Wat aanbiedingen aan de weekprijs veranderen
 
-## REAL PROMOTION VALUE: MEASURED
+## CAPTURED PROMOTION VALUE AT CURRENT LINK COVERAGE: € 0,32 per week
 
 Gemeten op de echte PrijsProfeet-momentopname van 15 september 2026: **5.190
 records, 3.052 Albert Heijn en 2.138 Jumbo**, over dezelfde vijftig scenario's
 als de no-promotions baseline.
 
-> **Echte aanbiedingen verlagen de weekprijs met gemiddeld € 0,32 op een
-> boodschappenmand van € 42,85 — 0,7 %.** De mediaan is € 0,00: in 31 van de 50
-> weken staat er niets in de aanbieding dat het weekmenu nodig heeft.
+> **Bij de huidige koppeldekking verlagen echte aanbiedingen de weekprijs met
+> gemiddeld € 0,32 op een boodschappenmand van € 42,85 — 0,7 %.** De mediaan is
+> € 0,00: in 31 van de 50 weken staat er niets in de aanbieding dat het weekmenu
+> nodig heeft.
 
-Dat cijfer is laag, en het is **geen oordeel over de promotielaag**. De
-oorzaak is meetbaar en zit ergens anders: van 5.190 aanbiedingen raken er 52 een
-product dat onze receptencatalogus überhaupt kan kopen. Zie
-[Waarom het cijfer zo laag is](#waarom-het-cijfer-zo-laag-is) — dat is de
-belangrijkste uitkomst van deze fase.
+**Dit is niet "de werkelijke waarde van promoties".** De brondata is echt en de
+meting is echt, maar slechts **1,0 %** ervan bereikt onze koopbare catalogus.
+Wat de overige 99 % waard zou zijn is niet gemeten en kan hier niet uit worden
+afgeleid.
+
+Eén verklaring is inmiddels uitgesloten: dat die 99 % door betere
+identiteitsresolutie bereikbaar wordt. De identity bridge is gebouwd, verrijkt
+56 producten met 100 % precision, en levert **nul** extra koppelingen op — 52
+voor, 52 na, met byte-identieke benchmarkcijfers. Zie
+[IDENTITY_BRIDGE.md](IDENTITY_BRIDGE.md). De beperking zit in de
+receptencatalogus: 1.022 van 33.390 producten zijn koopbaar. Zie
+[Waarom het cijfer zo laag is](#waarom-het-cijfer-zo-laag-is).
 
 Dit document heeft twee delen die niet vermengd mogen worden.
 
@@ -647,7 +655,9 @@ en A-merken draait.
 3. **Een `AMOUNT_OFF`-promotietype**, goed voor 31 records nu.
 4. **Een derde keten.** Zie hieronder.
 
-**7. Is een derde supermarkt logisch?** **Nee, nu niet.** De tweede winkel
+**7. Is een derde supermarkt logisch?** **Nee, nu niet.** De identity bridge
+heeft inmiddels bevestigd dat koppeldekking niet het probleem is, dus een derde
+bron van koppelwerk lost ook niets op. De tweede winkel
 levert praktisch € 0,00 op zonder promoties en − € 0,18 met. Een derde keten
 verdubbelt het koppelwerk en de reiskosten om te concurreren met een tweede die
 zichzelf al niet terugverdient. Eerst de catalogus vergroten; dan pas opnieuw
@@ -663,5 +673,8 @@ regels en vindt € 0,32. Het verschil is geen fout in deel A — het is precies
 waarvoor een gevoeligheidstest dient: hij gaf een curve, en de werkelijkheid
 blijkt aan de linkerkant ervan te liggen.
 
-**REAL PROMOTION VALUE: MEASURED** — € 0,32 per week, gemeten op 5.190 echte
-PrijsProfeet-records over 50 weken.
+**CAPTURED PROMOTION VALUE AT CURRENT LINK COVERAGE: € 0,32 per week**, gemeten
+op 5.190 echte PrijsProfeet-records over 50 weken. Niet te lezen als de totale
+waarde van promoties: 1,0 % van de bron bereikt onze koopbare catalogus, en dat
+ligt niet aan identiteitsresolutie ([IDENTITY_BRIDGE.md](IDENTITY_BRIDGE.md))
+maar aan de omvang van de receptencatalogus.

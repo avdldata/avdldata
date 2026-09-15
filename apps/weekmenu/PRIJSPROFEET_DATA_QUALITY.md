@@ -147,6 +147,17 @@ De linker accepteerde tot deze fase een match op het nummer alleen. Dat leverde
 
 ### Wat de EAN nog kan opleveren
 
+**Gemeten: niets, voor de koppeldekking.** De identity bridge is gebouwd en
+draait; hij verrijkt 56 producten met een EAN én een `base_product_id`, met 100 %
+precision, en levert nul extra promotiekoppelingen op. De reden is dat
+`base_product_id` in 5.190 van 5.190 records letterlijk `<keten>_<artikelnummer>`
+is — dezelfde identiteit met een voorvoegsel. Zie
+[IDENTITY_BRIDGE.md](IDENTITY_BRIDGE.md).
+
+Wat hieronder staat blijft gelden voor de gevallen waarin een EAN wél iets
+toevoegt (een hernummerd artikel: 1,9 % van de EAN's), en voor prijsvergelijking
+over de hele catalogus.
+
 Checkjebon draagt geen EAN, dus de GTIN-tier staat op nul. PrijsProfeets
 `shelf`-records dragen er wél een en hangen via hetzelfde artikelnummer aan onze
 producten; `eanIndexFromShelf` oogst ze. **Deze momentopname bevat geen
