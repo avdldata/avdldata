@@ -12,37 +12,31 @@
  *
  *   pnpm promo:prices
  */
-import { existsSync, readFileSync } from 'node:fs';
 import { linkPromotions, toCandidate } from '../src/services/promotions/link-promotions';
-import { extractRetailerProductId } from '../src/services/promotions/retailer-id';
-import type { ExternalPromotion } from '../src/services/promotions/types';
+import { loadSnapshotFromDisk, retailerIdIndex } from '../tests/support/promotion-snapshot';
 import { loadRealChains } from '../tests/support/real-data-store';
 
-const SNAPSHOT = 'data/external/promotions-snapshot.json';
-if (!existsSync(SNAPSHOT)) {
+const snapshot = loadSnapshotFromDisk();
+if (snapshot.status === 'ABSENT') {
   console.log(`
-  Geen promotiemomentopname op ${SNAPSHOT}, dus niets te vergelijken.
+  ${snapshot.message}
 
   Er is in deze omgeving nooit een respons opgehaald: de egress-proxy weigert
   PrijsProfeet met 403 op CONNECT. Zie PRIJSPROFEET_INTEGRATION.md voor het
-  bewijs en voor wat er nodig is om dit script wél te kunnen draaien.
+  bewijs en PRIJSPROFEET_SNAPSHOT_SCHEMA.md voor het bestandscontract.
 `);
   process.exit(1);
 }
 
-const promotions = JSON.parse(readFileSync(SNAPSHOT, 'utf8')) as ExternalPromotion[];
+const promotions = snapshot.promotions;
 const fixture = loadRealChains(['ah', 'jumbo']);
+const retailerIdByProduct = retailerIdIndex(fixture.chains);
 
-const retailerIdByProduct = new Map<string, string>();
-for (const chain of fixture.chains) {
-  for (const offer of chain.reducedOffers) {
-    const id = extractRetailerProductId(
-      chain.chainId,
-      offer.productId.slice(chain.chainId.length + 1),
-    );
-    if (id) retailerIdByProduct.set(offer.productId, id.id);
-  }
-}
+console.log(
+  `\n  bron ${snapshot.source}, ${promotions.length} aanbiedingen uit ${snapshot.sourceFile}` +
+    (snapshot.fetchedAt ? `, opgehaald ${snapshot.fetchedAt}` : '') +
+    `, ingelezen ${snapshot.importedAt}`,
+);
 
 /**
  * Only exactly-linked products.
@@ -71,7 +65,9 @@ for (const chain of fixture.chains) {
 
   const comparable = result.linked.filter(
     (entry) =>
-      (entry.matchedBy === 'EXACT_RETAILER_ID' || entry.matchedBy === 'EXACT_GTIN') &&
+      (entry.matchedBy === 'EXACT_STABLE_ID' ||
+        entry.matchedBy === 'EXACT_RETAILER_ID' ||
+        entry.matchedBy === 'EXACT_GTIN') &&
       entry.candidate.regularPriceCents !== undefined,
   );
 

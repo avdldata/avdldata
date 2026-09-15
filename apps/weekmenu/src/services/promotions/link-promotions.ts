@@ -2,7 +2,7 @@ import { cents, type Cents } from '@/domain/units';
 import { normalise } from '@/domain/ingestion/match-ingredient';
 import { resolvePackage } from '@/domain/ingestion/package-parser';
 import type { ProductOffer, Promotion } from '@/domain/stores/types';
-import { parsePromotionText } from './parse-promotion-text';
+import { parseTypedPromotion } from './parse-promotion-text';
 import { extractRetailerProductId, sameRetailerProduct } from './retailer-id';
 import type {
   ExternalPromotion,
@@ -37,8 +37,18 @@ import type {
 
 /** Turn what a source said into something comparable, without inventing anything. */
 export function toCandidate(external: ExternalPromotion): PromotionCandidate {
-  const retailer = extractRetailerProductId(external.chainId, external.externalProductId);
-  const parsed = parsePromotionText(external.promotionText, external.promotionalPriceCents);
+  // The retailer's own article number may arrive in its own field or be
+  // recoverable from a per-period id that happens to embed it; prefer the
+  // explicit one.
+  const retailer =
+    extractRetailerProductId(external.chainId, external.retailerProductId) ??
+    extractRetailerProductId(external.chainId, external.externalProductId);
+  const parsed = parseTypedPromotion(
+    external.promotionTypeCode,
+    external.promotionText,
+    external.promotionalPriceCents,
+    external.regularPriceCents,
+  );
   const pack = resolvePackage(external.packageText, external.productName);
 
   // A source that states no window is treated as stating nothing, not as
@@ -51,6 +61,7 @@ export function toCandidate(external: ExternalPromotion): PromotionCandidate {
     externalPromotionId: external.externalPromotionId,
     source: external.source,
     chainId: external.chainId,
+    ...(external.baseProductId ? { baseProductId: external.baseProductId } : {}),
     ...(retailer ? { retailerProductId: retailer.id } : {}),
     ...(retailer?.numeric ? { retailerArticleNumber: retailer.numeric } : {}),
     ...(external.gtin ? { gtin: normaliseGtin(external.gtin) } : {}),
@@ -65,6 +76,9 @@ export function toCandidate(external: ExternalPromotion): PromotionCandidate {
     ...(external.promotionalPriceCents !== undefined
       ? { promotionalPriceCents: external.promotionalPriceCents }
       : {}),
+    ...(external.unitPriceCents !== undefined ? { unitPriceCents: external.unitPriceCents } : {}),
+    ...(external.promotionTypeCode ? { promotionTypeCode: external.promotionTypeCode } : {}),
+    ...(external.promotionStatus ? { promotionStatus: external.promotionStatus } : {}),
     originalText: external.promotionText ?? '',
     ...(parsed.status === 'OK' ? { params: parsed.params } : { unsupportedReason: parsed.reason }),
     validFrom,
@@ -97,6 +111,15 @@ export interface LinkingInput {
    * Checkjebon slug.
    */
   readonly retailerIdByProduct: ReadonlyMap<string, string>;
+  /**
+   * A stable product identity per offer, when a mapping exists.
+   *
+   * Empty today: Checkjebon carries no such identity, so this only becomes
+   * useful once approved links from an earlier snapshot are stored. It is here
+   * because the tier order must be right from the start — retrofitting a
+   * higher-priority tier later would silently change existing links.
+   */
+  readonly stableIdByProduct?: ReadonlyMap<string, string>;
   /** GTIN per offer, when we have one. Checkjebon supplies none. */
   readonly gtinByProduct?: ReadonlyMap<string, string>;
 }
@@ -104,6 +127,7 @@ export interface LinkingInput {
 export function linkPromotions(input: LinkingInput): LinkingResult {
   const offers = input.offers.filter((o) => o.chainId === input.chainId);
 
+  const byStableId = new Map<string, ProductOffer[]>();
   const byRetailerId = new Map<string, ProductOffer[]>();
   const byGtin = new Map<string, ProductOffer[]>();
   const byName = new Map<string, ProductOffer[]>();
@@ -114,6 +138,8 @@ export function linkPromotions(input: LinkingInput): LinkingResult {
   };
 
   for (const offer of offers) {
+    const stableId = input.stableIdByProduct?.get(offer.productId);
+    if (stableId) push(byStableId, stableId.toLowerCase(), offer);
     const retailerId = input.retailerIdByProduct.get(offer.productId);
     if (retailerId) push(byRetailerId, retailerId.toLowerCase(), offer);
     const gtin = input.gtinByProduct?.get(offer.productId);
@@ -125,6 +151,7 @@ export function linkPromotions(input: LinkingInput): LinkingResult {
   const review: LinkedPromotion[] = [];
   const rejected: RejectedPromotion[] = [];
   const byTier: Record<PromotionMatchTier, number> = {
+    EXACT_STABLE_ID: 0,
     EXACT_RETAILER_ID: 0,
     EXACT_GTIN: 0,
     NAME_PACKAGE: 0,
@@ -137,18 +164,20 @@ export function linkPromotions(input: LinkingInput): LinkingResult {
     AMBIGUOUS_PRODUCT: 0,
   };
   let supportedType = 0;
+  let withStableId = 0;
   let withRetailerId = 0;
   let withGtin = 0;
   let withPackage = 0;
 
   for (const candidate of input.candidates) {
     if (candidate.chainId !== input.chainId) continue;
+    if (candidate.baseProductId) withStableId += 1;
     if (candidate.retailerProductId) withRetailerId += 1;
     if (candidate.gtin) withGtin += 1;
     if (candidate.packageAmount !== undefined) withPackage += 1;
     if (candidate.params) supportedType += 1;
 
-    const found = findProduct(candidate, { byRetailerId, byGtin, byName });
+    const found = findProduct(candidate, { byStableId, byRetailerId, byGtin, byName });
     if (found.tier === undefined) {
       rejectedCounts[found.reason] += 1;
       rejected.push({ candidate, reason: found.reason, nearest: found.nearest });
@@ -194,6 +223,7 @@ export function linkPromotions(input: LinkingInput): LinkingResult {
       supportedType,
       unsupportedType:
         input.candidates.filter((c) => c.chainId === input.chainId).length - supportedType,
+      withStableId,
       withRetailerId,
       withGtin,
       withPackage,
@@ -208,11 +238,22 @@ type FindResult =
 function findProduct(
   candidate: PromotionCandidate,
   index: {
+    byStableId: Map<string, ProductOffer[]>;
     byRetailerId: Map<string, ProductOffer[]>;
     byGtin: Map<string, ProductOffer[]>;
     byName: Map<string, ProductOffer[]>;
   },
 ): FindResult {
+  // Tier 0: an identity the source itself calls stable. Above the retailer id
+  // because a per-period product id is a record identity, not a product one.
+  if (candidate.baseProductId) {
+    const exact = index.byStableId.get(candidate.baseProductId.toLowerCase());
+    if (exact?.length === 1) return { tier: 'EXACT_STABLE_ID', offer: exact[0]! };
+    if (exact && exact.length > 1) {
+      return { tier: undefined, reason: 'AMBIGUOUS_PRODUCT', nearest: exact.map((o) => o.name) };
+    }
+  }
+
   // Tier 1: the shop's own number. Both the full id and the bare article
   // number are tried, because a feed may quote either.
   for (const key of [candidate.retailerProductId, candidate.retailerArticleNumber]) {

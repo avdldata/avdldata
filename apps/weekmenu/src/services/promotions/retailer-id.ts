@@ -67,7 +67,10 @@ export function extractJumboProductId(
   const text = (slugOrUrl ?? '').trim().replace(/\/+$/, '');
   if (text === '') return undefined;
   const last = text.split('/').pop() ?? '';
-  const match = /-(\d{4,10})([A-Z]{2,4})$/.exec(last);
+  // Either the tail of a slug ("...-128692ZK") or the bare identifier a feed
+  // hands over directly ("128692ZK"). Requiring the hyphen would have refused
+  // exactly the form a promotion source is most likely to send.
+  const match = /(?:^|-)(\d{4,10})([A-Z]{2,4})$/.exec(last);
   if (!match) return undefined;
   return { id: `${match[1]}${match[2]}`, numeric: match[1] };
 }

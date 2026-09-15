@@ -24,6 +24,14 @@ import type { Promotion, PromotionParams, ProductOffer } from '@/domain/stores/t
 
 /** How confident we are that a promotion belongs to a given product. */
 export type PromotionMatchTier =
+  /**
+   * A stable product identity the source itself calls permanent.
+   *
+   * Ranked above the retailer id because PrijsProfeet product ids can change
+   * per promotion period: a per-period id is a record identity, not a product
+   * identity, and linking on it would silently rot between folder weeks.
+   */
+  | 'EXACT_STABLE_ID'
   /** The retailer's own product number, quoted identically by both sides. */
   | 'EXACT_RETAILER_ID'
   /** A GTIN both sides carry and agree on. */
@@ -57,10 +65,21 @@ export interface ExternalPromotion {
   readonly source: string;
   /** Which chain the promotion is at. */
   readonly chainId: string;
-  /** The source's id for the product, if it has one. */
+  /**
+   * A product identity the source states is stable across promotion periods.
+   *
+   * This is the one to link on when it exists. `externalProductId` may be
+   * reissued every folder week, which makes it useful for de-duplicating
+   * records and useless for recognising a product.
+   */
+  readonly baseProductId?: string;
+  /** The retailer's own article number, when the source passes it through. */
+  readonly retailerProductId?: string;
+  /** The source's id for the product, if it has one. Per-period, so record identity. */
   readonly externalProductId?: string;
   readonly gtin?: string;
   readonly productName: string;
+  readonly brand?: string;
   /** Pack size as the source states it, unparsed. */
   readonly packageText?: string;
   /**
@@ -71,8 +90,28 @@ export interface ExternalPromotion {
    */
   readonly regularPriceCents?: number;
   readonly promotionalPriceCents?: number;
+  /**
+   * Price per kilo or litre as the source states it.
+   *
+   * Display and comparison only. Never multiplied by a quantity to price a
+   * basket: a unit price alongside "2 voor € 3" describes the bundle, and
+   * multiplying it prices a single pack at a discount that does not exist.
+   */
+  readonly unitPriceCents?: number;
+  /** The source's own classification of the offer, when it has one. */
+  readonly promotionTypeCode?: string;
   /** The shelf text: "1 + 1 gratis", "2e halve prijs". */
   readonly promotionText?: string;
+  /** Where the source says the offer sits relative to its window. */
+  readonly promotionStatus?: 'active' | 'upcoming' | 'expired';
+  /**
+   * The source's "this is live now" flag.
+   *
+   * Recorded, never obeyed. Whether an offer applies is decided by the shopping
+   * date against the window, because a flag is true at the moment the feed was
+   * built and the week being planned is not that moment.
+   */
+  readonly isActive?: boolean;
   readonly validFrom?: string;
   readonly validUntil?: string;
   /** When we fetched it, so a stale snapshot can be recognised as one. */
@@ -84,6 +123,7 @@ export interface PromotionCandidate {
   readonly externalPromotionId: string;
   readonly source: string;
   readonly chainId: string;
+  readonly baseProductId?: string;
   readonly retailerProductId?: string;
   readonly retailerArticleNumber?: string;
   readonly gtin?: string;
@@ -95,7 +135,14 @@ export interface PromotionCandidate {
   readonly packageUnit?: BaseUnit;
   readonly regularPriceCents?: number;
   readonly promotionalPriceCents?: number;
+  readonly unitPriceCents?: number;
+  readonly promotionTypeCode?: string;
+  readonly promotionStatus?: 'active' | 'upcoming' | 'expired';
   readonly originalText: string;
+  /** Which file this record came from, so a wrong line can be found again. */
+  readonly sourceFile?: string;
+  /** When we read the file. Distinct from when the source built it. */
+  readonly importedAt?: string;
   /** Absent when the text could not be structured; the promotion is then unusable. */
   readonly params?: PromotionParams;
   readonly unsupportedReason?: string;
@@ -145,6 +192,7 @@ export interface LinkingMetrics {
   readonly rejected: Readonly<Record<PromotionRejection, number>>;
   readonly supportedType: number;
   readonly unsupportedType: number;
+  readonly withStableId: number;
   readonly withRetailerId: number;
   readonly withGtin: number;
   readonly withPackage: number;

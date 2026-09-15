@@ -22,7 +22,10 @@ uitziet als een meting. Dus staat er niets.
 
 `pnpm promo:probe` produceert precies deze tabel, per keten, zodra er een
 momentopname in `data/external/promotions-snapshot.json` staat. Het is één
-commando en het antwoordt op alle tien de velden die stap 4 noemt.
+commando en het antwoordt op alle velden die de opdracht noemt, inclusief de
+identiteitsdekking (stable id / retailer id / GTIN) waarmee de koppelstrategie
+empirisch te beoordelen is. Het contract voor dat bestand staat in
+[PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md).
 
 De uitvoer heeft deze vorm:
 
@@ -139,6 +142,7 @@ Dit is gebouwd en getest; alleen de aantallen ontbreken.
 
 | tier                | eis                                                                                              | automatisch toepassen |
 | ------------------- | ------------------------------------------------------------------------------------------------ | :-------------------: |
+| `EXACT_STABLE_ID`   | een identiteit die de bron zelf permanent noemt (`base_product_id`)                              |          ja           |
 | `EXACT_RETAILER_ID` | winkelartikelnummer gelijk (volledig, of het cijferdeel als één kant de verpakkingscode weglaat) |          ja           |
 | `EXACT_GTIN`        | beide kanten een GTIN, en die is gelijk                                                          |          ja           |
 | `NAME_PACKAGE`      | genormaliseerde naam identiek **én** verpakking identiek                                         |          ja           |
@@ -152,6 +156,11 @@ grammen als stuks lezen, en die is in de vorige fase duur genoeg geweest.
 
 Vier redenen om te weigeren, allemaal apart geteld: `NO_CANDIDATE_PRODUCT`,
 `UNSUPPORTED_PROMOTION`, `INVALID_VALIDITY`, `AMBIGUOUS_PRODUCT`.
+
+`EXACT_STABLE_ID` staat bovenaan omdat PrijsProfeet-product-ID's per
+promotieperiode kunnen wijzigen. Een koppeling op zo'n per-periode-ID werkt deze
+week en rot stilletjes in de volgende folder, dus die geldt als
+_record_-identiteit — goed voor ontdubbelen — en niet als productidentiteit.
 
 ---
 

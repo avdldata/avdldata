@@ -249,3 +249,77 @@ export function parsePromotionText(
 
   return { status: 'FAILED', reason: 'UNSUPPORTED_PROMOTION', raw };
 }
+
+/**
+ * A source's own promotion type code, mapped to what the engine can price.
+ *
+ * The five codes recognised here are the spellings the brief supplies. A code
+ * narrows the reading but rarely completes it: "multi_buy" says a bundle
+ * without saying two-for-five, and "percentage" says a discount without saying
+ * how much. So a code is used to *pick* the rule and the text still supplies
+ * the numbers — and where the numbers are missing the promotion is refused
+ * rather than defaulted.
+ *
+ * A code we do not recognise is not an error. It falls through to reading the
+ * text, which is the conservative path and the one that already has tests.
+ */
+export function parseTypedPromotion(
+  typeCode: string | undefined | null,
+  text: string | undefined | null,
+  promotionalPriceCents?: number,
+  regularPriceCents?: number,
+): PromotionParseResult {
+  const code = (typeCode ?? '').trim().toLowerCase();
+  const fromText = parsePromotionText(text, promotionalPriceCents);
+
+  switch (code) {
+    case 'one_plus_one':
+      // Unambiguous on its own: buy one, get one. No numbers needed.
+      return { status: 'OK', params: { type: 'ONE_PLUS_ONE' }, matched: 'code one_plus_one' };
+
+    case 'multi_buy':
+      // Needs a bundle size and a bundle price, and only the text has those.
+      // A "multi_buy" whose text does not say how many is not priceable.
+      if (fromText.status === 'OK' && fromText.params.type === 'N_FOR_X') return fromText;
+      return { status: 'FAILED', reason: 'UNSUPPORTED_PROMOTION', raw: text ?? code };
+
+    case 'percentage':
+      if (fromText.status === 'OK' && fromText.params.type === 'PERCENT_OFF') return fromText;
+      // A stated pair of prices gives the percentage exactly, with no guessing:
+      // both numbers come from the source.
+      if (
+        promotionalPriceCents !== undefined &&
+        regularPriceCents !== undefined &&
+        regularPriceCents > 0 &&
+        promotionalPriceCents < regularPriceCents
+      ) {
+        const percent = Math.round((1 - promotionalPriceCents / regularPriceCents) * 100);
+        if (percent > 0 && percent < 100) {
+          return {
+            status: 'OK',
+            params: { type: 'PERCENT_OFF', percent },
+            matched: 'code percentage',
+          };
+        }
+      }
+      return { status: 'FAILED', reason: 'UNSUPPORTED_PROMOTION', raw: text ?? code };
+
+    case 'fixed_price':
+      if (promotionalPriceCents !== undefined && promotionalPriceCents > 0) {
+        return {
+          status: 'OK',
+          params: { type: 'FIXED_PRICE', unitPriceCents: cents(promotionalPriceCents) },
+          matched: 'code fixed_price',
+        };
+      }
+      return fromText;
+
+    case 'nth_discount':
+      // Which nth, and how deep, live only in the text.
+      if (fromText.status === 'OK' && fromText.params.type === 'BUY_NTH_DISCOUNT') return fromText;
+      return { status: 'FAILED', reason: 'UNSUPPORTED_PROMOTION', raw: text ?? code };
+
+    default:
+      return fromText;
+  }
+}

@@ -1,106 +1,202 @@
-import type { ExternalPromotion, PromotionProvider } from './types';
+import {
+  PROMOTION_STATUSES,
+  PROMOTION_TYPE_CODES,
+  SUPPORTED_RETAILERS,
+  validateSnapshot,
+  type PromotionRecord,
+  type SupportedRetailer,
+} from './snapshot-schema';
+import type { ExternalPromotion } from './types';
 
 /**
- * The PrijsProfeet adapter — deliberately unfinished, and here is why.
+ * PrijsProfeet → our boundary type.
  *
- * This is the only file in the promotion pipeline that is allowed to know what
- * PrijsProfeet's response looks like. Everything downstream of
- * `ExternalPromotion` is built, tested and measured.
+ * ## What could and could not be done here
  *
- * The mapping below is empty because **the live response has never been seen**.
- * Every attempt to reach the service from this environment is refused by the
- * egress proxy before a connection is made:
+ * The brief asks for the official OpenAPI specification's field names. **They
+ * could not be read.** The egress policy that blocks `prijsprofeet.nl` blocks
+ * its documentation too, and no mirror of the spec was reachable on the hosts
+ * that are allowed. Writing plausible names here and calling them official is
+ * exactly what the brief forbids, and it is worse than leaving a gap: a wrong
+ * field name yields zero promotions and nothing announces it.
  *
- *     curl https://prijsprofeet.nl
- *     curl: (56) CONNECT tunnel failed, response 403
+ * So the split is:
  *
- * The full evidence, including what else was checked, is in
- * PRIJSPROFEET_INTEGRATION.md.
+ *   - the **snapshot contract** in `snapshot-schema.ts` is ours, complete, and
+ *     covers every concept the brief lists. Everything downstream of it is
+ *     built and tested.
+ *   - the **binding** from PrijsProfeet's own spelling to that contract is a
+ *     table, `FIELD_BINDINGS`, filled in once by whoever can read a real
+ *     response. It is data, not code, so finishing this needs no TypeScript.
  *
- * Filling this in from documentation would be exactly the mistake the brief
- * warns against: a field name that turns out to be wrong does not fail loudly,
- * it silently yields zero promotions or — worse — a promotion attached to the
- * wrong price. So the mapping stays empty and honest until one real response
- * exists, and `mapResponse` throws rather than returning a plausible-looking
- * nothing.
+ * Two spellings below are exceptions and are marked: `base_product_id` and the
+ * promotion type codes (`one_plus_one`, `multi_buy`, `percentage`) come from
+ * the brief itself, so they are accepted verbatim as input.
  *
- * ## What finishing this takes
+ * ## Finishing it
  *
- * One response body. Then:
+ * 1. Put one real response next to this file and read its keys.
+ * 2. Fill in `FIELD_BINDINGS`: our name on the left, theirs on the right.
+ * 3. `pnpm promo:probe` reports which of the fields actually arrive.
  *
- *   1. write down the field names in `FIELD_MAPPING` below;
- *   2. implement `mapResponse` against them;
- *   3. run `pnpm promo:probe` — it reports which of the ten fields the brief
- *      asks about are actually present, over a sample;
- *   4. everything after that is already built.
- *
- * ## What the pipeline needs from a response
- *
- * Only `externalPromotionId`, `chainId` and `productName` are structurally
- * required. The rest changes how well linking works rather than whether it
- * runs, and each absence has a measured consequence:
- *
- * | field | absent means |
- * | --- | --- |
- * | retailer product id | tier 1 unavailable; linking falls back to name + package |
- * | GTIN | tier 2 unavailable |
- * | package text | tier 3 degrades to review, because a promotion on the small pack must not land on the large one |
- * | promotion text | only a bare action price can be read, so bundles and nth-item offers are lost |
- * | validFrom / validUntil | the promotion is refused outright: an offer with no window would apply to every week forever |
- * | regular price | no freshness comparison against Checkjebon |
+ * Nothing else changes.
  */
 
-/** The one thing this module still needs. Keys are ours, values are theirs. */
-export const FIELD_MAPPING: Readonly<Record<keyof ExternalPromotion, string | null>> = {
-  externalPromotionId: null,
-  source: null,
-  chainId: null,
-  externalProductId: null,
+/**
+ * Our contract field → the source's key for it.
+ *
+ * `null` means "not bound yet". A binding may also be a dotted path
+ * (`price.current`) for a nested response.
+ */
+export type FieldBindings = Readonly<Record<keyof PromotionRecord, string | null>>;
+
+export const FIELD_BINDINGS: FieldBindings = {
+  external_promotion_id: null,
+  retailer: null,
+  // Spelled as the brief spells it; accepted verbatim if the source agrees.
+  base_product_id: 'base_product_id',
+  retailer_product_id: null,
+  external_product_id: null,
   gtin: null,
-  productName: null,
-  packageText: null,
-  regularPriceCents: null,
-  promotionalPriceCents: null,
-  promotionText: null,
-  validFrom: null,
-  validUntil: null,
-  fetchedAt: null,
+  product_name: null,
+  brand: null,
+  package_text: null,
+  current_price: null,
+  regular_price: null,
+  unit_price: null,
+  promotion_status: null,
+  promotion_type: null,
+  promotion_text: null,
+  valid_from: null,
+  valid_until: null,
+  is_active: null,
+  fetched_at: null,
 };
 
+/** Which of our contract fields a response must supply for a record to be usable. */
+export const REQUIRED_FIELDS: readonly (keyof PromotionRecord)[] = [
+  'external_promotion_id',
+  'retailer',
+  'product_name',
+  'valid_from',
+  'valid_until',
+];
+
 export class PromotionSourceNotConfiguredError extends Error {
-  constructor() {
+  constructor(missing: readonly string[]) {
     super(
-      'De PrijsProfeet-veldmapping is nog niet ingevuld: er is in deze omgeving nooit een ' +
-        'echte respons opgehaald (egress-proxy weigert de host). Zie ' +
-        'PRIJSPROFEET_INTEGRATION.md. Vul FIELD_MAPPING en mapResponse in zodra er één ' +
-        'respons beschikbaar is, of gebruik fileSnapshotProvider met een opgeslagen respons.',
+      'De PrijsProfeet-veldbinding is niet ingevuld voor: ' +
+        `${missing.join(', ')}.\n\n` +
+        'De officiële specificatie was vanuit deze omgeving niet te lezen, dus de ' +
+        'veldnamen zijn niet ingevuld in plaats van geraden — een verkeerde veldnaam ' +
+        'levert stilzwijgend nul promoties op. Vul FIELD_BINDINGS in ' +
+        '(src/services/promotions/prijsprofeet-adapter.ts) zodra er één echte respons ' +
+        'beschikbaar is, of lever een momentopname aan die het contract uit ' +
+        'PRIJSPROFEET_SNAPSHOT_SCHEMA.md volgt.',
     );
     this.name = 'PromotionSourceNotConfiguredError';
   }
 }
 
-/** Turn one raw response into our boundary type. Not yet implementable. */
-export function mapResponse(_raw: unknown): readonly ExternalPromotion[] {
-  throw new PromotionSourceNotConfiguredError();
+/** True once every field a record needs has been bound. */
+export function isConfigured(): boolean {
+  return REQUIRED_FIELDS.every((field) => FIELD_BINDINGS[field] !== null);
+}
+
+export function unboundRequiredFields(): string[] {
+  return REQUIRED_FIELDS.filter((field) => FIELD_BINDINGS[field] === null);
+}
+
+/** Follow a dotted path through an unknown object, without throwing. */
+function at(value: unknown, path: string): unknown {
+  return path.split('.').reduce<unknown>((current, key) => {
+    if (current === null || typeof current !== 'object') return undefined;
+    return (current as Record<string, unknown>)[key];
+  }, value);
 }
 
 /**
- * The provider, wired but not usable.
+ * Turn one raw record into a snapshot record, using the bindings.
  *
- * `transport` is injected rather than hard-coded so that the HTTP details, the
- * base URL and any credential stay outside the domain and outside this
- * repository — and so that a saved response can be fed in without a network.
+ * Deliberately does no coercion beyond what the bindings say: a value that is
+ * present but of the wrong shape is left as it is, so the schema validator
+ * downstream reports it by path instead of this function quietly fixing it.
  */
-export function prijsProfeetProvider(
-  transport: (chainIds: readonly string[]) => Promise<unknown>,
-): PromotionProvider {
+export function bindRecord(raw: unknown): Record<string, unknown> {
+  const bound: Record<string, unknown> = {};
+  for (const [field, key] of Object.entries(FIELD_BINDINGS)) {
+    if (key === null) continue;
+    const value = at(raw, key);
+    if (value !== undefined && value !== null) bound[field] = value;
+  }
+  return bound;
+}
+
+/**
+ * A whole raw response, mapped and validated.
+ *
+ * Throws when the bindings are incomplete rather than returning an empty list.
+ * An empty list is indistinguishable from "no promotions this week", and that
+ * is precisely the failure the brief calls unacceptable.
+ */
+export function mapResponse(raw: unknown, sourceName = 'PrijsProfeet'): ExternalPromotion[] {
+  const missing = unboundRequiredFields();
+  if (missing.length > 0) throw new PromotionSourceNotConfiguredError(missing);
+
+  const records = Array.isArray(raw) ? raw : at(raw, 'promotions');
+  if (!Array.isArray(records)) {
+    throw new Error(
+      'De respons bevat geen lijst met promoties. Bind het pad naar de lijst in ' +
+        'mapResponse voordat dit gebruikt wordt.',
+    );
+  }
+
+  const validated = validateSnapshot(
+    { source: sourceName, promotions: records.map(bindRecord) },
+    '(respons)',
+  );
+  const list = Array.isArray(validated) ? validated : validated.promotions;
+  return list.map((record) => toExternalPromotion(record, sourceName, new Date().toISOString()));
+}
+
+/**
+ * One snapshot record as our boundary type.
+ *
+ * The only place the two vocabularies meet. Nothing is computed here — that is
+ * `toCandidate`'s job — so that a reader can check this function against the
+ * schema line by line.
+ */
+export function toExternalPromotion(
+  record: PromotionRecord,
+  sourceName: string,
+  importedAt: string,
+): ExternalPromotion {
   return {
-    name: 'PrijsProfeet',
-    fetchPromotions: async (chainIds) => mapResponse(await transport(chainIds)),
+    externalPromotionId: record.external_promotion_id,
+    source: sourceName,
+    chainId: record.retailer,
+    ...(record.base_product_id ? { baseProductId: record.base_product_id } : {}),
+    ...(record.retailer_product_id ? { retailerProductId: record.retailer_product_id } : {}),
+    ...(record.external_product_id ? { externalProductId: record.external_product_id } : {}),
+    ...(record.gtin ? { gtin: record.gtin } : {}),
+    productName: record.product_name,
+    ...(record.brand ? { brand: record.brand } : {}),
+    ...(record.package_text ? { packageText: record.package_text } : {}),
+    ...(record.regular_price !== undefined ? { regularPriceCents: record.regular_price } : {}),
+    ...(record.current_price !== undefined ? { promotionalPriceCents: record.current_price } : {}),
+    ...(record.unit_price !== undefined ? { unitPriceCents: record.unit_price } : {}),
+    ...(record.promotion_type ? { promotionTypeCode: record.promotion_type } : {}),
+    ...(record.promotion_text ? { promotionText: record.promotion_text } : {}),
+    ...(record.promotion_status ? { promotionStatus: record.promotion_status } : {}),
+    ...(record.is_active !== undefined ? { isActive: record.is_active } : {}),
+    validFrom: record.valid_from,
+    validUntil: record.valid_until,
+    // The source's own timestamp when it has one, otherwise the moment we read
+    // the file. Two different facts, and conflating them would let a month-old
+    // export look fresh.
+    fetchedAt: record.fetched_at ?? importedAt,
   };
 }
 
-/** True once someone has filled in the mapping. Used by the probe script. */
-export function isConfigured(): boolean {
-  return Object.values(FIELD_MAPPING).some((value) => value !== null);
-}
+export { PROMOTION_STATUSES, PROMOTION_TYPE_CODES, SUPPORTED_RETAILERS };
+export type { PromotionRecord, SupportedRetailer };

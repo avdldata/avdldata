@@ -22,15 +22,15 @@
  *   pnpm promo:bench -- --sweep         a curve over several rates
  *   pnpm promo:bench -- --weeks 10 --rate 0.2
  */
-import { existsSync, readFileSync } from 'node:fs';
 import { optimiseWeek, type OptimizerInput } from '../src/domain/optimization/week-optimizer';
 import type { StoreCandidate } from '../src/domain/optimization/store-selection';
 import { promotionSavings } from '../src/domain/pricing/promotions';
 import { applyPromotions } from '../src/services/promotions/apply-promotions';
 import { linkPromotions, toCandidate } from '../src/services/promotions/link-promotions';
-import { extractRetailerProductId } from '../src/services/promotions/retailer-id';
 import type { ExternalPromotion } from '../src/services/promotions/types';
 import { loadRealChains, type RealChainId } from '../tests/support/real-data-store';
+import { loadSnapshotFromDisk, retailerIdIndex } from '../tests/support/promotion-snapshot';
+import { identityCoverage } from '../src/services/promotions/load-snapshot';
 import { weekScenarios, type WeekScenario } from '../tests/support/week-scenarios';
 import { EVEN_MIX, modelPromotions } from '../tests/support/modelled-promotions';
 
@@ -44,22 +44,54 @@ const rates = args.includes('--sweep')
   : [Number(flag('--rate') ?? 0.15)];
 const euro = (c: number): string => `€ ${(c / 100).toFixed(2)}`;
 
-const SNAPSHOT = 'data/external/promotions-snapshot.json';
-const REAL = existsSync(SNAPSHOT);
+/*
+ * A real snapshot takes over automatically.
+ *
+ * Present: every number below is a measurement, and the modelled path is not
+ * used at all. Absent: the run falls back to the model and says so on every
+ * screen. There is no flag for this, on purpose — a switch is something you can
+ * forget to set, and reporting modelled numbers as real is the one mistake this
+ * phase must not make.
+ */
+const snapshot = loadSnapshotFromDisk();
+const REAL = snapshot.status === 'LOADED';
+const realPromotions = snapshot.status === 'LOADED' ? snapshot.promotions : [];
 
 const fixture = loadRealChains(['ah', 'jumbo']);
 const ah = fixture.chains.find((c) => c.chainId === 'ah')!;
 const jumbo = fixture.chains.find((c) => c.chainId === 'jumbo')!;
+const retailerIdByProduct = retailerIdIndex(fixture.chains);
 
-/** Our own offers, keyed by the retailer's article number, for tier-1 linking. */
-const retailerIdByProduct = new Map<string, string>();
-for (const chain of fixture.chains) {
-  for (const offer of chain.reducedOffers) {
-    const slug = offer.productId.slice(chain.chainId.length + 1);
-    const id = extractRetailerProductId(chain.chainId, slug);
-    if (id) retailerIdByProduct.set(offer.productId, id.id);
+/**
+ * The days a real snapshot can actually say something about.
+ *
+ * The fifty scenarios are spread over three months so that seasonal and weekday
+ * rules see variety. A real promotion folder covers one week. Left alone, that
+ * means forty-eight of the fifty weeks fall outside every window and the
+ * comparison measures the calendar instead of the promotions.
+ *
+ * So with a real snapshot the shopping dates are moved inside the window that
+ * the snapshot covers. Everything else about a scenario — the household, the
+ * catalogue slice, the convenience preference — is a function of the run number
+ * and is untouched, and the ON and OFF runs of a week share the same date. The
+ * comparison stays like for like; only the calendar is made relevant.
+ */
+function coveredDates(promotions: readonly ExternalPromotion[]): string[] {
+  const days = new Set<string>();
+  for (const promotion of promotions) {
+    if (!promotion.validFrom || !promotion.validUntil) continue;
+    const cursor = new Date(`${promotion.validFrom}T00:00:00Z`);
+    const end = new Date(`${promotion.validUntil}T00:00:00Z`);
+    // A folder longer than a month is a data problem, not a range to walk.
+    for (let guard = 0; cursor <= end && guard < 60; guard += 1) {
+      days.add(cursor.toISOString().slice(0, 10));
+      cursor.setUTCDate(cursor.getUTCDate() + 1);
+    }
   }
+  return [...days].sort();
 }
+
+const snapshotDays = REAL ? coveredDates(realPromotions) : [];
 
 interface Setup {
   readonly key: 'AH' | 'JUMBO' | 'BEIDE';
@@ -77,14 +109,13 @@ function promotionsFor(
   scenario: WeekScenario,
   weekIndex: number,
   rate: number,
-): ExternalPromotion[] {
-  if (REAL) {
-    const raw = JSON.parse(readFileSync(SNAPSHOT, 'utf8')) as ExternalPromotion[];
-    return raw;
-  }
+): readonly ExternalPromotion[] {
+  // With a real snapshot the same promotions apply to every week; which of them
+  // are in force is decided per week by the shopping date, not here.
+  if (REAL) return realPromotions;
+
   // A different draw per week, so fifty weeks are fifty promotion folders and
-  // not the same one fifty times.
-  // A week-long folder, the way Dutch chains actually run them, so the
+  // not the same one fifty times. A week-long folder, the way Dutch chains actually run them, so the
   // validity filter is exercised on a realistic window rather than a single day.
   const end = new Date(`${scenario.startDate}T00:00:00Z`);
   end.setUTCDate(end.getUTCDate() + 6);
@@ -147,6 +178,13 @@ interface Outcome {
   readonly ms: number;
 }
 
+/** The scenario, with its date moved into the snapshot's window when there is one. */
+function dated(scenario: WeekScenario, index: number): WeekScenario {
+  if (!REAL || snapshotDays.length === 0) return scenario;
+  const startDate = snapshotDays[index % snapshotDays.length]!;
+  return { ...scenario, startDate, today: new Date(`${startDate}T09:00:00Z`) };
+}
+
 function plan(setup: Setup, scenario: WeekScenario, stores: StoreCandidate[]): Outcome | undefined {
   const input: OptimizerInput = {
     household: scenario.household,
@@ -196,14 +234,37 @@ const quantile = (xs: number[], q: number): number => {
   return sorted[Math.min(sorted.length - 1, Math.ceil(q * sorted.length) - 1)]!;
 };
 
+if (snapshot.status === 'ABSENT') console.log(`\n  ${snapshot.message}`);
+
 console.log(
   REAL
-    ? `\nPromoties AAN vs UIT — echte momentopname uit ${SNAPSHOT}\n`
-    : '\nPromoties AAN vs UIT — GEMODELLEERDE promoties, geen meting\n' +
+    ? `\nREAL SNAPSHOT RESULTS — promoties AAN vs UIT\n` +
+        `  bron ${snapshot.status === 'LOADED' ? snapshot.source : ''}, ` +
+        `${realPromotions.length} aanbiedingen uit ${snapshot.status === 'LOADED' ? snapshot.sourceFile : ''}\n`
+    : '\nSYNTHETIC PROMOTION SENSITIVITY TEST — geen echte promoties\n' +
         '  PrijsProfeet is vanuit deze omgeving niet bereikbaar (zie PRIJSPROFEET_INTEGRATION.md).\n' +
-        '  Wat hieronder staat is een gevoeligheidsanalyse: bij welk aandeel aanbiedingen\n' +
-        '  gaat een tweede supermarkt lonen. Het zijn geen echte besparingen.\n',
+        '  Dit is een TECHNISCHE gevoeligheidstest, geen productmeting. Hij bewijst dat de\n' +
+        '  promotie-engine werkt, dat de optimizer op promoties reageert, en dat menu- en\n' +
+        '  winkelkeuze kunnen veranderen. Hij zegt NIETS over wat echte promoties opleveren.\n' +
+        '  REAL PROMOTION VALUE: NOT YET MEASURED.\n',
 );
+
+if (REAL) {
+  console.log(
+    `  De momentopname dekt ${snapshotDays.length} dag(en): ` +
+      `${snapshotDays[0] ?? '—'} t/m ${snapshotDays.at(-1) ?? '—'}.\n` +
+      '  De winkeldata van de scenario\u2019s liggen binnen dat venster; huishoudens en\n' +
+      '  receptkeuzes blijven exact dezelfde als in de no-promotions baseline.\n',
+  );
+  console.log('  Wat de momentopname draagt\n');
+  for (const row of identityCoverage(realPromotions)) {
+    console.log(
+      `    ${row.retailer.padEnd(8)} ${String(row.records).padStart(5)} records, ` +
+        `stable ${row.withStableId}, retailer ${row.withRetailerId}, GTIN ${row.withGtin}`,
+    );
+  }
+  console.log('');
+}
 
 for (const rate of rates) {
   const savings: Record<string, number[]> = { AH: [], JUMBO: [], BEIDE: [] };
@@ -222,7 +283,8 @@ for (const rate of rates) {
   const latencyOff: number[] = [];
   let measured = 0;
 
-  for (const [weekIndex, scenario] of weekScenarios(weekCount).entries()) {
+  for (const [weekIndex, raw] of weekScenarios(weekCount).entries()) {
+    const scenario = dated(raw, weekIndex);
     const promotions = promotionsFor(scenario, weekIndex, rate);
     const off = new Map<string, Outcome>();
     const on = new Map<string, Outcome>();
@@ -384,8 +446,12 @@ for (const rate of rates) {
 
 if (!REAL) {
   console.log(
-    '\n  Nogmaals, expliciet: bovenstaande promoties zijn gemodelleerd.\n' +
-      '  Zet een echte momentopname in data/external/promotions-snapshot.json\n' +
-      '  en dit script rapporteert metingen in plaats van een gevoeligheidsanalyse.\n',
+    '\n  SYNTHETIC PROMOTION SENSITIVITY TEST — nogmaals, expliciet.\n' +
+      '  Bovenstaande promoties zijn gemodelleerd. Ze mogen niet gebruikt worden om te\n' +
+      '  concluderen hoeveel echte promoties financieel opleveren.\n' +
+      '  REAL PROMOTION VALUE: NOT YET MEASURED.\n\n' +
+      '  Zet een export in data/external/promotions-snapshot.json (contract:\n' +
+      '  PRIJSPROFEET_SNAPSHOT_SCHEMA.md) en dit script draait automatisch de echte\n' +
+      '  benchmark, met dezelfde 50 scenario\u2019s.\n',
   );
 }

@@ -62,23 +62,55 @@ die er later uitziet als een specificatie.
 | **de PrijsProfeet-veldmapping zelf**                       | **niet ingevuld** — één functie, wacht op één echte respons                       |
 | **echte promotieaantallen, dekking, precision, besparing** | **niet gemeten** — daar is de bron voor nodig                                     |
 
-De landingsplaats voor de bron is één functie met een lege mappingtabel:
-`src/services/promotions/prijsprofeet-adapter.ts`. Zodra er één echte respons
-beschikbaar is, is dat het enige bestand dat ingevuld moet worden; alles
-stroomafwaarts is af en heeft tests.
+De landingsplaats voor de bron is één tabel — `FIELD_BINDINGS` in
+`src/services/promotions/prijsprofeet-adapter.ts` — en die is data, geen code.
+Alles stroomafwaarts is af en heeft tests.
+
+Sterker nog: die tabel is niet eens de kortste weg. Wie een export kan maken
+volgens [PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md) hoeft
+er niets aan te doen — het bestand neerzetten is genoeg, en `pnpm promo:bench`
+schakelt vanzelf om van gevoeligheidstest naar echte meting.
+
+### Waarom de officiële specificatie niet is overgenomen
+
+De opdracht vraagt de werkelijke veldnamen uit het officiële schema te
+gebruiken. **Dat kon niet**: dezelfde egress-beperking die de API blokkeert,
+blokkeert de documentatie, en er was geen spiegel bereikbaar op de hosts die wel
+open staan (`raw.githubusercontent.com` geeft 404 voor de voor de hand liggende
+paden).
+
+Plausibele namen opschrijven en officieel noemen zou de ene fout maken die deze
+hele fase probeert te voorkomen: een verkeerde veldnaam faalt niet luid, hij
+levert nul promoties op terwijl alles blijft werken. Dus is het contract van ons
+en is de binding leeg gelaten, met één uitzondering die uit de opdracht zelf
+komt: `base_product_id`, en de typecodes `one_plus_one`, `multi_buy`,
+`percentage`, `fixed_price`, `nth_discount`.
 
 ### Wat er nodig is om dit af te maken
 
 Eén van deze drie, in volgorde van voorkeur:
 
-1. **`prijsprofeet.nl` toevoegen aan de egress-allowlist** van deze omgeving.
-   Dan is de live probe uit stap 4 een kwestie van minuten en volgt de rest van
-   de meting daaruit.
-2. **Een opgeslagen respons aanleveren** — één JSON-bestand met 50–100
-   AH-promoties en 50–100 Jumbo-promoties, neergezet in `data/external/`. De
-   provider leest snapshots van schijf, dus dat werkt zonder netwerk.
-3. **De veldnamen doorgeven** uit de daadwerkelijke respons. Dan kan de mapping
-   ingevuld worden, maar de dekkings- en precisioncijfers blijven ongemeten.
+1. **Een export neerzetten** als `data/external/promotions-snapshot.json`,
+   volgens [PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md).
+   Verder is er niets nodig: geen netwerk, geen code, geen vlag.
+2. **De veldnamen doorgeven** uit een echte respons, zodat `FIELD_BINDINGS`
+   ingevuld kan worden en een eigen transport de rest doet.
+3. **`prijsprofeet.nl` op de egress-allowlist** van deze omgeving.
+
+### De checklist zodra de snapshot binnen is
+
+In deze volgorde, en pas na de laatste stap een productadvies:
+
+1. `pnpm promo:probe` — schema valideren en veldcoverage rapporteren;
+2. dezelfde uitvoer geeft de koppeldekking per tier;
+3. `pnpm promo:prices` — normale prijs tegenover Checkjebon;
+4. 100 AH- en 100 Jumbo-koppelingen met de hand labelen
+   (CORRECT / WRONG / AMBIGUOUS), doel ≥ 99 % precision op de automatisch
+   toegepaste tiers;
+5. `pnpm promo:bench` — de 50-weken-benchmark, die zichzelf als
+   `REAL SNAPSHOT RESULTS` aankondigt;
+6. vergelijken tegen de no-promotions baseline uit dezelfde run;
+7. **dan pas** een oordeel over de waarde van promoties.
 
 ---
 
