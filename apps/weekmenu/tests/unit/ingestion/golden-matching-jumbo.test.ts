@@ -119,3 +119,38 @@ describe('the rules the second chain proved were needed', () => {
     expect(verdict('Heinz Tomaten blokjes naturel')).toBe('AUTO_APPROVED:tomatenblokjes');
   });
 });
+
+/**
+ * What fifty real weeks bought, and what one of them should never have.
+ *
+ * The automatic checks passed on all 1.386 lines. Reading the 128 products they
+ * actually bought did not: a jar of infant purée had been quietly standing in
+ * for a vegetable, nineteen times. This is what the manual pass is for, and
+ * these tests are what stops it coming back.
+ */
+describe('infant food is not the vegetable on its label', () => {
+  const phrases = buildIngredientPhrases(SEED_INGREDIENTS, SEED_INGREDIENT_ALIASES);
+  const verdict = (name: string): string => {
+    const match = matchProduct({ productId: name, productName: name }, phrases);
+    return match ? `${match.status}:${match.canonicalIngredientId}` : 'NONE';
+  };
+
+  it('rejects a purée jar however the age marker is written', () => {
+    expect(verdict('AH Biologisch Pompoen 4m+')).toBe('REJECTED:pompoen');
+    expect(verdict('Olvarit Wortel 4m+')).toBe('REJECTED:wortel');
+    expect(verdict('AH Biologisch Fruithapje appel perzik 8m+')).toBe('REJECTED:appel');
+    expect(verdict('AH Biologisch Couscous met wortel tomaat kip 12m+')).toBe('REJECTED:couscous');
+  });
+
+  it('does not treat an age marker as a pack size', () => {
+    // "4m" used to be swallowed by the same rule that drops "400g", which left
+    // "Olvarit Appel 4m+" with nothing unexplained about it at all.
+    expect(verdict('Olvarit Appel 4m+')).not.toBe('AUTO_APPROVED:appel');
+  });
+
+  it('still drops real pack sizes', () => {
+    expect(verdict('AH Tomatenpuree 4-pack')).toBe('AUTO_APPROVED:tomatenpuree');
+    expect(verdict('Jumbo Tomatenblokjes 400g')).toBe('AUTO_APPROVED:tomatenblokjes');
+    expect(verdict('Jumbo Kikkererwten 400 g')).toBe('AUTO_APPROVED:kikkererwten');
+  });
+});

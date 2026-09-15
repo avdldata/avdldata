@@ -162,7 +162,7 @@ export function matchProduct(
   // the ingredient, not a sauce poured over one.
   const leftover = removePhrase(name, best.phrase)
     .split(' ')
-    .filter((word) => word !== '' && !/^\d+$/.test(word) && !/^\d+[a-z]*$/.test(word));
+    .filter((word) => word !== '' && !isPackSizeToken(word));
 
   const disqualifier = leftover.find((word) => DISQUALIFYING_WORDS.has(word));
   if (disqualifier !== undefined) {
@@ -217,6 +217,18 @@ export function matchProduct(
     matchedPhrase: best.phrase,
     unexplainedWords: unexplained,
   };
+}
+
+/**
+ * A bare number, or a number with a unit stuck to it: "500", "400g", "6x".
+ *
+ * Deliberately not "any number followed by any letters", which is what this
+ * used to be. That swallowed "4m" — the age marker on infant food — so
+ * "Olvarit Appel 4m+" read as a bag of apples with nothing unexplained about
+ * it. A token whose suffix is not a unit is a word, and words get classified.
+ */
+function isPackSizeToken(word: string): boolean {
+  return /^\d+(?:[.,]\d+)?(?:g|gr|kg|ml|cl|dl|l|st|stuk|stuks|x|pack|mm|cm|pers)?$/.test(word);
 }
 
 /** Lowercase, accent-free, punctuation-free, single-spaced. */

@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { cents, toBaseQuantity, UnitConversionError, type Cents } from '@/domain/units';
+import { cents, quantity, toBaseQuantity, UnitConversionError, type Cents } from '@/domain/units';
 import { buildIngredientIndex } from '@/domain/ingredients/types';
 import { normaliseRecipes } from '@/domain/recipes/normalise';
 import type { StoreCandidate } from '@/domain/optimization/store-selection';
@@ -47,6 +47,26 @@ export const SNAPSHOT_DATE = '2026-09-14';
 export const SNAPSHOT_MAX_AGE_DAYS = 1;
 
 export type RealChainId = 'ah' | 'jumbo';
+
+/**
+ * Ingredients where a shop's "stuk" is not a recipe's "stuk".
+ *
+ * A recipe asks for two cloves of garlic, so the catalogue records a garlic
+ * piece as five grams. A shop sells garlic by the bulb — "AH Knoflook, 2
+ * stuks", about a hundred grams. Converting the shop's two pieces through the
+ * recipe's piece weight gives ten grams, so a week needing thirty grams buys
+ * six bulbs. Same story for spring onions and chillies, which are sold by the
+ * bunch and cooked by the stalk.
+ *
+ * There is no way to tell these apart from the data — both say "stuks" — so
+ * they are named here and their piece-labelled packs are dropped. Both chains
+ * also sell these by weight, so the ingredient stays available.
+ */
+const RETAIL_PIECE_IS_NOT_RECIPE_PIECE: ReadonlySet<string> = new Set([
+  'knoflook',
+  'bosui',
+  'rode-peper',
+]);
 
 interface RawProduct {
   n?: string;
@@ -209,13 +229,29 @@ export function loadRealChain(chainId: RealChainId): RealDataFixture {
      */
     const ingredient = ingredientIndex.get(match.canonicalIngredientId);
     if (!ingredient) continue;
+    if (pack.info.baseUnit === 'piece' && RETAIL_PIECE_IS_NOT_RECIPE_PIECE.has(ingredient.id)) {
+      unconvertible += 1;
+      continue;
+    }
+
+    // A label that states a count outranks one that states a weight, but only
+    // for an ingredient a recipe counts. "8 Stuks 320 g" is eight wraps; via
+    // the average wrap weight it would be 5,16 wraps, and nobody buys 5,16.
+    const counted =
+      ingredient.baseUnit === 'piece' && pack.info.pieceCount !== undefined
+        ? pack.info.pieceCount
+        : undefined;
+
     let packageAmount;
     try {
-      packageAmount = toBaseQuantity(pack.info.totalAmount, pack.info.baseUnit, {
-        baseUnit: ingredient.baseUnit,
-        density: ingredient.density,
-        pieceWeightGrams: ingredient.pieceWeightGrams,
-      });
+      packageAmount =
+        counted !== undefined
+          ? quantity(counted, 'piece')
+          : toBaseQuantity(pack.info.totalAmount, pack.info.baseUnit, {
+              baseUnit: ingredient.baseUnit,
+              density: ingredient.density,
+              pieceWeightGrams: ingredient.pieceWeightGrams,
+            });
     } catch (error) {
       if (!(error instanceof UnitConversionError)) throw error;
       unconvertible += 1;

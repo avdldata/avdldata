@@ -63,7 +63,6 @@ export const BRAND_WORDS: ReadonlySet<string> = new Set([
   'calve',
   'iglo',
   'bonduelle',
-  'olvarit',
   'danish',
   'blue',
   'parmigiano',
@@ -427,6 +426,22 @@ export const DISQUALIFYING_WORDS: ReadonlySet<string> = new Set([
   'balletjes',
   'gepofte',
   'zoutloos',
+  // Infant food. A 125 g jar of purée is not the vegetable, and the age marker
+  // is the only thing on the label that says so. Found by reading the products
+  // fifty real weeks actually bought: "AH Biologisch Pompoen 4m+" was being
+  // bought as pumpkin, nineteen times over.
+  '4m',
+  '6m',
+  '8m',
+  '10m',
+  '12m',
+  '4m+',
+  '6m+',
+  '8m+',
+  'olvarit',
+  'nutrilon',
+  'babyvoeding',
+  'knijpfruit',
 ]);
 
 /** Words we know are harmless: brand, retail packaging, or a preserving form. */

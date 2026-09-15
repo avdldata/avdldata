@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parsePackage } from '@/domain/ingestion/package-parser';
+import { parsePackage, resolvePackage } from '@/domain/ingestion/package-parser';
 
 /**
  * Every label in here was taken from the real dataset. That matters more than
@@ -85,5 +85,51 @@ describe('reading a package size off a real label', () => {
         expect(result.info.totalAmount).toBe(1);
       }
     }
+  });
+});
+
+/**
+ * A stated item count, kept alongside the weight.
+ *
+ * Both numbers are on the label and they answer different questions. For an
+ * ingredient a recipe counts, the count is the answer; deriving it back from
+ * the weight gives 5,16 wraps, which is not a thing that can be bought.
+ */
+describe('stated piece counts', () => {
+  it('reads a count written out in full', () => {
+    const result = resolvePackage(undefined, 'Santa Maria Tortilla Wraps Medium 8 Stuks 320 g');
+    expect(result.status).toBe('OK');
+    if (result.status === 'OK') {
+      expect(result.info.totalAmount).toBe(320);
+      expect(result.info.pieceCount).toBe(8);
+    }
+  });
+
+  it('reads a count from the name even when the size field supplied the weight', () => {
+    const result = resolvePackage('320 g', 'Santa Maria Tortilla wraps original 8x medium');
+    expect(result.status).toBe('OK');
+    if (result.status === 'OK') expect(result.info.pieceCount).toBe(8);
+  });
+
+  it('multiplies a count that comes in sub-packs', () => {
+    const result = resolvePackage(undefined, 'Jumbo Groentebouillon Biologisch 3 x 6 Stuks 60g');
+    expect(result.status).toBe('OK');
+    if (result.status === 'OK') expect(result.info.pieceCount).toBe(18);
+  });
+
+  it('does not mistake a sub-pack weight for a count', () => {
+    // "2 x 100 g" is two hundred grams in two wrappers, not two items.
+    const result = resolvePackage(undefined, 'Jumbo Biologisch Spekreepjes 2 x 100 g');
+    expect(result.status).toBe('OK');
+    if (result.status === 'OK') {
+      expect(result.info.totalAmount).toBe(200);
+      expect(result.info.pieceCount).toBeUndefined();
+    }
+  });
+
+  it('leaves a plain weight alone', () => {
+    const result = resolvePackage(undefined, 'Jumbo Kikkererwten 400 g');
+    expect(result.status).toBe('OK');
+    if (result.status === 'OK') expect(result.info.pieceCount).toBeUndefined();
   });
 });

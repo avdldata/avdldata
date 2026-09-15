@@ -155,3 +155,36 @@ describeReal('both chains, loaded through the same gate', () => {
     }
   });
 });
+
+/**
+ * Quantities a person would recognise.
+ *
+ * Every one of these was found by reading the products fifty real weeks bought,
+ * not by a failing assertion — which is the point of doing that pass at all.
+ */
+describeReal('what fifty real weeks actually buy', () => {
+  const fixture = loadRealChains(['ah', 'jumbo']);
+  const offersFor = (ingredientId: string) =>
+    fixture.chains.flatMap((c) => c.reducedOffers.filter((o) => o.ingredientId === ingredientId));
+
+  it('buys eight wraps when the box says eight', () => {
+    const wraps = offersFor('wraps').filter((o) => /8\s*(stuks|x)/i.test(o.name));
+    expect(wraps.length).toBeGreaterThan(0);
+    for (const offer of wraps) expect(offer.packageAmount.amount).toBe(8);
+  });
+
+  it('does not sell garlic by a piece that means something else', () => {
+    // A shop's garlic "stuk" is a bulb; a recipe's is a clove. Both chains also
+    // sell it by weight, so refusing the piece packs costs no coverage.
+    const garlic = offersFor('knoflook');
+    expect(garlic.length).toBeGreaterThan(0);
+    for (const offer of garlic) expect(offer.packageAmount.unit).toBe('g');
+  });
+
+  it('keeps infant purée out of the offer set entirely', () => {
+    for (const chain of fixture.chains) {
+      const babyFood = chain.allOffers.filter((o) => /\d+\s*m\+/i.test(o.name));
+      expect(babyFood.map((o) => o.name)).toEqual([]);
+    }
+  });
+});

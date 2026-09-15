@@ -56,6 +56,15 @@ export interface PackageInfo {
   /** Content of one sub-pack, in `baseUnit`. */
   readonly amountPerPackage: number;
   readonly baseUnit: BaseUnit;
+  /**
+   * How many individual items the label says are in the pack, when it says so.
+   *
+   * "Santa Maria Tortilla Wraps Medium 8 Stuks 320 g" states both a count and a
+   * weight. For an ingredient measured in pieces the count is the truth and the
+   * weight is trivia: converting 320 g back into wraps through an average wrap
+   * weight gives 5,16 wraps, which is not a number that exists.
+   */
+  readonly pieceCount?: number;
   /** `packageCount × amountPerPackage` — what the optimizer actually buys. */
   readonly totalAmount: number;
   /**
@@ -298,8 +307,44 @@ export function parsePackageFromName(name: string | undefined | null): PackagePa
 
   return {
     status: 'OK',
-    info: { ...parsed.info, raw: text, source: 'NAME_SUFFIX' },
+    info: {
+      ...parsed.info,
+      raw: text,
+      source: 'NAME_SUFFIX',
+    },
   };
+}
+
+/**
+ * How many items the label says are in the pack, if it says at all.
+ *
+ * Two conventions, both common: "8 Stuks 320 g" and "8x medium". A count
+ * followed by another number is not an item count — "2 x 100 g" is two
+ * sub-packs — so that form is left to the multiplier rule that already handles
+ * it.
+ *
+ * Only meaningful for ingredients measured in pieces. For everything else the
+ * weight is what a recipe asks for and the count is packaging detail.
+ */
+export function statedPieceCount(text: string | undefined | null): number | undefined {
+  const name = (text ?? '').trim();
+  if (name === '') return undefined;
+
+  // "3 x 6 stuks" is eighteen; "6 stuks" is six.
+  const spelled = /(?:(\d+)\s*[x\u00d7]\s*)?(\d+)\s*(?:stuks|stuk|stk)\b/i.exec(name);
+  if (spelled) {
+    const count = Number(spelled[1] ?? 1) * Number(spelled[2]);
+    if (Number.isFinite(count) && count > 0) return count;
+  }
+
+  // "8x medium", "6x large" — a count against a size word, not a quantity.
+  const compact = /\b(\d+)\s*[x\u00d7]\s*(?![\d.,])[a-z]/i.exec(name);
+  if (compact) {
+    const count = Number(compact[1]);
+    if (Number.isFinite(count) && count > 0) return count;
+  }
+
+  return undefined;
 }
 
 /**
@@ -315,7 +360,18 @@ export function resolvePackage(
   productName: string | undefined | null,
 ): PackageParseResult {
   const stated = parsePackage(sizeField);
-  if (stated.status === 'OK') return stated;
-  if (stated.reason !== 'EMPTY') return stated;
-  return parsePackageFromName(productName);
+  const resolved =
+    stated.status === 'OK'
+      ? stated
+      : stated.reason !== 'EMPTY'
+        ? stated
+        : parsePackageFromName(productName);
+  if (resolved.status !== 'OK') return resolved;
+
+  // The count comes from the name whichever source supplied the amount: a shop
+  // that says "320 g" in its size field still says "8 Stuks" in its name, and
+  // for an ingredient counted in pieces that is the number that matters.
+  const pieces = statedPieceCount(productName) ?? statedPieceCount(sizeField);
+  if (pieces === undefined) return resolved;
+  return { status: 'OK', info: { ...resolved.info, pieceCount: pieces } };
 }

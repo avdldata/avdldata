@@ -24,8 +24,8 @@ import { prepareOptimization } from '../src/domain/optimization/prepare';
 import { evaluateWeek } from '../src/domain/optimization/evaluate-week';
 import type { StoreCandidate } from '../src/domain/optimization/store-selection';
 import type { Recipe } from '../src/domain/recipes/types';
-import { DEMO_HOUSEHOLD } from '../src/data/seed/demo-household';
 import { loadRealChains, SNAPSHOT_DATE } from '../tests/support/real-data-store';
+import { weekScenarios, type WeekScenario } from '../tests/support/week-scenarios';
 
 const args = process.argv.slice(2);
 const weekCount = Number(args[args.indexOf('--weeks') + 1] ?? 1);
@@ -49,39 +49,27 @@ const SETUPS: readonly Setup[] = [
   { key: 'D', label: 'beide, twee winkels', stores: [ah, jumbo], maxStores: 2 },
 ];
 
-/**
- * Rotate the catalogue so successive weeks are genuinely different menus.
- *
- * Not a random sample: the same rotation is applied to every setup within a
- * week, so the four setups always face the identical choice. Determinism is the
- * whole point — a comparison that resamples per setup measures the sampler.
- */
-function rotate<T>(items: readonly T[], by: number): T[] {
-  const at = ((by % items.length) + items.length) % items.length;
-  return [...items.slice(at), ...items.slice(0, at)];
-}
-
-function inputFor(setup: Setup, recipes: readonly Recipe[]): OptimizerInput {
+function inputFor(setup: Setup, scenario: WeekScenario): OptimizerInput {
   return {
-    household: DEMO_HOUSEHOLD,
-    recipes,
+    household: scenario.household,
+    recipes: scenario.recipes(fixture.recipes),
     ingredients: fixture.ingredientIndex,
     stores: setup.stores,
     maxStores: setup.maxStores,
-    conveniencePreference: 'gebalanceerd',
+    conveniencePreference: scenario.conveniencePreference,
     budget: {},
-    startDate: '2026-09-14',
-    today: new Date('2026-09-14T09:00:00Z'),
+    startDate: scenario.startDate,
+    today: scenario.today,
   };
 }
 
 /** Let the optimizer choose everything, menu included. */
 function planFreely(
   setup: Setup,
-  recipes: readonly Recipe[],
+  scenario: WeekScenario,
 ): { option: ReturnType<typeof unwrap>; ms: number } | undefined {
   const started = performance.now();
-  const result = optimiseWeek(inputFor(setup, recipes));
+  const result = optimiseWeek(inputFor(setup, scenario));
   const ms = performance.now() - started;
   if (result.status !== 'OK') return undefined;
   return { option: unwrap(result.plan), ms };
@@ -98,10 +86,10 @@ function planFreely(
  */
 function priceMenu(
   setup: Setup,
-  recipes: readonly Recipe[],
+  scenario: WeekScenario,
   menu: readonly string[],
 ): { option: ReturnType<typeof unwrap>; ms: number } | undefined {
-  const prepared = prepareOptimization(inputFor(setup, recipes));
+  const prepared = prepareOptimization(inputFor(setup, scenario));
   if (prepared.status !== 'OK') return undefined;
   const byId = new Map(prepared.candidates.map((r) => [r.id, r]));
   const ordered = menu.map((id) => byId.get(id));
@@ -111,7 +99,7 @@ function priceMenu(
   const priced = evaluateWeek({
     recipes: ordered as Recipe[],
     portionsByRecipe: prepared.portionsByRecipe,
-    household: DEMO_HOUSEHOLD,
+    household: scenario.household,
     memberNutrition: prepared.memberNutrition,
     ingredients: fixture.ingredientIndex,
     stores: prepared.stores,
@@ -119,7 +107,7 @@ function priceMenu(
     maxStores: prepared.maxStores,
     extraStorePenalty: prepared.extraStorePenalty,
     budget: {},
-    startDate: '2026-09-14',
+    startDate: scenario.startDate,
     config: prepared.config,
     excluded: prepared.excluded,
   });
@@ -151,29 +139,42 @@ function unwrap(weekPlan: {
 
 console.log(`\nTwee ketens naast elkaar — Checkjebon, momentopname ${SNAPSHOT_DATE}\n`);
 
+/*
+ * What is actually being counted, and why not "which setup won".
+ *
+ * A and C and D land on the same answer whenever one shop happens to be best,
+ * so counting setup labels would hand every tie to whichever letter sorts
+ * first and report a landslide that is really a draw. What matters is which
+ * *shop* the week ends up at, and whether the second shop ever pays for the
+ * detour — so that is what is tallied.
+ */
 interface Tally {
-  sameBasketWins: Record<string, number>;
-  freeChoiceWins: Record<string, number>;
-  grossSaving: number[];
-  practicalSaving: number[];
+  cheapestChain: Record<string, number>;
+  twoShopsUsed: number;
+  twoShopsWorthIt: number;
+  ahMinusJumbo: number[];
+  bestSaving: number[];
+  bestPracticalSaving: number[];
+  menus: Set<string>;
   weeksMeasured: number;
   weeksSkipped: number;
 }
 const tally: Tally = {
-  sameBasketWins: { A: 0, B: 0, C: 0, D: 0 },
-  freeChoiceWins: { A: 0, B: 0, C: 0, D: 0 },
-  grossSaving: [],
-  practicalSaving: [],
+  cheapestChain: {},
+  twoShopsUsed: 0,
+  twoShopsWorthIt: 0,
+  ahMinusJumbo: [],
+  bestSaving: [],
+  bestPracticalSaving: [],
+  menus: new Set(),
   weeksMeasured: 0,
   weeksSkipped: 0,
 };
 
-for (let week = 0; week < weekCount; week += 1) {
-  const recipes = rotate(fixture.recipes, week * 3);
-
+for (const [week, scenario] of weekScenarios(weekCount).entries()) {
   // The reference menu comes from the richest setup: both shops, either or
   // both. Any other choice would hand one setup its favourite week.
-  const reference = planFreely(SETUPS[3]!, recipes);
+  const reference = planFreely(SETUPS[3]!, scenario);
   if (!reference) {
     console.log(`  week ${week}: geen referentieweek (D leverde niets op) — overgeslagen`);
     tally.weeksSkipped += 1;
@@ -185,8 +186,8 @@ for (let week = 0; week < weekCount; week += 1) {
   const freeChoice = new Map<string, ReturnType<typeof unwrap>>();
   let incomplete = false;
   for (const setup of SETUPS) {
-    const pinned = priceMenu(setup, recipes, menu);
-    const free = planFreely(setup, recipes);
+    const pinned = priceMenu(setup, scenario, menu);
+    const free = planFreely(setup, scenario);
     if (!pinned || !free) {
       console.log(
         `  week ${week}: opstelling ${setup.key} leverde geen week op ` +
@@ -208,13 +209,21 @@ for (let week = 0; week < weekCount; week += 1) {
     [...source.entries()].sort(
       (a, b) => a[1].practical - b[1].practical || a[0].localeCompare(b[0]),
     )[0]![0];
-  tally.sameBasketWins[best(sameBasket)] = (tally.sameBasketWins[best(sameBasket)] ?? 0) + 1;
-  tally.freeChoiceWins[best(freeChoice)] = (tally.freeChoiceWins[best(freeChoice)] ?? 0) + 1;
 
   const a = sameBasket.get('A')!;
+  const b = sameBasket.get('B')!;
+  const d = sameBasket.get('D')!;
   const bestPinned = sameBasket.get(best(sameBasket))!;
-  tally.grossSaving.push(a.grocery - bestPinned.grocery);
-  tally.practicalSaving.push(a.practical - bestPinned.practical);
+
+  tally.menus.add(menu.join('|'));
+  tally.cheapestChain[bestPinned.chains] = (tally.cheapestChain[bestPinned.chains] ?? 0) + 1;
+  if (d.chains.includes('+')) {
+    tally.twoShopsUsed += 1;
+    if (d.practical < Math.min(a.practical, b.practical)) tally.twoShopsWorthIt += 1;
+  }
+  tally.ahMinusJumbo.push(a.grocery - b.grocery);
+  tally.bestSaving.push(a.grocery - bestPinned.grocery);
+  tally.bestPracticalSaving.push(a.practical - bestPinned.practical);
 
   if (weekCount === 1) {
     console.log('  Het menu (vastgezet voor alle vier de opstellingen)\n');
@@ -268,26 +277,37 @@ if (weekCount > 1) {
     return sorted[Math.floor(sorted.length / 2)]!;
   };
 
-  console.log(`  ${tally.weeksMeasured} weken gemeten, ${tally.weeksSkipped} overgeslagen\n`);
-  console.log('  Wie wint, per vraag\n');
-  const header =
-    '    ' + 'opstelling'.padEnd(26) + 'zelfde mandje'.padStart(15) + 'vrije keuze'.padStart(14);
-  console.log(header);
-  console.log('    ' + '-'.repeat(header.length - 4));
-  for (const setup of SETUPS) {
-    console.log(
-      '    ' +
-        `${setup.key}  ${setup.label}`.padEnd(26) +
-        String(tally.sameBasketWins[setup.key] ?? 0).padStart(15) +
-        String(tally.freeChoiceWins[setup.key] ?? 0).padStart(14),
-    );
-  }
-  console.log('\n  Besparing tegenover alleen Albert Heijn, zelfde mandje\n');
   console.log(
-    `    bruto (alleen boodschappen)   gem. ${euro(mean(tally.grossSaving))}   mediaan ${euro(median(tally.grossSaving))}`,
+    `  ${tally.weeksMeasured} weken gemeten, ${tally.weeksSkipped} overgeslagen, ` +
+      `${tally.menus.size} verschillende menu's\n`,
+  );
+
+  console.log('  Waar de week uiteindelijk gekocht wordt (zelfde mandje)\n');
+  for (const [chains, count] of [...Object.entries(tally.cheapestChain)].sort(
+    (x, y) => y[1] - x[1],
+  )) {
+    console.log(`    ${chains.padEnd(12)} ${String(count).padStart(3)} van ${tally.weeksMeasured}`);
+  }
+  console.log(
+    `\n    twee winkels toegestaan en ook gebruikt   ${tally.twoShopsUsed} van ${tally.weeksMeasured}`,
   );
   console.log(
-    `    praktisch (incl. reis)        gem. ${euro(mean(tally.practicalSaving))}   mediaan ${euro(median(tally.practicalSaving))}`,
+    `    en dan ook echt goedkoper dan één winkel  ${tally.twoShopsWorthIt} van ${tally.weeksMeasured}`,
+  );
+
+  console.log('\n  Prijsverschil per week, hetzelfde mandje\n');
+  const spread = tally.ahMinusJumbo;
+  const ahCheaper = spread.filter((x) => x < 0).length;
+  console.log(
+    `    Albert Heijn min Jumbo        gem. ${euro(mean(spread))}   mediaan ${euro(median(spread))}` +
+      `   (AH goedkoper in ${ahCheaper} van ${spread.length})`,
+  );
+  console.log('\n  Besparing tegenover alleen Albert Heijn\n');
+  console.log(
+    `    bruto (alleen boodschappen)   gem. ${euro(mean(tally.bestSaving))}   mediaan ${euro(median(tally.bestSaving))}`,
+  );
+  console.log(
+    `    praktisch (incl. reis)        gem. ${euro(mean(tally.bestPracticalSaving))}   mediaan ${euro(median(tally.bestPracticalSaving))}`,
   );
   console.log('');
 }
