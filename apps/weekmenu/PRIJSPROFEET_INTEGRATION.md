@@ -59,50 +59,70 @@ die er later uitziet als een specificatie.
 | promotie-engine per type, quantity-ladders                 | **gebouwd en getest**                                                             |
 | dieetregels gaan vóór korting                              | **gebouwd en getest**                                                             |
 | ON/OFF-vergelijking over 50 weken                          | **harness gebouwd en gedraaid** — met gemodelleerde promoties, expliciet gelabeld |
-| **de PrijsProfeet-veldmapping zelf**                       | **niet ingevuld** — één functie, wacht op één echte respons                       |
+| **de PrijsProfeet-veldmapping zelf**                       | **geverifieerd en ingevuld** — officiële veldnamen, zie hieronder                 |
 | **echte promotieaantallen, dekking, precision, besparing** | **niet gemeten** — daar is de bron voor nodig                                     |
 
-De landingsplaats voor de bron is één tabel — `FIELD_BINDINGS` in
-`src/services/promotions/prijsprofeet-adapter.ts` — en die is data, geen code.
-Alles stroomafwaarts is af en heeft tests.
+Er is nog precies één ding nodig, en dat is een bestand. De veldnamen zijn niet
+langer onbekend: de officiële documentatie is extern geverifieerd en
+`FIELD_BINDINGS` in `src/services/promotions/prijsprofeet-adapter.ts` bevat de
+echte namen. Een ruwe export valideert daardoor zoals hij is — geen handmatige
+transformatiestap, geen tweede vocabulaire.
 
-Sterker nog: die tabel is niet eens de kortste weg. Wie een export kan maken
-volgens [PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md) hoeft
-er niets aan te doen — het bestand neerzetten is genoeg, en `pnpm promo:bench`
-schakelt vanzelf om van gevoeligheidstest naar echte meting.
+### De geverifieerde velden
 
-### Waarom de officiële specificatie niet is overgenomen
+```
+product_id        base_product_id   retailer          name
+ean               quantity          price             original_price
+unit_price        is_current_deal   promotion_status  promotion_type
+valid_from        valid_until       url               price_changed_at
+```
 
-De opdracht vraagt de werkelijke veldnamen uit het officiële schema te
-gebruiken. **Dat kon niet**: dezelfde egress-beperking die de API blokkeert,
-blokkeert de documentatie, en er was geen spiegel bereikbaar op de hosts die wel
-open staan (`raw.githubusercontent.com` geeft 404 voor de voor de hand liggende
-paden).
+Alleen `retailer` en `name` zijn verplicht. De reden staat in
+[PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md): de feed
+draagt vier soorten records en die verschillen legitiem van elkaar. Wat een
+record waard is, beslist de classificatie, niet het schema.
 
-Plausibele namen opschrijven en officieel noemen zou de ene fout maken die deze
-hele fase probeert te voorkomen: een verkeerde veldnaam faalt niet luid, hij
-levert nul promoties op terwijl alles blijft werken. Dus is het contract van ons
-en is de binding leeg gelaten, met één uitzondering die uit de opdracht zelf
-komt: `base_product_id`, en de typecodes `one_plus_one`, `multi_buy`,
-`percentage`, `fixed_price`, `nth_discount`.
+### Eigenschappen van de officiële API
+
+Uit de officiële documentatie, en bepalend voor hoe deze integratie zich
+gedraagt:
+
+| eigenschap                                             | wat het voor ons betekent                                                      |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| publieke search-, product- en dealendpoints zonder key | een eerste export vraagt geen registratie                                      |
+| een gratis key verhoogt de limiet                      | de key hoort in een server-side omgevingsvariabele, nooit in de repo of client |
+| bronvermelding verplicht op de gratis laag             | `PROMOTION_ATTRIBUTIONS` — "Aanbiedingsdata: PrijsProfeet", altijd zichtbaar   |
+| data wordt dagelijks ververst                          | een cache-TTL onder een dag; `fetchedAt` blijft apart van `importedAt`         |
+| data is indicatief, controleer bij de retailer         | de app is geen kassa; prijzen zijn schattingen en worden zo gelabeld           |
+| geen volledige databasekopie bouwen                    | wij halen op wat een week nodig heeft, geen bulkmirror, geen massa-import      |
+| een eigen product of interne tool is toegestaan        | dit persoonlijke gebruik past binnen de voorwaarden                            |
+
+De laatste twee zijn de reden dat er geen crawler in dit project zit en ook geen
+opslag van de volledige catalogus van PrijsProfeet: de snapshot is een
+werkbestand, geen kopie van hun database.
 
 ### Wat er nodig is om dit af te maken
 
-Eén van deze drie, in volgorde van voorkeur:
+Eén van deze twee:
 
-1. **Een export neerzetten** als `data/external/promotions-snapshot.json`,
-   volgens [PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md).
+1. **Een export neerzetten** en importeren:
+
+   ```bash
+   pnpm promo:import <export>.json
+   ```
+
    Verder is er niets nodig: geen netwerk, geen code, geen vlag.
-2. **De veldnamen doorgeven** uit een echte respons, zodat `FIELD_BINDINGS`
-   ingevuld kan worden en een eigen transport de rest doet.
-3. **`prijsprofeet.nl` op de egress-allowlist** van deze omgeving.
+
+2. **`prijsprofeet.nl` op de egress-allowlist** van deze omgeving, zodat een
+   transport de export zelf kan ophalen.
 
 ### De checklist zodra de snapshot binnen is
 
 In deze volgorde, en pas na de laatste stap een productadvies:
 
-1. `pnpm promo:probe` — schema valideren en veldcoverage rapporteren;
-2. dezelfde uitvoer geeft de koppeldekking per tier;
+1. `pnpm promo:import <export>.json` — valideren, classificeren, identiteits- en
+   typedekking rapporteren, koppelen, opslaan. Trekt zelf geen conclusies;
+2. `pnpm promo:probe` — dezelfde tellingen los, plus de koppeldekking per tier;
 3. `pnpm promo:prices` — normale prijs tegenover Checkjebon;
 4. 100 AH- en 100 Jumbo-koppelingen met de hand labelen
    (CORRECT / WRONG / AMBIGUOUS), doel ≥ 99 % precision op de automatisch
@@ -177,10 +197,26 @@ zien waaróm iets gekoppeld is.
 
 | tier                | wanneer                                                                   | automatisch toepassen |
 | ------------------- | ------------------------------------------------------------------------- | --------------------- |
+| `EXACT_STABLE_ID`   | `base_product_id` gelijk — de identiteit die een folderwissel overleeft   | ja                    |
 | `EXACT_RETAILER_ID` | het winkelproduct-ID uit de Checkjebon-link is gelijk aan dat van de bron | ja                    |
-| `EXACT_GTIN`        | beide kanten hebben een GTIN en die is gelijk                             | ja                    |
+| `EXACT_GTIN`        | beide kanten hebben een EAN en die is gelijk                              | ja                    |
 | `NAME_PACKAGE`      | genormaliseerde naam identiek én verpakking identiek                      | ja                    |
 | `NEEDS_REVIEW`      | alles daaronder                                                           | **nee, nooit**        |
+
+`EXACT_STABLE_ID` staat bovenaan omdat `product_id` bij sommige ketens per
+promotieweek verandert. Een koppeling op zo'n ID werkt deze week en rot
+stilletjes in de volgende folder.
+
+`EXACT_GTIN` is bereikbaar geworden: Checkjebon draagt geen EAN, maar
+PrijsProfeets `shelf`-records wél, en die hangen via het winkelartikelnummer aan
+onze producten. `eanIndexFromShelf` oogst ze
+(`src/services/promotions/shelf-enrichment.ts`). Een product waarover twee
+schaprecords het oneens zijn, valt eruit — twee EANs op één artikelnummer
+betekent dat er één fout is, en er is geen manier om te bepalen welke.
+
+Een EAN koppelt een **product**, geen aanbieding. Dezelfde EAN bij AH en Jumbo
+blijft twee retail offers met elk hun eigen prijs en promotie; de koppeling
+gebeurt per keten, zodat een Jumbo-korting nooit in een AH-mandje landt.
 
 ### Retailer-ID's uit Checkjebon
 
@@ -280,11 +316,22 @@ dubbel en overlappend.
 
 ## Attributie
 
-De gratis laag van een promotiebron vraagt doorgaans om bronvermelding. Elke
-toegepaste promotie draagt daarom zijn herkomst mee (`source`,
-`externalPromotionId`, `externalProductId`, `matchedBy`, `fetchedAt`,
-`validFrom`, `validUntil`, `originalText`), en de attributietekst staat op één
-plek zodat een gewijzigde licentievoorwaarde één aanpassing is.
+De gratis laag van PrijsProfeet **vereist** bronvermelding; het is dus geen
+optionele UI-verfraaiing. Elke toegepaste promotie draagt zijn herkomst mee
+(`source`, `externalPromotionId`, `identity`, `matchedBy`, `fetchedAt`,
+`importedAt`, `validFrom`, `validUntil`, `originalText`), en de attributietekst
+staat op één plek zodat een gewijzigde licentievoorwaarde één aanpassing is.
+
+De tekst voor de UI staat klaar in `PROMOTION_ATTRIBUTIONS`:
+
+```
+Aanbiedingsdata: PrijsProfeet
+```
+
+`attributionsFor` zoekt de credit ongevoelig voor spelling op — de momentopname
+schrijft `PRIJSPROFEET` en de code `PrijsProfeet`, en een
+credit die op een hoofdletterverschil wegvalt is een licentieprobleem dat zich
+voordoet als niets. Verder is er nog geen uitgebreide UI nodig.
 
 ---
 
@@ -297,5 +344,8 @@ plek zodat een gewijzigde licentievoorwaarde één aanpassing is.
 | `src/services/promotions/retailer-id.ts`          | winkelproduct-ID uit een productlink                                            |
 | `src/services/promotions/link-promotions.ts`      | de vier tiers, met metrics                                                      |
 | `src/services/promotions/snapshot-provider.ts`    | snapshot van schijf, TTL, historie                                              |
-| `src/services/promotions/prijsprofeet-adapter.ts` | **de lege plek** — wacht op één echte respons                                   |
+| `src/services/promotions/snapshot-schema.ts`      | de officiële velden, strikt gevalideerd; classificatie per record               |
+| `src/services/promotions/prijsprofeet-adapter.ts` | de geverifieerde bindings, identiteit, ontdubbeling, import                     |
+| `src/services/promotions/shelf-enrichment.ts`     | wat een `shelf`-record wél mag: EAN oogsten en prijzen vergelijken              |
 | `src/services/promotions/attribution.ts`          | bronvermelding op één plek                                                      |
+| `scripts/promotion-import.ts`                     | `pnpm promo:import` — valideren, tellen, koppelen, opslaan                      |

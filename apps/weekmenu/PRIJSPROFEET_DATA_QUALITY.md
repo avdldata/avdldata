@@ -16,16 +16,27 @@ verder gecontroleerd is, staat in
 Een getal in een van deze cellen zou een gok zijn die er over drie maanden
 uitziet als een meting. Dus staat er niets.
 
+Wat sinds de vorige ronde wél veranderd is: de **veldnamen** zijn geen onbekende
+meer. De officiële documentatie is extern geverifieerd, dus het schema accepteert
+een ruwe export zonder transformatie. Dat verplaatst de blokkade van "we weten
+niet hoe de data eruitziet" naar "we hebben de data niet" — een kleinere
+blokkade, maar nog steeds een blokkade.
+
 ---
 
 ## Wat er in plaats daarvan klaarstaat
 
-`pnpm promo:probe` produceert precies deze tabel, per keten, zodra er een
-momentopname in `data/external/promotions-snapshot.json` staat. Het is één
-commando en het antwoordt op alle velden die de opdracht noemt, inclusief de
-identiteitsdekking (stable id / retailer id / GTIN) waarmee de koppelstrategie
-empirisch te beoordelen is. Het contract voor dat bestand staat in
+`pnpm promo:import <export>.json` produceert precies deze tabel, per keten, en
+`pnpm promo:probe` doet hetzelfde voor een momentopname die al op de vaste plek
+staat. Eén commando, en het antwoordt op alle velden die de opdracht noemt,
+inclusief de identiteitsdekking (`base_product_id` / winkelartikelnummer / EAN /
+`product_id`) waarmee de koppelstrategie empirisch te beoordelen is. Het contract
+voor dat bestand staat in
 [PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md).
+
+De import splitst de records bovendien naar soort — promotie, schapprijs,
+historisch, zonder venster, zonder identiteit — zodat "weinig promoties" en "veel
+records die geen promotie zijn" niet op elkaar lijken.
 
 De uitvoer heeft deze vorm:
 
@@ -34,8 +45,10 @@ Promotiemomentopname — <n> aanbiedingen, ketens ah, jumbo
 
   AH — <n> aanbiedingen, <m> bekeken
 
-    product id        ....   ..%
-    EAN / GTIN        ....   ..%
+    base_product_id   ....   ..%
+    winkelartikelnr.  ....   ..%
+    EAN               ....   ..%
+    product_id        ....   ..%
     productnaam       ....   ..%
     verpakking        ....   ..%
     normale prijs     ....   ..%
@@ -55,7 +68,7 @@ Promotiemomentopname — <n> aanbiedingen, ketens ah, jumbo
 
   Koppeling aan onze producten
 
-    keten    aangeboden  retailer-ID   GTIN  naam+maat  review   niet
+    keten    aangeboden  base_id  winkel-id   EAN  naam+maat  review   niet
     ah              ...          ...    ...        ...     ...    ...
     jumbo           ...          ...    ...        ...     ...    ...
 ```
@@ -96,9 +109,15 @@ Zo nee, dan valt alles terug op naam plus verpakking, en dan wordt de dekking
 fors lager en de reviewwachtrij fors langer. Dat is de belangrijkste onbekende
 van deze fase.
 
-Wat we over de tegenpartij niet weten en niet gaan raden: GTIN-dekking
-(Checkjebon heeft er geen, dus tier 2 hangt volledig van de bron af),
-verpakkingsdekking, en of de promotietekst gestructureerd of vrij is.
+Wat de bron aan onze kant oplost: **de EAN**. Checkjebon heeft er geen, dus tier
+2 was dood gewicht. PrijsProfeets `shelf`-records dragen er wél een, en die
+hangen via hetzelfde winkelartikelnummer aan onze producten — `eanIndexFromShelf`
+oogst ze en de GTIN-tier komt daarmee tot leven. Hoe vaak dat lukt is een meting,
+geen aanname, en hij staat in de importrapportage.
+
+Wat we over de tegenpartij niet weten en niet gaan raden: de feitelijke
+EAN-dekking, de verpakkingsdekking, en of de promotietekst gestructureerd of vrij
+is.
 
 ---
 
@@ -142,7 +161,7 @@ Dit is gebouwd en getest; alleen de aantallen ontbreken.
 
 | tier                | eis                                                                                              | automatisch toepassen |
 | ------------------- | ------------------------------------------------------------------------------------------------ | :-------------------: |
-| `EXACT_STABLE_ID`   | een identiteit die de bron zelf permanent noemt (`base_product_id`)                              |          ja           |
+| `EXACT_STABLE_ID`   | `base_product_id` gelijk — de identiteit die de bron zelf permanent noemt                        |          ja           |
 | `EXACT_RETAILER_ID` | winkelartikelnummer gelijk (volledig, of het cijferdeel als één kant de verpakkingscode weglaat) |          ja           |
 | `EXACT_GTIN`        | beide kanten een GTIN, en die is gelijk                                                          |          ja           |
 | `NAME_PACKAGE`      | genormaliseerde naam identiek **én** verpakking identiek                                         |          ja           |
@@ -157,10 +176,13 @@ grammen als stuks lezen, en die is in de vorige fase duur genoeg geweest.
 Vier redenen om te weigeren, allemaal apart geteld: `NO_CANDIDATE_PRODUCT`,
 `UNSUPPORTED_PROMOTION`, `INVALID_VALIDITY`, `AMBIGUOUS_PRODUCT`.
 
-`EXACT_STABLE_ID` staat bovenaan omdat PrijsProfeet-product-ID's per
-promotieperiode kunnen wijzigen. Een koppeling op zo'n per-periode-ID werkt deze
-week en rot stilletjes in de volgende folder, dus die geldt als
-_record_-identiteit — goed voor ontdubbelen — en niet als productidentiteit.
+`EXACT_STABLE_ID` staat bovenaan omdat `product_id` bij sommige ketens per
+promotieweek wijzigt. Een koppeling op zo'n per-periode-ID werkt deze week en rot
+stilletjes in de volgende folder, dus die geldt als _record_-identiteit — goed
+voor ontdubbelen — en niet als productidentiteit. `base_product_id` is de sleutel
+die een folderwissel overleeft, en daarom ook de primaire ontdubbelsleutel: samen
+met `retailer`, en met het geldigheidsvenster erbij zodat twee opeenvolgende
+actieweken op één product niet als duplicaat samenvallen.
 
 ---
 
@@ -175,8 +197,10 @@ zou hij meten of het model bij zichzelf past. Dat is een cirkel, geen meting.
 
 Wat de plaats ervan inneemt tot er data is:
 
-- **80 tests** over de promotiepijplijn, waarvan de meerderheid gaat over wat
-  er _niet_ gekoppeld of _niet_ geprijsd wordt;
+- **144 tests** over de promotiepijplijn, waarvan de meerderheid gaat over wat
+  er _niet_ gekoppeld of _niet_ geprijsd wordt — inclusief de vier soorten
+  records die de bron publiceert en de acht fixtures die de identiteitsregels
+  vastpinnen;
 - de koppelingsregels zijn zo gebouwd dat de twee automatische tiers per
   definitie exact zijn — een artikelnummer of een GTIN is gelijk of niet. De
   enige tier waar precision een empirische vraag is, is `NAME_PACKAGE`, en die

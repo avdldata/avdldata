@@ -1,49 +1,55 @@
 import { z } from 'zod';
 
 /**
- * The contract for `data/external/promotions-snapshot.json`.
+ * The PrijsProfeet record, in PrijsProfeet's own field names.
  *
- * ## What this is, and what it is not
+ * These are the verified official names, so a raw export validates as it comes
+ * out of the API: no hand-written transformation step, no second vocabulary to
+ * keep in sync. That was the whole reason the earlier version of this file used
+ * our own names — the spec could not be read from this environment — and it is
+ * no longer necessary.
  *
- * These field names are **ours**. The official PrijsProfeet OpenAPI document
- * could not be read from this environment — the same egress policy that blocks
- * the API blocks its documentation, and no mirror was reachable either (see
- * PRIJSPROFEET_INTEGRATION.md). Naming a field here after a concept the brief
- * asked for is a description of our own file format; presenting it as the
- * upstream API's spelling would be an invention, and the brief rightly forbids
- * that.
+ * ## What is required, and why so little
  *
- * So the snapshot file is a **normalised handover format**. Whoever exports
- * from PrijsProfeet binds their field names to these once, in
- * `FIELD_BINDINGS` (see `prijsprofeet-adapter.ts`), and everything downstream is
- * already built and tested.
+ * Only `retailer` and `name`. Everything else is optional, because the feed
+ * carries four different kinds of record and they legitimately differ:
  *
- * Two names below are exceptions, and they are marked as such: `base_product_id`
- * and the promotion type codes (`one_plus_one`, `multi_buy`, `percentage`) come
- * from the brief itself, so they are accepted verbatim as input spellings.
+ *   active / upcoming   a promotion, with a window
+ *   shelf               today's ordinary price, with no window at all and
+ *                       sometimes no `product_id` either
+ *   historical          a past price point, never applied to a basket
  *
- * ## Why it is strict
+ * A schema that demanded a validity window would reject every shelf record, and
+ * one that demanded `product_id` would reject the shelf records that carry only
+ * an EAN. Neither is drift; both are the feed working normally.
  *
- * An empty promotion set caused by a renamed field is the worst possible
- * failure: everything keeps working, the plan is simply never discounted, and
- * nobody notices. So the schema refuses unknown shapes rather than skipping
- * records, and every rejection names the record index and the field path.
+ * ## What is still strict
+ *
+ * `.strict()` stays. An unknown key is refused, because a renamed field usually
+ * arrives alongside a missing one, and a promotion set that is silently empty is
+ * the failure this whole layer exists to prevent. Types are enforced on every
+ * field that *is* present: a date that is not a date and a price that is not a
+ * price are errors, never coerced and never treated as zero.
+ *
+ * Whether a record can actually be used is decided after validation, by
+ * classification — see `classifyRecord`. That keeps "the feed is malformed"
+ * apart from "this record is not a promotion", which are different problems
+ * with different fixes.
  */
 
-/** ISO date, yyyy-mm-dd. Anything else is a drift signal, not a value to coerce. */
+/** ISO date, yyyy-mm-dd. Anything else is drift, not a value to coerce. */
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'verwacht een ISO-datum yyyy-mm-dd');
 
+/** A timestamp; the feed uses these for `price_changed_at`. */
 const isoDateTime = z
   .string()
   .refine((value) => Number.isFinite(Date.parse(value)), 'verwacht een ISO-tijdstempel');
 
 /**
- * Money as the source states it.
+ * Money as the source states it, converted to integer cents at the boundary.
  *
- * Accepts a number of euros or a string, and converts to integer cents at the
- * boundary — money is integer cents everywhere inside this system. A value that
- * cannot be read as money is an error, never a zero: a promotion priced at zero
- * would be free.
+ * Accepts a number of euros or a string. A value that cannot be read as money
+ * is an error and never a zero: a promotion priced at zero would be free.
  */
 const euroAmount = z.union([z.number(), z.string()]).transform((value, ctx) => {
   const text = String(value).replace(/[€\s]/g, '').replace(',', '.');
@@ -55,118 +61,166 @@ const euroAmount = z.union([z.number(), z.string()]).transform((value, ctx) => {
   return Math.round(parsed * 100);
 });
 
-/**
- * Which retailer. Only the two chains this phase covers are recognised;
- * anything else is skipped by the loader with a count, not an error, because a
- * feed carrying every Dutch chain is normal and not a defect.
- */
+/** The two chains this phase covers. Others are counted and skipped, not failed. */
 export const SUPPORTED_RETAILERS = ['ah', 'jumbo'] as const;
 export type SupportedRetailer = (typeof SUPPORTED_RETAILERS)[number];
 
 /**
- * Promotion type codes.
+ * The four statuses the feed publishes, and what each means for us.
  *
- * The five on the left are the spellings the brief supplies; they are accepted
- * verbatim. `unknown` is what an exporter should write when the source states a
- * type it cannot classify — better an explicit unknown than a guess, and the
- * text parser then gets its turn.
+ *   active       a promotion running now
+ *   upcoming     a promotion that starts later — usable, because a week planned
+ *                on Sunday is shopped later, and that is the whole reason for
+ *                fetching these
+ *   shelf        today's ordinary price, no promotion. Usable for price
+ *                validation and enrichment, never as a discount.
+ *   historical   a past price point. Never applied to a basket, in any form.
  */
-export const PROMOTION_TYPE_CODES = [
-  'one_plus_one',
-  'multi_buy',
-  'percentage',
-  'fixed_price',
-  'nth_discount',
-  'unknown',
-] as const;
-export type PromotionTypeCode = (typeof PROMOTION_TYPE_CODES)[number];
-
-/** Where a promotion sits relative to its own window, as the source sees it. */
-export const PROMOTION_STATUSES = ['active', 'upcoming', 'expired'] as const;
+export const PROMOTION_STATUSES = ['active', 'upcoming', 'historical', 'shelf'] as const;
 export type PromotionStatus = (typeof PROMOTION_STATUSES)[number];
 
 /**
- * One record in the snapshot.
+ * Promotion type codes.
  *
- * Required: only what makes a record usable at all. A promotion without an
- * identity cannot be linked, one without a window cannot be applied to a
- * shopping date, and one without a retailer belongs to nobody. Everything else
- * is optional because a source may genuinely not have it — and an absent field
- * stays absent rather than becoming a default, because a missing GTIN is not an
- * empty GTIN and a missing regular price is not zero.
+ * The three named ones are the official concepts. Anything else the feed sends
+ * is kept verbatim rather than rejected — an unrecognised code is not a schema
+ * error, it simply means the text parser decides. Refusing it would turn a new
+ * promotion kind into a broken import.
  */
-export const promotionRecordSchema = z
+export const KNOWN_PROMOTION_TYPES = ['percentage', 'multi_buy', 'one_plus_one'] as const;
+export type KnownPromotionType = (typeof KNOWN_PROMOTION_TYPES)[number];
+
+export const prijsProfeetRecordSchema = z
   .object({
-    /** The source's own id for this record. May change between folder weeks. */
-    external_promotion_id: z.string().min(1),
-    retailer: z.enum(SUPPORTED_RETAILERS),
-
     /**
-     * The stable identity, preferred over everything else for linking.
+     * The retailer's product id for this record.
      *
-     * Spelled as the brief spells it. PrijsProfeet product ids can change per
-     * promotion period, so a record that carries this is worth far more than
-     * one that only carries a per-period id.
+     * Nullable on purpose. Shelf records may carry no `product_id` while still
+     * carrying an EAN, a price and a URL, and dropping those would throw away
+     * exactly the records that are useful for price validation. It also changes
+     * per promotion week at some chains, which is why it is never the identity
+     * we link on when `base_product_id` is there.
      */
-    base_product_id: z.string().min(1).optional(),
-    /** The retailer's own article number, if the source passes it through. */
-    retailer_product_id: z.string().min(1).optional(),
-    /** The source's per-period product id. Record identity, never product identity. */
-    external_product_id: z.string().min(1).optional(),
-    gtin: z.string().min(6).optional(),
-
-    product_name: z.string().min(1),
-    brand: z.string().min(1).optional(),
+    product_id: z.string().min(1).nullable().optional(),
+    /** The stable, chain-internal key. The one to link on. */
+    base_product_id: z.string().min(1).nullable().optional(),
+    retailer: z.string().min(1),
+    name: z.string().min(1),
+    /** Product identity across retailers. Not offer identity — see the docs. */
+    ean: z.string().min(6).nullable().optional(),
     /** Pack size as text, parsed by the same parser the catalogue uses. */
-    package_text: z.string().optional(),
+    quantity: z.string().nullable().optional(),
 
-    current_price: euroAmount.optional(),
-    regular_price: euroAmount.optional(),
-    /** Price per kilo/litre as the source states it. Display only, never priced against. */
-    unit_price: euroAmount.optional(),
+    /** The price in this record: the action price when there is one. */
+    price: euroAmount.nullable().optional(),
+    /** The "from" price, when the record states one. */
+    original_price: euroAmount.nullable().optional(),
+    /** Per kilo or litre. Display, validation and sanity checks only. */
+    unit_price: euroAmount.nullable().optional(),
 
-    promotion_status: z.enum(PROMOTION_STATUSES).optional(),
-    promotion_type: z.enum(PROMOTION_TYPE_CODES).optional(),
-    promotion_text: z.string().optional(),
+    /** Supplementary source information, never our only validity rule. */
+    is_current_deal: z.boolean().nullable().optional(),
+    promotion_status: z.enum(PROMOTION_STATUSES).nullable().optional(),
+    promotion_type: z.string().min(1).nullable().optional(),
+    /** Shelf text; the parser takes the numbers out of it. */
+    promotion_text: z.string().nullable().optional(),
 
-    valid_from: isoDate,
-    valid_until: isoDate,
-    /** The source's own "this is live" flag, kept but never trusted over the dates. */
-    is_active: z.boolean().optional(),
+    valid_from: isoDate.nullable().optional(),
+    valid_until: isoDate.nullable().optional(),
 
-    fetched_at: isoDateTime.optional(),
+    url: z.string().min(1).nullable().optional(),
+    price_changed_at: isoDateTime.nullable().optional(),
   })
   .strict();
 
-export type PromotionRecord = z.infer<typeof promotionRecordSchema>;
+export type PrijsProfeetRecord = z.infer<typeof prijsProfeetRecordSchema>;
 
 /**
  * The snapshot file.
  *
- * A bare array is accepted too, because that is what a first hand-made export
- * usually looks like and refusing it would cost a round trip for nothing. The
- * wrapped form is preferred: it carries provenance that a bare array cannot.
+ * A bare array of records is the plain case. The wrapped form adds provenance
+ * the array cannot carry, and is preferred for that reason.
  */
 export const wrappedSnapshotSchema = z
   .object({
     source: z.string().min(1).default('PRIJSPROFEET'),
     fetched_at: isoDateTime.optional(),
-    promotions: z.array(promotionRecordSchema),
+    /** Either key is accepted; the feed calls them results, we call them promotions. */
+    promotions: z.array(prijsProfeetRecordSchema).optional(),
+    results: z.array(prijsProfeetRecordSchema).optional(),
   })
-  .strict();
+  .strict()
+  .refine(
+    (value) => value.promotions !== undefined || value.results !== undefined,
+    'verwacht een "promotions"- of "results"-lijst',
+  );
 
-export const bareSnapshotSchema = z.array(promotionRecordSchema);
+export const bareSnapshotSchema = z.array(prijsProfeetRecordSchema);
 
-export type SnapshotFile =
-  z.infer<typeof wrappedSnapshotSchema> | z.infer<typeof bareSnapshotSchema>;
+export interface NormalisedSnapshot {
+  readonly source: string;
+  readonly fetchedAt?: string;
+  readonly records: readonly PrijsProfeetRecord[];
+}
 
 /**
- * A validation failure, described well enough to fix without guessing.
+ * Why a record cannot be used as a promotion.
  *
- * The record index and the field path are the whole point: "expected string at
- * promotions[41].product_name, received null" is actionable, and "invalid
- * snapshot" is not.
+ * Separate from schema failure on purpose: a shelf record is perfectly valid
+ * data that simply is not a discount, and conflating the two would either
+ * reject good data or hide bad data.
  */
+export type RecordUse =
+  /** A promotion we can price, once it is linked and in window. */
+  | 'PROMOTION'
+  /** Today's ordinary price. Useful for validating ours; never a discount. */
+  | 'SHELF_PRICE'
+  /** A past price point. Never applied. */
+  | 'HISTORICAL'
+  /** Marked as a promotion but with no window, so it can never be dated. */
+  | 'PROMOTION_WITHOUT_WINDOW'
+  /** No identity at all: no base id, no product id, no EAN. */
+  | 'NO_IDENTITY';
+
+/**
+ * What a record is for.
+ *
+ * Status leads, because the feed states it. Where status is absent the window
+ * decides, which is the same rule the rest of the system uses: dates over flags.
+ */
+export function classifyRecord(record: PrijsProfeetRecord): RecordUse {
+  const hasIdentity = Boolean(record.base_product_id ?? record.product_id ?? record.ean);
+  if (!hasIdentity) return 'NO_IDENTITY';
+
+  const status = record.promotion_status ?? undefined;
+  if (status === 'historical') return 'HISTORICAL';
+  if (status === 'shelf') return 'SHELF_PRICE';
+
+  const hasWindow = Boolean(record.valid_from && record.valid_until);
+  if (status === 'active' || status === 'upcoming') {
+    return hasWindow ? 'PROMOTION' : 'PROMOTION_WITHOUT_WINDOW';
+  }
+
+  // No status stated. A window makes it a promotion; its absence makes it a
+  // shelf price, which is the conservative reading — treating an undated
+  // record as a discount would apply it to every week forever.
+  return hasWindow ? 'PROMOTION' : 'SHELF_PRICE';
+}
+
+/**
+ * A stable external record id.
+ *
+ * The feed has no promotion id of its own, so one is derived from the parts
+ * that identify the record: the retailer, the best identity available, and the
+ * window. Deterministic, so re-importing the same export twice de-duplicates
+ * instead of doubling, and so a record keeps its id between imports.
+ */
+export function recordId(record: PrijsProfeetRecord): string {
+  const identity = record.base_product_id ?? record.product_id ?? record.ean ?? record.name;
+  const window = record.valid_from ? `${record.valid_from}..${record.valid_until ?? ''}` : 'shelf';
+  return `${record.retailer}:${identity}:${window}`;
+}
+
 export class SnapshotSchemaError extends Error {
   constructor(
     readonly path: string,
@@ -190,15 +244,16 @@ export class SnapshotSchemaError extends Error {
 /**
  * Validate a parsed JSON value, or throw with the exact paths that failed.
  *
- * The shape is decided *before* validating rather than by trying both and
+ * The shape is decided before validating rather than by trying both and
  * unioning the errors. A union reports "invalid input" at the root when both
  * branches fail, which is precisely the useless message this module exists to
- * avoid: the caller needs "promotions[41].current_price", not "invalid".
+ * avoid: the caller needs `results.41.price`, not "invalid".
  */
-export function validateSnapshot(raw: unknown, path: string): SnapshotFile {
+export function validateSnapshot(raw: unknown, path: string): NormalisedSnapshot {
+  const wrapped = raw !== null && typeof raw === 'object' && !Array.isArray(raw);
   const schema = Array.isArray(raw)
     ? bareSnapshotSchema
-    : raw !== null && typeof raw === 'object' && 'promotions' in raw
+    : wrapped
       ? wrappedSnapshotSchema
       : undefined;
 
@@ -206,18 +261,29 @@ export function validateSnapshot(raw: unknown, path: string): SnapshotFile {
     throw new SnapshotSchemaError(path, [
       {
         path: '(root)',
-        message: 'verwacht een lijst met promoties, of een object met een "promotions"-lijst',
+        message: 'verwacht een lijst met records, of een object met een "results"-lijst',
       },
     ]);
   }
 
   const result = schema.safeParse(raw);
-  if (result.success) return result.data;
-  throw new SnapshotSchemaError(
-    path,
-    result.error.issues.map((issue) => ({
-      path: issue.path.join('.'),
-      message: issue.message,
-    })),
-  );
+  if (!result.success) {
+    throw new SnapshotSchemaError(
+      path,
+      result.error.issues.map((issue) => ({
+        path: issue.path.join('.'),
+        message: issue.message,
+      })),
+    );
+  }
+
+  if (Array.isArray(result.data)) {
+    return { source: 'PRIJSPROFEET', records: result.data };
+  }
+  const data = result.data;
+  return {
+    source: data.source,
+    ...(data.fetched_at ? { fetchedAt: data.fetched_at } : {}),
+    records: data.results ?? data.promotions ?? [],
+  };
 }

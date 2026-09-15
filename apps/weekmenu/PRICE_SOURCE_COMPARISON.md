@@ -72,7 +72,8 @@ gerapporteerd. Dat is wat dit document over gaat.
 # één opgehaalde respons, als array van ExternalPromotion
 cp <opgehaalde-respons>.json data/external/promotions-snapshot.json
 
-pnpm promo:probe     # welke velden zitten er echt in
+pnpm promo:import <export>.json   # valideren, tellen, koppelen, opslaan
+pnpm promo:probe                  # welke velden zitten er echt in
 pnpm promo:prices    # deze vergelijking
 ```
 

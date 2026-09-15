@@ -22,6 +22,36 @@ import type { Promotion, PromotionParams, ProductOffer } from '@/domain/stores/t
  * source costs an adapter and nothing else.
  */
 
+/**
+ * A product identity as a source states it, with its provenance attached.
+ *
+ * Deliberately a record of *all* the identities a source supplied rather than
+ * one resolved string, because they are not interchangeable and the difference
+ * decides whether a link survives next week:
+ *
+ *   baseProductId  the chain's stable key. Link on this whenever it is there.
+ *   productId      the source's per-record id. It can be reissued per promotion
+ *                  period, so it identifies a record, never a product.
+ *   ean            identifies the *product*, across retailers — and precisely
+ *                  therefore not a retail offer: the same EAN at AH and at
+ *                  Jumbo is two offers at two prices in two baskets.
+ *
+ * `retailer` is part of the identity for the same reason: an id is only unique
+ * inside the chain that issued it.
+ */
+export interface ExternalProductIdentity {
+  /** Which feed said so, e.g. `PRIJSPROFEET`. */
+  readonly provider: string;
+  /** The chain the ids belong to, in our spelling (`ah`, `jumbo`). */
+  readonly retailer: string;
+  /** Per-record, possibly per-period. Never the linking key when a base id exists. */
+  readonly productId?: string;
+  /** Stable across promotion periods. The linking key when present. */
+  readonly baseProductId?: string;
+  /** Product identity across retailers. Not offer identity. */
+  readonly ean?: string;
+}
+
 /** How confident we are that a promotion belongs to a given product. */
 export type PromotionMatchTier =
   /**
@@ -102,7 +132,15 @@ export interface ExternalPromotion {
   readonly promotionTypeCode?: string;
   /** The shelf text: "1 + 1 gratis", "2e halve prijs". */
   readonly promotionText?: string;
-  /** Where the source says the offer sits relative to its window. */
+  /**
+   * Where the source says the offer sits relative to its window.
+   *
+   * Three values, on purpose, even where a source publishes more. A source that
+   * distinguishes "historical" from "expired" is making a distinction about its
+   * own archive, not about our basket: both mean the offer is over. A source
+   * that publishes shelf prices does not describe a promotion at all, and those
+   * records never become an `ExternalPromotion` — see `ExternalShelfPrice`.
+   */
   readonly promotionStatus?: 'active' | 'upcoming' | 'expired';
   /**
    * The source's "this is live now" flag.
@@ -116,6 +154,47 @@ export interface ExternalPromotion {
   readonly validUntil?: string;
   /** When we fetched it, so a stale snapshot can be recognised as one. */
   readonly fetchedAt: string;
+  /**
+   * Every identity the source supplied, kept together.
+   *
+   * The flat fields above are what the linker compares; this is the provenance
+   * of those fields and the key the importer de-duplicates on. Optional because
+   * a source is not obliged to supply any identity at all.
+   */
+  readonly identity?: ExternalProductIdentity;
+  /** The source's own link to the offer. Also where a retailer id can be read. */
+  readonly url?: string;
+  /** When the source last saw this price change. A freshness signal, nothing more. */
+  readonly priceChangedAt?: string;
+}
+
+/**
+ * An ordinary shelf price as a source states it.
+ *
+ * A separate type from `ExternalPromotion`, and that is the entire point. A
+ * shelf record carries a price and no discount; giving it the promotion shape
+ * would make "apply this to the basket" a one-line mistake away, and a shelf
+ * price applied as a promotion is a discount that does not exist. Here it
+ * cannot happen, because nothing downstream of the promotion engine accepts
+ * this type.
+ *
+ * What it is for: validating our own catalogue price against a second source,
+ * and enriching a product with an EAN or a pack size we did not have.
+ */
+export interface ExternalShelfPrice {
+  readonly source: string;
+  readonly chainId: string;
+  readonly identity: ExternalProductIdentity;
+  readonly productName: string;
+  readonly packageText?: string;
+  /** Today's ordinary price at this chain, in integer cents. */
+  readonly priceCents?: number;
+  /** Per kilo or litre. Display and sanity checks only, never checkout. */
+  readonly unitPriceCents?: number;
+  readonly url?: string;
+  readonly priceChangedAt?: string;
+  /** When we read it. */
+  readonly observedAt: string;
 }
 
 /** An external promotion after normalisation, before it is tied to a product. */

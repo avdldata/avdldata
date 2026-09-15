@@ -157,6 +157,11 @@ describeReal('promotions on the real two-chain catalogue', () => {
   });
 
   it('credits every source that contributed', () => {
+    // Ook in de spelling die de momentopname zelf gebruikt: een credit die
+    // wegvalt op een hoofdletterverschil is een licentieprobleem zonder symptoom.
+    expect(attributionsFor(['PRIJSPROFEET']).map((a) => a.notice)).toContain(
+      'Aanbiedingsdata: PrijsProfeet',
+    );
     const notices = attributionsFor(['PrijsProfeet']).map((a) => a.notice);
     expect(notices).toContain('Prijs- en productdata: Checkjebon');
     expect(notices).toContain('Aanbiedingsdata: PrijsProfeet');

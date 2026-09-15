@@ -15,10 +15,6 @@
 import { linkPromotions, toCandidate } from '../src/services/promotions/link-promotions';
 import { identityCoverage, DEFAULT_SNAPSHOT_PATH } from '../src/services/promotions/load-snapshot';
 import { extractRetailerProductId } from '../src/services/promotions/retailer-id';
-import {
-  isConfigured,
-  unboundRequiredFields,
-} from '../src/services/promotions/prijsprofeet-adapter';
 import { loadSnapshotFromDisk, retailerIdIndex } from '../tests/support/promotion-snapshot';
 import { loadRealChains } from '../tests/support/real-data-store';
 
@@ -46,16 +42,13 @@ if (outcome.status === 'ABSENT') {
   de host met 403 op CONNECT. Het volledige bewijs en wat er nodig is om verder
   te komen staan in PRIJSPROFEET_INTEGRATION.md.
 
-  Twee manieren om dit script wél te laten draaien:
+  De veldnamen zijn inmiddels de geverifieerde officiële namen, dus een ruwe
+  export uit de API valideert zoals hij is. Wat ontbreekt is de export zelf:
 
-    1. Zet een export neer als ${DEFAULT_SNAPSHOT_PATH}, volgens het contract in
-       PRIJSPROFEET_SNAPSHOT_SCHEMA.md. Dat is de aanbevolen weg.
-    2. Vul FIELD_BINDINGS in src/services/promotions/prijsprofeet-adapter.ts en
-       haal op met een transport dat de bron wél kan bereiken.
-
-  Veldbinding op dit moment: ${isConfigured() ? 'ingevuld' : 'NIET ingevuld'}${
-    isConfigured() ? '' : ` (ontbreekt: ${unboundRequiredFields().join(', ')})`
-  }.
+    1. Zet er een neer als ${DEFAULT_SNAPSHOT_PATH} — zie
+       PRIJSPROFEET_SNAPSHOT_SCHEMA.md voor de velden.
+    2. Draai "pnpm promo:import ${DEFAULT_SNAPSHOT_PATH}" voor de inleesrapportage,
+       en daarna dit script voor de koppeling aan onze producten.
 `);
   process.exit(1);
 }
@@ -85,7 +78,8 @@ const head =
   'records'.padStart(9) +
   'stable'.padStart(9) +
   'retailer'.padStart(10) +
-  'GTIN'.padStart(7) +
+  'EAN'.padStart(7) +
+  'product_id'.padStart(12) +
   'pakket'.padStart(8) +
   'normprijs'.padStart(11) +
   'tekst'.padStart(7) +
@@ -102,6 +96,7 @@ for (const row of identityCoverage(promotions, shoppingDate)) {
       share(row.withStableId, row.records).padStart(9) +
       share(row.withRetailerId, row.records).padStart(10) +
       share(row.withGtin, row.records).padStart(7) +
+      share(row.withProductId, row.records).padStart(12) +
       share(row.withPackage, row.records).padStart(8) +
       share(row.withRegularPrice, row.records).padStart(11) +
       share(row.withPromotionText, row.records).padStart(7) +

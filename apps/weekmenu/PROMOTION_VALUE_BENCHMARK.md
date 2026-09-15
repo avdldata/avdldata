@@ -316,20 +316,20 @@ De volledige checklist voor die run staat onderaan in
 De opdracht vraagt in dit geval om elf antwoorden, en niet om een
 productconclusie.
 
-**1. Schema geïmplementeerd?** Ja. `snapshot-schema.ts` dekt alle vijftien
-concepten die de opdracht opsomt, met Zod-validatie en strikte afwijzing van
-onbekende velden. De namen zijn die van óns handover-contract: de officiële
-specificatie was vanuit deze omgeving niet te lezen, en verzinnen wat er in
-staat is erger dan een gat laten. De binding naar PrijsProfeets eigen spelling
-is één tabel (`FIELD_BINDINGS`), niet code.
+**1. Schema geïmplementeerd?** Ja, en inmiddels op de **officiële veldnamen**.
+De documentatie is extern geverifieerd, dus `snapshot-schema.ts` accepteert een
+ruwe export zonder handmatige transformatie, met Zod-validatie en strikte
+afwijzing van onbekende velden. `FIELD_BINDINGS` in de adapter bevat per veld één
+expliciete geverifieerde naam; de tabel met `null`s uit de vorige ronde is weg.
 
-**2. Welke velden ondersteund?** `external_promotion_id`, `retailer`,
-`base_product_id`, `retailer_product_id`, `external_product_id`, `gtin`,
-`product_name`, `brand`, `package_text`, `current_price`, `regular_price`,
-`unit_price`, `promotion_status`, `promotion_type`, `promotion_text`,
-`valid_from`, `valid_until`, `is_active`, `fetched_at`. Verplicht zijn er vijf;
-de rest bepaalt hoe goed de koppeling wordt, niet óf het werkt. Wat elk gemis
-kost staat in [PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md).
+**2. Welke velden ondersteund?** `product_id`, `base_product_id`, `retailer`,
+`name`, `ean`, `quantity`, `price`, `original_price`, `unit_price`,
+`is_current_deal`, `promotion_status`, `promotion_type`, `promotion_text`,
+`valid_from`, `valid_until`, `url`, `price_changed_at`. Verplicht zijn er twee —
+`retailer` en `name` — omdat de feed vier soorten records draagt die legitiem
+verschillen; wat een record waard is beslist de classificatie, niet het schema.
+Wat elk gemis kost staat in
+[PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md).
 
 **3. Snapshot loader werkt?** Ja. `loadPrijsProfeetSnapshot(path)` leest,
 valideert en normaliseert, met omhulsel of als kale array. Bewezen end-to-end op
@@ -375,10 +375,15 @@ versus groente, verpakkingsmaat — zijn opnieuw gepind vanuit de promotiekant.
 
 **10. REAL PROMOTION VALUE: NOT YET MEASURED.**
 
-**11. Wat is er nodig om verder te gaan?** Eén bestand:
-`data/external/promotions-snapshot.json`, volgens
-[PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md). Dan draaien
-`pnpm promo:probe`, `pnpm promo:prices` en `pnpm promo:bench` de volledige
-meting, en vult deel B zich met echte cijfers. Alternatief: `prijsprofeet.nl` op
-de egress-allowlist, of de veldnamen uit een echte respons zodat `FIELD_BINDINGS`
-ingevuld kan worden.
+**11. Wat is er nodig om verder te gaan?** Eén bestand — een ruwe export uit de
+PrijsProfeet-API, in hun eigen veldnamen. Dan:
+
+```bash
+pnpm promo:import <export>.json
+pnpm promo:prices
+pnpm promo:bench
+```
+
+en vult deel B zich met echte cijfers. Alternatief: `prijsprofeet.nl` op de
+egress-allowlist van deze omgeving. De veldnamen zijn niet langer een openstaande
+vraag.

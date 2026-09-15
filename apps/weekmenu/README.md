@@ -80,6 +80,7 @@ seed.
 | `pnpm match:review -- --chain jumbo`    | Wat er met de hand beoordeeld moet worden   |
 | `pnpm match:weeks -- --chains ah,jumbo` | 50 echte weken, elke regel gecontroleerd    |
 | `pnpm perf:real -- --chains ah,jumbo`   | Waar de tijd heen gaat, per fase            |
+| `pnpm promo:import <export>.json`       | Promotie-export valideren, tellen, opslaan  |
 | `pnpm promo:probe`                      | Welke velden een promotiefeed echt levert   |
 | `pnpm promo:prices`                     | Normale prijs: Checkjebon tegenover de feed |
 | `pnpm promo:bench -- --sweep`           | Wat aanbiedingen veranderen, aan versus uit |
