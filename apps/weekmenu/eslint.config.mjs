@@ -107,6 +107,10 @@ const config = [
       'playwright-report/**',
       'test-results/**',
       'next-env.d.ts',
+      // Downloaded third-party corpora and generated snapshots. They are data,
+      // not source: linting them says nothing about this codebase and buries
+      // real findings under one warning per recipe file.
+      'data/**',
     ],
   },
   {

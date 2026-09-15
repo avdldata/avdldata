@@ -1,0 +1,6949 @@
+[
+  {
+    "source": "forkrecipe",
+    "externalId": "koshari",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/koshari.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Koshari",
+    "cuisine": "Egyptian",
+    "servings": 6,
+    "score": 0.9539536489151873,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 13,
+      "matched": 13,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 13,
+      "canonicalIds": [
+        "witte-rijst",
+        "linzen",
+        "macaroni",
+        "ui",
+        "zonnebloemolie",
+        "tomatenblokjes",
+        "knoflook",
+        "komijn",
+        "verse-koriander",
+        "chilipoeder",
+        "azijn",
+        "zout",
+        "groentebouillon"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "200 g Long-grain white rice",
+        "rawName": "Long-grain white rice",
+        "quantity": 200,
+        "unit": "g"
+      },
+      {
+        "rawText": "200 g Brown lentils, rinsed",
+        "rawName": "Brown lentils",
+        "quantity": 200,
+        "unit": "g",
+        "preparation": "rinsed"
+      },
+      {
+        "rawText": "150 g Elbow macaroni or ditalini",
+        "rawName": "Elbow macaroni or ditalini",
+        "quantity": 150,
+        "unit": "g"
+      },
+      {
+        "rawText": "500 g Large yellow onions, thinly sliced",
+        "rawName": "Large yellow onions",
+        "quantity": 500,
+        "unit": "g",
+        "preparation": "thinly sliced"
+      },
+      {
+        "rawText": "100 g Neutral oil (divided)",
+        "rawName": "Neutral oil (divided)",
+        "quantity": 100,
+        "unit": "g"
+      },
+      {
+        "rawText": "400 g Crushed canned tomatoes",
+        "rawName": "Crushed canned tomatoes",
+        "quantity": 400,
+        "unit": "g"
+      },
+      {
+        "rawText": "20 g Garlic cloves, minced",
+        "rawName": "Garlic cloves",
+        "quantity": 20,
+        "unit": "g",
+        "preparation": "minced"
+      },
+      {
+        "rawText": "8 g Ground cumin",
+        "rawName": "Ground cumin",
+        "quantity": 8,
+        "unit": "g"
+      },
+      {
+        "rawText": "4 g Ground coriander",
+        "rawName": "Ground coriander",
+        "quantity": 4,
+        "unit": "g"
+      },
+      {
+        "rawText": "3 g Cayenne pepper",
+        "rawName": "Cayenne pepper",
+        "quantity": 3,
+        "unit": "g"
+      },
+      {
+        "rawText": "30 g White wine vinegar",
+        "rawName": "White wine vinegar",
+        "quantity": 30,
+        "unit": "g"
+      },
+      {
+        "rawText": "10 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 10,
+        "unit": "g"
+      },
+      {
+        "rawText": "600 g Water or vegetable stock",
+        "rawName": "Water or vegetable stock",
+        "quantity": 600,
+        "unit": "g"
+      }
+    ]
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "korean-japchae",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/korean-japchae.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Japchae (Korean Glass Noodles)",
+    "cuisine": "Korean",
+    "servings": 2,
+    "score": 0.9488715986394558,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 14,
+      "matched": 13,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 14,
+      "canonicalIds": [
+        "zoete-aardappel",
+        "spinazie",
+        "wortel",
+        "paprika-rood",
+        "champignons",
+        "ui",
+        "knoflook",
+        "sojasaus",
+        "sesamzaad",
+        "zonnebloemolie",
+        "zout",
+        "ei"
+      ],
+      "newConcepts": [
+        "sugar white"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "200 g Dangmyeon (sweet potato glass noodles)",
+        "rawName": "Dangmyeon (sweet potato glass noodles)",
+        "quantity": 200,
+        "unit": "g"
+      },
+      {
+        "rawText": "150 g Fresh spinach, briefly blanched and squeezed",
+        "rawName": "Fresh spinach",
+        "quantity": 150,
+        "unit": "g",
+        "preparation": "briefly blanched and squeezed"
+      },
+      {
+        "rawText": "120 g Carrots, julienned into fine matchsticks",
+        "rawName": "Carrots",
+        "quantity": 120,
+        "unit": "g",
+        "preparation": "julienned into fine matchsticks"
+      },
+      {
+        "rawText": "120 g Red bell pepper, julienned",
+        "rawName": "Red bell pepper",
+        "quantity": 120,
+        "unit": "g",
+        "preparation": "julienned"
+      },
+      {
+        "rawText": "100 g Shiitake mushrooms, stems removed and sliced",
+        "rawName": "Shiitake mushrooms",
+        "quantity": 100,
+        "unit": "g",
+        "preparation": "stems removed and sliced"
+      },
+      {
+        "rawText": "100 g Onion, thinly sliced",
+        "rawName": "Onion",
+        "quantity": 100,
+        "unit": "g",
+        "preparation": "thinly sliced"
+      },
+      {
+        "rawText": "10 g Garlic cloves, minced",
+        "rawName": "Garlic cloves",
+        "quantity": 10,
+        "unit": "g",
+        "preparation": "minced"
+      },
+      {
+        "rawText": "45 ml Soy sauce (ganjang)",
+        "rawName": "Soy sauce (ganjang)",
+        "quantity": 45,
+        "unit": "ml"
+      },
+      {
+        "rawText": "30 ml Toasted sesame oil",
+        "rawName": "Toasted sesame oil",
+        "quantity": 30,
+        "unit": "ml"
+      },
+      {
+        "rawText": "15 g Sugar (white)",
+        "rawName": "Sugar (white)",
+        "quantity": 15,
+        "unit": "g"
+      },
+      {
+        "rawText": "30 ml Vegetable oil (for stir-frying)",
+        "rawName": "Vegetable oil (for stir-frying)",
+        "quantity": 30,
+        "unit": "ml"
+      },
+      {
+        "rawText": "5 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 5,
+        "unit": "g"
+      },
+      {
+        "rawText": "10 g Toasted sesame seeds",
+        "rawName": "Toasted sesame seeds",
+        "quantity": 10,
+        "unit": "g"
+      },
+      {
+        "rawText": "1 egg Egg, cooked as a thin omelette and julienned (optional)",
+        "rawName": "Egg",
+        "quantity": 1,
+        "unit": "egg",
+        "preparation": "cooked as a thin omelette and julienned (optional)"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "louisiana-creole/potato-salad-14",
+    "sourceUrl": "https://archive.org/details/cu31924073878708",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Picayune's Creole Cook Book (1910), publiek domein, via Open Recipe Archive",
+    "title": "Potato Salad",
+    "cuisine": "us-louisiana",
+    "score": 0.9257142857142856,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 7,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "olijfolie",
+        "azijn",
+        "ui",
+        "zout",
+        "verse-peterselie"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "3 Large Cold Boiled Potatoes",
+        "rawName": "Large Cold Boiled Potatoes",
+        "quantity": 3
+      },
+      {
+        "rawText": "2 Hard-Boiled Eggs",
+        "rawName": "Hard-Boiled Eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "9 Tablespoonfuls of Olive Oil",
+        "rawName": "Olive Oil",
+        "quantity": 9,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "3 Tablespoonfuls of Vinegar",
+        "rawName": "Vinegar",
+        "quantity": 3,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "1 Large Onion",
+        "rawName": "Large Onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 Teaspoonful of Salt",
+        "rawName": "Salt",
+        "quantity": 1,
+        "unit": "teaspoonful"
+      },
+      {
+        "rawText": "4 Sprigs of Parsley",
+        "rawName": "Sprigs of Parsley",
+        "quantity": 4
+      }
+    ]
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "mujadara",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/mujadara.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Mujadara",
+    "cuisine": "Lebanese",
+    "servings": 3,
+    "score": 0.9223915343915344,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 9,
+      "matched": 8,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 9,
+      "canonicalIds": [
+        "linzen",
+        "witte-rijst",
+        "ui",
+        "olijfolie",
+        "komijn",
+        "groentebouillon",
+        "zout"
+      ],
+      "newConcepts": [
+        "allspice"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "200 g Green or brown lentils, rinsed",
+        "rawName": "Green or brown lentils",
+        "quantity": 200,
+        "unit": "g",
+        "preparation": "rinsed"
+      },
+      {
+        "rawText": "150 g Long-grain rice, rinsed",
+        "rawName": "Long-grain rice",
+        "quantity": 150,
+        "unit": "g",
+        "preparation": "rinsed"
+      },
+      {
+        "rawText": "600 g Large yellow onions, thinly sliced",
+        "rawName": "Large yellow onions",
+        "quantity": 600,
+        "unit": "g",
+        "preparation": "thinly sliced"
+      },
+      {
+        "rawText": "200 g Shallots, thinly sliced into rings",
+        "rawName": "Shallots",
+        "quantity": 200,
+        "unit": "g",
+        "preparation": "thinly sliced into rings"
+      },
+      {
+        "rawText": "80 ml Olive oil",
+        "rawName": "Olive oil",
+        "quantity": 80,
+        "unit": "ml"
+      },
+      {
+        "rawText": "8 g Ground cumin",
+        "rawName": "Ground cumin",
+        "quantity": 8,
+        "unit": "g"
+      },
+      {
+        "rawText": "3 g Ground allspice",
+        "rawName": "Ground allspice",
+        "quantity": 3,
+        "unit": "g"
+      },
+      {
+        "rawText": "700 ml Water or light vegetable stock",
+        "rawName": "Water or light vegetable stock",
+        "quantity": 700,
+        "unit": "ml"
+      },
+      {
+        "rawText": "8 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 8,
+        "unit": "g"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "suomen-keittio/sillipallerot-herring-balls",
+    "sourceUrl": "https://archive.org/details/keittokirjacookb00wall",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Keittokirja = Cook Book (1928), publiek domein, via Open Recipe Archive",
+    "title": "Sillipallerot (Herring Balls)",
+    "cuisine": "finland",
+    "score": 0.9128571428571428,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 7,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "zout",
+        "aardappel",
+        "ei",
+        "ui",
+        "roomboter",
+        "paneermeel",
+        "kookroom"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "1 salt herring or 2 fresh ones",
+        "rawName": "salt herring or 2 fresh ones",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 cup chopped potato",
+        "rawName": "chopped potato",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "2 eggs",
+        "rawName": "eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 onion",
+        "rawName": "onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 tablespoon butter",
+        "rawName": "tablespoon butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 tablespoons bread crumbs",
+        "rawName": "tablespoons bread crumbs",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 tablespoons cream",
+        "rawName": "tablespoons cream",
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "misir-wot",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/misir-wot.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Misir Wot (Red Lentil Stew)",
+    "cuisine": "Ethiopian",
+    "servings": 4,
+    "score": 0.9079791666666667,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 9,
+      "matched": 8,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 9,
+      "canonicalIds": [
+        "linzen",
+        "ui",
+        "roomboter",
+        "knoflook",
+        "gember",
+        "groentebouillon",
+        "zout",
+        "citroen"
+      ],
+      "newConcepts": [
+        "berbere spice blend"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "300 g Red lentils (masoor dal), rinsed",
+        "rawName": "Red lentils (masoor dal)",
+        "quantity": 300,
+        "unit": "g",
+        "preparation": "rinsed"
+      },
+      {
+        "rawText": "400 g Yellow onions, finely minced",
+        "rawName": "Yellow onions",
+        "quantity": 400,
+        "unit": "g",
+        "preparation": "finely minced"
+      },
+      {
+        "rawText": "60 g Niter kibbeh or clarified spiced butter",
+        "rawName": "Niter kibbeh or clarified spiced butter",
+        "quantity": 60,
+        "unit": "g"
+      },
+      {
+        "rawText": "40 g Berbere spice blend",
+        "rawName": "Berbere spice blend",
+        "quantity": 40,
+        "unit": "g"
+      },
+      {
+        "rawText": "15 g Garlic cloves, minced",
+        "rawName": "Garlic cloves",
+        "quantity": 15,
+        "unit": "g",
+        "preparation": "minced"
+      },
+      {
+        "rawText": "10 g Fresh ginger, grated",
+        "rawName": "Fresh ginger",
+        "quantity": 10,
+        "unit": "g",
+        "preparation": "grated"
+      },
+      {
+        "rawText": "700 g Water or light vegetable stock",
+        "rawName": "Water or light vegetable stock",
+        "quantity": 700,
+        "unit": "g"
+      },
+      {
+        "rawText": "8 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 8,
+        "unit": "g"
+      },
+      {
+        "rawText": "15 g Fresh lemon juice",
+        "rawName": "Fresh lemon juice",
+        "quantity": 15,
+        "unit": "g"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "ceska-kuchyne/bavln-n-pol-vka-velvet-soup",
+    "sourceUrl": "https://archive.org/details/novdomckuc00ber",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Nová domácí kuchařka pro česko-americké hospodyně (1896), publiek domein, via Open Recipe Archive",
+    "title": "Bavlněná polévka (Velvet Soup)",
+    "cuisine": "czechia",
+    "score": 0.9,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 4,
+      "matched": 4,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 4,
+      "canonicalIds": [
+        "ei",
+        "kookroom",
+        "bloem",
+        "groentebouillon"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "six egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 6
+      },
+      {
+        "rawText": "one cup of cream",
+        "rawName": "cream",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "six teaspoons of fine flour",
+        "rawName": "teaspoons of fine flour",
+        "quantity": 6
+      },
+      {
+        "rawText": "two quarts of boiling beef broth",
+        "rawName": "boiling beef broth",
+        "quantity": 2,
+        "unit": "quarts"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "cocina-espanola/pasta-dough-for-ravioles",
+    "sourceUrl": "https://archive.org/details/elpracticntrat00muro",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: El Practicón: tratado completo de cocina (1894), publiek domein, via Open Recipe Archive",
+    "title": "Pasta Dough (for Ravioles)",
+    "cuisine": "spain",
+    "score": 0.9,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 5,
+      "needsNewCanonical": 0,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "ei",
+        "bloem",
+        "zout",
+        "roomboter",
+        "citroen"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "One egg",
+        "rawName": "egg",
+        "quantity": 1
+      },
+      {
+        "rawText": "Two tablespoons of water",
+        "rawName": "tablespoons of water",
+        "quantity": 2
+      },
+      {
+        "rawText": "Two tablespoons of flour",
+        "rawName": "tablespoons of flour",
+        "quantity": 2
+      },
+      {
+        "rawText": "A pinch of salt",
+        "rawName": "pinch of salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "A small amount of butter",
+        "rawName": "small amount of butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "A few drops of lemon or cognac",
+        "rawName": "few drops of lemon or cognac",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "cocina-mexicana/fideos-pasta-de-noodle-dough",
+    "sourceUrl": "https://archive.org/details/bub_gb_NdQqAAAAYAAJ",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Diccionario de cocina, ó El nuevo cocinero mexicano (1845), publiek domein, via Open Recipe Archive",
+    "title": "Fideos (Pasta de) (Noodle Dough)",
+    "cuisine": "mexico",
+    "score": 0.9,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 5,
+      "matched": 5,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "roomboter",
+        "zout"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "1 pound flour",
+        "rawName": "flour",
+        "quantity": 1,
+        "unit": "pound"
+      },
+      {
+        "rawText": "4 egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 4
+      },
+      {
+        "rawText": "half a cup of melted butter",
+        "rawName": "a cup of melted butter",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1 piece of yeast the size of an egg, dissolved in a cup of warm water",
+        "rawName": "piece of yeast the size of an egg, dissolved in a cup of warm water",
+        "quantity": 1
+      },
+      {
+        "rawText": "a little salt",
+        "rawName": "little salt",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "cozinha-portuguesa/sopa-brasica-de-arroz-brasica-rice-soup",
+    "sourceUrl": "https://archive.org/details/b28764626",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Cozinheiro moderno, ou nova arte de cozinha (1785), publiek domein, via Open Recipe Archive",
+    "title": "Sopa Brasica de arroz (Brasica Rice Soup)",
+    "cuisine": "portugal",
+    "score": 0.9,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 4,
+      "matched": 4,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 4,
+      "canonicalIds": [
+        "witte-rijst",
+        "groentebouillon",
+        "roomboter",
+        "ei"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "Half a pound of rice",
+        "rawName": "a pound of rice",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "A little vegetable broth",
+        "rawName": "little vegetable broth",
+        "quantity": 1
+      },
+      {
+        "rawText": "A piece of butter",
+        "rawName": "piece of butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "Seven or eight egg yolks",
+        "rawName": "or eight egg yolks",
+        "quantity": 7
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "kuchnia-polska/ry-po-turecku-turkish-rice",
+    "sourceUrl": "https://archive.org/details/kuchniapolskoame00kami",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Kuchnia polsko-amerykańska (1917), publiek domein, via Open Recipe Archive",
+    "title": "Ryż po Turecku (Turkish Rice)",
+    "cuisine": "poland",
+    "score": 0.9,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 6,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "groentebouillon",
+        "tomaat",
+        "witte-rijst",
+        "zout",
+        "peper",
+        "roomboter"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "three cups strong beef broth",
+        "rawName": "strong beef broth",
+        "quantity": 3,
+        "unit": "cups"
+      },
+      {
+        "rawText": "three tomatoes",
+        "rawName": "tomatoes",
+        "quantity": 3
+      },
+      {
+        "rawText": "one cup coarse rice",
+        "rawName": "coarse rice",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "one teaspoon salt",
+        "rawName": "teaspoon salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "one quarter teaspoon pepper",
+        "rawName": "quarter teaspoon pepper",
+        "quantity": 1
+      },
+      {
+        "rawText": "one tablespoon butter",
+        "rawName": "tablespoon butter",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "louisiana-creole/baked-shrimps-2",
+    "sourceUrl": "https://archive.org/details/cu31924073878708",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Picayune's Creole Cook Book (1910), publiek domein, via Open Recipe Archive",
+    "title": "Baked Shrimps",
+    "cuisine": "us-louisiana",
+    "score": 0.9,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 4,
+      "matched": 4,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 4,
+      "canonicalIds": [
+        "garnalen",
+        "tomaat",
+        "roomboter",
+        "paneermeel"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "100 Lake Shrimp",
+        "rawName": "Lake Shrimp",
+        "quantity": 100
+      },
+      {
+        "rawText": "1 Dozen Tomatoes",
+        "rawName": "Dozen Tomatoes",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 Tablespoonful of Butter",
+        "rawName": "Butter",
+        "quantity": 1,
+        "unit": "tablespoonful"
+      },
+      {
+        "rawText": "1 Cup of Grated Bread Crumbs or Crackers",
+        "rawName": "Grated Bread Crumbs or Crackers",
+        "quantity": 1,
+        "unit": "cup"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/tomatbiff-tomato-beef-2",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Tomatbiff (Tomato Beef)",
+    "cuisine": "sweden",
+    "score": 0.9,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 7,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "tomaat",
+        "zout",
+        "peper",
+        "ei",
+        "paneermeel",
+        "roomboter",
+        "ui"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "5 large tomatoes",
+        "rawName": "large tomatoes",
+        "quantity": 5
+      },
+      {
+        "rawText": "2 teaspoons salt",
+        "rawName": "teaspoons salt",
+        "quantity": 2
+      },
+      {
+        "rawText": "1/4 teaspoon white pepper",
+        "rawName": "teaspoon white pepper",
+        "quantity": 0.25
+      },
+      {
+        "rawText": "1 egg",
+        "rawName": "egg",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 cup crushed bread crumbs",
+        "rawName": "crushed bread crumbs",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "1 hectogram butter",
+        "rawName": "hectogram butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 large Portuguese onion",
+        "rawName": "large Portuguese onion",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "wiener-kueche/geroestete-wurfel-roasted-noodle-soup",
+    "sourceUrl": "https://archive.org/details/bub_gb_oP8yAQAAMAAJ",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Wiener Kochbuch (1883), publiek domein, via Open Recipe Archive",
+    "title": "Geroestete Wurfel (Roasted Noodle Soup)",
+    "cuisine": "austria",
+    "score": 0.9,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 5,
+      "matched": 5,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "ei",
+        "bloem",
+        "roomboter",
+        "groentebouillon"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "2 whole eggs",
+        "rawName": "whole eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 egg yolk",
+        "rawName": "egg yolk",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 liter flour",
+        "rawName": "liter flour",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "10 deca butter",
+        "rawName": "deca butter",
+        "quantity": 10
+      },
+      {
+        "rawText": "2 liters beef broth",
+        "rawName": "liters beef broth",
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "ye-old-american/curried-eggs-ii",
+    "sourceUrl": "https://www.gutenberg.org/ebooks/65061",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Boston Cooking-School Cook Book (1896), publiek domein, via Open Recipe Archive",
+    "title": "Curried Eggs II",
+    "cuisine": "american-historical",
+    "score": 0.9,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 9,
+      "matched": 9,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 9,
+      "canonicalIds": [
+        "ei",
+        "roomboter",
+        "ui",
+        "bloem",
+        "kerriepoeder",
+        "zout",
+        "paprika-rood",
+        "melk",
+        "witte-rijst"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "4 hard-boiled eggs",
+        "rawName": "hard-boiled eggs",
+        "quantity": 4
+      },
+      {
+        "rawText": "2 tablespoons butter",
+        "rawName": "tablespoons butter",
+        "quantity": 2
+      },
+      {
+        "rawText": "1/2 tablespoon finely chopped onion",
+        "rawName": "tablespoon finely chopped onion",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "2 tablespoons flour",
+        "rawName": "tablespoons flour",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 teaspoon curry powder",
+        "rawName": "teaspoon curry powder",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 teaspoon salt",
+        "rawName": "teaspoon salt",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1/8 teaspoon paprika",
+        "rawName": "teaspoon paprika",
+        "quantity": 0.125
+      },
+      {
+        "rawText": "1 1/3 cups scalded milk",
+        "rawName": "1/3 cups scalded milk",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 cup cooked rice",
+        "rawName": "cooked rice",
+        "quantity": 0.5,
+        "unit": "cup"
+      }
+    ]
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "moros-y-cristianos",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/moros-y-cristianos.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Moros y Cristianos",
+    "cuisine": "Cuban",
+    "servings": 2,
+    "score": 0.8852336700336698,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 12,
+      "matched": 11,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 12,
+      "canonicalIds": [
+        "zwarte-bonen",
+        "witte-rijst",
+        "ui",
+        "paprika-rood",
+        "knoflook",
+        "olijfolie",
+        "komijn",
+        "oregano",
+        "zout",
+        "peper",
+        "azijn"
+      ],
+      "newConcepts": [
+        "bay leaves"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "300 g Dried black beans (soaked overnight)",
+        "rawName": "Dried black beans (soaked overnight)",
+        "quantity": 300,
+        "unit": "g"
+      },
+      {
+        "rawText": "300 g Long-grain white rice",
+        "rawName": "Long-grain white rice",
+        "quantity": 300,
+        "unit": "g"
+      },
+      {
+        "rawText": "150 g White onion (finely diced)",
+        "rawName": "White onion (finely diced)",
+        "quantity": 150,
+        "unit": "g"
+      },
+      {
+        "rawText": "100 g Green bell pepper (finely diced)",
+        "rawName": "Green bell pepper (finely diced)",
+        "quantity": 100,
+        "unit": "g"
+      },
+      {
+        "rawText": "4 cloves Garlic cloves (minced)",
+        "rawName": "Garlic cloves (minced)",
+        "quantity": 4,
+        "unit": "cloves"
+      },
+      {
+        "rawText": "45 ml Olive oil",
+        "rawName": "Olive oil",
+        "quantity": 45,
+        "unit": "ml"
+      },
+      {
+        "rawText": "5 g Ground cumin",
+        "rawName": "Ground cumin",
+        "quantity": 5,
+        "unit": "g"
+      },
+      {
+        "rawText": "3 g Dried oregano",
+        "rawName": "Dried oregano",
+        "quantity": 3,
+        "unit": "g"
+      },
+      {
+        "rawText": "2 leaves Bay leaves",
+        "rawName": "Bay leaves",
+        "quantity": 2,
+        "unit": "leaves"
+      },
+      {
+        "rawText": "8 g Fine salt",
+        "rawName": "Fine salt",
+        "quantity": 8,
+        "unit": "g"
+      },
+      {
+        "rawText": "2 g Black pepper (freshly ground)",
+        "rawName": "Black pepper (freshly ground)",
+        "quantity": 2,
+        "unit": "g"
+      },
+      {
+        "rawText": "15 ml White wine vinegar (for finishing)",
+        "rawName": "White wine vinegar (for finishing)",
+        "quantity": 15,
+        "unit": "ml"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "canadian-kitchen/split-pea-soup-3",
+    "sourceUrl": "https://archive.org/details/canadianfarmcook00unse",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Canadian Farm Cook Book (1911), publiek domein, via Open Recipe Archive",
+    "title": "Split Pea Soup",
+    "cuisine": "canada",
+    "score": 0.8817857142857144,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 7,
+      "needsNewCanonical": 0,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "doperwten",
+        "ui",
+        "roomboter",
+        "bloem",
+        "zout",
+        "peper",
+        "melk"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "1 cup split peas",
+        "rawName": "split peas",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "2.5 quarts water",
+        "rawName": "water",
+        "quantity": 2.5,
+        "unit": "quarts"
+      },
+      {
+        "rawText": "2 teaspoons chopped onion",
+        "rawName": "teaspoons chopped onion",
+        "quantity": 2
+      },
+      {
+        "rawText": "3 teaspoons butter",
+        "rawName": "teaspoons butter",
+        "quantity": 3
+      },
+      {
+        "rawText": "3 teaspoons flour",
+        "rawName": "teaspoons flour",
+        "quantity": 3
+      },
+      {
+        "rawText": "1.5 teaspoons salt",
+        "rawName": "teaspoons salt",
+        "quantity": 1.5
+      },
+      {
+        "rawText": "0.75 teaspoon pepper",
+        "rawName": "teaspoon pepper",
+        "quantity": 0.75
+      },
+      {
+        "rawText": "1 pint milk",
+        "rawName": "milk",
+        "quantity": 1,
+        "unit": "pint"
+      }
+    ]
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "bacalhau-a-bras",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/bacalhau-a-bras.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Bacalhau à Brás",
+    "cuisine": "Portuguese",
+    "servings": 3,
+    "score": 0.8578044444444444,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 10,
+      "matched": 10,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "zout",
+        "aardappel",
+        "ei",
+        "ui",
+        "knoflook",
+        "olijfolie",
+        "verse-peterselie",
+        "olijven",
+        "peper"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "400 g Salt cod (bacalhau), skin-on fillets",
+        "rawName": "Salt cod (bacalhau)",
+        "quantity": 400,
+        "unit": "g",
+        "preparation": "skin-on fillets"
+      },
+      {
+        "rawText": "400 g Waxy potatoes, peeled",
+        "rawName": "Waxy potatoes",
+        "quantity": 400,
+        "unit": "g",
+        "preparation": "peeled"
+      },
+      {
+        "rawText": "6 ea Eggs, large",
+        "rawName": "Eggs",
+        "quantity": 6,
+        "unit": "ea",
+        "preparation": "large"
+      },
+      {
+        "rawText": "200 g White onion, finely sliced",
+        "rawName": "White onion",
+        "quantity": 200,
+        "unit": "g",
+        "preparation": "finely sliced"
+      },
+      {
+        "rawText": "4 ea Garlic cloves, sliced thin",
+        "rawName": "Garlic cloves",
+        "quantity": 4,
+        "unit": "ea",
+        "preparation": "sliced thin"
+      },
+      {
+        "rawText": "80 ml Extra-virgin olive oil",
+        "rawName": "Extra-virgin olive oil",
+        "quantity": 80,
+        "unit": "ml"
+      },
+      {
+        "rawText": "20 g Flat-leaf parsley, roughly chopped",
+        "rawName": "Flat-leaf parsley",
+        "quantity": 20,
+        "unit": "g",
+        "preparation": "roughly chopped"
+      },
+      {
+        "rawText": "60 g Pitted black olives (Kalamata or Gaeta)",
+        "rawName": "Pitted black olives (Kalamata or Gaeta)",
+        "quantity": 60,
+        "unit": "g"
+      },
+      {
+        "rawText": "4 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 4,
+        "unit": "g"
+      },
+      {
+        "rawText": "2 g Black pepper, freshly cracked",
+        "rawName": "Black pepper",
+        "quantity": 2,
+        "unit": "g",
+        "preparation": "freshly cracked"
+      }
+    ]
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "saag-aloo",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/saag-aloo.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Saag Aloo",
+    "cuisine": "Indian",
+    "servings": 2,
+    "score": 0.848314824380165,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 12,
+      "matched": 11,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 11,
+      "canonicalIds": [
+        "aardappel",
+        "spinazie",
+        "ui",
+        "knoflook",
+        "gember",
+        "komijn",
+        "mosterd",
+        "kurkuma",
+        "rode-peper",
+        "zonnebloemolie",
+        "zout"
+      ],
+      "newConcepts": [
+        "garam masala"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "500 g Waxy potatoes (Desiree or Charlotte), cut into 3 cm cubes",
+        "rawName": "Waxy potatoes (Desiree or Charlotte)",
+        "quantity": 500,
+        "unit": "g",
+        "preparation": "cut into 3 cm cubes"
+      },
+      {
+        "rawText": "300 g Fresh baby spinach",
+        "rawName": "Fresh baby spinach",
+        "quantity": 300,
+        "unit": "g"
+      },
+      {
+        "rawText": "150 g White onion, finely diced",
+        "rawName": "White onion",
+        "quantity": 150,
+        "unit": "g",
+        "preparation": "finely diced"
+      },
+      {
+        "rawText": "4 cloves Garlic cloves, minced",
+        "rawName": "Garlic cloves",
+        "quantity": 4,
+        "unit": "cloves",
+        "preparation": "minced"
+      },
+      {
+        "rawText": "15 g Fresh ginger, grated",
+        "rawName": "Fresh ginger",
+        "quantity": 15,
+        "unit": "g",
+        "preparation": "grated"
+      },
+      {
+        "rawText": "5 g Cumin seeds",
+        "rawName": "Cumin seeds",
+        "quantity": 5,
+        "unit": "g"
+      },
+      {
+        "rawText": "5 g Black or yellow mustard seeds",
+        "rawName": "Black or yellow mustard seeds",
+        "quantity": 5,
+        "unit": "g"
+      },
+      {
+        "rawText": "4 g Ground turmeric",
+        "rawName": "Ground turmeric",
+        "quantity": 4,
+        "unit": "g"
+      },
+      {
+        "rawText": "6 g Garam masala",
+        "rawName": "Garam masala",
+        "quantity": 6,
+        "unit": "g"
+      },
+      {
+        "rawText": "1 whole Green chili, finely sliced",
+        "rawName": "Green chili",
+        "quantity": 1,
+        "unit": "whole",
+        "preparation": "finely sliced"
+      },
+      {
+        "rawText": "40 ml Ghee (or neutral oil)",
+        "rawName": "Ghee (or neutral oil)",
+        "quantity": 40,
+        "unit": "ml"
+      },
+      {
+        "rawText": "8 g Fine salt",
+        "rawName": "Fine salt",
+        "quantity": 8,
+        "unit": "g"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/timbal-p-kalv-veal-timbal",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Timbal på Kalv (Veal Timbal)",
+    "cuisine": "sweden",
+    "score": 0.8438390725436181,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 11,
+      "matched": 10,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 11,
+      "canonicalIds": [
+        "roomboter",
+        "ei",
+        "kookroom",
+        "zout",
+        "peper",
+        "bloem",
+        "wortel",
+        "sperziebonen",
+        "macaroni"
+      ],
+      "newConcepts": [
+        "boneless veal"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1/2 kg. boneless veal",
+        "rawName": "kg. boneless veal",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "80 gr. butter",
+        "rawName": "gr. butter",
+        "quantity": 80
+      },
+      {
+        "rawText": "2 eggs",
+        "rawName": "eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "4 dcl. thick cream",
+        "rawName": "dcl. thick cream",
+        "quantity": 4
+      },
+      {
+        "rawText": "3 tsp. salt",
+        "rawName": "tsp. salt",
+        "quantity": 3
+      },
+      {
+        "rawText": "1/2 tsp. white pepper",
+        "rawName": "tsp. white pepper",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "2 tbsp. flour (20 gr.)",
+        "rawName": "tbsp. flour (20 gr.)",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 carrots",
+        "rawName": "carrots",
+        "quantity": 2
+      },
+      {
+        "rawText": "1/2 can green beans (haricots-verts)",
+        "rawName": "can green beans (haricots-verts)",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1 hg. macaroni",
+        "rawName": "hg. macaroni",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 tbsp. butter for the mold (40 gr.)",
+        "rawName": "tbsp. butter for the mold (40 gr.)",
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "yangzhou-fried-rice",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/yangzhou-fried-rice.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Yangzhou Fried Rice",
+    "cuisine": "Chinese",
+    "servings": 2,
+    "score": 0.8368351411845729,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 12,
+      "matched": 11,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 11,
+      "canonicalIds": [
+        "basmatirijst",
+        "ei",
+        "garnalen",
+        "honing",
+        "doperwten",
+        "bosui",
+        "sojasaus",
+        "sesamzaad",
+        "peper",
+        "zonnebloemolie",
+        "zout"
+      ],
+      "newConcepts": [
+        "oyster sauce"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "600 g Day-old cooked jasmine rice, cold",
+        "rawName": "Day-old cooked jasmine rice",
+        "quantity": 600,
+        "unit": "g",
+        "preparation": "cold"
+      },
+      {
+        "rawText": "3 whole Eggs",
+        "rawName": "Eggs",
+        "quantity": 3,
+        "unit": "whole"
+      },
+      {
+        "rawText": "150 g Medium shrimp, peeled and deveined",
+        "rawName": "Medium shrimp",
+        "quantity": 150,
+        "unit": "g",
+        "preparation": "peeled and deveined"
+      },
+      {
+        "rawText": "100 g Char siu or honey-glazed ham, diced",
+        "rawName": "Char siu or honey-glazed ham",
+        "quantity": 100,
+        "unit": "g",
+        "preparation": "diced"
+      },
+      {
+        "rawText": "80 g Frozen peas, thawed",
+        "rawName": "Frozen peas",
+        "quantity": 80,
+        "unit": "g",
+        "preparation": "thawed"
+      },
+      {
+        "rawText": "4 stalks Scallions, thinly sliced",
+        "rawName": "Scallions",
+        "quantity": 4,
+        "unit": "stalks",
+        "preparation": "thinly sliced"
+      },
+      {
+        "rawText": "30 ml Light soy sauce",
+        "rawName": "Light soy sauce",
+        "quantity": 30,
+        "unit": "ml"
+      },
+      {
+        "rawText": "15 ml Oyster sauce",
+        "rawName": "Oyster sauce",
+        "quantity": 15,
+        "unit": "ml"
+      },
+      {
+        "rawText": "5 ml Toasted sesame oil",
+        "rawName": "Toasted sesame oil",
+        "quantity": 5,
+        "unit": "ml"
+      },
+      {
+        "rawText": "2 g Ground white pepper",
+        "rawName": "Ground white pepper",
+        "quantity": 2,
+        "unit": "g"
+      },
+      {
+        "rawText": "45 ml Neutral oil (vegetable or peanut)",
+        "rawName": "Neutral oil (vegetable or peanut)",
+        "quantity": 45,
+        "unit": "ml"
+      },
+      {
+        "rawText": "3 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 3,
+        "unit": "g"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/linskotletter-lentil-cutlets-4",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Linskotletter (Lentil Cutlets)",
+    "cuisine": "sweden",
+    "score": 0.8116493484224965,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 10,
+      "matched": 8,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 10,
+      "canonicalIds": [
+        "linzen",
+        "ui",
+        "roomboter",
+        "paneermeel",
+        "ei",
+        "zout"
+      ],
+      "newConcepts": [
+        "cornflakes"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 cups lentils",
+        "rawName": "lentils",
+        "quantity": 2,
+        "unit": "cups"
+      },
+      {
+        "rawText": "1 1/2 liters water",
+        "rawName": "1/2 liters water",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 Portuguese onion",
+        "rawName": "Portuguese onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 tablespoons butter (40 gr.)",
+        "rawName": "tablespoons butter (40 gr.)",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 cup crushed bread crumbs",
+        "rawName": "crushed bread crumbs",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "1 cup cornflakes",
+        "rawName": "cornflakes",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "2 eggs",
+        "rawName": "eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 tablespoon salt",
+        "rawName": "tablespoon salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 teaspoon seasoned salt",
+        "rawName": "teaspoon seasoned salt",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "4 tablespoons butter (80 gr.) for frying",
+        "rawName": "tablespoons butter (80 gr.) for frying",
+        "quantity": 4
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "canadian-kitchen/potato-soup-version-4",
+    "sourceUrl": "https://archive.org/details/canadianfarmcook00unse",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Canadian Farm Cook Book (1911), publiek domein, via Open Recipe Archive",
+    "title": "Potato Soup (Version 4)",
+    "cuisine": "canada",
+    "score": 0.7970595238095238,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 7,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "aardappel",
+        "melk",
+        "ui",
+        "zout",
+        "peper",
+        "roomboter",
+        "bloem"
+      ],
+      "newConcepts": [
+        "stalks celery"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "3 potatoes",
+        "rawName": "potatoes",
+        "quantity": 3
+      },
+      {
+        "rawText": "4 cups milk",
+        "rawName": "milk",
+        "quantity": 4,
+        "unit": "cups"
+      },
+      {
+        "rawText": "1 onion",
+        "rawName": "onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 teaspoon salt",
+        "rawName": "teaspoon salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 teaspoon pepper",
+        "rawName": "teaspoon pepper",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "2 tablespoons butter",
+        "rawName": "tablespoons butter",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 tablespoon flour",
+        "rawName": "tablespoon flour",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 stalks celery",
+        "rawName": "stalks celery",
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "filipino-kitchen/black-bean-soup-4",
+    "sourceUrl": "https://archive.org/details/cu31924059639215",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Manila Cook Book (1919), publiek domein, via Open Recipe Archive",
+    "title": "Black Bean Soup",
+    "cuisine": "philippines",
+    "score": 0.7970595238095238,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 9,
+      "matched": 7,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 9,
+      "canonicalIds": [
+        "zwarte-bonen",
+        "ui",
+        "zout",
+        "peper",
+        "citroen",
+        "ei",
+        "groentebouillon"
+      ],
+      "newConcepts": [
+        "saltspoon cayenne"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 pint black beans",
+        "rawName": "black beans",
+        "quantity": 1,
+        "unit": "pint"
+      },
+      {
+        "rawText": "1 quart cold water",
+        "rawName": "cold water",
+        "quantity": 1,
+        "unit": "quart"
+      },
+      {
+        "rawText": "1 small onion",
+        "rawName": "small onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 teaspoon salt",
+        "rawName": "teaspoon salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 saltspoon pepper",
+        "rawName": "saltspoon pepper",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 saltspoon cayenne",
+        "rawName": "saltspoon cayenne",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 lemon",
+        "rawName": "lemon",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 eggs",
+        "rawName": "eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 quart beef stock",
+        "rawName": "beef stock",
+        "quantity": 1,
+        "unit": "quart"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "jewish-kitchen/kidney-beans-with-peppers-and-tomatoes",
+    "sourceUrl": "https://archive.org/details/cu31924003580952",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The International Jewish Cook Book (1918), publiek domein, via Open Recipe Archive",
+    "title": "Kidney Beans with Peppers and Tomatoes",
+    "cuisine": "jewish-diaspora",
+    "score": 0.7970595238095238,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 9,
+      "matched": 7,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 9,
+      "canonicalIds": [
+        "kidneybonen",
+        "roomboter",
+        "paprika-rood",
+        "ui",
+        "tomaat",
+        "zout",
+        "witte-rijst"
+      ],
+      "newConcepts": [
+        "green peppers"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "two cups of kidney beans",
+        "rawName": "kidney beans",
+        "quantity": 2,
+        "unit": "cups"
+      },
+      {
+        "rawText": "one quart of water",
+        "rawName": "water",
+        "quantity": 1,
+        "unit": "quart"
+      },
+      {
+        "rawText": "one tablespoon of butter",
+        "rawName": "tablespoon of butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "four green peppers",
+        "rawName": "green peppers",
+        "quantity": 4
+      },
+      {
+        "rawText": "one small red pepper",
+        "rawName": "small red pepper",
+        "quantity": 1
+      },
+      {
+        "rawText": "one onion",
+        "rawName": "onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "one pint of tomatoes",
+        "rawName": "tomatoes",
+        "quantity": 1,
+        "unit": "pint"
+      },
+      {
+        "rawText": "one teaspoon of salt",
+        "rawName": "teaspoon of salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "three tablespoons of uncooked rice",
+        "rawName": "tablespoons of uncooked rice",
+        "quantity": 3
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "suomen-keittio/beet-soup",
+    "sourceUrl": "https://archive.org/details/suomalaisamerika00wall",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Suomalais-amerikalainen keittokirja (1914), publiek domein, via Open Recipe Archive",
+    "title": "Beet Soup",
+    "cuisine": "finland",
+    "score": 0.7858333333333334,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 7,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "groentebouillon",
+        "prei",
+        "citroen",
+        "roomboter",
+        "bloem",
+        "ei",
+        "kookroom"
+      ],
+      "newConcepts": [
+        "beets"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "5 beets",
+        "rawName": "beets",
+        "quantity": 5
+      },
+      {
+        "rawText": "3 quarts of vegetable stock",
+        "rawName": "vegetable stock",
+        "quantity": 3,
+        "unit": "quarts"
+      },
+      {
+        "rawText": "2 leeks",
+        "rawName": "leeks",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 tablespoonfuls of lemon juice",
+        "rawName": "lemon juice",
+        "quantity": 2,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "3 tablespoonfuls of butter",
+        "rawName": "butter",
+        "quantity": 3,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "2 tablespoonfuls of flour",
+        "rawName": "flour",
+        "quantity": 2,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "2 egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 2
+      },
+      {
+        "rawText": "1/2 cupful of cream",
+        "rawName": "cream",
+        "quantity": 0.5,
+        "unit": "cupful"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "australian-table/mulligatawny-soup-5",
+    "sourceUrl": "https://archive.org/details/artoflivinginaus00muskiala",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Art of Living in Australia (1893), publiek domein, via Open Recipe Archive",
+    "title": "Mulligatawny Soup",
+    "cuisine": "australia",
+    "score": 0.7826431405895692,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 6,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "appel",
+        "ui",
+        "wortel",
+        "kerriepoeder",
+        "bloem",
+        "roomboter"
+      ],
+      "newConcepts": [
+        "stock"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 quarts Stock",
+        "rawName": "Stock",
+        "quantity": 2,
+        "unit": "quarts"
+      },
+      {
+        "rawText": "1 Apple",
+        "rawName": "Apple",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 Onion",
+        "rawName": "Onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 Carrot",
+        "rawName": "Carrot",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 oz. Curry Powder",
+        "rawName": "oz. Curry Powder",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1 oz. Flour",
+        "rawName": "oz. Flour",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 oz. Butter",
+        "rawName": "oz. Butter",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/kroppkakor-potato-dumplings",
+    "sourceUrl": "https://archive.org/details/hemmetskokbok_1911",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Hemmets kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Kroppkakor (Potato Dumplings)",
+    "cuisine": "sweden",
+    "score": 0.7826431405895692,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 6,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "aardappel",
+        "bloem",
+        "zout",
+        "ei",
+        "rode-ui",
+        "peper"
+      ],
+      "newConcepts": [
+        "hectograms smoked ham"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 1/2 liters potatoes",
+        "rawName": "1/2 liters potatoes",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 hectograms wheat flour",
+        "rawName": "hectograms wheat flour",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 tablespoon salt",
+        "rawName": "tablespoon salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 egg",
+        "rawName": "egg",
+        "quantity": 1
+      },
+      {
+        "rawText": "3 hectograms smoked ham",
+        "rawName": "hectograms smoked ham",
+        "quantity": 3
+      },
+      {
+        "rawText": "1 small red onion",
+        "rawName": "small red onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/4 teaspoon white pepper",
+        "rawName": "teaspoon white pepper",
+        "quantity": 0.25
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/omelett-med-potatis-och-skinka-omelet-with-potato-and-ham",
+    "sourceUrl": "https://archive.org/details/hemmetskokbok_1911",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Hemmets kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Omelett med Potatis och Skinka (Omelet with Potato and Ham)",
+    "cuisine": "sweden",
+    "score": 0.7826431405895692,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 6,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "ei",
+        "kookroom",
+        "aardappel",
+        "ui",
+        "roomboter",
+        "verse-peterselie"
+      ],
+      "newConcepts": [
+        "smoked ham"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "5 eggs",
+        "rawName": "eggs",
+        "quantity": 5
+      },
+      {
+        "rawText": "10 tablespoons thick cream",
+        "rawName": "tablespoons thick cream",
+        "quantity": 10
+      },
+      {
+        "rawText": "0.5 liter cooked potato",
+        "rawName": "liter cooked potato",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "200 g smoked ham",
+        "rawName": "g smoked ham",
+        "quantity": 200
+      },
+      {
+        "rawText": "0.25 Portuguese onion",
+        "rawName": "Portuguese onion",
+        "quantity": 0.25
+      },
+      {
+        "rawText": "2 tablespoons butter",
+        "rawName": "tablespoons butter",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 tablespoon chopped parsley",
+        "rawName": "tablespoon chopped parsley",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "danske-kokken/suppe-l-hollandaise-hollandaise-soup",
+    "sourceUrl": "https://archive.org/details/frkenjensensko00jens",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Frøken Jensens kogebog (1921), publiek domein, via Open Recipe Archive",
+    "title": "Suppe à l'Hollandaise (Hollandaise Soup)",
+    "cuisine": "denmark",
+    "score": 0.7806377551020409,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 7,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "groentebouillon",
+        "wortel",
+        "doperwten",
+        "roomboter",
+        "bloem",
+        "ei",
+        "kookroom"
+      ],
+      "newConcepts": [
+        "turnips"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "5 L (5 pots) vegetable stock",
+        "rawName": "L (5 pots) vegetable stock",
+        "quantity": 5
+      },
+      {
+        "rawText": "4 carrots",
+        "rawName": "carrots",
+        "quantity": 4
+      },
+      {
+        "rawText": "4 turnips",
+        "rawName": "turnips",
+        "quantity": 4
+      },
+      {
+        "rawText": "1/2 L (1/2 pot) shelled peas",
+        "rawName": "L (1/2 pot) shelled peas",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "125 g (1/4 lb) butter",
+        "rawName": "g (1/4 lb) butter",
+        "quantity": 125
+      },
+      {
+        "rawText": "125 g (1/4 lb) flour",
+        "rawName": "g (1/4 lb) flour",
+        "quantity": 125
+      },
+      {
+        "rawText": "6 egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 6
+      },
+      {
+        "rawText": "1/4 L (1 pint) raw cream",
+        "rawName": "L (1 pint) raw cream",
+        "quantity": 0.25
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "filipino-kitchen/cream-of-celery-soup-4",
+    "sourceUrl": "https://archive.org/details/cu31924059639215",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Manila Cook Book (1919), publiek domein, via Open Recipe Archive",
+    "title": "Cream of Celery Soup",
+    "cuisine": "philippines",
+    "score": 0.769812925170068,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 6,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "melk",
+        "roomboter",
+        "bloem",
+        "ui",
+        "zout",
+        "peper"
+      ],
+      "newConcepts": [
+        "celery"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 pint of cooked celery",
+        "rawName": "cooked celery",
+        "quantity": 1,
+        "unit": "pint"
+      },
+      {
+        "rawText": "1 quart of milk",
+        "rawName": "milk",
+        "quantity": 1,
+        "unit": "quart"
+      },
+      {
+        "rawText": "1 tablespoon butter",
+        "rawName": "tablespoon butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 tablespoon flour",
+        "rawName": "tablespoon flour",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 teaspoon onion juice",
+        "rawName": "teaspoon onion juice",
+        "quantity": 1
+      },
+      {
+        "rawText": "3/4 teaspoon celery salt",
+        "rawName": "teaspoon celery salt",
+        "quantity": 0.75
+      },
+      {
+        "rawText": "3/4 saltspoon white pepper",
+        "rawName": "saltspoon white pepper",
+        "quantity": 0.75
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "suomen-keittio/kasvismureke-vegetable-farcie",
+    "sourceUrl": "https://archive.org/details/suomalaisamerika00wall",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Suomalais-amerikalainen keittokirja (1914), publiek domein, via Open Recipe Archive",
+    "title": "Kasvismureke (Vegetable Farcie)",
+    "cuisine": "finland",
+    "score": 0.769812925170068,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 6,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "paneermeel",
+        "ei",
+        "mais",
+        "roomboter",
+        "ui",
+        "kookroom"
+      ],
+      "newConcepts": [
+        "vegetables"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 lbs. of cooked vegetables",
+        "rawName": "lbs. of cooked vegetables",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 cupfuls of bread crumbs",
+        "rawName": "bread crumbs",
+        "quantity": 2,
+        "unit": "cupfuls"
+      },
+      {
+        "rawText": "3 eggs",
+        "rawName": "eggs",
+        "quantity": 3
+      },
+      {
+        "rawText": "2 tablespoonfuls of corn starch",
+        "rawName": "corn starch",
+        "quantity": 2,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "3/4 lb. of butter",
+        "rawName": "lb. of butter",
+        "quantity": 0.75
+      },
+      {
+        "rawText": "2 onions",
+        "rawName": "onions",
+        "quantity": 2
+      },
+      {
+        "rawText": "3/4 cupful of cream",
+        "rawName": "cream",
+        "quantity": 0.75,
+        "unit": "cupful"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/mellanr-tt-av-nudel-creamed-pasta-course-for-6-persons",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Mellanrätt av Nudel (Creamed Pasta Course for 6 persons)",
+    "cuisine": "sweden",
+    "score": 0.769812925170068,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 6,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "zout",
+        "roomboter",
+        "kookroom",
+        "peper",
+        "parmezaan"
+      ],
+      "newConcepts": [
+        "pasta"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 cups pasta",
+        "rawName": "pasta",
+        "quantity": 2,
+        "unit": "cups"
+      },
+      {
+        "rawText": "2 1/2 liters water",
+        "rawName": "1/2 liters water",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 tablespoon salt",
+        "rawName": "tablespoon salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "3 tablespoons butter (60 g)",
+        "rawName": "tablespoons butter (60 g)",
+        "quantity": 3
+      },
+      {
+        "rawText": "8 deciliters cream",
+        "rawName": "deciliters cream",
+        "quantity": 8
+      },
+      {
+        "rawText": "2 teaspoons salt",
+        "rawName": "teaspoons salt",
+        "quantity": 2
+      },
+      {
+        "rawText": "1/4 teaspoon white pepper",
+        "rawName": "teaspoon white pepper",
+        "quantity": 0.25
+      },
+      {
+        "rawText": "2 tablespoons grated Parmesan cheese",
+        "rawName": "tablespoons grated Parmesan cheese",
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/kalvkotlett-i-kastrull-veal-chops-in-casserole",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Kalvkotlett i kastrull (Veal Chops in Casserole)",
+    "cuisine": "sweden",
+    "score": 0.7672789351851851,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 5,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "zout",
+        "peper",
+        "roomboter",
+        "aardappel"
+      ],
+      "newConcepts": [
+        "veal chops"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "3 veal chops",
+        "rawName": "veal chops",
+        "quantity": 3
+      },
+      {
+        "rawText": "2 tsp. salt",
+        "rawName": "tsp. salt",
+        "quantity": 2
+      },
+      {
+        "rawText": "1/2 tsp. white pepper",
+        "rawName": "tsp. white pepper",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "4 tbsp. butter (80 g.)",
+        "rawName": "tbsp. butter (80 g.)",
+        "quantity": 4
+      },
+      {
+        "rawText": "12 small raw potatoes",
+        "rawName": "small raw potatoes",
+        "quantity": 12
+      },
+      {
+        "rawText": "1 tsp. salt",
+        "rawName": "tsp. salt",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/k-ldolmar-cabbage-rolls-2",
+    "sourceUrl": "https://archive.org/details/hemmetskokbok_1911",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Hemmets kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Kåldolmar (Cabbage Rolls)",
+    "cuisine": "sweden",
+    "score": 0.756050462962963,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 12,
+      "matched": 10,
+      "needsNewCanonical": 2,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 12,
+      "canonicalIds": [
+        "spitskool",
+        "witte-rijst",
+        "melk",
+        "spekblokjes",
+        "ei",
+        "peper",
+        "zout",
+        "roomboter",
+        "groentebouillon",
+        "kookroom"
+      ],
+      "newConcepts": [
+        "boneless beef",
+        "boneless veal"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 small cabbage head",
+        "rawName": "small cabbage head",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/5 cup rice grains",
+        "rawName": "rice grains",
+        "quantity": 0.2,
+        "unit": "cup"
+      },
+      {
+        "rawText": "4 cups milk",
+        "rawName": "milk",
+        "quantity": 4,
+        "unit": "cups"
+      },
+      {
+        "rawText": "200 g boneless beef",
+        "rawName": "g boneless beef",
+        "quantity": 200
+      },
+      {
+        "rawText": "100 g boneless veal",
+        "rawName": "g boneless veal",
+        "quantity": 100
+      },
+      {
+        "rawText": "100 g lard bacon",
+        "rawName": "g lard bacon",
+        "quantity": 100
+      },
+      {
+        "rawText": "1 egg",
+        "rawName": "egg",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 teaspoon white pepper",
+        "rawName": "teaspoon white pepper",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1 tablespoon salt",
+        "rawName": "tablespoon salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 tablespoons butter",
+        "rawName": "tablespoons butter",
+        "quantity": 2
+      },
+      {
+        "rawText": "1/2 liter bouillon",
+        "rawName": "liter bouillon",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1 part cream",
+        "rawName": "part cream",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "german-kitchen/huhn-mit-reis-chicken-with-rice",
+    "sourceUrl": "https://www.gutenberg.org/ebooks/13921",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Volks-Kochbuch (1905), publiek domein, via Open Recipe Archive",
+    "title": "Huhn mit Reis (Chicken with Rice)",
+    "cuisine": "germany",
+    "score": 0.7485648148148148,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 5,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "kipfilet",
+        "witte-rijst",
+        "roomboter",
+        "bloem",
+        "ui"
+      ],
+      "newConcepts": [
+        "spice measure"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 old chicken or 2 old partridges",
+        "rawName": "old chicken or 2 old partridges",
+        "quantity": 1
+      },
+      {
+        "rawText": "125 g rice, washed several times",
+        "rawName": "g rice, washed several times",
+        "quantity": 125
+      },
+      {
+        "rawText": "20 g butter",
+        "rawName": "g butter",
+        "quantity": 20
+      },
+      {
+        "rawText": "10 g flour",
+        "rawName": "g flour",
+        "quantity": 10
+      },
+      {
+        "rawText": "1 spice measure",
+        "rawName": "spice measure",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 onion",
+        "rawName": "onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 1/4 l water",
+        "rawName": "1/4 l water",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "kuchnia-polska/zupa-z-kury-z-szynk-soup-with-chicken-and-ham",
+    "sourceUrl": "https://archive.org/details/kuchniapolskoame00kami",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Kuchnia polsko-amerykańska (1917), publiek domein, via Open Recipe Archive",
+    "title": "Zupa z Kury z Szynką (Soup with Chicken and Ham)",
+    "cuisine": "poland",
+    "score": 0.7485648148148148,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 5,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "kipfilet",
+        "ui",
+        "witte-rijst",
+        "melk",
+        "bloem"
+      ],
+      "newConcepts": [
+        "ham"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "one chicken, quartered",
+        "rawName": "chicken, quartered",
+        "quantity": 1
+      },
+      {
+        "rawText": "half pound ham",
+        "rawName": "ham",
+        "quantity": 0.5,
+        "unit": "pound"
+      },
+      {
+        "rawText": "two onions",
+        "rawName": "onions",
+        "quantity": 2
+      },
+      {
+        "rawText": "three quarts water",
+        "rawName": "water",
+        "quantity": 3,
+        "unit": "quarts"
+      },
+      {
+        "rawText": "half a cup rice",
+        "rawName": "a cup rice",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "two cups good milk",
+        "rawName": "good milk",
+        "quantity": 2,
+        "unit": "cups"
+      },
+      {
+        "rawText": "a little flour",
+        "rawName": "little flour",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "wiener-kueche/n-del-oder-eferseln-noodle-souffl",
+    "sourceUrl": "https://archive.org/details/bub_gb_oP8yAQAAMAAJ",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Wiener Kochbuch (1883), publiek domein, via Open Recipe Archive",
+    "title": "Nüdel oder Eferseln (Noodle Soufflé)",
+    "cuisine": "austria",
+    "score": 0.7485648148148148,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 5,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "ei",
+        "melk",
+        "roomboter"
+      ],
+      "newConcepts": [
+        "vanilla sugar"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 eggs",
+        "rawName": "eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "1/2 liter boiling milk",
+        "rawName": "liter boiling milk",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "12 teaspoons butter",
+        "rawName": "teaspoons butter",
+        "quantity": 12
+      },
+      {
+        "rawText": "12 teaspoons vanilla sugar",
+        "rawName": "teaspoons vanilla sugar",
+        "quantity": 12
+      },
+      {
+        "rawText": "4 egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 4
+      },
+      {
+        "rawText": "4 egg whites",
+        "rawName": "egg whites",
+        "quantity": 4
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/biffpaj-beef-pie-2",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Biffpaj (Beef Pie)",
+    "cuisine": "sweden",
+    "score": 0.7473620293847566,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 11,
+      "matched": 9,
+      "needsNewCanonical": 2,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 11,
+      "canonicalIds": [
+        "zout",
+        "peper",
+        "ui",
+        "roomboter",
+        "aardappel",
+        "bloem"
+      ],
+      "newConcepts": [
+        "beef chuck",
+        "dcl good broth"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 kg. beef chuck",
+        "rawName": "kg. beef chuck",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 tsp. salt (10 gr.)",
+        "rawName": "tsp. salt (10 gr.)",
+        "quantity": 2
+      },
+      {
+        "rawText": "1/2 tsp. white pepper",
+        "rawName": "tsp. white pepper",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "2 red onions or 1 Portuguese onion",
+        "rawName": "red onions or 1 Portuguese onion",
+        "quantity": 2
+      },
+      {
+        "rawText": "3 tbsp. butter (60 gr.)",
+        "rawName": "tbsp. butter (60 gr.)",
+        "quantity": 3
+      },
+      {
+        "rawText": "1 liter potatoes (optional)",
+        "rawName": "liter potatoes (optional)",
+        "quantity": 1
+      },
+      {
+        "rawText": "4 dcl. good broth",
+        "rawName": "dcl. good broth",
+        "quantity": 4
+      },
+      {
+        "rawText": "1 tbsp. flour (10 gr.)",
+        "rawName": "tbsp. flour (10 gr.)",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 hg. cooked, cold grated potato",
+        "rawName": "hg. cooked, cold grated potato",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 hg. butter",
+        "rawName": "hg. butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 hg. flour",
+        "rawName": "hg. flour",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "huevos-rancheros",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/huevos-rancheros.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Huevos Rancheros",
+    "cuisine": "Mexican",
+    "score": 0.7430623591284748,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 11,
+      "matched": 11,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 9,
+      "canonicalIds": [
+        "ei",
+        "wraps",
+        "tomaat",
+        "rode-peper",
+        "ui",
+        "knoflook",
+        "zonnebloemolie",
+        "zout",
+        "verse-koriander",
+        "geraspte-kaas",
+        "limoen"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "2 eggs Large eggs",
+        "rawName": "Large eggs",
+        "quantity": 2,
+        "unit": "eggs"
+      },
+      {
+        "rawText": "2 pieces Corn tortillas (15 cm / 6 inch)",
+        "rawName": "Corn tortillas (15 cm / 6 inch)",
+        "quantity": 2,
+        "unit": "pieces"
+      },
+      {
+        "rawText": "4 pieces Roma tomatoes",
+        "rawName": "Roma tomatoes",
+        "quantity": 4,
+        "unit": "pieces"
+      },
+      {
+        "rawText": "2 pieces Dried guajillo or ancho chili (stemmed, seeded)",
+        "rawName": "Dried guajillo or ancho chili (stemmed",
+        "quantity": 2,
+        "unit": "pieces",
+        "preparation": "seeded)"
+      },
+      {
+        "rawText": "0.5 medium White onion (halved)",
+        "rawName": "White onion (halved)",
+        "quantity": 0.5,
+        "unit": "medium"
+      },
+      {
+        "rawText": "3 cloves Garlic cloves (unpeeled)",
+        "rawName": "Garlic cloves (unpeeled)",
+        "quantity": 3,
+        "unit": "cloves"
+      },
+      {
+        "rawText": "3 tbsp Neutral oil or lard",
+        "rawName": "Neutral oil or lard",
+        "quantity": 3,
+        "unit": "tbsp"
+      },
+      {
+        "rawText": "1 tsp Fine salt",
+        "rawName": "Fine salt",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "rawText": "2 tbsp Fresh cilantro leaves",
+        "rawName": "Fresh cilantro leaves",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "rawText": "2 tbsp Cotija cheese or queso fresco (crumbled)",
+        "rawName": "Cotija cheese or queso fresco (crumbled)",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "rawText": "1 lime Lime (cut into wedges)",
+        "rawName": "Lime (cut into wedges)",
+        "quantity": 1,
+        "unit": "lime"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/ppelsoppa-apple-soup",
+    "sourceUrl": "https://archive.org/details/hemmetskokbok_1911",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Hemmets kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Äppelsoppa (Apple Soup)",
+    "cuisine": "sweden",
+    "score": 0.7370091666666666,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "appel",
+        "azijn",
+        "citroen",
+        "aardappel"
+      ],
+      "newConcepts": [
+        "1 2 cups sugar"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 liters fresh (or 1 1/2 hectograms dried) apples",
+        "rawName": "liters fresh (or 1 1/2 hectograms dried) apples",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 tablespoon vinegar",
+        "rawName": "tablespoon vinegar",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 liters water",
+        "rawName": "liters water",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 1/2 cups crushed sugar",
+        "rawName": "1/2 cups crushed sugar",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 lemon (rind and juice)",
+        "rawName": "lemon (rind and juice)",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1 1/2 - 2 tablespoons potato flour",
+        "rawName": "1/2 - 2 tablespoons potato flour",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/irl-ndsk-k-ttstuvning-irish-meat-stew-2",
+    "sourceUrl": "https://archive.org/details/hemmetskokbok_1911",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Hemmets kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Irländsk köttstuvning (Irish Meat Stew)",
+    "cuisine": "sweden",
+    "score": 0.7370091666666666,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "ui",
+        "zout",
+        "peper",
+        "aardappel"
+      ],
+      "newConcepts": [
+        "lamb meat"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1.5 kg lamb meat",
+        "rawName": "kg lamb meat",
+        "quantity": 1.5
+      },
+      {
+        "rawText": "2 red onions",
+        "rawName": "red onions",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 tbsp salt",
+        "rawName": "tbsp salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "0.5 tsp white pepper",
+        "rawName": "tsp white pepper",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "6 cups water",
+        "rawName": "water",
+        "quantity": 6,
+        "unit": "cups"
+      },
+      {
+        "rawText": "1.5 liters potatoes",
+        "rawName": "liters potatoes",
+        "quantity": 1.5
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/fransk-salad-i-gel-french-salad-in-aspic-2",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Fransk salad i gelé (French Salad in Aspic)",
+    "cuisine": "sweden",
+    "score": 0.7262236666666667,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 17,
+      "matched": 12,
+      "needsNewCanonical": 3,
+      "rejectedLines": 2,
+      "ambiguousLines": 0,
+      "parseableLines": 17,
+      "canonicalIds": [
+        "kipfilet",
+        "komkommer",
+        "aardappel",
+        "tomaat",
+        "appel",
+        "ei",
+        "zout",
+        "azijn",
+        "citroen",
+        "groentebouillon"
+      ],
+      "newConcepts": [
+        "hg salted ox tongue",
+        "dcl fine salad oil",
+        "leaves gelatin"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 hg. cooked chicken meat (leftovers)",
+        "rawName": "hg. cooked chicken meat (leftovers)",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 hg. salted ox tongue",
+        "rawName": "hg. salted ox tongue",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 small pickled cucumber",
+        "rawName": "small pickled cucumber",
+        "quantity": 1
+      },
+      {
+        "rawText": "3 medium-sized, cooked potatoes",
+        "rawName": "medium-sized, cooked potatoes",
+        "quantity": 3
+      },
+      {
+        "rawText": "2 tomatoes",
+        "rawName": "tomatoes",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 small apples",
+        "rawName": "small apples",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 2
+      },
+      {
+        "rawText": "1/2 tsp. salt, cayenne",
+        "rawName": "tsp. salt, cayenne",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "2 dcl. fine salad oil",
+        "rawName": "dcl. fine salad oil",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 tbsp. tarragon vinegar",
+        "rawName": "tbsp. tarragon vinegar",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 tbsp. lemon juice",
+        "rawName": "tbsp. lemon juice",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1 tbsp. boiling water",
+        "rawName": "tbsp. boiling water",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 liter good bouillon",
+        "rawName": "liter good bouillon",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "5 leaves gelatin",
+        "rawName": "leaves gelatin",
+        "quantity": 5
+      },
+      {
+        "rawText": "1 tsp. vinegar",
+        "rawName": "tsp. vinegar",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 egg white and the rinsed shells",
+        "rawName": "egg white and the rinsed shells",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 tbsp. cold water",
+        "rawName": "tbsp. cold water",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "danske-kokken/ris-og-tomat-suppe-rice-and-tomato-soup",
+    "sourceUrl": "https://archive.org/details/skandinaviskillu00chic",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Skandinavisk illustreret kogebog (1884), publiek domein, via Open Recipe Archive",
+    "title": "Ris- og Tomat-Suppe (Rice and Tomato Soup)",
+    "cuisine": "denmark",
+    "score": 0.7190333333333333,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 5,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "tomaat",
+        "zout",
+        "peper",
+        "witte-rijst"
+      ],
+      "newConcepts": [
+        "good clear broth free from fat"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 pint tomatoes",
+        "rawName": "tomatoes",
+        "quantity": 1,
+        "unit": "pint"
+      },
+      {
+        "rawText": "2 quarts good, clear broth, free from fat",
+        "rawName": "good, clear broth, free from fat",
+        "quantity": 2,
+        "unit": "quarts"
+      },
+      {
+        "rawText": "1 teaspoon salt",
+        "rawName": "teaspoon salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "0.5 teaspoon pepper",
+        "rawName": "teaspoon pepper",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "4 ounces rice",
+        "rawName": "rice",
+        "quantity": 4,
+        "unit": "ounces"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "hollandse-keuken/koolsoep-cabbage-soup-4",
+    "sourceUrl": "https://archive.org/details/bwb_Y0-BXP-037",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Kookboek van de Amsterdamse Huishoudschool (1910), publiek domein, via Open Recipe Archive",
+    "title": "Koolsoep (Cabbage Soup)",
+    "cuisine": "netherlands",
+    "score": 0.7190333333333333,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 5,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "groentebouillon",
+        "spitskool",
+        "bloem",
+        "roomboter"
+      ],
+      "newConcepts": [
+        "curry"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 l light veal bouillon or 1 l water and 4 Maggi bouillon cubes",
+        "rawName": "l light veal bouillon or 1 l water and 4 Maggi bouillon cubes",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/4 Savoy or white cabbage",
+        "rawName": "Savoy or white cabbage",
+        "quantity": 0.25
+      },
+      {
+        "rawText": "1/2 tablespoon curry",
+        "rawName": "tablespoon curry",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "40 g flour",
+        "rawName": "g flour",
+        "quantity": 40
+      },
+      {
+        "rawText": "40 g butter or margarine",
+        "rawName": "g butter or margarine",
+        "quantity": 40
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/br-ckt-skinka-med-ris-smoked-ham-with-rice",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Bräckt skinka med ris (Smoked Ham with Rice)",
+    "cuisine": "sweden",
+    "score": 0.7190333333333333,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "witte-rijst",
+        "zout",
+        "ui",
+        "roomboter"
+      ],
+      "newConcepts": [
+        "hg smoked ham"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1/2 dcl. rice grains (150 gr.)",
+        "rawName": "dcl. rice grains (150 gr.)",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1 1/2 liters water",
+        "rawName": "1/2 liters water",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 tablespoon salt",
+        "rawName": "tablespoon salt",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1 Portuguese onion",
+        "rawName": "Portuguese onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "50 gr. butter",
+        "rawName": "gr. butter",
+        "quantity": 50
+      },
+      {
+        "rawText": "5 hg. smoked ham",
+        "rawName": "hg. smoked ham",
+        "quantity": 5
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/gr-nsakspastejer-vegetable-pastries-2",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Grönsakspastejer (Vegetable Pastries)",
+    "cuisine": "sweden",
+    "score": 0.7152743764172335,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 9,
+      "matched": 9,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "wortel",
+        "roomboter",
+        "doperwten",
+        "aardappel",
+        "kookroom",
+        "ei",
+        "zout"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "2 carrots",
+        "rawName": "carrots",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 tbsp butter (20 gr)",
+        "rawName": "tbsp butter (20 gr)",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 dcl fine preserved peas",
+        "rawName": "dcl fine preserved peas",
+        "quantity": 2
+      },
+      {
+        "rawText": "750 gr peeled potato, approximately 1 1/4 liter unpeeled",
+        "rawName": "gr peeled potato, approximately 1 1/4 liter unpeeled",
+        "quantity": 750
+      },
+      {
+        "rawText": "30 gr butter",
+        "rawName": "gr butter",
+        "quantity": 30
+      },
+      {
+        "rawText": "1-1 1/2 dcl cooked cream"
+      },
+      {
+        "rawText": "1 egg",
+        "rawName": "egg",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 egg yolk",
+        "rawName": "egg yolk",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 tsp salt, 1 tsp sugar (little grated nutmeg)",
+        "rawName": "tsp salt, 1 tsp sugar (little grated nutmeg)",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "kuchnia-polska/zupa-pomidorowa-z-ry-em-tomato-soup-with-rice",
+    "sourceUrl": "https://archive.org/details/kuchniapolskoame00kami",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Kuchnia polsko-amerykańska (1917), publiek domein, via Open Recipe Archive",
+    "title": "Zupa Pomidorowa z Ryżem (Tomato Soup with Rice)",
+    "cuisine": "poland",
+    "score": 0.6987200520833333,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 6,
+      "needsNewCanonical": 0,
+      "rejectedLines": 2,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "tomaat",
+        "witte-rijst",
+        "ui",
+        "wortel",
+        "roomboter",
+        "bloem"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "two large cupfuls of pickled or fresh tomatoes",
+        "rawName": "large cupfuls of pickled or fresh tomatoes",
+        "quantity": 2
+      },
+      {
+        "rawText": "half cupful of rice",
+        "rawName": "rice",
+        "quantity": 0.5,
+        "unit": "cupful"
+      },
+      {
+        "rawText": "two onions",
+        "rawName": "onions",
+        "quantity": 2
+      },
+      {
+        "rawText": "one carrot",
+        "rawName": "carrot",
+        "quantity": 1
+      },
+      {
+        "rawText": "three tablespoons of butter",
+        "rawName": "tablespoons of butter",
+        "quantity": 3
+      },
+      {
+        "rawText": "two tablespoons of flour",
+        "rawName": "tablespoons of flour",
+        "quantity": 2
+      },
+      {
+        "rawText": "one quart of cold water",
+        "rawName": "cold water",
+        "quantity": 1,
+        "unit": "quart"
+      },
+      {
+        "rawText": "salt and pepper to taste"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "wiener-kueche/reis-kn-del-rice-kn-del",
+    "sourceUrl": "https://archive.org/details/bub_gb_oP8yAQAAMAAJ",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Wiener Kochbuch (1883), publiek domein, via Open Recipe Archive",
+    "title": "Reis-Knödel (Rice Knödel)",
+    "cuisine": "austria",
+    "score": 0.6972608024691359,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 9,
+      "matched": 9,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "witte-rijst",
+        "melk",
+        "roomboter",
+        "ei",
+        "paneermeel",
+        "zout",
+        "doperwten",
+        "bloem"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "18 deca rice",
+        "rawName": "deca rice",
+        "quantity": 18
+      },
+      {
+        "rawText": "1/2 liter milk",
+        "rawName": "liter milk",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "12 deca butter",
+        "rawName": "deca butter",
+        "quantity": 12
+      },
+      {
+        "rawText": "2 whole eggs",
+        "rawName": "whole eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "3 egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 3
+      },
+      {
+        "rawText": "8 deca bread crumbs",
+        "rawName": "deca bread crumbs",
+        "quantity": 8
+      },
+      {
+        "rawText": "some salt"
+      },
+      {
+        "rawText": "1/16 liter cooked green peas",
+        "rawName": "liter cooked green peas",
+        "quantity": 0.0625
+      },
+      {
+        "rawText": "2 tablespoons flour",
+        "rawName": "tablespoons flour",
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "ye-old-american/corn-soup-4",
+    "sourceUrl": "https://www.gutenberg.org/ebooks/65061",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Boston Cooking-School Cook Book (1896), publiek domein, via Open Recipe Archive",
+    "title": "Corn Soup",
+    "cuisine": "american-historical",
+    "score": 0.687265625,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 7,
+      "needsNewCanonical": 0,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "mais",
+        "melk",
+        "ui",
+        "roomboter",
+        "bloem",
+        "zout",
+        "peper"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "1 can corn",
+        "rawName": "can corn",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 pint boiling water",
+        "rawName": "boiling water",
+        "quantity": 1,
+        "unit": "pint"
+      },
+      {
+        "rawText": "1 pint milk",
+        "rawName": "milk",
+        "quantity": 1,
+        "unit": "pint"
+      },
+      {
+        "rawText": "1 slice onion",
+        "rawName": "slice onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 tablespoons butter",
+        "rawName": "tablespoons butter",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 tablespoons flour",
+        "rawName": "tablespoons flour",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 teaspoon salt",
+        "rawName": "teaspoon salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "Few grains pepper"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/pirog-p-lax-salmon-pirog-3",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Pirog på lax (Salmon Pirog)",
+    "cuisine": "sweden",
+    "score": 0.6832465277777778,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 12,
+      "matched": 11,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 11,
+      "canonicalIds": [
+        "witte-rijst",
+        "zout",
+        "kookroom",
+        "zalmfilet",
+        "rode-ui",
+        "roomboter",
+        "ei"
+      ],
+      "newConcepts": [
+        "lit water"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 1/2 dcl. rice grains (150 gr.)",
+        "rawName": "1/2 dcl. rice grains (150 gr.)",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 lit. water",
+        "rawName": "lit. water",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "2 tsk. salt (10 gr.)",
+        "rawName": "tsk. salt (10 gr.)",
+        "quantity": 2
+      },
+      {
+        "rawText": "3-4 dcl. thick cream"
+      },
+      {
+        "rawText": "3 1/2 hg. salted salmon",
+        "rawName": "1/2 hg. salted salmon",
+        "quantity": 3
+      },
+      {
+        "rawText": "1 msk. finely chopped red onion",
+        "rawName": "msk. finely chopped red onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 msk. butter (40 gr.)",
+        "rawName": "msk. butter (40 gr.)",
+        "quantity": 2
+      },
+      {
+        "rawText": "3 hard-boiled eggs",
+        "rawName": "hard-boiled eggs",
+        "quantity": 3
+      },
+      {
+        "rawText": "150 gr. flour for the butter dough",
+        "rawName": "gr. flour for the butter dough",
+        "quantity": 150
+      },
+      {
+        "rawText": "1 dcl. water (scant) for the butter dough",
+        "rawName": "dcl. water (scant) for the butter dough",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 hg. butter for the butter dough",
+        "rawName": "hg. butter for the butter dough",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 egg white for brushing",
+        "rawName": "egg white for brushing",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "gnocchi",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/gnocchi.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Potato Gnocchi",
+    "cuisine": "Italian",
+    "servings": 3,
+    "score": 0.6822949999999999,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 5,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "aardappel",
+        "bloem",
+        "ei",
+        "zout",
+        "roomboter"
+      ],
+      "newConcepts": [
+        "parmigiano reggiano"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1000 g Russet or Yukon Gold potatoes (floury variety)",
+        "rawName": "Russet or Yukon Gold potatoes (floury variety)",
+        "quantity": 1000,
+        "unit": "g"
+      },
+      {
+        "rawText": "200 g All-purpose flour (plus extra for bench)",
+        "rawName": "All-purpose flour (plus extra for bench)",
+        "quantity": 200,
+        "unit": "g"
+      },
+      {
+        "rawText": "1 whole Egg (large), beaten",
+        "rawName": "Egg (large)",
+        "quantity": 1,
+        "unit": "whole",
+        "preparation": "beaten"
+      },
+      {
+        "rawText": "8 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 8,
+        "unit": "g"
+      },
+      {
+        "rawText": "30 g Parmigiano-Reggiano, grated (optional finish)",
+        "rawName": "Parmigiano-Reggiano",
+        "quantity": 30,
+        "unit": "g",
+        "preparation": "grated (optional finish)"
+      },
+      {
+        "rawText": "40 g Unsalted butter, for pan sauce",
+        "rawName": "Unsalted butter",
+        "quantity": 40,
+        "unit": "g",
+        "preparation": "for pan sauce"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "ceska-kuchyne/zelnice-ili-coura-ka-cabbage-soup",
+    "sourceUrl": "https://archive.org/details/nrodndomc00rosi",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Národní domácí kuchařka česko-americká (1904), publiek domein, via Open Recipe Archive",
+    "title": "Zelnice čili Couračka (Cabbage Soup)",
+    "cuisine": "czechia",
+    "score": 0.6579591836734694,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 6,
+      "needsNewCanonical": 0,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "spitskool",
+        "ei",
+        "roomboter",
+        "creme-fraiche",
+        "bloem"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "1 quart cabbage water",
+        "rawName": "cabbage water",
+        "quantity": 1,
+        "unit": "quart"
+      },
+      {
+        "rawText": "1 pint sour cabbage",
+        "rawName": "sour cabbage",
+        "quantity": 1,
+        "unit": "pint"
+      },
+      {
+        "rawText": "1 quart water",
+        "rawName": "water",
+        "quantity": 1,
+        "unit": "quart"
+      },
+      {
+        "rawText": "6 egg yolks or 3 eggs",
+        "rawName": "egg yolks or 3 eggs",
+        "quantity": 6
+      },
+      {
+        "rawText": "A piece of butter",
+        "rawName": "piece of butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 cup good sour cream",
+        "rawName": "good sour cream",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "Optional: 1 spoon white flour for thicker soup"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "kuchnia-polska/pomidory-faszerowane-stuffed-tomatoes",
+    "sourceUrl": "https://archive.org/details/kuchniapolskoame00kami",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Kuchnia polsko-amerykańska (1917), publiek domein, via Open Recipe Archive",
+    "title": "Pomidory Faszerowane (Stuffed Tomatoes)",
+    "cuisine": "poland",
+    "score": 0.6579591836734694,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 7,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "paneermeel",
+        "verse-peterselie",
+        "roomboter",
+        "zout",
+        "ei",
+        "paprika-rood",
+        "tomaat"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "one cup finely grated bread crumbs",
+        "rawName": "finely grated bread crumbs",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "one tablespoon finely chopped fresh parsley",
+        "rawName": "tablespoon finely chopped fresh parsley",
+        "quantity": 1
+      },
+      {
+        "rawText": "one tablespoon melted butter",
+        "rawName": "tablespoon melted butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "half a teaspoon salt",
+        "rawName": "a teaspoon salt",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "two beaten eggs",
+        "rawName": "beaten eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "red pepper"
+      },
+      {
+        "rawText": "six large tomatoes",
+        "rawName": "large tomatoes",
+        "quantity": 6
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "suomen-keittio/sienimureke-mushroom-farce",
+    "sourceUrl": "https://archive.org/details/keittokirjacookb00wall",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Keittokirja = Cook Book (1928), publiek domein, via Open Recipe Archive",
+    "title": "Sienimureke (Mushroom Farce)",
+    "cuisine": "finland",
+    "score": 0.6579591836734694,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 6,
+      "needsNewCanonical": 0,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "champignons",
+        "paneermeel",
+        "roomboter",
+        "ui",
+        "melk",
+        "ei"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "2 1/2 pounds mushrooms",
+        "rawName": "1/2 pounds mushrooms",
+        "quantity": 2
+      },
+      {
+        "rawText": "10 ounces bread crumbs",
+        "rawName": "bread crumbs",
+        "quantity": 10,
+        "unit": "ounces"
+      },
+      {
+        "rawText": "1/4 pound butter",
+        "rawName": "butter",
+        "quantity": 0.25,
+        "unit": "pound"
+      },
+      {
+        "rawText": "2 small onions",
+        "rawName": "small onions",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 cups rich milk",
+        "rawName": "rich milk",
+        "quantity": 2,
+        "unit": "cups"
+      },
+      {
+        "rawText": "3 eggs",
+        "rawName": "eggs",
+        "quantity": 3
+      },
+      {
+        "rawText": "salt and pepper"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "suomen-keittio/lohikeitto-salmon-soup",
+    "sourceUrl": "https://archive.org/details/keittokirjacookb00wall",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Keittokirja = Cook Book (1928), publiek domein, via Open Recipe Archive",
+    "title": "Lohikeitto (Salmon Soup)",
+    "cuisine": "finland",
+    "score": 0.6579591836734694,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 6,
+      "needsNewCanonical": 0,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "zalmfilet",
+        "roomboter",
+        "bloem",
+        "ei",
+        "kookroom"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "2 quarts salmon or fish stock",
+        "rawName": "salmon or fish stock",
+        "quantity": 2,
+        "unit": "quarts"
+      },
+      {
+        "rawText": "2.5 pounds fresh salmon or 0.5 can of salmon",
+        "rawName": "fresh salmon or 0.5 can of salmon",
+        "quantity": 2.5,
+        "unit": "pounds"
+      },
+      {
+        "rawText": "2 tablespoons butter or lobster butter",
+        "rawName": "tablespoons butter or lobster butter",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 tablespoons flour",
+        "rawName": "tablespoons flour",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 cup cream",
+        "rawName": "cream",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "Salt and pepper"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "suomen-keittio/liha-kvenellej-meat-quenelles",
+    "sourceUrl": "https://archive.org/details/suomalaisamerika00wall",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Suomalais-amerikalainen keittokirja (1914), publiek domein, via Open Recipe Archive",
+    "title": "Liha Kvenellejä (Meat Quenelles)",
+    "cuisine": "finland",
+    "score": 0.6579591836734694,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 6,
+      "needsNewCanonical": 0,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "kipfilet",
+        "roomboter",
+        "ei",
+        "paneermeel",
+        "melk",
+        "ui"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "1/2 lb. of chicken or veal",
+        "rawName": "lb. of chicken or veal",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "2 tablespoonfuls of melted butter",
+        "rawName": "melted butter",
+        "quantity": 2,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "2 eggs",
+        "rawName": "eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 tablespoonfuls of bread crumbs",
+        "rawName": "bread crumbs",
+        "quantity": 2,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "2 tablespoonfuls of milk or meat stock",
+        "rawName": "milk or meat stock",
+        "quantity": 2,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "1/2 onion",
+        "rawName": "onion",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "salt and pepper"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/makaroni-gratin-macaroni-gratin",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Makaroni-gratin (Macaroni Gratin)",
+    "cuisine": "sweden",
+    "score": 0.6355257262522219,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 13,
+      "matched": 10,
+      "needsNewCanonical": 2,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 12,
+      "canonicalIds": [
+        "macaroni",
+        "zout",
+        "roomboter",
+        "rode-ui",
+        "bloem",
+        "melk",
+        "peper",
+        "geraspte-kaas",
+        "paneermeel"
+      ],
+      "newConcepts": [
+        "lean veal in fine cubes",
+        "little nutmeg"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 1/2 hectograms good macaroni",
+        "rawName": "1/2 hectograms good macaroni",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 1/2 liters water",
+        "rawName": "1/2 liters water",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 tablespoon salt",
+        "rawName": "tablespoon salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "80 gr. butter",
+        "rawName": "gr. butter",
+        "quantity": 80
+      },
+      {
+        "rawText": "1 finely chopped red onion",
+        "rawName": "finely chopped red onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "50 gr. lean veal (in fine cubes)",
+        "rawName": "gr. lean veal (in fine cubes)",
+        "quantity": 50
+      },
+      {
+        "rawText": "40 gr. flour",
+        "rawName": "gr. flour",
+        "quantity": 40
+      },
+      {
+        "rawText": "8 deciliters boiling milk",
+        "rawName": "deciliters boiling milk",
+        "quantity": 8
+      },
+      {
+        "rawText": "salt, white pepper"
+      },
+      {
+        "rawText": "a little grated nutmeg",
+        "rawName": "little grated nutmeg",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 tablespoon butter (20 gr.) for the mold",
+        "rawName": "tablespoon butter (20 gr.) for the mold",
+        "quantity": 1
+      },
+      {
+        "rawText": "3 tablespoons grated cheese",
+        "rawName": "tablespoons grated cheese",
+        "quantity": 3
+      },
+      {
+        "rawText": "3 tablespoons crushed breadcrumbs",
+        "rawName": "tablespoons crushed breadcrumbs",
+        "quantity": 3
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "hollandse-keuken/brussels-lof-schotel-brussels-lof-casserole",
+    "sourceUrl": "https://archive.org/details/bwb_Y0-BXP-037",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Kookboek van de Amsterdamse Huishoudschool (1910), publiek domein, via Open Recipe Archive",
+    "title": "Brussels Lof Schotel (Brussels Lof Casserole)",
+    "cuisine": "netherlands",
+    "score": 0.6315555555555554,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 9,
+      "matched": 8,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "spekblokjes",
+        "ei",
+        "zout",
+        "melk",
+        "roomboter",
+        "bloem",
+        "geraspte-kaas"
+      ],
+      "newConcepts": [
+        "brussels lof"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 kg Brussels lof",
+        "rawName": "kg Brussels lof",
+        "quantity": 1
+      },
+      {
+        "rawText": "150 g ham or bacon",
+        "rawName": "g ham or bacon",
+        "quantity": 150
+      },
+      {
+        "rawText": "2 hard-boiled eggs",
+        "rawName": "hard-boiled eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "salt to taste"
+      },
+      {
+        "rawText": "0.5 l milk",
+        "rawName": "l milk",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "40 g butter or margarine",
+        "rawName": "g butter or margarine",
+        "quantity": 40
+      },
+      {
+        "rawText": "40 g flour",
+        "rawName": "g flour",
+        "quantity": 40
+      },
+      {
+        "rawText": "60 g aged Gouda cheese",
+        "rawName": "g aged Gouda cheese",
+        "quantity": 60
+      },
+      {
+        "rawText": "20 g melted butter or margarine",
+        "rawName": "g melted butter or margarine",
+        "quantity": 20
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "cocina-argentina/sopa-de-albondiguillas-meatball-soup-3",
+    "sourceUrl": "https://archive.org/details/cocina-eclectica-juana-manuela-gorriti",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Cocina Ecléctica (1890), publiek domein, via Open Recipe Archive",
+    "title": "Sopa de Albondiguillas (Meatball Soup)",
+    "cuisine": "argentina",
+    "score": 0.6193055555555557,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 6,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "ei",
+        "melk",
+        "roomboter",
+        "zout",
+        "peper",
+        "bloem"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "four eggs",
+        "rawName": "eggs",
+        "quantity": 4
+      },
+      {
+        "rawText": "one cup milk",
+        "rawName": "milk",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "two ounces butter",
+        "rawName": "butter",
+        "quantity": 2,
+        "unit": "ounces"
+      },
+      {
+        "rawText": "a pinch of salt",
+        "rawName": "pinch of salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "a pinch of pepper",
+        "rawName": "pinch of pepper",
+        "quantity": 1
+      },
+      {
+        "rawText": "wheat flour"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "filipino-kitchen/baked-eggplant-2",
+    "sourceUrl": "https://archive.org/details/cu31924059639215",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Manila Cook Book (1919), publiek domein, via Open Recipe Archive",
+    "title": "Baked Eggplant",
+    "cuisine": "philippines",
+    "score": 0.6193055555555557,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 5,
+      "needsNewCanonical": 0,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "aubergine",
+        "paneermeel",
+        "tomaat",
+        "witte-rijst",
+        "ei"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "1 large eggplant",
+        "rawName": "large eggplant",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 cup bread crumbs",
+        "rawName": "bread crumbs",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "3 large ripe tomatoes",
+        "rawName": "large ripe tomatoes",
+        "quantity": 3
+      },
+      {
+        "rawText": "3/4 cup cooked rice",
+        "rawName": "cooked rice",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "rawText": "1 beaten egg",
+        "rawName": "beaten egg",
+        "quantity": 1
+      },
+      {
+        "rawText": "salt and pepper to taste"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "kuchnia-polska/polewka-z-kapusty-cabbage-soup-2",
+    "sourceUrl": "https://archive.org/details/kuchniapolskoame00kami",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Kuchnia polsko-amerykańska (1917), publiek domein, via Open Recipe Archive",
+    "title": "Polewka z Kapusty (Cabbage Soup)",
+    "cuisine": "poland",
+    "score": 0.6193055555555557,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 4,
+      "needsNewCanonical": 0,
+      "rejectedLines": 2,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "spitskool",
+        "melk",
+        "roomboter",
+        "bloem"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "one small head of cabbage",
+        "rawName": "small head of cabbage",
+        "quantity": 1
+      },
+      {
+        "rawText": "one quart of water",
+        "rawName": "water",
+        "quantity": 1,
+        "unit": "quart"
+      },
+      {
+        "rawText": "half quart of good hot milk",
+        "rawName": "good hot milk",
+        "quantity": 0.5,
+        "unit": "quart"
+      },
+      {
+        "rawText": "salt and pepper to taste"
+      },
+      {
+        "rawText": "two tablespoons of butter",
+        "rawName": "tablespoons of butter",
+        "quantity": 2
+      },
+      {
+        "rawText": "one tablespoon of flour",
+        "rawName": "tablespoon of flour",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "victorian-britain/soup-a-la-solferino",
+    "sourceUrl": "https://www.gutenberg.org/ebooks/10136",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Book of Household Management (1861), publiek domein, via Open Recipe Archive",
+    "title": "Soup a la Solferino",
+    "cuisine": "united-kingdom",
+    "score": 0.6193055555555557,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 5,
+      "needsNewCanonical": 0,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "ei",
+        "kookroom",
+        "roomboter",
+        "bloem",
+        "groentebouillon"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "4 eggs",
+        "rawName": "eggs",
+        "quantity": 4
+      },
+      {
+        "rawText": "1/2 pint of cream",
+        "rawName": "cream",
+        "quantity": 0.5,
+        "unit": "pint"
+      },
+      {
+        "rawText": "2 oz. of fresh butter",
+        "rawName": "oz. of fresh butter",
+        "quantity": 2
+      },
+      {
+        "rawText": "salt and pepper to taste"
+      },
+      {
+        "rawText": "a little flour to thicken",
+        "rawName": "little flour to thicken",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 quarts of bouillon, No. 105",
+        "rawName": "bouillon, No. 105",
+        "quantity": 2,
+        "unit": "quarts"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "canadian-kitchen/corn-chowder-4",
+    "sourceUrl": "https://archive.org/details/canadianfarmcook00unse",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Canadian Farm Cook Book (1911), publiek domein, via Open Recipe Archive",
+    "title": "Corn Chowder",
+    "cuisine": "canada",
+    "score": 0.6140123456790123,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 9,
+      "matched": 8,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "mais",
+        "spitskool",
+        "ui",
+        "azijn",
+        "mosterd",
+        "kerriepoeder",
+        "kurkuma",
+        "zout"
+      ],
+      "newConcepts": [
+        "red peppers"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 dozen ears sweet corn",
+        "rawName": "dozen ears sweet corn",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 cabbage head",
+        "rawName": "cabbage head",
+        "quantity": 1
+      },
+      {
+        "rawText": "4 onions",
+        "rawName": "onions",
+        "quantity": 4
+      },
+      {
+        "rawText": "2 red peppers",
+        "rawName": "red peppers",
+        "quantity": 2
+      },
+      {
+        "rawText": "3 pints of vinegar",
+        "rawName": "vinegar",
+        "quantity": 3,
+        "unit": "pints"
+      },
+      {
+        "rawText": "3/4 pound mustard",
+        "rawName": "mustard",
+        "quantity": 0.75,
+        "unit": "pound"
+      },
+      {
+        "rawText": "2 teaspoons curry powder",
+        "rawName": "teaspoons curry powder",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 teaspoon turmeric",
+        "rawName": "teaspoon turmeric",
+        "quantity": 1
+      },
+      {
+        "rawText": "salt to taste"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "suomen-keittio/porkkanasoppa-carrot-soup",
+    "sourceUrl": "https://archive.org/details/keittokirjacookb00wall",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Keittokirja = Cook Book (1928), publiek domein, via Open Recipe Archive",
+    "title": "Porkkanasoppa (Carrot Soup)",
+    "cuisine": "finland",
+    "score": 0.6107823522927689,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 9,
+      "matched": 7,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "groentebouillon",
+        "wortel",
+        "ui",
+        "roomboter",
+        "bloem",
+        "ei",
+        "kookroom"
+      ],
+      "newConcepts": [
+        "stalks celery"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 quarts bouillon",
+        "rawName": "bouillon",
+        "quantity": 2,
+        "unit": "quarts"
+      },
+      {
+        "rawText": "1 cup carrots cut in pieces",
+        "rawName": "carrots cut in pieces",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "1 small onion",
+        "rawName": "small onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 stalks celery",
+        "rawName": "stalks celery",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 tablespoons butter",
+        "rawName": "tablespoons butter",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 tablespoons flour",
+        "rawName": "tablespoons flour",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 cup cream",
+        "rawName": "cream",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "Salt and pepper"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "suomen-keittio/julienne-soup-3",
+    "sourceUrl": "https://archive.org/details/suomalaisamerika00wall",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Suomalais-amerikalainen keittokirja (1914), publiek domein, via Open Recipe Archive",
+    "title": "Julienne Soup",
+    "cuisine": "finland",
+    "score": 0.5931668526785715,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 6,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "groentebouillon",
+        "wortel",
+        "prei",
+        "ijsbergsla",
+        "sperziebonen",
+        "roomboter"
+      ],
+      "newConcepts": [
+        "celery"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 quarts of rich bouillon",
+        "rawName": "rich bouillon",
+        "quantity": 2,
+        "unit": "quarts"
+      },
+      {
+        "rawText": "1 small celery",
+        "rawName": "small celery",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 carrot",
+        "rawName": "carrot",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 leek",
+        "rawName": "leek",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 head of lettuce",
+        "rawName": "head of lettuce",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 1/2 cupfuls of string beans",
+        "rawName": "1/2 cupfuls of string beans",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 tablespoonfuls of butter",
+        "rawName": "butter",
+        "quantity": 2,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "salt and pepper"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "victorian-britain/forcemeat-for-pike-carp-haddock-and-various-kinds-of-fish",
+    "sourceUrl": "https://www.gutenberg.org/ebooks/10136",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Book of Household Management (1861), publiek domein, via Open Recipe Archive",
+    "title": "Forcemeat For Pike, Carp, Haddock, And Various Kinds Of Fish",
+    "cuisine": "united-kingdom",
+    "score": 0.58824609375,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 7,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "roomboter",
+        "spekblokjes",
+        "verse-peterselie",
+        "ui",
+        "zout",
+        "paneermeel",
+        "ei"
+      ],
+      "newConcepts": [
+        "suet"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 oz. of fresh butter",
+        "rawName": "oz. of fresh butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 oz. of suet",
+        "rawName": "oz. of suet",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 oz. of fat bacon",
+        "rawName": "oz. of fat bacon",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 small teaspoonful of minced savoury herbs, including parsley",
+        "rawName": "small teaspoonful of minced savoury herbs, including parsley",
+        "quantity": 1
+      },
+      {
+        "rawText": "a little onion, when liked, shredded very fine",
+        "rawName": "little onion, when liked, shredded very fine",
+        "quantity": 1
+      },
+      {
+        "rawText": "salt, nutmeg, and cayenne to taste"
+      },
+      {
+        "rawText": "4 oz. of bread crumbs",
+        "rawName": "oz. of bread crumbs",
+        "quantity": 4
+      },
+      {
+        "rawText": "1 egg",
+        "rawName": "egg",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "louisiana-creole/boiled-spaghetti-italian-style",
+    "sourceUrl": "https://archive.org/details/cu31924073878708",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Picayune's Creole Cook Book (1910), publiek domein, via Open Recipe Archive",
+    "title": "Boiled Spaghetti, Italian Style",
+    "cuisine": "us-louisiana",
+    "score": 0.5801499999999999,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 5,
+      "matched": 4,
+      "needsNewCanonical": 0,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 4,
+      "canonicalIds": [
+        "spaghetti",
+        "parmezaan",
+        "roomboter",
+        "bloem"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "3/4 Pound of Spaghetti",
+        "rawName": "Spaghetti",
+        "quantity": 0.75,
+        "unit": "pound"
+      },
+      {
+        "rawText": "1 Pound of Grated Parmesan Cheese",
+        "rawName": "Grated Parmesan Cheese",
+        "quantity": 1,
+        "unit": "pound"
+      },
+      {
+        "rawText": "1 Tablespoonful of Butter",
+        "rawName": "Butter",
+        "quantity": 1,
+        "unit": "tablespoonful"
+      },
+      {
+        "rawText": "1 Tablespoonful of Flour",
+        "rawName": "Flour",
+        "quantity": 1,
+        "unit": "tablespoonful"
+      },
+      {
+        "rawText": "Salt and Pepper to Taste"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "german-kitchen/stra-burger-waffeln-strasbourg-waffles",
+    "sourceUrl": "https://www.gutenberg.org/ebooks/52879",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Neuestes Süddeutsches Kochbuch (1858), publiek domein, via Open Recipe Archive",
+    "title": "Straßburger Waffeln (Strasbourg Waffles)",
+    "cuisine": "germany",
+    "score": 0.566,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 5,
+      "matched": 5,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 4,
+      "canonicalIds": [
+        "roomboter",
+        "ei",
+        "bloem",
+        "melk",
+        "zout"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "1/2 pound butter",
+        "rawName": "butter",
+        "quantity": 0.5,
+        "unit": "pound"
+      },
+      {
+        "rawText": "6 eggs",
+        "rawName": "eggs",
+        "quantity": 6
+      },
+      {
+        "rawText": "10 loth flour",
+        "rawName": "loth flour",
+        "quantity": 10
+      },
+      {
+        "rawText": "lukewarm milk"
+      },
+      {
+        "rawText": "1 knife-point of salt",
+        "rawName": "knife-point of salt",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "kuchnia-polska/zupa-grzybowa-ameryka-ska-american-mushroom-soup",
+    "sourceUrl": "https://archive.org/details/kuchniapolskoame00kami",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Kuchnia polsko-amerykańska (1917), publiek domein, via Open Recipe Archive",
+    "title": "Zupa Grzybowa Amerykańska (American Mushroom Soup)",
+    "cuisine": "poland",
+    "score": 0.566,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 5,
+      "matched": 4,
+      "needsNewCanonical": 0,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 4,
+      "canonicalIds": [
+        "champignons",
+        "kipfilet",
+        "bloem",
+        "roomboter"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "Half quart of fresh white mushrooms",
+        "rawName": "fresh white mushrooms",
+        "quantity": 0.5,
+        "unit": "quart"
+      },
+      {
+        "rawText": "One quart of broth, preferably from veal or chicken",
+        "rawName": "broth, preferably from veal or chicken",
+        "quantity": 1,
+        "unit": "quart"
+      },
+      {
+        "rawText": "One tablespoon of flour",
+        "rawName": "tablespoon of flour",
+        "quantity": 1
+      },
+      {
+        "rawText": "One tablespoon of butter",
+        "rawName": "tablespoon of butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "Salt and pepper"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "canadian-kitchen/salmon-soup-2",
+    "sourceUrl": "https://archive.org/details/canadianfamilyco00deni_0",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Canadian Family Cook Book (1914), publiek domein, via Open Recipe Archive",
+    "title": "Salmon Soup",
+    "cuisine": "canada",
+    "score": 0.5649208120748299,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 6,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "zalmfilet",
+        "melk",
+        "roomboter",
+        "bloem",
+        "verse-peterselie",
+        "ui"
+      ],
+      "newConcepts": [
+        "bay leaf"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 cup cooked salmon",
+        "rawName": "cooked salmon",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "1 pt. milk",
+        "rawName": "pt. milk",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 tablespoonful butter",
+        "rawName": "butter",
+        "quantity": 1,
+        "unit": "tablespoonful"
+      },
+      {
+        "rawText": "1 tablespoonful flour",
+        "rawName": "flour",
+        "quantity": 1,
+        "unit": "tablespoonful"
+      },
+      {
+        "rawText": "Salt and pepper to taste"
+      },
+      {
+        "rawText": "1 bay leaf",
+        "rawName": "bay leaf",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 sprig parsley",
+        "rawName": "sprig parsley",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 slice onion",
+        "rawName": "slice onion",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "suomen-keittio/ahvenvatkuli-perch-chowder",
+    "sourceUrl": "https://archive.org/details/keittokirjacookb00wall",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Keittokirja = Cook Book (1928), publiek domein, via Open Recipe Archive",
+    "title": "Ahvenvatkuli (Perch Chowder)",
+    "cuisine": "finland",
+    "score": 0.5649208120748299,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 6,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "roomboter",
+        "bloem",
+        "zout",
+        "verse-peterselie",
+        "ui",
+        "peper"
+      ],
+      "newConcepts": [
+        "perch"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "4 pounds perch",
+        "rawName": "perch",
+        "quantity": 4,
+        "unit": "pounds"
+      },
+      {
+        "rawText": "5 tablespoons butter",
+        "rawName": "tablespoons butter",
+        "quantity": 5
+      },
+      {
+        "rawText": "3 tablespoons flour",
+        "rawName": "tablespoons flour",
+        "quantity": 3
+      },
+      {
+        "rawText": "2 tablespoons salt",
+        "rawName": "tablespoons salt",
+        "quantity": 2
+      },
+      {
+        "rawText": "3 tablespoons chopped parsley",
+        "rawName": "tablespoons chopped parsley",
+        "quantity": 3
+      },
+      {
+        "rawText": "1 chopped onion",
+        "rawName": "chopped onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "4 cups water",
+        "rawName": "water",
+        "quantity": 4,
+        "unit": "cups"
+      },
+      {
+        "rawText": "Pepper"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "suomen-keittio/lihapullia-meat-balls",
+    "sourceUrl": "https://archive.org/details/keittokirjacookb00wall",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Keittokirja = Cook Book (1928), publiek domein, via Open Recipe Archive",
+    "title": "Lihapullia (Meat Balls)",
+    "cuisine": "finland",
+    "score": 0.5649208120748299,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 6,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "paneermeel",
+        "ei",
+        "kookroom",
+        "ui",
+        "roomboter",
+        "tomaat"
+      ],
+      "newConcepts": [
+        "beef"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 pound ground beef",
+        "rawName": "ground beef",
+        "quantity": 1,
+        "unit": "pound"
+      },
+      {
+        "rawText": "1/2 cup bread crumbs",
+        "rawName": "bread crumbs",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "rawText": "1 egg",
+        "rawName": "egg",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 or 3/4 cup water or cream",
+        "rawName": "or 3/4 cup water or cream",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1/2 onion, fried",
+        "rawName": "onion, fried",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "2 tablespoons butter or lard",
+        "rawName": "tablespoons butter or lard",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 tomato, cut in pieces",
+        "rawName": "tomato, cut in pieces",
+        "quantity": 1
+      },
+      {
+        "rawText": "Salt and pepper"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "suomen-keittio/sieni-soppa-mushroom-soup",
+    "sourceUrl": "https://archive.org/details/suomalaisamerika00wall",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Suomalais-amerikalainen keittokirja (1914), publiek domein, via Open Recipe Archive",
+    "title": "Sieni-soppa (Mushroom Soup)",
+    "cuisine": "finland",
+    "score": 0.5649208120748299,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 8,
+      "matched": 6,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 7,
+      "canonicalIds": [
+        "champignons",
+        "ui",
+        "roomboter",
+        "bloem",
+        "tomaat",
+        "kookroom"
+      ],
+      "newConcepts": [
+        "veal stock"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1/2 lb. or 1 small jar of mushrooms",
+        "rawName": "lb. or 1 small jar of mushrooms",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "2 quarts of veal stock",
+        "rawName": "veal stock",
+        "quantity": 2,
+        "unit": "quarts"
+      },
+      {
+        "rawText": "1 small onion",
+        "rawName": "small onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 tablespoonfuls of butter",
+        "rawName": "butter",
+        "quantity": 2,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "2 tablespoonfuls of flour",
+        "rawName": "flour",
+        "quantity": 2,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "2 tablespoonfuls of tomatoes",
+        "rawName": "tomatoes",
+        "quantity": 2,
+        "unit": "tablespoonfuls"
+      },
+      {
+        "rawText": "1 cupful of cream",
+        "rawName": "cream",
+        "quantity": 1,
+        "unit": "cupful"
+      },
+      {
+        "rawText": "salt and pepper"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "hollandse-keuken/goulasch-goulash",
+    "sourceUrl": "https://archive.org/details/bwb_Y0-BXP-037",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Kookboek van de Amsterdamse Huishoudschool (1910), publiek domein, via Open Recipe Archive",
+    "title": "Goulasch (Goulash)",
+    "cuisine": "netherlands",
+    "score": 0.536734693877551,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 6,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "zout",
+        "ui",
+        "bloem",
+        "paprika-rood",
+        "tomatenpuree",
+        "roomboter"
+      ],
+      "newConcepts": [
+        "meat e g lamb"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "500 g meat (e.g. lamb)",
+        "rawName": "g meat (e.g. lamb)",
+        "quantity": 500
+      },
+      {
+        "rawText": "Salt"
+      },
+      {
+        "rawText": "2 onions",
+        "rawName": "onions",
+        "quantity": 2
+      },
+      {
+        "rawText": "35 g flour",
+        "rawName": "g flour",
+        "quantity": 35
+      },
+      {
+        "rawText": "2 teaspoons paprika",
+        "rawName": "teaspoons paprika",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 to 3 tablespoons thick tomato puree",
+        "rawName": "to 3 tablespoons thick tomato puree",
+        "quantity": 2
+      },
+      {
+        "rawText": "50 g fat, butter or margarine",
+        "rawName": "g fat, butter or margarine",
+        "quantity": 50
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/stekt-f-rsk-str-mming-med-tomats-s-fried-fresh-herring-with-tomato-sauce-2",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Stekt, Färsk Strömming med Tomatsås (Fried Fresh Herring with Tomato Sauce)",
+    "cuisine": "sweden",
+    "score": 0.536734693877551,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 14,
+      "matched": 12,
+      "needsNewCanonical": 2,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 12,
+      "canonicalIds": [
+        "zout",
+        "ei",
+        "bloem",
+        "paneermeel",
+        "roomboter",
+        "tomaat",
+        "kookroom",
+        "peper"
+      ],
+      "newConcepts": [
+        "herrings",
+        "decilitres broth"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "30 herrings",
+        "rawName": "herrings",
+        "quantity": 30
+      },
+      {
+        "rawText": "1 1/2 tablespoons salt",
+        "rawName": "1/2 tablespoons salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 egg",
+        "rawName": "egg",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 tablespoons flour (20 gr.)",
+        "rawName": "tablespoons flour (20 gr.)",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 tablespoons crushed bread crumbs",
+        "rawName": "tablespoons crushed bread crumbs",
+        "quantity": 2
+      },
+      {
+        "rawText": "80 gr. butter (for frying)",
+        "rawName": "gr. butter (for frying)",
+        "quantity": 80
+      },
+      {
+        "rawText": "6 tomatoes",
+        "rawName": "tomatoes",
+        "quantity": 6
+      },
+      {
+        "rawText": "1 1/2 tablespoons butter (30 gr.)",
+        "rawName": "1/2 tablespoons butter (30 gr.)",
+        "quantity": 1
+      },
+      {
+        "rawText": "3 tablespoons flour (30 gr.)",
+        "rawName": "tablespoons flour (30 gr.)",
+        "quantity": 3
+      },
+      {
+        "rawText": "3 decilitres broth",
+        "rawName": "decilitres broth",
+        "quantity": 3
+      },
+      {
+        "rawText": "1 decilitre cream",
+        "rawName": "decilitre cream",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 egg yolk",
+        "rawName": "egg yolk",
+        "quantity": 1
+      },
+      {
+        "rawText": "salt"
+      },
+      {
+        "rawText": "white pepper"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "magyar-konyha/guly-sh-s-hungarian-goulash",
+    "sourceUrl": "https://archive.org/details/b28112982",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Képes budapesti szakácskönyv (1901), publiek domein, via Open Recipe Archive",
+    "title": "Gulyáshús (Hungarian Goulash)",
+    "cuisine": "hungary",
+    "score": 0.5273199546485261,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 5,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "ei",
+        "zout",
+        "ui",
+        "paprika-rood",
+        "aardappel"
+      ],
+      "newConcepts": [
+        "kilogram beef chuck felsar szelt"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 kilogram beef chuck (felsár-szélt)",
+        "rawName": "kilogram beef chuck (felsár-szélt)",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 egg-sized piece of lard",
+        "rawName": "egg-sized piece of lard",
+        "quantity": 1
+      },
+      {
+        "rawText": "salt"
+      },
+      {
+        "rawText": "1 large onion, finely chopped",
+        "rawName": "large onion, finely chopped",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 tablespoon paprika",
+        "rawName": "tablespoon paprika",
+        "quantity": 1
+      },
+      {
+        "rawText": "3 liters hot water",
+        "rawName": "liters hot water",
+        "quantity": 3
+      },
+      {
+        "rawText": "1 plate of potatoes, peeled and quartered",
+        "rawName": "plate of potatoes, peeled and quartered",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "wiener-kueche/kalbsschwanz-mit-reis-veal-tails-with-rice",
+    "sourceUrl": "https://archive.org/details/bub_gb_oP8yAQAAMAAJ",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Wiener Kochbuch (1883), publiek domein, via Open Recipe Archive",
+    "title": "Kalbsschwanz mit Reis (Veal Tails with Rice)",
+    "cuisine": "austria",
+    "score": 0.5169803476946334,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 7,
+      "matched": 5,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": [
+        "roomboter",
+        "witte-rijst",
+        "verse-peterselie",
+        "champignons",
+        "ui"
+      ],
+      "newConcepts": [
+        "veal tails cut into finger length pieces"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 pounds butter",
+        "rawName": "butter",
+        "quantity": 2,
+        "unit": "pounds"
+      },
+      {
+        "rawText": "3 pounds veal tails, cut into finger-length pieces",
+        "rawName": "veal tails, cut into finger-length pieces",
+        "quantity": 3,
+        "unit": "pounds"
+      },
+      {
+        "rawText": "1/2 liter water",
+        "rawName": "liter water",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1/4 liter rice",
+        "rawName": "liter rice",
+        "quantity": 0.25
+      },
+      {
+        "rawText": "parsley, tied in sprigs"
+      },
+      {
+        "rawText": "1 piece cleaned mushroom",
+        "rawName": "piece cleaned mushroom",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 onion spiked with a clove",
+        "rawName": "onion spiked with a clove",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/potatiskroketter-med-tomater-potato-croquettes-with-tomatoes",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Potatiskroketter med tomater (Potato Croquettes with Tomatoes)",
+    "cuisine": "sweden",
+    "score": 0.5166666666666667,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 3,
+      "matched": 3,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 3,
+      "canonicalIds": [
+        "aardappel",
+        "tomatenpuree",
+        "ei"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "7 hg potato puree",
+        "rawName": "hg potato puree",
+        "quantity": 7
+      },
+      {
+        "rawText": "4 tbsp cooked, red tomato puree",
+        "rawName": "tbsp cooked, red tomato puree",
+        "quantity": 4
+      },
+      {
+        "rawText": "1 egg for brushing",
+        "rawName": "egg for brushing",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "wiener-kueche/noodles-with-loin-and-fat-nudeln-mit-lenden-und-spett",
+    "sourceUrl": "https://archive.org/details/bub_gb_oP8yAQAAMAAJ",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Wiener Kochbuch (1883), publiek domein, via Open Recipe Archive",
+    "title": "Noodles with Loin and Fat (Nudeln mit Lenden und Spett)",
+    "cuisine": "austria",
+    "score": 0.5166666666666667,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 3,
+      "matched": 3,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 3,
+      "canonicalIds": [
+        "mie",
+        "champignons",
+        "spekblokjes"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "1/2 pound of loin, prepared as faded noodles (No. 1201)",
+        "rawName": "loin, prepared as faded noodles (No. 1201)",
+        "quantity": 0.5,
+        "unit": "pound"
+      },
+      {
+        "rawText": "32 tablespoons of strained mushrooms",
+        "rawName": "tablespoons of strained mushrooms",
+        "quantity": 32
+      },
+      {
+        "rawText": "8 tablespoons of finely diced, golden-roasted bacon",
+        "rawName": "tablespoons of finely diced, golden-roasted bacon",
+        "quantity": 8
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "louisiana-creole/chicken-croquettes-6",
+    "sourceUrl": "https://archive.org/details/cu31924073878708",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Picayune's Creole Cook Book (1910), publiek domein, via Open Recipe Archive",
+    "title": "Chicken Croquettes",
+    "cuisine": "us-louisiana",
+    "score": 0.48316666666666663,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 10,
+      "matched": 9,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "kipfilet",
+        "ui",
+        "verse-peterselie",
+        "roomboter",
+        "melk",
+        "zout",
+        "peper",
+        "ei",
+        "paneermeel"
+      ],
+      "newConcepts": [
+        "bay leaf"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 Young Chicken",
+        "rawName": "Young Chicken",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 Small Onions",
+        "rawName": "Small Onions",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 Bay Leaf",
+        "rawName": "Bay Leaf",
+        "quantity": 1
+      },
+      {
+        "rawText": "4 Sprigs of Parsley",
+        "rawName": "Sprigs of Parsley",
+        "quantity": 4
+      },
+      {
+        "rawText": "1 Large Tablespoonful of Butter",
+        "rawName": "Large Tablespoonful of Butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 Cup of Milk",
+        "rawName": "Milk",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "rawText": "1 Teaspoonful of Salt",
+        "rawName": "Salt",
+        "quantity": 1,
+        "unit": "teaspoonful"
+      },
+      {
+        "rawText": "Cayenne and Pepper to Taste"
+      },
+      {
+        "rawText": "2 Eggs",
+        "rawName": "Eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "Bread crumbs"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "canadian-kitchen/pot-pie-dumpling-2",
+    "sourceUrl": "https://archive.org/details/canadianfarmcook00unse",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Canadian Farm Cook Book (1911), publiek domein, via Open Recipe Archive",
+    "title": "Pot Pie Dumpling 2",
+    "cuisine": "canada",
+    "score": 0.48006944444444444,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 5,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "roomboter",
+        "zout",
+        "melk"
+      ],
+      "newConcepts": [
+        "baking powder"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 cups flour",
+        "rawName": "flour",
+        "quantity": 2,
+        "unit": "cups"
+      },
+      {
+        "rawText": "1 egg",
+        "rawName": "egg",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 teaspoons baking powder",
+        "rawName": "teaspoons baking powder",
+        "quantity": 2
+      },
+      {
+        "rawText": "3 teaspoons butter",
+        "rawName": "teaspoons butter",
+        "quantity": 3
+      },
+      {
+        "rawText": "a little salt",
+        "rawName": "little salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "milk or water"
+      }
+    ]
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "lamb-shawarma",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/lamb-shawarma.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Lamb Shawarma",
+    "cuisine": "Middle Eastern",
+    "servings": 4,
+    "score": 0.4790994728429072,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 11,
+      "matched": 9,
+      "needsNewCanonical": 2,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 11,
+      "canonicalIds": [
+        "yoghurt",
+        "komijn",
+        "verse-koriander",
+        "kurkuma",
+        "kaneel",
+        "knoflook",
+        "citroen",
+        "olijfolie",
+        "zout"
+      ],
+      "newConcepts": [
+        "bone in lamb shoulder",
+        "cardamom"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1500 g Bone-in lamb shoulder",
+        "rawName": "Bone-in lamb shoulder",
+        "quantity": 1500,
+        "unit": "g"
+      },
+      {
+        "rawText": "150 g Full-fat yogurt",
+        "rawName": "Full-fat yogurt",
+        "quantity": 150,
+        "unit": "g"
+      },
+      {
+        "rawText": "8 g Ground cumin",
+        "rawName": "Ground cumin",
+        "quantity": 8,
+        "unit": "g"
+      },
+      {
+        "rawText": "6 g Ground coriander",
+        "rawName": "Ground coriander",
+        "quantity": 6,
+        "unit": "g"
+      },
+      {
+        "rawText": "4 g Ground turmeric",
+        "rawName": "Ground turmeric",
+        "quantity": 4,
+        "unit": "g"
+      },
+      {
+        "rawText": "3 g Ground cinnamon",
+        "rawName": "Ground cinnamon",
+        "quantity": 3,
+        "unit": "g"
+      },
+      {
+        "rawText": "2 g Ground cardamom",
+        "rawName": "Ground cardamom",
+        "quantity": 2,
+        "unit": "g"
+      },
+      {
+        "rawText": "20 g Garlic cloves, minced",
+        "rawName": "Garlic cloves",
+        "quantity": 20,
+        "unit": "g",
+        "preparation": "minced"
+      },
+      {
+        "rawText": "30 ml Fresh lemon juice",
+        "rawName": "Fresh lemon juice",
+        "quantity": 30,
+        "unit": "ml"
+      },
+      {
+        "rawText": "40 ml Olive oil",
+        "rawName": "Olive oil",
+        "quantity": 40,
+        "unit": "ml"
+      },
+      {
+        "rawText": "15 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 15,
+        "unit": "g"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "victorian-britain/cabbage-soup",
+    "sourceUrl": "https://www.gutenberg.org/ebooks/10136",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Book of Household Management (1861), publiek domein, via Open Recipe Archive",
+    "title": "Cabbage Soup",
+    "cuisine": "united-kingdom",
+    "score": 0.47562666666666664,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "spitskool",
+        "wortel",
+        "ui",
+        "spekblokjes"
+      ],
+      "newConcepts": [
+        "stock no 105"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 large cabbage",
+        "rawName": "large cabbage",
+        "quantity": 1
+      },
+      {
+        "rawText": "3 carrots",
+        "rawName": "carrots",
+        "quantity": 3
+      },
+      {
+        "rawText": "2 onions",
+        "rawName": "onions",
+        "quantity": 2
+      },
+      {
+        "rawText": "4 or 5 slices of lean bacon",
+        "rawName": "or 5 slices of lean bacon",
+        "quantity": 4
+      },
+      {
+        "rawText": "salt and pepper to taste"
+      },
+      {
+        "rawText": "2 quarts of medium stock No. 105",
+        "rawName": "medium stock No. 105",
+        "quantity": 2,
+        "unit": "quarts"
+      }
+    ]
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "berbere-lamb-shoulder",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/berbere-lamb-shoulder.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Berbere-Braised Lamb Shoulder",
+    "cuisine": "Ethiopian",
+    "servings": 6,
+    "score": 0.46929375000000007,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 10,
+      "matched": 8,
+      "needsNewCanonical": 2,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 10,
+      "canonicalIds": [
+        "roomboter",
+        "ui",
+        "knoflook",
+        "gember",
+        "tomatenblokjes",
+        "groentebouillon",
+        "honing",
+        "zout"
+      ],
+      "newConcepts": [
+        "bone in lamb shoulder",
+        "berbere spice blend"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1400 g Bone-in lamb shoulder, cut into large pieces",
+        "rawName": "Bone-in lamb shoulder",
+        "quantity": 1400,
+        "unit": "g",
+        "preparation": "cut into large pieces"
+      },
+      {
+        "rawText": "45 g Berbere spice blend",
+        "rawName": "Berbere spice blend",
+        "quantity": 45,
+        "unit": "g"
+      },
+      {
+        "rawText": "60 g Niter kibbeh (Ethiopian spiced butter) or ghee",
+        "rawName": "Niter kibbeh (Ethiopian spiced butter) or ghee",
+        "quantity": 60,
+        "unit": "g"
+      },
+      {
+        "rawText": "350 g White onions, finely diced",
+        "rawName": "White onions",
+        "quantity": 350,
+        "unit": "g",
+        "preparation": "finely diced"
+      },
+      {
+        "rawText": "5 cloves Garlic cloves, minced",
+        "rawName": "Garlic cloves",
+        "quantity": 5,
+        "unit": "cloves",
+        "preparation": "minced"
+      },
+      {
+        "rawText": "25 g Fresh ginger, grated",
+        "rawName": "Fresh ginger",
+        "quantity": 25,
+        "unit": "g",
+        "preparation": "grated"
+      },
+      {
+        "rawText": "400 g Canned diced tomatoes",
+        "rawName": "Canned diced tomatoes",
+        "quantity": 400,
+        "unit": "g"
+      },
+      {
+        "rawText": "400 ml Lamb or beef stock",
+        "rawName": "Lamb or beef stock",
+        "quantity": 400,
+        "unit": "ml"
+      },
+      {
+        "rawText": "120 ml Tej (Ethiopian honey wine) or dry white wine",
+        "rawName": "Tej (Ethiopian honey wine) or dry white wine",
+        "quantity": 120,
+        "unit": "ml"
+      },
+      {
+        "rawText": "10 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 10,
+        "unit": "g"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "filipino-kitchen/chicken-entree",
+    "sourceUrl": "https://archive.org/details/cu31924059639215",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Manila Cook Book (1919), publiek domein, via Open Recipe Archive",
+    "title": "Chicken Entree",
+    "cuisine": "philippines",
+    "score": 0.46430222222222217,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "ei",
+        "roomboter",
+        "macaroni",
+        "champignons"
+      ],
+      "newConcepts": [
+        "chickens"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 chickens",
+        "rawName": "chickens",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 eggs",
+        "rawName": "eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "1 tablespoon butter",
+        "rawName": "tablespoon butter",
+        "quantity": 1
+      },
+      {
+        "rawText": "18 sticks macaroni",
+        "rawName": "sticks macaroni",
+        "quantity": 18
+      },
+      {
+        "rawText": "2 cans mushrooms",
+        "rawName": "cans mushrooms",
+        "quantity": 2
+      },
+      {
+        "rawText": "salt and pepper"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "ye-old-american/rice-la-riston",
+    "sourceUrl": "https://www.gutenberg.org/ebooks/65061",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Boston Cooking-School Cook Book (1896), publiek domein, via Open Recipe Archive",
+    "title": "Rice à la Riston",
+    "cuisine": "american-historical",
+    "score": 0.46430222222222217,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "spekblokjes",
+        "spitskool",
+        "witte-rijst",
+        "verse-peterselie"
+      ],
+      "newConcepts": [
+        "white stock"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 thin slices bacon",
+        "rawName": "thin slices bacon",
+        "quantity": 2
+      },
+      {
+        "rawText": "1/2 raw medium-sized cabbage",
+        "rawName": "raw medium-sized cabbage",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1/4 cup rice, boiled",
+        "rawName": "rice, boiled",
+        "quantity": 0.25,
+        "unit": "cup"
+      },
+      {
+        "rawText": "1/2 teaspoon chopped parsley",
+        "rawName": "teaspoon chopped parsley",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "salt and pepper"
+      },
+      {
+        "rawText": "1/2 cup White Stock",
+        "rawName": "White Stock",
+        "quantity": 0.5,
+        "unit": "cup"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "filipino-kitchen/roast-steak",
+    "sourceUrl": "https://archive.org/details/cu31924059639215",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Manila Cook Book (1919), publiek domein, via Open Recipe Archive",
+    "title": "Roast Steak",
+    "cuisine": "philippines",
+    "score": 0.45297777777777776,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "peper",
+        "zout",
+        "ui",
+        "roomboter"
+      ],
+      "newConcepts": [
+        "beefsteak"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "beefsteak"
+      },
+      {
+        "rawText": "1 pint boiling water",
+        "rawName": "boiling water",
+        "quantity": 1,
+        "unit": "pint"
+      },
+      {
+        "rawText": "1 teaspoon pepper",
+        "rawName": "teaspoon pepper",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 1/2 teaspoon salt",
+        "rawName": "1/2 teaspoon salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 onion",
+        "rawName": "onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 teaspoon butter",
+        "rawName": "teaspoon butter",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "hollandse-keuken/eenvoudige-bruine-bonensoep-simple-brown-bean-soup",
+    "sourceUrl": "https://archive.org/details/bwb_Y0-BXP-037",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Kookboek van de Amsterdamse Huishoudschool (1910), publiek domein, via Open Recipe Archive",
+    "title": "Eenvoudige Bruine Bonensoep (Simple Brown Bean Soup)",
+    "cuisine": "netherlands",
+    "score": 0.45297777777777776,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "bruine-bonen",
+        "zout",
+        "prei",
+        "roomboter"
+      ],
+      "newConcepts": [
+        "bunch celery greens"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "400 g brown beans",
+        "rawName": "g brown beans",
+        "quantity": 400
+      },
+      {
+        "rawText": "2 1/2 l water",
+        "rawName": "1/2 l water",
+        "quantity": 2
+      },
+      {
+        "rawText": "salt to taste"
+      },
+      {
+        "rawText": "4 leeks",
+        "rawName": "leeks",
+        "quantity": 4
+      },
+      {
+        "rawText": "1 bunch celery greens",
+        "rawName": "bunch celery greens",
+        "quantity": 1
+      },
+      {
+        "rawText": "60 g butter, margarine, or beef fat",
+        "rawName": "g butter, margarine, or beef fat",
+        "quantity": 60
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "ye-old-american/curry-sauce-2",
+    "sourceUrl": "https://www.gutenberg.org/ebooks/13923",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: The Whitehouse Cookbook (1887), publiek domein, via Open Recipe Archive",
+    "title": "Curry Sauce",
+    "cuisine": "american-historical",
+    "score": 0.45297777777777776,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 5,
+      "canonicalIds": [
+        "roomboter",
+        "bloem",
+        "kerriepoeder",
+        "ui"
+      ],
+      "newConcepts": [
+        "stock"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "One tablespoonful of butter",
+        "rawName": "butter",
+        "quantity": 1,
+        "unit": "tablespoonful"
+      },
+      {
+        "rawText": "one of flour",
+        "rawName": "of flour",
+        "quantity": 1
+      },
+      {
+        "rawText": "one teaspoonful of curry powder",
+        "rawName": "curry powder",
+        "quantity": 1,
+        "unit": "teaspoonful"
+      },
+      {
+        "rawText": "one large slice of onion",
+        "rawName": "large slice of onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "one large cupful of stock",
+        "rawName": "large cupful of stock",
+        "quantity": 1
+      },
+      {
+        "rawText": "salt and pepper to taste"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "danske-kokken/kartoffel-suppe-potato-soup",
+    "sourceUrl": "https://archive.org/details/frkenjensensko00jens",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Frøken Jensens kogebog (1921), publiek domein, via Open Recipe Archive",
+    "title": "Kartoffel-Suppe (Potato Soup)",
+    "cuisine": "denmark",
+    "score": 0.4126649999999999,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 10,
+      "matched": 8,
+      "needsNewCanonical": 2,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "aardappel",
+        "wortel",
+        "roomboter",
+        "bloem",
+        "ei",
+        "kookroom",
+        "peper",
+        "zout"
+      ],
+      "newConcepts": [
+        "4 pots spare broth",
+        "whisk"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "1 kg (2 S) peeled, floury potatoes",
+        "rawName": "kg (2 S) peeled, floury potatoes",
+        "quantity": 1
+      },
+      {
+        "rawText": "4 L (4 pots) spare broth",
+        "rawName": "L (4 pots) spare broth",
+        "quantity": 4
+      },
+      {
+        "rawText": "1 whisk",
+        "rawName": "whisk",
+        "quantity": 1
+      },
+      {
+        "rawText": "4 carrots",
+        "rawName": "carrots",
+        "quantity": 4
+      },
+      {
+        "rawText": "75 grams (15 skein) butter",
+        "rawName": "grams (15 skein) butter",
+        "quantity": 75
+      },
+      {
+        "rawText": "50 grams (10 skein) flour",
+        "rawName": "grams (10 skein) flour",
+        "quantity": 50
+      },
+      {
+        "rawText": "4 egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 4
+      },
+      {
+        "rawText": "1/4 L (1 mug) raw cream",
+        "rawName": "L (1 mug) raw cream",
+        "quantity": 0.25
+      },
+      {
+        "rawText": "ground white pepper"
+      },
+      {
+        "rawText": "salt"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "canadian-kitchen/casserole-of-rice-and-meat-2",
+    "sourceUrl": "https://archive.org/details/canadianfarmcook00unse",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Canadian Farm Cook Book (1911), publiek domein, via Open Recipe Archive",
+    "title": "Casserole of Rice and Meat",
+    "cuisine": "canada",
+    "score": 0.40259999999999996,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 10,
+      "matched": 8,
+      "needsNewCanonical": 2,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "zout",
+        "peper",
+        "ui",
+        "verse-peterselie",
+        "ei",
+        "paneermeel",
+        "witte-rijst",
+        "tomaat"
+      ],
+      "newConcepts": [
+        "meat",
+        "stock"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "2 cups chopped meat",
+        "rawName": "chopped meat",
+        "quantity": 2,
+        "unit": "cups"
+      },
+      {
+        "rawText": "1 teaspoon salt",
+        "rawName": "teaspoon salt",
+        "quantity": 1
+      },
+      {
+        "rawText": "3/4 teaspoon pepper",
+        "rawName": "teaspoon pepper",
+        "quantity": 0.75
+      },
+      {
+        "rawText": "3/4 teaspoon onion juice",
+        "rawName": "teaspoon onion juice",
+        "quantity": 0.75
+      },
+      {
+        "rawText": "1 teaspoon chopped parsley",
+        "rawName": "teaspoon chopped parsley",
+        "quantity": 1
+      },
+      {
+        "rawText": "1 egg",
+        "rawName": "egg",
+        "quantity": 1
+      },
+      {
+        "rawText": "3/4 cup fine bread crumbs",
+        "rawName": "fine bread crumbs",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "rawText": "4 cups boiled rice",
+        "rawName": "boiled rice",
+        "quantity": 4,
+        "unit": "cups"
+      },
+      {
+        "rawText": "stock"
+      },
+      {
+        "rawText": "tomato sauce"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "cocina-chilena/sopa-al-conde-de-par-s-soup-la-comte-de-paris",
+    "sourceUrl": "https://archive.org/details/novsimomanuald00sant",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Novísimo manual del cocinero práctico chileno (1896), publiek domein, via Open Recipe Archive",
+    "title": "Sopa al Conde de París (Soup à la Comte de Paris)",
+    "cuisine": "chile",
+    "score": 0.40259999999999996,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 5,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 4,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "melk",
+        "roomboter"
+      ],
+      "newConcepts": [
+        "broth"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "three ounces rice flour",
+        "rawName": "rice flour",
+        "quantity": 3,
+        "unit": "ounces"
+      },
+      {
+        "rawText": "six cups broth",
+        "rawName": "broth",
+        "quantity": 6,
+        "unit": "cups"
+      },
+      {
+        "rawText": "four egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 4
+      },
+      {
+        "rawText": "one glass milk",
+        "rawName": "glass milk",
+        "quantity": 1
+      },
+      {
+        "rawText": "butter"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "cozinha-brasileira/sopa-de-leite-com-arroz-milk-soup-with-rice",
+    "sourceUrl": "https://archive.org/details/cozinheiro-nacional",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Cozinheiro Nacional (1874), publiek domein, via Open Recipe Archive",
+    "title": "Sopa de Leite com Arroz (Milk Soup with Rice)",
+    "cuisine": "brazil",
+    "score": 0.40259999999999996,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 5,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 4,
+      "canonicalIds": [
+        "witte-rijst",
+        "melk",
+        "ei",
+        "kaneel"
+      ],
+      "newConcepts": [
+        "sugar"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "4 full tablespoons rice",
+        "rawName": "full tablespoons rice",
+        "quantity": 4
+      },
+      {
+        "rawText": "1 bottle milk",
+        "rawName": "bottle milk",
+        "quantity": 1
+      },
+      {
+        "rawText": "2 tablespoons sugar",
+        "rawName": "tablespoons sugar",
+        "quantity": 2
+      },
+      {
+        "rawText": "2 egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 2
+      },
+      {
+        "rawText": "cinnamon"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "cucina-italiana/minestra-del-paradiso-paradise-soup",
+    "sourceUrl": "https://www.gutenberg.org/ebooks/59047",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: La scienza in cucina e l'arte di mangiar bene (1891), publiek domein, via Open Recipe Archive",
+    "title": "Minestra del Paradiso (Paradise Soup)",
+    "cuisine": "italy",
+    "score": 0.40259999999999996,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 5,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 4,
+      "canonicalIds": [
+        "ei",
+        "paneermeel",
+        "parmezaan"
+      ],
+      "newConcepts": [
+        "nutmeg"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "4 egg whites",
+        "rawName": "egg whites",
+        "quantity": 4
+      },
+      {
+        "rawText": "4 egg yolks",
+        "rawName": "egg yolks",
+        "quantity": 4
+      },
+      {
+        "rawText": "4 tablespoons fine breadcrumbs from hard bread",
+        "rawName": "tablespoons fine breadcrumbs from hard bread",
+        "quantity": 4
+      },
+      {
+        "rawText": "4 tablespoons grated Parmesan cheese",
+        "rawName": "tablespoons grated Parmesan cheese",
+        "quantity": 4
+      },
+      {
+        "rawText": "nutmeg to taste"
+      }
+    ]
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "cucina-italiana/minestra-di-passatelli-passatelli-soup",
+    "sourceUrl": "https://www.gutenberg.org/ebooks/59047",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: La scienza in cucina e l'arte di mangiar bene (1891), publiek domein, via Open Recipe Archive",
+    "title": "Minestra di Passatelli (Passatelli Soup)",
+    "cuisine": "italy",
+    "score": 0.40259999999999996,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 5,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 4,
+      "canonicalIds": [
+        "paneermeel",
+        "parmezaan",
+        "ei",
+        "citroen"
+      ],
+      "newConcepts": [
+        "beef marrow"
+      ]
+    },
+    "ingredients": [
+      {
+        "rawText": "100 grams breadcrumbs",
+        "rawName": "grams breadcrumbs",
+        "quantity": 100
+      },
+      {
+        "rawText": "20 grams beef marrow",
+        "rawName": "grams beef marrow",
+        "quantity": 20
+      },
+      {
+        "rawText": "40 grams grated Parmesan cheese",
+        "rawName": "grams grated Parmesan cheese",
+        "quantity": 40
+      },
+      {
+        "rawText": "2 eggs",
+        "rawName": "eggs",
+        "quantity": 2
+      },
+      {
+        "rawText": "nutmeg or lemon zest, or both together"
+      }
+    ]
+  }
+]

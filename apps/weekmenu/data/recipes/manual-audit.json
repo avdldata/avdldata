@@ -1,0 +1,191 @@
+{
+  "auditedAt": "2026-09-15",
+  "auditedBy": "handmatig, door de ontwikkelaar van deze fase",
+  "sample": "top300.json, posities 1-50 (de hoogst scorende helft van de high-confidence set van 96)",
+  "target": "minstens 95% GOOD",
+  "criteria": {
+    "GOOD": "Direct bruikbaar als Nederlandse doordeweekse avondmaaltijd: het is een hoofdgerecht, er zit een hoofdcomponent in, elke hoeveelheid is bruikbaar (gram, milliliter of stuks), en alle ingredienten zijn in NL te koop.",
+    "FIXABLE": "Het gerecht klopt als avondmaaltijd, maar er moet iets met de hand aan gebeuren: hoeveelheden in cups/hectogram/deca/'1 blik' omrekenen, een ontbrekende portiegrootte vaststellen, of een ingredient vervangen dat in NL lastig is.",
+    "REJECT": "Geen doordeweekse avondmaaltijd (voorgerechtsoep, dessert, deeg, bijgerecht), of een hoofdcomponent ontbreekt, of de hoeveelheden zijn niet te redden."
+  },
+  "note": "Strenger dan een eerdere, informele pas over dezelfde lijst. Een soep zonder eiwit telt hier als voorgerecht en niet als avondmaaltijd, en een recept met onomrekenbare eenheden is FIXABLE en niet GOOD. Beide passes halen het doel van 95% bij lange na niet; de strengere maakt alleen zichtbaar hoe ver.",
+  "result": { "GOOD": 8, "FIXABLE": 21, "REJECT": 21, "total": 50, "goodShare": 0.16 },
+  "verdicts": {
+    "GOOD": [
+      {
+        "n": 1,
+        "title": "Koshari",
+        "reden": "compleet hoofdgerecht, alles in gram, alles te koop"
+      },
+      {
+        "n": 2,
+        "title": "Japchae (Korean Glass Noodles)",
+        "reden": "compleet, in gram; glasnoedels zijn toko-artikel maar gewoon verkrijgbaar"
+      },
+      { "n": 4, "title": "Mujadara", "reden": "compleet vegetarisch hoofdgerecht in gram" },
+      {
+        "n": 6,
+        "title": "Misir Wot (Red Lentil Stew)",
+        "reden": "compleet, in gram; berbere is specialistisch maar verkrijgbaar"
+      },
+      { "n": 16, "title": "Moros y Cristianos", "reden": "compleet, in gram" },
+      {
+        "n": 18,
+        "title": "Bacalhau a Bras",
+        "reden": "compleet, in gram; klipvis is verkrijgbaar"
+      },
+      { "n": 19, "title": "Saag Aloo", "reden": "compleet vegetarisch hoofdgerecht in gram" },
+      { "n": 21, "title": "Yangzhou Fried Rice", "reden": "compleet, in gram" }
+    ],
+    "FIXABLE": [
+      {
+        "n": 5,
+        "title": "Sillipallerot (Herring Balls)",
+        "reden": "cups en tablespoons; '1 salt herring' is geen inkoopbare hoeveelheid"
+      },
+      {
+        "n": 12,
+        "title": "Baked Shrimps",
+        "reden": "'100 Lake Shrimp' en '1 Dozen Tomatoes' moeten met de hand worden omgezet"
+      },
+      { "n": 15, "title": "Curried Eggs II", "reden": "cups en tablespoons; porties onbekend" },
+      {
+        "n": 17,
+        "title": "Split Pea Soup",
+        "reden": "cups/quarts; als maaltijdsoep bruikbaar, maar zonder vlees mager"
+      },
+      {
+        "n": 20,
+        "title": "Timbal pa Kalv (Veal Timbal)",
+        "reden": "hectogram, deciliter en '0,5 blik' sperziebonen; kalfsvlees is in NL beperkt verkrijgbaar"
+      },
+      {
+        "n": 22,
+        "title": "Linskotletter (Lentil Cutlets)",
+        "reden": "cups en liters; cornflakes als paneermiddel vraagt een keuze"
+      },
+      { "n": 23, "title": "Potato Soup (Version 4)", "reden": "cups; maaltijdsoep zonder eiwit" },
+      { "n": 24, "title": "Black Bean Soup", "reden": "pints/quarts/saltspoon" },
+      {
+        "n": 25,
+        "title": "Kidney Beans with Peppers and Tomatoes",
+        "reden": "cups/pints; bruikbaar met rijst erbij"
+      },
+      {
+        "n": 27,
+        "title": "Mulligatawny Soup",
+        "reden": "ounces; zonder eiwit een voorgerecht tenzij vlees wordt toegevoegd"
+      },
+      {
+        "n": 28,
+        "title": "Kroppkakor (Potato Dumplings)",
+        "reden": "hectogram en liters aardappel"
+      },
+      {
+        "n": 29,
+        "title": "Omelett med Potatis och Skinka",
+        "reden": "'0,5 liter gekookte aardappel' en '0,25 ui' moeten omgezet"
+      },
+      {
+        "n": 33,
+        "title": "Mellanratt av Nudel (Creamed Pasta Course)",
+        "reden": "deciliters; pasta met room is een prima doordeweeks gerecht"
+      },
+      {
+        "n": 34,
+        "title": "Kalvkotlett i kastrull (Veal Chops in Casserole)",
+        "reden": "kalfskotelet is in NL beperkt verkrijgbaar; '12 small raw potatoes'"
+      },
+      {
+        "n": 35,
+        "title": "Kaldolmar (Cabbage Rolls)",
+        "reden": "'1 part cream' is geen hoeveelheid; verder een echt hoofdgerecht"
+      },
+      {
+        "n": 36,
+        "title": "Huhn mit Reis (Chicken with Rice)",
+        "reden": "'1 old chicken or 2 old partridges' en '1 spice measure'"
+      },
+      {
+        "n": 37,
+        "title": "Zupa z Kury z Szynka (Soup with Chicken and Ham)",
+        "reden": "'1 little flour'; als maaltijdsoep bruikbaar"
+      },
+      {
+        "n": 39,
+        "title": "Biffpaj (Beef Pie)",
+        "reden": "hectogram; boter en bloem staan twee keer in de lijst"
+      },
+      {
+        "n": 40,
+        "title": "Huevos Rancheros",
+        "reden": "van huis uit een ontbijtgerecht; als lichte avondmaaltijd verdedigbaar"
+      },
+      {
+        "n": 42,
+        "title": "Irlandsk kottstuvning (Irish Meat Stew)",
+        "reden": "'1,5 liter aardappelen' is een volume van een vaste stof"
+      },
+      {
+        "n": 46,
+        "title": "Brackt skinka med ris (Smoked Ham with Rice)",
+        "reden": "deciliter en hectogram"
+      }
+    ],
+    "REJECT": [
+      { "n": 3, "title": "Potato Salad", "reden": "bijgerecht, geen avondmaaltijd" },
+      {
+        "n": 7,
+        "title": "Bavlnena polevka (Velvet Soup)",
+        "reden": "eierdooiers in bouillon; voorgerecht"
+      },
+      { "n": 8, "title": "Pasta Dough (for Ravioles)", "reden": "een component, geen gerecht" },
+      { "n": 9, "title": "Fideos (Noodle Dough)", "reden": "een component, geen gerecht" },
+      {
+        "n": 10,
+        "title": "Sopa Brasica de arroz",
+        "reden": "'1 little vegetable broth', '7 or eight egg yolks' — niet te redden"
+      },
+      { "n": 11, "title": "Ryz po Turecku (Turkish Rice)", "reden": "bijgerecht zonder eiwit" },
+      {
+        "n": 13,
+        "title": "Tomatbiff (Tomato Beef)",
+        "reden": "de titel belooft rundvlees en dat staat niet in de ingredientenlijst"
+      },
+      {
+        "n": 14,
+        "title": "Geroestete Wurfel (Roasted Noodle Soup)",
+        "reden": "'0,5 liter bloem' en deca-eenheden; het is een soepgarnituur"
+      },
+      { "n": 26, "title": "Beet Soup", "reden": "voorgerechtsoep" },
+      { "n": 30, "title": "Suppe a l'Hollandaise", "reden": "voorgerechtsoep met zes eierdooiers" },
+      { "n": 31, "title": "Cream of Celery Soup", "reden": "voorgerechtsoep" },
+      {
+        "n": 32,
+        "title": "Kasvismureke (Vegetable Farcie)",
+        "reden": "'2 lbs gekookte groenten' zegt niet welke; 0,75 lb boter"
+      },
+      {
+        "n": 38,
+        "title": "Nudel oder Eferseln (Noodle Souffle)",
+        "reden": "vanillesuiker en opgeklopt eiwit: nagerecht"
+      },
+      { "n": 41, "title": "Appelsoppa (Apple Soup)", "reden": "zoete soep met suiker: nagerecht" },
+      {
+        "n": 43,
+        "title": "Fransk salad i gele (French Salad in Aspic)",
+        "reden": "gelatinesalade met ossentong"
+      },
+      { "n": 44, "title": "Ris- og Tomat-Suppe", "reden": "voorgerechtsoep" },
+      { "n": 45, "title": "Koolsoep (Cabbage Soup)", "reden": "voorgerechtsoep zonder eiwit" },
+      {
+        "n": 47,
+        "title": "Gronsakspastejer (Vegetable Pastries)",
+        "reden": "gebak, een component"
+      },
+      { "n": 48, "title": "Zupa Pomidorowa z Ryzem", "reden": "voorgerechtsoep" },
+      { "n": 49, "title": "Reis-Knodel (Rice Knodel)", "reden": "bijgerecht in deca-eenheden" },
+      { "n": 50, "title": "Corn Soup", "reden": "voorgerechtsoep; '1 can corn'" }
+    ]
+  }
+}

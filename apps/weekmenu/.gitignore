@@ -19,3 +19,11 @@ supabase/seed.sql
 # stuk), veranderen dagelijks, en zijn met één commando opnieuw op te halen —
 # zie data/external/README.md.
 data/external/*.json
+
+# Opgehaalde recept-corpora (92 MB). Brondata van derden, met `pnpm recipes:fetch`
+# opnieuw op te halen; alleen de selectie in `_selected/` wordt meegecommit.
+# Zie data/recipes/README.md.
+data/recipes/candidates/forkrecipe/
+data/recipes/candidates/open-recipe-archive/
+data/recipes/candidates/public-domain-recipes/
+data/recipes/candidates/recipe-dataset/
