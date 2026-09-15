@@ -7,10 +7,6 @@
  *
  *   pnpm perf:real
  */
-import { readFileSync } from 'node:fs';
-import { cents, quantity, type Cents } from '../src/domain/units';
-import { buildIngredientIndex } from '../src/domain/ingredients/types';
-import { normaliseRecipes } from '../src/domain/recipes/normalise';
 import { optimiseWeek } from '../src/domain/optimization/week-optimizer';
 import { prepareOptimization } from '../src/domain/optimization/prepare';
 import { generateCandidateWeeks } from '../src/domain/optimization/candidates';
@@ -20,99 +16,59 @@ import {
   buildPackagingMatrix,
   enumerateStoreOptions,
   type PackagingCache,
-  type StoreCandidate,
 } from '../src/domain/optimization/store-selection';
 import {
   aggregateWeekIngredients,
   purchasableRequirements,
 } from '../src/domain/aggregation/aggregate';
-import type { ProductOffer } from '../src/domain/stores/types';
-import { resolvePackage } from '../src/domain/ingestion/package-parser';
-import { buildIngredientPhrases, matchProduct } from '../src/domain/ingestion/match-ingredient';
-import { PRODUCT_MATCH_OVERRIDES } from '../src/data/matching/overrides';
-import { SEED_INGREDIENTS, SEED_INGREDIENT_ALIASES } from '../src/data/seed/ingredients';
-import { SEED_RECIPES } from '../src/data/seed/recipes';
 import { DEMO_HOUSEHOLD } from '../src/data/seed/demo-household';
+import { loadRealChains, type RealChainId } from '../tests/support/real-data-store';
 
-interface RawProduct {
-  n?: string;
-  l?: string;
-  p?: number;
-  s?: string;
-}
-const chains = JSON.parse(readFileSync('data/external/checkjebon-snapshot.json', 'utf8')) as {
-  n?: string;
-  c?: string;
-  d?: RawProduct[];
-}[];
-const chain = chains.find((c) => c.n === 'ah')!;
-
-const ingredientIndex = buildIngredientIndex(SEED_INGREDIENTS);
-const recipes = normaliseRecipes(SEED_RECIPES, ingredientIndex);
-const phrases = buildIngredientPhrases(SEED_INGREDIENTS, SEED_INGREDIENT_ALIASES);
+const args = process.argv.slice(2);
+const chainIds = (args.indexOf('--chains') !== -1 ? args[args.indexOf('--chains') + 1]! : 'ah')
+  .split(',')
+  .map((c) => c.trim()) as RealChainId[];
+const maxStores = Number(
+  args.indexOf('--max-stores') !== -1 ? args[args.indexOf('--max-stores') + 1] : 1,
+);
 
 const ingestStarted = performance.now();
-const offers: ProductOffer[] = [];
-for (const product of chain.d ?? []) {
-  const productId = `ah:${product.l ?? ''}`;
-  const match = matchProduct(
-    { productId, productName: product.n ?? '' },
-    phrases,
-    PRODUCT_MATCH_OVERRIDES,
-  );
-  if (!match || (match.status !== 'AUTO_APPROVED' && match.status !== 'APPROVED')) continue;
-  const pack = resolvePackage(product.s, product.n);
-  const price = product.p;
-  if (pack.status !== 'OK') continue;
-  if (typeof price !== 'number' || !Number.isFinite(price) || price <= 0) continue;
-  const unitPrice = cents(Math.round(price * 100)) as Cents;
-  offers.push({
-    productId,
-    chainId: 'ah',
-    locationId: 'ah-shadow',
-    ingredientId: match.canonicalIngredientId,
-    name: product.n ?? '',
-    brandName: 'AH',
-    isPrivateLabel: false,
-    packageAmount: quantity(pack.info.totalAmount, pack.info.baseUnit),
-    normalUnitPriceCents: unitPrice,
-    unitPriceCents: unitPrice,
-    pricePerBaseUnitCents: unitPrice / Math.max(1, pack.info.totalAmount),
-    nutritionOrigin: 'ingredient',
-  });
-}
+const fixture = loadRealChains(chainIds);
 const ingestMs = performance.now() - ingestStarted;
-
-const store: StoreCandidate = {
-  location: {
-    id: 'ah-shadow',
-    chainId: 'ah',
-    name: 'AH',
-    address: '',
-    postalCode: '9711AA',
-    city: 'Groningen',
-    latitude: DEMO_HOUSEHOLD.location.latitude!,
-    longitude: DEMO_HOUSEHOLD.location.longitude!,
-    regionId: 'nl',
-  },
-  chain: { id: 'ah', name: 'AH', logoUrl: '', colorHex: '#00a0e2' },
-  distanceKm: 2.5,
-  offers,
-};
+const ingredientIndex = fixture.ingredientIndex;
+const recipes = fixture.recipes;
+const offers = fixture.chains.flatMap((c) => c.reducedOffers);
 
 const input = {
   household: DEMO_HOUSEHOLD,
   recipes,
   ingredients: ingredientIndex,
-  stores: [store],
-  maxStores: 1,
+  stores: fixture.stores,
+  maxStores,
   conveniencePreference: 'gebalanceerd' as const,
   budget: {},
   startDate: '2026-09-14',
   today: new Date('2026-09-14T09:00:00Z'),
 };
 
-console.log(`\nProfiel met echte AH-data — ${offers.length} bruikbare aanbiedingen\n`);
+console.log(
+  `\nProfiel met echte data — ${chainIds.join(' + ')}, ` +
+    `maximaal ${maxStores} winkel${maxStores === 1 ? '' : 's'}, ` +
+    `${offers.length} bruikbare aanbiedingen\n`,
+);
+for (const chain of fixture.chains) {
+  const perIngredient = new Map<string, number>();
+  for (const offer of chain.reducedOffers) {
+    perIngredient.set(offer.ingredientId, (perIngredient.get(offer.ingredientId) ?? 0) + 1);
+  }
+  const counts = [...perIngredient.values()].sort((a, b) => a - b);
+  const mean = counts.reduce((sum, n) => sum + n, 0) / Math.max(1, counts.length);
+  console.log(
+    `  ${chain.chainId.padEnd(6)} ${String(chain.reducedOffers.length).padStart(4)} aanbiedingen over ` +
+      `${counts.length} ingrediënten — gemiddeld ${mean.toFixed(1)}, ` +
+      `mediaan ${counts[Math.floor(counts.length / 2)] ?? 0}, max ${counts.at(-1) ?? 0}`,
+  );
+}
 console.log(`  ingest + matching (eenmalig)   ${ingestMs.toFixed(0)} ms`);
 
 // --- stage by stage -------------------------------------------------------
@@ -262,6 +218,53 @@ if (result.status === 'OK' && withoutBound.status === 'OK') {
       `${withoutBound.plan.diagnostics.weeksFullyEvaluated}`,
   );
 }
+
+/*
+ * Cache hit rate, measured rather than asserted.
+ *
+ * `buildPackagingMatrix` memoises on (ingredient, amount, shop). A run that
+ * prices dozens of weeks over the same catalogue should hit that memo almost
+ * always; if it does not, the key is wrong and the packaging solver is being
+ * paid for over and over.
+ */
+const counting: PackagingCache = new Map();
+let lookups = 0;
+let misses = 0;
+const instrumented: PackagingCache = {
+  get(key: string) {
+    lookups += 1;
+    const hit = counting.get(key);
+    if (hit === undefined) misses += 1;
+    return hit;
+  },
+  set(key: string, value: NonNullable<ReturnType<PackagingCache['get']>>) {
+    counting.set(key, value);
+    return instrumented;
+  },
+} as unknown as PackagingCache;
+for (const candidate of generated.weeks.slice(0, 40)) {
+  evaluateWeek({
+    recipes: candidate.recipes,
+    portionsByRecipe: prepared.portionsByRecipe,
+    household: DEMO_HOUSEHOLD,
+    memberNutrition: prepared.memberNutrition,
+    ingredients: ingredientIndex,
+    stores: prepared.stores,
+    matrixHome: prepared.home,
+    maxStores: prepared.maxStores,
+    extraStorePenalty: prepared.extraStorePenalty,
+    budget: {},
+    startDate: '2026-09-14',
+    config: prepared.config,
+    excluded: prepared.excluded,
+    explain: false,
+    packagingCache: instrumented,
+  });
+}
+console.log(
+  `\n  verpakkingscache               ${lookups} opzoekingen, ${misses} missers, ` +
+    `${(((lookups - misses) / Math.max(1, lookups)) * 100).toFixed(1)}% raak`,
+);
 
 console.log(`\n  Hele run\n`);
 console.log(`  voorbereiding                  ${prepMs.toFixed(1)} ms`);

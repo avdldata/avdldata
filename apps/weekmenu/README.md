@@ -64,6 +64,23 @@ niets geïnstalleerd hebt.
 | `pnpm seed:images`          | Placeholder-illustraties per recept                  |
 | `pnpm db:verify`            | Migraties en seed in een PostgreSQL laden            |
 
+Met een Checkjebon-momentopname in `data/external` (zie
+[data/external/README.md](data/external/README.md)) komen daar de
+schaduwmodus-commando's bij. Die raken de app niet: die draait op zijn eigen
+seed.
+
+| Commando                                | Wat het doet                                |
+| --------------------------------------- | ------------------------------------------- |
+| `pnpm data:probe`                       | Datakwaliteit per keten in de momentopname  |
+| `pnpm data:coverage`                    | Hoeveel van onze receptcatalogus te koop is |
+| `pnpm data:jumbo`                       | Jumbo naast Albert Heijn, zelfde parser     |
+| `pnpm data:week -- --chains ah,jumbo`   | Eén echte week, met herkomst per regel      |
+| `pnpm data:scenarios -- --weeks 50`     | Loont een tweede supermarkt, en hoeveel     |
+| `pnpm match:eval --chain both`          | Precision en recall tegen beide golden sets |
+| `pnpm match:review -- --chain jumbo`    | Wat er met de hand beoordeeld moet worden   |
+| `pnpm match:weeks -- --chains ah,jumbo` | 50 echte weken, elke regel gecontroleerd    |
+| `pnpm perf:real -- --chains ah,jumbo`   | Waar de tijd heen gaat, per fase            |
+
 Elke push en pull request naar `main` draait typecheck, lint, format, tests,
 productiebuild, de Playwright-suite en een korte optimizer-benchmark — zie
 [.github/workflows/weekmenu.yml](../../.github/workflows/weekmenu.yml). CI
@@ -194,15 +211,17 @@ is, komt uit data, regels en berekeningen.
 
 ## Verder lezen
 
-|                                                  |                                                     |
-| ------------------------------------------------ | --------------------------------------------------- |
-| [ARCHITECTURE.md](ARCHITECTURE.md)               | Lagen, providers, adapters, privacy                 |
-| [DATA_MODEL.md](DATA_MODEL.md)                   | Waarom ingredient, product en prijs gescheiden zijn |
-| [OPTIMIZER.md](OPTIMIZER.md)                     | De pijplijn, de scorefunctie, complexiteit          |
-| [DATABASE.md](DATABASE.md)                       | Schema, constraints, row level security             |
-| [DATA_SOURCES.md](DATA_SOURCES.md)               | Hoe je NEVO, GS1 of een prijsfeed aansluit          |
-| [AUDIT_REPORT.md](AUDIT_REPORT.md)               | Wat een kritische doorlichting van V1 opleverde     |
-| [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md) | Hoe dicht de optimizer bij het echte optimum komt   |
+|                                                  |                                                      |
+| ------------------------------------------------ | ---------------------------------------------------- |
+| [ARCHITECTURE.md](ARCHITECTURE.md)               | Lagen, providers, adapters, privacy                  |
+| [DATA_MODEL.md](DATA_MODEL.md)                   | Waarom ingredient, product en prijs gescheiden zijn  |
+| [OPTIMIZER.md](OPTIMIZER.md)                     | De pijplijn, de scorefunctie, complexiteit           |
+| [DATABASE.md](DATABASE.md)                       | Schema, constraints, row level security              |
+| [DATA_SOURCES.md](DATA_SOURCES.md)               | Hoe je NEVO, GS1 of een prijsfeed aansluit           |
+| [AUDIT_REPORT.md](AUDIT_REPORT.md)               | Wat een kritische doorlichting van V1 opleverde      |
+| [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md) | Hoe dicht de optimizer bij het echte optimum komt    |
+| [MATCHING.md](MATCHING.md)                       | Van supermarktproduct naar canoniek ingrediënt       |
+| [JUMBO_DATA_QUALITY.md](JUMBO_DATA_QUALITY.md)   | Twee ketens: kwaliteit, dekking, en wat het oplevert |
 
 ## Wat V1 bewust niet doet
 

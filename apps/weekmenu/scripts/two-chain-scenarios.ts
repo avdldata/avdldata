@@ -155,6 +155,10 @@ interface Tally {
   ahMinusJumbo: number[];
   bestSaving: number[];
   bestPracticalSaving: number[];
+  /** Per setup, the weekly grocery and practical totals for the same basket. */
+  grocery: Record<string, number[]>;
+  practical: Record<string, number[]>;
+  missing: Record<string, number[]>;
   menus: Set<string>;
   weeksMeasured: number;
   weeksSkipped: number;
@@ -166,6 +170,9 @@ const tally: Tally = {
   ahMinusJumbo: [],
   bestSaving: [],
   bestPracticalSaving: [],
+  grocery: { A: [], B: [], C: [], D: [] },
+  practical: { A: [], B: [], C: [], D: [] },
+  missing: { A: [], B: [], C: [], D: [] },
   menus: new Set(),
   weeksMeasured: 0,
   weeksSkipped: 0,
@@ -220,6 +227,11 @@ for (const [week, scenario] of weekScenarios(weekCount).entries()) {
   if (d.chains.includes('+')) {
     tally.twoShopsUsed += 1;
     if (d.practical < Math.min(a.practical, b.practical)) tally.twoShopsWorthIt += 1;
+  }
+  for (const setup of SETUPS) {
+    tally.grocery[setup.key]!.push(sameBasket.get(setup.key)!.grocery);
+    tally.practical[setup.key]!.push(sameBasket.get(setup.key)!.practical);
+    tally.missing[setup.key]!.push(sameBasket.get(setup.key)!.missing);
   }
   tally.ahMinusJumbo.push(a.grocery - b.grocery);
   tally.bestSaving.push(a.grocery - bestPinned.grocery);
@@ -302,12 +314,61 @@ if (weekCount > 1) {
     `    Albert Heijn min Jumbo        gem. ${euro(mean(spread))}   mediaan ${euro(median(spread))}` +
       `   (AH goedkoper in ${ahCheaper} van ${spread.length})`,
   );
+  const quantile = (xs: number[], q: number): number => {
+    if (xs.length === 0) return 0;
+    const sorted = [...xs].sort((x, y) => x - y);
+    return sorted[Math.min(sorted.length - 1, Math.ceil(q * sorted.length) - 1)]!;
+  };
+
+  /*
+   * Why C can look more expensive than A, and is not wrong to be.
+   *
+   * The optimizer does not minimise the practical bill; it minimises the bill
+   * plus what the week fails to supply. Allowed to pick either shop, it will
+   * take a dearer one that can actually buy the seventh ingredient. The missing
+   * column is what makes that trade visible instead of looking like a bug.
+   */
+  console.log('\n  Gemiddelde week per opstelling, zelfde mandje\n');
+  const totalsHeader =
+    '    ' +
+    'opstelling'.padEnd(26) +
+    'boodschappen'.padStart(14) +
+    'praktisch'.padStart(12) +
+    'mist'.padStart(8);
+  console.log(totalsHeader);
+  console.log('    ' + '-'.repeat(totalsHeader.length - 4));
+  for (const setup of SETUPS) {
+    console.log(
+      '    ' +
+        `${setup.key}  ${setup.label}`.padEnd(26) +
+        euro(mean(tally.grocery[setup.key]!)).padStart(14) +
+        euro(mean(tally.practical[setup.key]!)).padStart(12) +
+        mean(tally.missing[setup.key]!).toFixed(1).padStart(8),
+    );
+  }
+
   console.log('\n  Besparing tegenover alleen Albert Heijn\n');
-  console.log(
-    `    bruto (alleen boodschappen)   gem. ${euro(mean(tally.bestSaving))}   mediaan ${euro(median(tally.bestSaving))}`,
-  );
-  console.log(
-    `    praktisch (incl. reis)        gem. ${euro(mean(tally.bestPracticalSaving))}   mediaan ${euro(median(tally.bestPracticalSaving))}`,
-  );
+  const savingsHeader =
+    '    ' +
+    ''.padEnd(30) +
+    'gemiddeld'.padStart(11) +
+    'mediaan'.padStart(10) +
+    'p90'.padStart(10) +
+    'maximum'.padStart(10);
+  console.log(savingsHeader);
+  console.log('    ' + '-'.repeat(savingsHeader.length - 4));
+  for (const [label, values] of [
+    ['bruto (alleen boodschappen)', tally.bestSaving],
+    ['praktisch (incl. reis)', tally.bestPracticalSaving],
+  ] as const) {
+    console.log(
+      '    ' +
+        label.padEnd(30) +
+        euro(mean(values)).padStart(11) +
+        euro(median(values)).padStart(10) +
+        euro(quantile(values, 0.9)).padStart(10) +
+        euro(Math.max(...values)).padStart(10),
+    );
+  }
   console.log('');
 }

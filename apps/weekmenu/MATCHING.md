@@ -83,50 +83,74 @@ voorgesneden, sauzen, desserts en maaltijdcomponenten.
 | recall                | 40,3 %  | **100,0 %** |
 | F1                    | 57,4 %  | **100,0 %** |
 
+Sinds de Jumbo-fase draait dezelfde matcher ook tegen een **tweede corpus van
+195 Jumbo-voorbeelden** (`tests/support/golden-matches-jumbo.ts`).
+`pnpm match:eval --chain both` zet ze naast elkaar:
+
+| keten        |   n | precision |  recall |      F1 |
+| ------------ | --: | --------: | ------: | ------: |
+| Albert Heijn | 253 |   100,0 % | 100,0 % | 100,0 % |
+| Jumbo        | 195 |   100,0 % |  98,5 % |  99,2 % |
+
+Er is **geen tweede matcher**: dezelfde functie, dezelfde woordenlijst, dezelfde
+regels. Dat is wat de tweede keten tot bewijs maakt in plaats van tot een tweede
+implementatie.
+
 En op de echte data:
 
-| dekking bij AH                      | voor   | na         |
-| ----------------------------------- | ------ | ---------- |
-| alle canonieke ingrediënten         | —      | 86,7 %     |
-| ingrediënten die recepten gebruiken | 58,9 % | **89,7 %** |
-| gewogen naar receptgebruik          | —      | **94,8 %** |
+| dekking                             | AH         | Jumbo      | samen      |
+| ----------------------------------- | ---------- | ---------- | ---------- |
+| ingrediënten die recepten gebruiken | **89,7 %** | **84,1 %** | **92,5 %** |
+| gewogen naar receptgebruik          | **96,6 %** | **90,1 %** | **97,4 %** |
 
 **Eén eerlijke kanttekening bij die 100 %.** De woordenlijst is uitgebreid
-_terwijl_ er tegen dit corpus gemeten werd, dus een perfecte score is deels een
-maat voor hoe goed de lijst op dit corpus past. Het onafhankelijke bewijs is de
-audit over twintig weken, die producten koopt die het corpus nooit gezien heeft.
+_terwijl_ er tegen deze corpora gemeten werd, dus een perfecte score is deels
+een maat voor hoe goed de lijst op dit corpus past. Het onafhankelijke bewijs is
+de weekaudit, die producten koopt die de corpora nooit gezien hebben.
 
-## De audit over twintig weken
+## De audit over vijftig weken
 
-`pnpm match:weeks` plant twintig echte AH-weken en controleert elke
-boodschappenregel automatisch op: goedgekeurde match, geldige verpakking,
-geldige prijs, en — de belangrijkste — **geen enkel product dat in review of
-afgewezen staat**.
+`pnpm match:weeks -- --chains ah,jumbo --max-stores 2` plant vijftig echte weken
+en controleert elke boodschappenregel automatisch op: goedgekeurde match,
+geldige verpakking, geldige prijs, regeltotaal gelijk aan stuksprijs × aantal in
+hele centen, verpakkingseenheid gelijk aan de recepteenheid, aantal onder de
+twintig, gekocht ≥ nodig en < nodig + één verpakking, toegewezen winkel wordt
+ook bezocht, en de regels tellen op tot het weektotaal.
 
 ```
-weken gepland        20/20
-boodschappenregels   460
-verschillende producten gekocht   31
-niet-goedgekeurde producten       0
+weken gepland        50/50   (waarvan 24 met twee winkels)
+boodschappenregels   1.403
+verschillende producten gekocht  143
+problemen            0
 ```
 
-De 31 gekochte producten zijn met de hand nagelopen. Geen enkele semantisch
-verkeerde aankoop. Wel één te brede alias gevonden — rode wijnazijn voor een
-recept dat om witte vraagt — en die is daarop vernauwd.
+**Nul automatische problemen, en tóch drie fouten.** Het handmatig nalopen van
+de gekochte producten vond wat de assertions niet zochten: een potje babypuree
+dat als pompoen gekocht werd, 5,16 wraps waar de doos er acht bevat, en
+knoflook per teen gerekend terwijl de winkel per bol verkoopt. Alle drie staan
+uitgewerkt in `JUMBO_DATA_QUALITY.md` §1 en alle drie hebben een regressietest
+met de echte productnaam erin. Een boodschappenlijst wordt op het oog geloofd;
+"hij ziet er goed uit" is daarom geen bewijs.
+
+Na herstel: 143 producten nagelopen, nul semantische fouten.
 
 ## Latency
 
-De hypothese was dat betere matching de runtime zou verlágen, doordat er minder
-onleverbare kandidaatweken doorgerekend worden.
+Gemeten over vijftig weken per opstelling:
 
-**Dat klopte niet.** Gemeten over twintig weken: gemiddeld 1.987 ms, p95
-2.612 ms, tegen 2.613 ms voor één week vóór deze fase. Meer bruikbare producten
-betekent ook meer kandidaten per ingrediënt, en dat heft de winst op.
+|           |       AH |    Jumbo |   AH + Jumbo |
+| --------- | -------: | -------: | -----------: |
+| gemiddeld | 1.689 ms | 1.780 ms | **1.432 ms** |
+| p95       | 2.997 ms | 3.103 ms | **2.449 ms** |
 
-De p95 zit daarmee boven de grens van 2 s. Dat is een openstaand punt, en het is
-uitdrukkelijk _geen_ reden om aan de zoekstrategie te komen: de optimizer is
-bevroren en er is geen aanwijzing dat de zoekstrategie het probleem is. De
-volgende stap daarvoor is kandidaatreductie per ingrediënt, gemeten.
+Twee ketens zijn niet trager maar sneller: met meer aanbod hoeft de optimizer
+minder dure uitwijkweken door te rekenen. Eén meting per opstelling, dus geen
+schone A/B.
+
+De zoekstrategie is niet aangepast, en er is ook geen aanleiding voor. Profiling
+(`pnpm perf:real -- --chains ah,jumbo --max-stores 2`) laat zien dat de tweede
+keten het aantal winkelcombinaties verdrievoudigt maar het aantal geprijsde
+weken gelijk houdt, en dat de verpakkingscache 83,2 % raak blijft.
 
 ## Bestanden
 
@@ -136,5 +160,7 @@ volgende stap daarvoor is kandidaatreductie per ingrediënt, gemeten.
 | `src/domain/ingestion/matching-vocabulary.ts` | merk-, vorm- en diskwalificerende woorden        |
 | `src/domain/ingestion/ingredient-aliases.ts`  | aliassen en ingrediënt-specifieke uitzonderingen |
 | `src/data/matching/overrides.ts`              | menselijke beslissingen, permanent               |
-| `tests/support/golden-matches.ts`             | 253 gelabelde beslissingen: de meetlat           |
+| `tests/support/golden-matches.ts`             | 253 gelabelde AH-beslissingen: de meetlat        |
+| `tests/support/golden-matches-jumbo.ts`       | 195 gelabelde Jumbo-beslissingen                 |
+| `src/domain/ingestion/provenance.ts`          | herkomst per regel: keten, bron, datum, maat     |
 | `tests/support/match-evaluation.ts`           | precision, recall, F1                            |
