@@ -127,6 +127,50 @@ je echte prijzen kunt gebruiken terwijl voedingswaarden nog uit de seed komen.
 `src/services/store-service.ts` is de enige plek die providers kent — een echte
 bron aansluiten is daar één regel. Zie [DATA_SOURCES.md](DATA_SOURCES.md).
 
+### Aanbiedingen komen uit een andere bron dan prijzen
+
+Reguliere catalogus, prijs en verpakking komen uit Checkjebon. Aanbiedingen
+komen ergens anders vandaan, en dat is met opzet een aparte provider met een
+aparte laag:
+
+```
+Checkjebon                     promotiebron
+  catalogus, prijs, pakket       aanbiedingen, geldigheid, identiteit
+        │                                  │
+        ▼                                  ▼
+  ProductOffer                      ExternalPromotion
+        │                                  │
+        │                           PromotionCandidate
+        │                            (genormaliseerd)
+        │                                  │
+        └───────► productkoppeling ◄───────┘
+                         │
+                         ▼
+                 ProductOffer + Promotion
+                         │
+                         ▼
+          bestaande pricing / packaging / optimizer
+```
+
+Drie regels die dit vasthouden, elk met tests:
+
+- **De optimizer kent geen promotiebron.** `src/domain` bevat de naam nergens;
+  het ziet alleen een `Promotion`, dezelfde vorm die de seed al gebruikt.
+- **Een aanbieding overschrijft nooit de reguliere prijs.** Als beide bronnen
+  een normale prijs noemen en die verschillen, worden ze allebei bewaard met
+  herkomst en wordt het verschil gerapporteerd.
+- **Er gaat nooit een netwerkverzoek uit tijdens het optimaliseren.** Ophalen
+  gebeurt in een aparte stap naar een momentopname met TTL; de optimizer leest
+  wat er al ligt. Valt de bron weg, dan plant de week gewoon door op
+  schapprijzen.
+
+Wat wanneer geldt, wordt bepaald door de **winkeldatum** en niet door "vandaag":
+een aanbieding die maandag afloopt telt niet voor boodschappen op zaterdag, en
+een die maandag begint telt wél voor boodschappen op maandag. Dat laatste is de
+reden dat komende aanbiedingen überhaupt opgehaald worden.
+
+Zie [PRIJSPROFEET_INTEGRATION.md](PRIJSPROFEET_INTEGRATION.md).
+
 ## Data: twee adapters, één interface
 
 ```ts

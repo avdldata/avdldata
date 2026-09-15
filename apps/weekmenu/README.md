@@ -80,6 +80,9 @@ seed.
 | `pnpm match:review -- --chain jumbo`    | Wat er met de hand beoordeeld moet worden   |
 | `pnpm match:weeks -- --chains ah,jumbo` | 50 echte weken, elke regel gecontroleerd    |
 | `pnpm perf:real -- --chains ah,jumbo`   | Waar de tijd heen gaat, per fase            |
+| `pnpm promo:probe`                      | Welke velden een promotiefeed echt levert   |
+| `pnpm promo:prices`                     | Normale prijs: Checkjebon tegenover de feed |
+| `pnpm promo:bench -- --sweep`           | Wat aanbiedingen veranderen, aan versus uit |
 
 Elke push en pull request naar `main` draait typecheck, lint, format, tests,
 productiebuild, de Playwright-suite en een korte optimizer-benchmark — zie
@@ -211,17 +214,19 @@ is, komt uit data, regels en berekeningen.
 
 ## Verder lezen
 
-|                                                  |                                                      |
-| ------------------------------------------------ | ---------------------------------------------------- |
-| [ARCHITECTURE.md](ARCHITECTURE.md)               | Lagen, providers, adapters, privacy                  |
-| [DATA_MODEL.md](DATA_MODEL.md)                   | Waarom ingredient, product en prijs gescheiden zijn  |
-| [OPTIMIZER.md](OPTIMIZER.md)                     | De pijplijn, de scorefunctie, complexiteit           |
-| [DATABASE.md](DATABASE.md)                       | Schema, constraints, row level security              |
-| [DATA_SOURCES.md](DATA_SOURCES.md)               | Hoe je NEVO, GS1 of een prijsfeed aansluit           |
-| [AUDIT_REPORT.md](AUDIT_REPORT.md)               | Wat een kritische doorlichting van V1 opleverde      |
-| [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md) | Hoe dicht de optimizer bij het echte optimum komt    |
-| [MATCHING.md](MATCHING.md)                       | Van supermarktproduct naar canoniek ingrediënt       |
-| [JUMBO_DATA_QUALITY.md](JUMBO_DATA_QUALITY.md)   | Twee ketens: kwaliteit, dekking, en wat het oplevert |
+|                                                              |                                                      |
+| ------------------------------------------------------------ | ---------------------------------------------------- |
+| [ARCHITECTURE.md](ARCHITECTURE.md)                           | Lagen, providers, adapters, privacy                  |
+| [DATA_MODEL.md](DATA_MODEL.md)                               | Waarom ingredient, product en prijs gescheiden zijn  |
+| [OPTIMIZER.md](OPTIMIZER.md)                                 | De pijplijn, de scorefunctie, complexiteit           |
+| [DATABASE.md](DATABASE.md)                                   | Schema, constraints, row level security              |
+| [DATA_SOURCES.md](DATA_SOURCES.md)                           | Hoe je NEVO, GS1 of een prijsfeed aansluit           |
+| [AUDIT_REPORT.md](AUDIT_REPORT.md)                           | Wat een kritische doorlichting van V1 opleverde      |
+| [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md)             | Hoe dicht de optimizer bij het echte optimum komt    |
+| [MATCHING.md](MATCHING.md)                                   | Van supermarktproduct naar canoniek ingrediënt       |
+| [JUMBO_DATA_QUALITY.md](JUMBO_DATA_QUALITY.md)               | Twee ketens: kwaliteit, dekking, en wat het oplevert |
+| [PRIJSPROFEET_INTEGRATION.md](PRIJSPROFEET_INTEGRATION.md)   | De promotielaag, en waarom de bron nog ontbreekt     |
+| [PROMOTION_VALUE_BENCHMARK.md](PROMOTION_VALUE_BENCHMARK.md) | Wat aanbiedingen aan de weekprijs veranderen         |
 
 ## Wat V1 bewust niet doet
 

@@ -1,0 +1,391 @@
+/**
+ * What do promotions actually change?
+ *
+ * The same week, planned twice — once at shelf prices and once with promotions
+ * in force — over fifty households and three store setups. Everything the
+ * comparison reports is a difference between two runs that differ in exactly
+ * one thing.
+ *
+ * ## Where the promotions come from
+ *
+ * If `data/external/promotions-snapshot.json` exists, it is used, and every
+ * number below is a measurement.
+ *
+ * If it does not, the run falls back to a **model** and says so on every line.
+ * PrijsProfeet is unreachable from this environment (see
+ * PRIJSPROFEET_INTEGRATION.md), so there is no real promotion data to measure;
+ * what the model buys is a sensitivity curve — at what share of the basket does
+ * a second supermarket start to pay for itself — which is a bounded, honest
+ * answer where a single invented figure would not be.
+ *
+ *   pnpm promo:bench                    one rate, fifty weeks
+ *   pnpm promo:bench -- --sweep         a curve over several rates
+ *   pnpm promo:bench -- --weeks 10 --rate 0.2
+ */
+import { existsSync, readFileSync } from 'node:fs';
+import { optimiseWeek, type OptimizerInput } from '../src/domain/optimization/week-optimizer';
+import type { StoreCandidate } from '../src/domain/optimization/store-selection';
+import { promotionSavings } from '../src/domain/pricing/promotions';
+import { applyPromotions } from '../src/services/promotions/apply-promotions';
+import { linkPromotions, toCandidate } from '../src/services/promotions/link-promotions';
+import { extractRetailerProductId } from '../src/services/promotions/retailer-id';
+import type { ExternalPromotion } from '../src/services/promotions/types';
+import { loadRealChains, type RealChainId } from '../tests/support/real-data-store';
+import { weekScenarios, type WeekScenario } from '../tests/support/week-scenarios';
+import { EVEN_MIX, modelPromotions } from '../tests/support/modelled-promotions';
+
+const args = process.argv.slice(2);
+const flag = (name: string): string | undefined =>
+  args.indexOf(name) !== -1 ? args[args.indexOf(name) + 1] : undefined;
+
+const weekCount = Number(flag('--weeks') ?? 50);
+const rates = args.includes('--sweep')
+  ? [0.05, 0.1, 0.15, 0.2, 0.3, 0.4]
+  : [Number(flag('--rate') ?? 0.15)];
+const euro = (c: number): string => `€ ${(c / 100).toFixed(2)}`;
+
+const SNAPSHOT = 'data/external/promotions-snapshot.json';
+const REAL = existsSync(SNAPSHOT);
+
+const fixture = loadRealChains(['ah', 'jumbo']);
+const ah = fixture.chains.find((c) => c.chainId === 'ah')!;
+const jumbo = fixture.chains.find((c) => c.chainId === 'jumbo')!;
+
+/** Our own offers, keyed by the retailer's article number, for tier-1 linking. */
+const retailerIdByProduct = new Map<string, string>();
+for (const chain of fixture.chains) {
+  for (const offer of chain.reducedOffers) {
+    const slug = offer.productId.slice(chain.chainId.length + 1);
+    const id = extractRetailerProductId(chain.chainId, slug);
+    if (id) retailerIdByProduct.set(offer.productId, id.id);
+  }
+}
+
+interface Setup {
+  readonly key: 'AH' | 'JUMBO' | 'BEIDE';
+  readonly label: string;
+  readonly chains: readonly RealChainId[];
+  readonly maxStores: number;
+}
+const SETUPS: readonly Setup[] = [
+  { key: 'AH', label: 'alleen Albert Heijn', chains: ['ah'], maxStores: 1 },
+  { key: 'JUMBO', label: 'alleen Jumbo', chains: ['jumbo'], maxStores: 1 },
+  { key: 'BEIDE', label: 'AH + Jumbo', chains: ['ah', 'jumbo'], maxStores: 2 },
+];
+
+function promotionsFor(
+  scenario: WeekScenario,
+  weekIndex: number,
+  rate: number,
+): ExternalPromotion[] {
+  if (REAL) {
+    const raw = JSON.parse(readFileSync(SNAPSHOT, 'utf8')) as ExternalPromotion[];
+    return raw;
+  }
+  // A different draw per week, so fifty weeks are fifty promotion folders and
+  // not the same one fifty times.
+  // A week-long folder, the way Dutch chains actually run them, so the
+  // validity filter is exercised on a realistic window rather than a single day.
+  const end = new Date(`${scenario.startDate}T00:00:00Z`);
+  end.setUTCDate(end.getUTCDate() + 6);
+  const window = { validFrom: scenario.startDate, validUntil: end.toISOString().slice(0, 10) };
+  return [
+    ...modelPromotions(ah.reducedOffers, {
+      rate,
+      mix: EVEN_MIX,
+      seed: 1000 + weekIndex,
+      ...window,
+    }),
+    ...modelPromotions(jumbo.reducedOffers, {
+      rate,
+      mix: EVEN_MIX,
+      // A different seed per chain: if both chains promoted exactly the same
+      // products, a second shop could never help, and the comparison would be
+      // measuring the seed rather than the shops.
+      seed: 7000 + weekIndex,
+      ...window,
+    }),
+  ];
+}
+
+/** Offers for one setup, with promotions attached or deliberately not. */
+function storesFor(
+  setup: Setup,
+  scenario: WeekScenario,
+  promotions: readonly ExternalPromotion[],
+  enabled: boolean,
+): { stores: StoreCandidate[]; applied: number } {
+  let applied = 0;
+  const stores = setup.chains.map((chainId) => {
+    const chain = fixture.chains.find((c) => c.chainId === chainId)!;
+    if (!enabled) return chain.store;
+
+    const linked = linkPromotions({
+      chainId,
+      candidates: promotions.map(toCandidate),
+      offers: chain.reducedOffers,
+      retailerIdByProduct,
+    }).linked;
+    const resolved = applyPromotions(chain.reducedOffers, linked, {
+      shoppingDate: scenario.startDate,
+    });
+    applied += resolved.applied;
+    return { ...chain.store, offers: resolved.offers };
+  });
+  return { stores, applied };
+}
+
+interface Outcome {
+  readonly grocery: number;
+  readonly practical: number;
+  readonly chains: string;
+  readonly menu: string;
+  readonly missing: number;
+  readonly promotionSavings: number;
+  readonly linesOnPromotion: number;
+  readonly lines: number;
+  readonly ms: number;
+}
+
+function plan(setup: Setup, scenario: WeekScenario, stores: StoreCandidate[]): Outcome | undefined {
+  const input: OptimizerInput = {
+    household: scenario.household,
+    recipes: scenario.recipes(fixture.recipes),
+    ingredients: fixture.ingredientIndex,
+    stores,
+    maxStores: setup.maxStores,
+    conveniencePreference: scenario.conveniencePreference,
+    budget: {},
+    startDate: scenario.startDate,
+    today: scenario.today,
+  };
+  const started = performance.now();
+  const result = optimiseWeek(input);
+  const ms = performance.now() - started;
+  if (result.status !== 'OK') return undefined;
+
+  const option = result.plan.recommendedOption;
+  const lines = option.assignments.flatMap((a) => a.packaging.lines);
+  let saved = 0;
+  let onPromotion = 0;
+  for (const line of lines) {
+    const amount = promotionSavings(line.offer, line.units);
+    if (amount > 0) {
+      saved += amount;
+      onPromotion += 1;
+    }
+  }
+  return {
+    grocery: option.groceryCents,
+    practical: option.practicalTotalCents,
+    chains: option.chainIds.join('+'),
+    menu: result.plan.days.map((d) => d.recipe.id).join('|'),
+    missing: option.unavailable.length,
+    promotionSavings: saved,
+    linesOnPromotion: onPromotion,
+    lines: lines.length,
+    ms,
+  };
+}
+
+const mean = (xs: number[]): number =>
+  xs.length === 0 ? 0 : xs.reduce((s, x) => s + x, 0) / xs.length;
+const quantile = (xs: number[], q: number): number => {
+  if (xs.length === 0) return 0;
+  const sorted = [...xs].sort((a, b) => a - b);
+  return sorted[Math.min(sorted.length - 1, Math.ceil(q * sorted.length) - 1)]!;
+};
+
+console.log(
+  REAL
+    ? `\nPromoties AAN vs UIT — echte momentopname uit ${SNAPSHOT}\n`
+    : '\nPromoties AAN vs UIT — GEMODELLEERDE promoties, geen meting\n' +
+        '  PrijsProfeet is vanuit deze omgeving niet bereikbaar (zie PRIJSPROFEET_INTEGRATION.md).\n' +
+        '  Wat hieronder staat is een gevoeligheidsanalyse: bij welk aandeel aanbiedingen\n' +
+        '  gaat een tweede supermarkt lonen. Het zijn geen echte besparingen.\n',
+);
+
+for (const rate of rates) {
+  const savings: Record<string, number[]> = { AH: [], JUMBO: [], BEIDE: [] };
+  const practicalOff: Record<string, number[]> = { AH: [], JUMBO: [], BEIDE: [] };
+  const practicalOn: Record<string, number[]> = { AH: [], JUMBO: [], BEIDE: [] };
+  const missingOn: Record<string, number[]> = { AH: [], JUMBO: [], BEIDE: [] };
+  const winsOff: Record<string, number> = {};
+  const winsOn: Record<string, number> = {};
+  const multiStoreOff: number[] = [];
+  const multiStoreOn: number[] = [];
+  const menuChanges = { same: 0, one: 0, more: 0 };
+  const promotionCounts: number[] = [];
+  const promotionShare: number[] = [];
+  const perChainSavings: Record<string, number> = { ah: 0, jumbo: 0 };
+  const latencyOn: number[] = [];
+  const latencyOff: number[] = [];
+  let measured = 0;
+
+  for (const [weekIndex, scenario] of weekScenarios(weekCount).entries()) {
+    const promotions = promotionsFor(scenario, weekIndex, rate);
+    const off = new Map<string, Outcome>();
+    const on = new Map<string, Outcome>();
+    let complete = true;
+
+    for (const setup of SETUPS) {
+      const plain = storesFor(setup, scenario, promotions, false);
+      const promoted = storesFor(setup, scenario, promotions, true);
+      const a = plan(setup, scenario, plain.stores);
+      const b = plan(setup, scenario, promoted.stores);
+      if (!a || !b) {
+        complete = false;
+        break;
+      }
+      off.set(setup.key, a);
+      on.set(setup.key, b);
+      latencyOff.push(a.ms);
+      latencyOn.push(b.ms);
+    }
+    if (!complete) continue;
+    measured += 1;
+
+    for (const setup of SETUPS) {
+      const a = off.get(setup.key)!;
+      const b = on.get(setup.key)!;
+      savings[setup.key]!.push(b.promotionSavings);
+      practicalOff[setup.key]!.push(a.practical);
+      practicalOn[setup.key]!.push(b.practical);
+      missingOn[setup.key]!.push(b.missing);
+    }
+
+    const bestOff = [...off.entries()].sort((x, y) => x[1].practical - y[1].practical)[0]!;
+    const bestOn = [...on.entries()].sort((x, y) => x[1].practical - y[1].practical)[0]!;
+    winsOff[bestOff[1].chains] = (winsOff[bestOff[1].chains] ?? 0) + 1;
+    winsOn[bestOn[1].chains] = (winsOn[bestOn[1].chains] ?? 0) + 1;
+
+    // The product question: what does a second shop save, with and without.
+    multiStoreOff.push(off.get('AH')!.practical - off.get('BEIDE')!.practical);
+    multiStoreOn.push(on.get('AH')!.practical - on.get('BEIDE')!.practical);
+
+    const before = off.get('BEIDE')!.menu.split('|');
+    const after = on.get('BEIDE')!.menu.split('|');
+    const changed = before.filter((id) => !after.includes(id)).length;
+    if (changed === 0) menuChanges.same += 1;
+    else if (changed === 1) menuChanges.one += 1;
+    else menuChanges.more += 1;
+
+    const both = on.get('BEIDE')!;
+    promotionCounts.push(both.linesOnPromotion);
+    promotionShare.push(both.lines === 0 ? 0 : both.linesOnPromotion / both.lines);
+    for (const chainId of ['ah', 'jumbo'] as const) {
+      const single = on.get(chainId === 'ah' ? 'AH' : 'JUMBO')!;
+      perChainSavings[chainId]! += single.promotionSavings;
+    }
+  }
+
+  console.log(
+    `\n${'='.repeat(78)}\n  ${REAL ? 'Echte promoties' : `Gemodelleerd, ${(rate * 100).toFixed(0)}% van het assortiment in de aanbieding`}` +
+      `  —  ${measured} weken\n`,
+  );
+
+  console.log('  Gemiddelde week, praktische kosten\n');
+  const header =
+    '    ' +
+    'opstelling'.padEnd(24) +
+    'zonder'.padStart(11) +
+    'met'.padStart(11) +
+    'verschil'.padStart(11) +
+    'mist'.padStart(8);
+  console.log(header);
+  console.log('    ' + '-'.repeat(header.length - 4));
+  for (const setup of SETUPS) {
+    const a = mean(practicalOff[setup.key]!);
+    const b = mean(practicalOn[setup.key]!);
+    console.log(
+      '    ' +
+        setup.label.padEnd(24) +
+        euro(a).padStart(11) +
+        euro(b).padStart(11) +
+        euro(a - b).padStart(11) +
+        mean(missingOn[setup.key]!).toFixed(1).padStart(8),
+    );
+  }
+  // Two shops routinely cost more and miss less. Without that last column the
+  // difference reads as a loss instead of as the trade it is.
+
+  console.log('\n  Wat twee winkels opleveren tegenover alleen Albert Heijn\n');
+  const savingHeader =
+    '    ' +
+    ''.padEnd(24) +
+    'gem.'.padStart(10) +
+    'mediaan'.padStart(10) +
+    'p75'.padStart(9) +
+    'p90'.padStart(9) +
+    'max'.padStart(9);
+  console.log(savingHeader);
+  console.log('    ' + '-'.repeat(savingHeader.length - 4));
+  for (const [label, values] of [
+    ['zonder promoties', multiStoreOff],
+    ['met promoties', multiStoreOn],
+  ] as const) {
+    console.log(
+      '    ' +
+        label.padEnd(24) +
+        euro(mean(values)).padStart(10) +
+        euro(quantile(values, 0.5)).padStart(10) +
+        euro(quantile(values, 0.75)).padStart(9) +
+        euro(quantile(values, 0.9)).padStart(9) +
+        euro(Math.max(0, ...values)).padStart(9),
+    );
+  }
+
+  console.log('\n  Hoeveel weken halen welke praktische besparing met twee winkels\n');
+  for (const threshold of [100, 250, 500, 750, 1000]) {
+    const withoutPromotions = multiStoreOff.filter((v) => v >= threshold).length;
+    const withPromotions = multiStoreOn.filter((v) => v >= threshold).length;
+    console.log(
+      `    ≥ ${euro(threshold).padEnd(8)} zonder ${String(withoutPromotions).padStart(3)}/${measured}` +
+        `   met ${String(withPromotions).padStart(3)}/${measured}`,
+    );
+  }
+
+  console.log('\n  Waar de week gekocht wordt\n');
+  const chainKeys = [...new Set([...Object.keys(winsOff), ...Object.keys(winsOn)])].sort();
+  console.log('    ' + 'winkels'.padEnd(14) + 'zonder'.padStart(9) + 'met'.padStart(7));
+  for (const key of chainKeys) {
+    console.log(
+      '    ' +
+        key.padEnd(14) +
+        String(winsOff[key] ?? 0).padStart(9) +
+        String(winsOn[key] ?? 0).padStart(7),
+    );
+  }
+
+  console.log('\n  Promotiegebruik, AH + Jumbo\n');
+  console.log(`    toegepaste promoties per week      ${mean(promotionCounts).toFixed(1)}`);
+  console.log(`    aandeel gekochte regels in actie   ${(mean(promotionShare) * 100).toFixed(1)}%`);
+  console.log(`    promotievoordeel per week          ${euro(mean(savings.BEIDE!))}`);
+  console.log(
+    `    waarvan bij AH alleen              ${euro(perChainSavings.ah! / Math.max(1, measured))}`,
+  );
+  console.log(
+    `    waarvan bij Jumbo alleen           ${euro(perChainSavings.jumbo! / Math.max(1, measured))}`,
+  );
+
+  console.log('\n  Verandert het menu door promoties?\n');
+  console.log(`    zelfde menu           ${menuChanges.same}/${measured}`);
+  console.log(`    1 gerecht anders      ${menuChanges.one}/${measured}`);
+  console.log(`    2 of meer anders      ${menuChanges.more}/${measured}`);
+
+  console.log('\n  Latency\n');
+  console.log(
+    `    zonder promoties   gem. ${mean(latencyOff).toFixed(0)} ms   p95 ${quantile(latencyOff, 0.95).toFixed(0)} ms`,
+  );
+  console.log(
+    `    met promoties      gem. ${mean(latencyOn).toFixed(0)} ms   p95 ${quantile(latencyOn, 0.95).toFixed(0)} ms`,
+  );
+}
+
+if (!REAL) {
+  console.log(
+    '\n  Nogmaals, expliciet: bovenstaande promoties zijn gemodelleerd.\n' +
+      '  Zet een echte momentopname in data/external/promotions-snapshot.json\n' +
+      '  en dit script rapporteert metingen in plaats van een gevoeligheidsanalyse.\n',
+  );
+}
