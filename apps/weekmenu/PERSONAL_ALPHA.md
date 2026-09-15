@@ -1,7 +1,7 @@
 # Personal Alpha v0.1 — status
 
-**Oordeel: NOT READY.** Twee harde eisen uit de v0.1-definitie worden niet
-gehaald. Alles wat wél werkt staat hieronder, gemeten door de app zelf te
+**Oordeel: NOT READY.** Nog één harde eis uit de v0.1-definitie wordt niet
+gehaald: het aantal recepten. De data-blocker is in Sprint 1 opgelost. Alles wat wél werkt staat hieronder, gemeten door de app zelf te
 gebruiken in een browser, zonder CLI, zonder devtools.
 
 ## De acceptatietest, stap voor stap
@@ -44,17 +44,32 @@ verdeling is op zichzelf redelijk (mediterraan 14, Nederlands 12, Italiaans 9,
 Aziatisch 9, Mexicaans 5, Indiaas 4, Grieks 2, Frans 1; 29 vegetarisch,
 10 veganistisch, 8 vis, 8 kip), maar het aantal is de helft van wat v0.1 vraagt.
 
-### Blocker 2 — de app draait op demo-data
+### ~~Blocker 2 — de app draait op demo-data~~ — opgelost in Sprint 1
 
-De app gebruikt de seed-catalogus, niet de echte prijzen. De gemeten
-€ 38,14 voor een week is een **synthetische** prijs.
+De app rekent nu met de echte catalogus. Eén schakelaar (`DATA_MODE`, standaard
+`REAL`) bepaalt welke provider de winkelservice krijgt, en er is geen stille
+terugval: ontbreekt de momentopname, dan geeft de app een fout in plaats van een
+verzonnen prijs.
 
-De echte data bestáát wel en is gemeten: 16.173 AH-, 17.217 Jumbo- en 22.070
-Lidl-producten in `data/external/checkjebon-snapshot.json`, plus 5.190 echte
-promoties. Maar die catalogus is alleen aangesloten op de testharnas
-(`tests/support/real-data-store.ts`), niet op de app zelf. Er is dus een
-werkende real-data-pijplijn en een werkende app, en ze zijn nog niet op elkaar
-aangesloten.
+Gemeten door de app zelf te gebruiken, acht keer, met echte producten in het
+mandje:
+
+| scenario                            | winkels |      totaal |
+| ----------------------------------- | ------- | ----------: |
+| alleen Albert Heijn                 | 1       |     € 35,94 |
+| alleen Jumbo                        | 1       |     € 35,34 |
+| alleen Lidl                         | 1       |     € 35,51 |
+| AH + Jumbo                          | 2       |     € 34,69 |
+| AH + Lidl                           | 2       | **€ 30,48** |
+| Jumbo + Lidl                        | 2       |     € 31,46 |
+| alle drie toegestaan, max 1 winkel  | **1**   |     € 33,24 |
+| alle drie toegestaan, max 2 winkels | **2**   |     € 30,48 |
+
+Elke week had zeven maaltijden en een complete mand. De boodschappenlijst noemt
+echte artikelen: "Jumbo Aardappelen Vastkokend 1 kg" voor € 1,29, "AH Andijvie
+fijngesneden kleinverpakking" voor € 1,39.
+
+Weekgeneratie duurt gemeten **1,6 s** gemiddeld (5 runs: 1539–1679 ms).
 
 ## Lidl, opnieuw gemeten met de huidige code
 
@@ -123,3 +138,15 @@ de app is geen medisch hulpmiddel.
 
 Stap 1 en 2 zijn samen het verschil tussen "de demo werkt" en "ik kan hem
 gebruiken".
+
+## Hoe de momentopnames worden ververst
+
+Er is bewust nog geen scheduler. De prijsmomentopname staat als
+`data/external/checkjebon-snapshot.json` in de repository en wordt met de hand
+vervangen; de app leest hem bij de eerste aanvraag en onthoudt hem voor de rest
+van het proces. De datum die de app toont is de bestandsdatum, want dat is het
+enige wat we eerlijk weten.
+
+Als eindgebruiker hoef je hier niets voor te doen: is het bestand er, dan
+gebruikt de app het. Is het er niet, dan zegt de app dat, in plaats van
+stilletjes demo-prijzen te tonen.

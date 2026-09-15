@@ -121,7 +121,14 @@ export interface PriceObservation {
   readonly source: PriceSource;
 }
 
-export const PRICE_SOURCES = ['demo-seed', 'chain-api', 'folder', 'handmatig'] as const;
+export const PRICE_SOURCES = [
+  'demo-seed',
+  /** A captured catalogue export, with the date it was captured. Not live. */
+  'prijs-snapshot',
+  'chain-api',
+  'folder',
+  'handmatig',
+] as const;
 export type PriceSource = (typeof PRICE_SOURCES)[number];
 
 export const PROMOTION_TYPES = ['FIXED_PRICE', 'PERCENT_OFF', 'ONE_PLUS_ONE', 'N_FOR_X'] as const;

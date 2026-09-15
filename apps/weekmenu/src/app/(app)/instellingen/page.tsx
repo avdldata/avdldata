@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getRepositories } from '@/data';
 import { requireUser } from '@/services/auth';
 import { DangerZone } from '@/features/auth/danger-zone';
+import { dataModeView } from '@/services/store-service';
 import { DEFAULT_WEEK_SETTINGS } from '@/data/repositories/types';
 import { formatEuro } from '@/lib/format';
 
@@ -24,8 +25,20 @@ const TRANSPORT_LABELS: Record<string, string> = {
   lopen: 'Lopend',
 };
 
+/** A snapshot timestamp, in the way a person reads a date. */
+function formatCapturedAt(iso: string): string {
+  return new Date(iso).toLocaleString('nl-NL', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 export default async function SettingsPage() {
   const user = await requireUser();
+  const data = dataModeView();
   const repositories = getRepositories();
   const household = await repositories.households.getByOwner(user.id);
   const settings = household
@@ -129,6 +142,23 @@ export default async function SettingsPage() {
             </p>
             <p className="text-ink font-medium">
               Weekmenu geeft richtwaarden en is geen medisch hulpmiddel.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Prijsdata</CardTitle>
+          </CardHeader>
+          <CardContent className="text-ink-soft space-y-2 text-sm">
+            <p className="text-ink font-medium">{data.label}</p>
+            {data.pricesCapturedAt ? (
+              <p>Prijzen bijgewerkt: {formatCapturedAt(data.pricesCapturedAt)}</p>
+            ) : null}
+            <p>Aanbiedingen: nog niet gekoppeld in deze versie.</p>
+            <p className="text-ink-faint text-xs">
+              Prijzen komen uit een momentopname van de catalogus, niet uit een live koppeling. Ze
+              kunnen in de winkel afwijken.
             </p>
           </CardContent>
         </Card>

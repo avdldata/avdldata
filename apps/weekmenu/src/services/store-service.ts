@@ -5,6 +5,8 @@ import type { HistoricalPriceStats } from '@/domain/pricing/price-history';
 import { buildIngredientIndex } from '@/domain/ingredients/types';
 import type { StoreCandidate } from '@/domain/optimization/store-selection';
 import { SeedDataProvider } from '@/providers/seed-data-provider';
+import { RealDataProvider, realSnapshotCapturedAt } from '@/providers/real-data-provider';
+import { dataMode } from '@/config/data-mode';
 import { SeedStoreLocatorProvider } from '@/providers/locator/seed-locator';
 import type { ProductCatalogProvider } from '@/providers/catalog/types';
 import type { SupermarketPriceProvider } from '@/providers/pricing/types';
@@ -12,15 +14,40 @@ import type { NutritionDataProvider } from '@/providers/nutrition/types';
 import type { StoreLocatorProvider } from '@/providers/locator/types';
 
 /**
- * The three data seams, all backed by the seed in V1. They are separate
- * variables rather than one object so that swapping just the price feed for a
- * live one is a one-line change here and nowhere else.
+ * The three data seams, and the one decision that made them worth having.
+ *
+ * In `REAL` mode all three are backed by the captured Albert Heijn, Jumbo and
+ * Lidl catalogue; in `DEMO` mode by the synthetic seed. This is the only place
+ * that choice is made, and it is made once per process.
+ *
+ * There is deliberately no fallback from REAL to DEMO. If the snapshot is
+ * missing, `buildRealCatalogue` throws and the app says so, because the
+ * alternative — quietly pricing a week from invented data — produces a number
+ * that looks exactly like a real one.
  */
-const seed = new SeedDataProvider();
-const catalogProvider: ProductCatalogProvider = seed;
-const priceProvider: SupermarketPriceProvider = seed;
-const nutritionProvider: NutritionDataProvider = seed;
+const mode = dataMode();
+const backing = mode === 'REAL' ? new RealDataProvider() : new SeedDataProvider();
+const catalogProvider: ProductCatalogProvider = backing;
+const priceProvider: SupermarketPriceProvider = backing;
+const nutritionProvider: NutritionDataProvider = backing;
 const locatorProvider: StoreLocatorProvider = new SeedStoreLocatorProvider();
+
+/** What the interface should tell the reader about the prices it is showing. */
+export function dataModeView(): {
+  mode: 'REAL' | 'DEMO';
+  label: string;
+  pricesCapturedAt?: string;
+} {
+  if (mode === 'DEMO') {
+    return { mode, label: 'Demo-data — dit zijn geen echte winkelprijzen' };
+  }
+  const capturedAt = realSnapshotCapturedAt();
+  return {
+    mode,
+    label: 'Echte prijsdata',
+    ...(capturedAt ? { pricesCapturedAt: capturedAt } : {}),
+  };
+}
 
 export interface NearbyStoreView {
   readonly location: SupermarketLocation;
