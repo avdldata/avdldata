@@ -114,3 +114,24 @@ kastanjechampignons, rode kool, spruitjes, krieltjes.
 aliassen, exclusions, een unit type, generieke nutrition en matching-tests
 nodig, en dat werk moet zich terugverdienen in gekookte maaltijden — niet in
 folderdekking.
+
+## Herclassificatie: hoeveel van deze 52 zijn echt nieuw?
+
+De lijst hierboven telt concepten. Na classificatie blijkt hij minder te vragen
+dan hij lijkt — zie [INGREDIENT_TAXONOMY.md](INGREDIENT_TAXONOMY.md) voor de
+volledige tabel en de redenering per concept.
+
+|                           | aantal |
+| ------------------------- | -----: |
+| werkelijk nieuw top-level | **25** |
+| variant van bestaand      |     16 |
+| winkelvorm van bestaand   |      4 |
+| niet modelleren           |      7 |
+
+Van de top 20 zouden er **12** een nieuw top-level concept worden, niet twintig.
+Twee van de 52 bleken helemaal geen concept nodig te hebben: "gemengd gehakt" en
+"plantaardig gehakt" zijn synoniemen van ingredienten die we al modelleren, en
+leverden samen twee bereikbare promoties op voor nul nieuwe ingredienten.
+
+De eerste geïmplementeerde batch is 24 concepten. Wat dat gemeten opleverde
+staat in [DINNER_PROMOTION_COVERAGE.md](DINNER_PROMOTION_COVERAGE.md).

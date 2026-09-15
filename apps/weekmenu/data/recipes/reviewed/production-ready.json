@@ -1,0 +1,1021 @@
+[
+  {
+    "source": "forkrecipe",
+    "externalId": "koshari",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/koshari.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Koshari",
+    "cuisine": "Egyptian",
+    "servings": 6,
+    "score": 0.9539536489151873,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 13,
+      "matched": 13,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 13,
+      "canonicalIds": [
+        "witte-rijst",
+        "linzen",
+        "macaroni",
+        "ui",
+        "zonnebloemolie",
+        "tomatenblokjes",
+        "knoflook",
+        "komijn",
+        "verse-koriander",
+        "chilipoeder",
+        "azijn",
+        "zout",
+        "groentebouillon"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "200 g Long-grain white rice",
+        "rawName": "Long-grain white rice",
+        "quantity": 200,
+        "unit": "g"
+      },
+      {
+        "rawText": "200 g Brown lentils, rinsed",
+        "rawName": "Brown lentils",
+        "quantity": 200,
+        "unit": "g",
+        "preparation": "rinsed"
+      },
+      {
+        "rawText": "150 g Elbow macaroni or ditalini",
+        "rawName": "Elbow macaroni or ditalini",
+        "quantity": 150,
+        "unit": "g"
+      },
+      {
+        "rawText": "500 g Large yellow onions, thinly sliced",
+        "rawName": "Large yellow onions",
+        "quantity": 500,
+        "unit": "g",
+        "preparation": "thinly sliced"
+      },
+      {
+        "rawText": "100 g Neutral oil (divided)",
+        "rawName": "Neutral oil (divided)",
+        "quantity": 100,
+        "unit": "g"
+      },
+      {
+        "rawText": "400 g Crushed canned tomatoes",
+        "rawName": "Crushed canned tomatoes",
+        "quantity": 400,
+        "unit": "g"
+      },
+      {
+        "rawText": "20 g Garlic cloves, minced",
+        "rawName": "Garlic cloves",
+        "quantity": 20,
+        "unit": "g",
+        "preparation": "minced"
+      },
+      {
+        "rawText": "8 g Ground cumin",
+        "rawName": "Ground cumin",
+        "quantity": 8,
+        "unit": "g"
+      },
+      {
+        "rawText": "4 g Ground coriander",
+        "rawName": "Ground coriander",
+        "quantity": 4,
+        "unit": "g"
+      },
+      {
+        "rawText": "3 g Cayenne pepper",
+        "rawName": "Cayenne pepper",
+        "quantity": 3,
+        "unit": "g"
+      },
+      {
+        "rawText": "30 g White wine vinegar",
+        "rawName": "White wine vinegar",
+        "quantity": 30,
+        "unit": "g"
+      },
+      {
+        "rawText": "10 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 10,
+        "unit": "g"
+      },
+      {
+        "rawText": "600 g Water or vegetable stock",
+        "rawName": "Water or vegetable stock",
+        "quantity": 600,
+        "unit": "g"
+      }
+    ],
+    "review": {
+      "verdict": "GOOD",
+      "reviewedAt": "2026-09-15",
+      "note": "Direct bruikbaar; hoeveelheden en eenheden ongewijzigd overgenomen."
+    }
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "korean-japchae",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/korean-japchae.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Japchae (Korean Glass Noodles)",
+    "cuisine": "Korean",
+    "servings": 2,
+    "score": 0.9488715986394558,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 14,
+      "matched": 13,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 14,
+      "canonicalIds": [
+        "zoete-aardappel",
+        "spinazie",
+        "wortel",
+        "paprika-rood",
+        "champignons",
+        "ui",
+        "knoflook",
+        "sojasaus",
+        "sesamzaad",
+        "zonnebloemolie",
+        "zout",
+        "ei"
+      ],
+      "newConcepts": ["sugar white"]
+    },
+    "ingredients": [
+      {
+        "rawText": "200 g Dangmyeon (sweet potato glass noodles)",
+        "rawName": "Dangmyeon (sweet potato glass noodles)",
+        "quantity": 200,
+        "unit": "g"
+      },
+      {
+        "rawText": "150 g Fresh spinach, briefly blanched and squeezed",
+        "rawName": "Fresh spinach",
+        "quantity": 150,
+        "unit": "g",
+        "preparation": "briefly blanched and squeezed"
+      },
+      {
+        "rawText": "120 g Carrots, julienned into fine matchsticks",
+        "rawName": "Carrots",
+        "quantity": 120,
+        "unit": "g",
+        "preparation": "julienned into fine matchsticks"
+      },
+      {
+        "rawText": "120 g Red bell pepper, julienned",
+        "rawName": "Red bell pepper",
+        "quantity": 120,
+        "unit": "g",
+        "preparation": "julienned"
+      },
+      {
+        "rawText": "100 g Shiitake mushrooms, stems removed and sliced",
+        "rawName": "Shiitake mushrooms",
+        "quantity": 100,
+        "unit": "g",
+        "preparation": "stems removed and sliced"
+      },
+      {
+        "rawText": "100 g Onion, thinly sliced",
+        "rawName": "Onion",
+        "quantity": 100,
+        "unit": "g",
+        "preparation": "thinly sliced"
+      },
+      {
+        "rawText": "10 g Garlic cloves, minced",
+        "rawName": "Garlic cloves",
+        "quantity": 10,
+        "unit": "g",
+        "preparation": "minced"
+      },
+      {
+        "rawText": "45 ml Soy sauce (ganjang)",
+        "rawName": "Soy sauce (ganjang)",
+        "quantity": 45,
+        "unit": "ml"
+      },
+      {
+        "rawText": "30 ml Toasted sesame oil",
+        "rawName": "Toasted sesame oil",
+        "quantity": 30,
+        "unit": "ml"
+      },
+      {
+        "rawText": "15 g Sugar (white)",
+        "rawName": "Sugar (white)",
+        "quantity": 15,
+        "unit": "g"
+      },
+      {
+        "rawText": "30 ml Vegetable oil (for stir-frying)",
+        "rawName": "Vegetable oil (for stir-frying)",
+        "quantity": 30,
+        "unit": "ml"
+      },
+      {
+        "rawText": "5 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 5,
+        "unit": "g"
+      },
+      {
+        "rawText": "10 g Toasted sesame seeds",
+        "rawName": "Toasted sesame seeds",
+        "quantity": 10,
+        "unit": "g"
+      },
+      {
+        "rawText": "1 egg Egg, cooked as a thin omelette and julienned (optional)",
+        "rawName": "Egg",
+        "quantity": 1,
+        "unit": "egg",
+        "preparation": "cooked as a thin omelette and julienned (optional)"
+      }
+    ],
+    "review": {
+      "verdict": "GOOD",
+      "reviewedAt": "2026-09-15",
+      "note": "Direct bruikbaar; hoeveelheden en eenheden ongewijzigd overgenomen."
+    }
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "mujadara",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/mujadara.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Mujadara",
+    "cuisine": "Lebanese",
+    "servings": 3,
+    "score": 0.9223915343915344,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 9,
+      "matched": 8,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 9,
+      "canonicalIds": [
+        "linzen",
+        "witte-rijst",
+        "ui",
+        "olijfolie",
+        "komijn",
+        "groentebouillon",
+        "zout"
+      ],
+      "newConcepts": ["allspice"]
+    },
+    "ingredients": [
+      {
+        "rawText": "200 g Green or brown lentils, rinsed",
+        "rawName": "Green or brown lentils",
+        "quantity": 200,
+        "unit": "g",
+        "preparation": "rinsed"
+      },
+      {
+        "rawText": "150 g Long-grain rice, rinsed",
+        "rawName": "Long-grain rice",
+        "quantity": 150,
+        "unit": "g",
+        "preparation": "rinsed"
+      },
+      {
+        "rawText": "600 g Large yellow onions, thinly sliced",
+        "rawName": "Large yellow onions",
+        "quantity": 600,
+        "unit": "g",
+        "preparation": "thinly sliced"
+      },
+      {
+        "rawText": "200 g Shallots, thinly sliced into rings",
+        "rawName": "Shallots",
+        "quantity": 200,
+        "unit": "g",
+        "preparation": "thinly sliced into rings"
+      },
+      {
+        "rawText": "80 ml Olive oil",
+        "rawName": "Olive oil",
+        "quantity": 80,
+        "unit": "ml"
+      },
+      {
+        "rawText": "8 g Ground cumin",
+        "rawName": "Ground cumin",
+        "quantity": 8,
+        "unit": "g"
+      },
+      {
+        "rawText": "3 g Ground allspice",
+        "rawName": "Ground allspice",
+        "quantity": 3,
+        "unit": "g"
+      },
+      {
+        "rawText": "700 ml Water or light vegetable stock",
+        "rawName": "Water or light vegetable stock",
+        "quantity": 700,
+        "unit": "ml"
+      },
+      {
+        "rawText": "8 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 8,
+        "unit": "g"
+      }
+    ],
+    "review": {
+      "verdict": "GOOD",
+      "reviewedAt": "2026-09-15",
+      "note": "Direct bruikbaar; hoeveelheden en eenheden ongewijzigd overgenomen."
+    }
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "misir-wot",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/misir-wot.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Misir Wot (Red Lentil Stew)",
+    "cuisine": "Ethiopian",
+    "servings": 4,
+    "score": 0.9079791666666667,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 9,
+      "matched": 8,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 9,
+      "canonicalIds": [
+        "linzen",
+        "ui",
+        "roomboter",
+        "knoflook",
+        "gember",
+        "groentebouillon",
+        "zout",
+        "citroen"
+      ],
+      "newConcepts": ["berbere spice blend"]
+    },
+    "ingredients": [
+      {
+        "rawText": "300 g Red lentils (masoor dal), rinsed",
+        "rawName": "Red lentils (masoor dal)",
+        "quantity": 300,
+        "unit": "g",
+        "preparation": "rinsed"
+      },
+      {
+        "rawText": "400 g Yellow onions, finely minced",
+        "rawName": "Yellow onions",
+        "quantity": 400,
+        "unit": "g",
+        "preparation": "finely minced"
+      },
+      {
+        "rawText": "60 g Niter kibbeh or clarified spiced butter",
+        "rawName": "Niter kibbeh or clarified spiced butter",
+        "quantity": 60,
+        "unit": "g"
+      },
+      {
+        "rawText": "40 g Berbere spice blend",
+        "rawName": "Berbere spice blend",
+        "quantity": 40,
+        "unit": "g"
+      },
+      {
+        "rawText": "15 g Garlic cloves, minced",
+        "rawName": "Garlic cloves",
+        "quantity": 15,
+        "unit": "g",
+        "preparation": "minced"
+      },
+      {
+        "rawText": "10 g Fresh ginger, grated",
+        "rawName": "Fresh ginger",
+        "quantity": 10,
+        "unit": "g",
+        "preparation": "grated"
+      },
+      {
+        "rawText": "700 g Water or light vegetable stock",
+        "rawName": "Water or light vegetable stock",
+        "quantity": 700,
+        "unit": "g"
+      },
+      {
+        "rawText": "8 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 8,
+        "unit": "g"
+      },
+      {
+        "rawText": "15 g Fresh lemon juice",
+        "rawName": "Fresh lemon juice",
+        "quantity": 15,
+        "unit": "g"
+      }
+    ],
+    "review": {
+      "verdict": "GOOD",
+      "reviewedAt": "2026-09-15",
+      "note": "Direct bruikbaar; hoeveelheden en eenheden ongewijzigd overgenomen."
+    }
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "moros-y-cristianos",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/moros-y-cristianos.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Moros y Cristianos",
+    "cuisine": "Cuban",
+    "servings": 2,
+    "score": 0.8852336700336698,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 12,
+      "matched": 11,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 12,
+      "canonicalIds": [
+        "zwarte-bonen",
+        "witte-rijst",
+        "ui",
+        "paprika-rood",
+        "knoflook",
+        "olijfolie",
+        "komijn",
+        "oregano",
+        "zout",
+        "peper",
+        "azijn"
+      ],
+      "newConcepts": ["bay leaves"]
+    },
+    "ingredients": [
+      {
+        "rawText": "300 g Dried black beans (soaked overnight)",
+        "rawName": "Dried black beans (soaked overnight)",
+        "quantity": 300,
+        "unit": "g"
+      },
+      {
+        "rawText": "300 g Long-grain white rice",
+        "rawName": "Long-grain white rice",
+        "quantity": 300,
+        "unit": "g"
+      },
+      {
+        "rawText": "150 g White onion (finely diced)",
+        "rawName": "White onion (finely diced)",
+        "quantity": 150,
+        "unit": "g"
+      },
+      {
+        "rawText": "100 g Green bell pepper (finely diced)",
+        "rawName": "Green bell pepper (finely diced)",
+        "quantity": 100,
+        "unit": "g"
+      },
+      {
+        "rawText": "4 cloves Garlic cloves (minced)",
+        "rawName": "Garlic cloves (minced)",
+        "quantity": 4,
+        "unit": "cloves"
+      },
+      {
+        "rawText": "45 ml Olive oil",
+        "rawName": "Olive oil",
+        "quantity": 45,
+        "unit": "ml"
+      },
+      {
+        "rawText": "5 g Ground cumin",
+        "rawName": "Ground cumin",
+        "quantity": 5,
+        "unit": "g"
+      },
+      {
+        "rawText": "3 g Dried oregano",
+        "rawName": "Dried oregano",
+        "quantity": 3,
+        "unit": "g"
+      },
+      {
+        "rawText": "2 leaves Bay leaves",
+        "rawName": "Bay leaves",
+        "quantity": 2,
+        "unit": "leaves"
+      },
+      {
+        "rawText": "8 g Fine salt",
+        "rawName": "Fine salt",
+        "quantity": 8,
+        "unit": "g"
+      },
+      {
+        "rawText": "2 g Black pepper (freshly ground)",
+        "rawName": "Black pepper (freshly ground)",
+        "quantity": 2,
+        "unit": "g"
+      },
+      {
+        "rawText": "15 ml White wine vinegar (for finishing)",
+        "rawName": "White wine vinegar (for finishing)",
+        "quantity": 15,
+        "unit": "ml"
+      }
+    ],
+    "review": {
+      "verdict": "GOOD",
+      "reviewedAt": "2026-09-15",
+      "note": "Direct bruikbaar; hoeveelheden en eenheden ongewijzigd overgenomen."
+    }
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "bacalhau-a-bras",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/bacalhau-a-bras.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Bacalhau à Brás",
+    "cuisine": "Portuguese",
+    "servings": 3,
+    "score": 0.8578044444444444,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 10,
+      "matched": 10,
+      "needsNewCanonical": 0,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 8,
+      "canonicalIds": [
+        "zout",
+        "aardappel",
+        "ei",
+        "ui",
+        "knoflook",
+        "olijfolie",
+        "verse-peterselie",
+        "olijven",
+        "peper"
+      ],
+      "newConcepts": []
+    },
+    "ingredients": [
+      {
+        "rawText": "400 g Salt cod (bacalhau), skin-on fillets",
+        "rawName": "Salt cod (bacalhau)",
+        "quantity": 400,
+        "unit": "g",
+        "preparation": "skin-on fillets"
+      },
+      {
+        "rawText": "400 g Waxy potatoes, peeled",
+        "rawName": "Waxy potatoes",
+        "quantity": 400,
+        "unit": "g",
+        "preparation": "peeled"
+      },
+      {
+        "rawText": "6 ea Eggs, large",
+        "rawName": "Eggs",
+        "quantity": 6,
+        "unit": "ea",
+        "preparation": "large"
+      },
+      {
+        "rawText": "200 g White onion, finely sliced",
+        "rawName": "White onion",
+        "quantity": 200,
+        "unit": "g",
+        "preparation": "finely sliced"
+      },
+      {
+        "rawText": "4 ea Garlic cloves, sliced thin",
+        "rawName": "Garlic cloves",
+        "quantity": 4,
+        "unit": "ea",
+        "preparation": "sliced thin"
+      },
+      {
+        "rawText": "80 ml Extra-virgin olive oil",
+        "rawName": "Extra-virgin olive oil",
+        "quantity": 80,
+        "unit": "ml"
+      },
+      {
+        "rawText": "20 g Flat-leaf parsley, roughly chopped",
+        "rawName": "Flat-leaf parsley",
+        "quantity": 20,
+        "unit": "g",
+        "preparation": "roughly chopped"
+      },
+      {
+        "rawText": "60 g Pitted black olives (Kalamata or Gaeta)",
+        "rawName": "Pitted black olives (Kalamata or Gaeta)",
+        "quantity": 60,
+        "unit": "g"
+      },
+      {
+        "rawText": "4 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 4,
+        "unit": "g"
+      },
+      {
+        "rawText": "2 g Black pepper, freshly cracked",
+        "rawName": "Black pepper",
+        "quantity": 2,
+        "unit": "g",
+        "preparation": "freshly cracked"
+      }
+    ],
+    "review": {
+      "verdict": "GOOD",
+      "reviewedAt": "2026-09-15",
+      "note": "Direct bruikbaar; hoeveelheden en eenheden ongewijzigd overgenomen."
+    }
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "saag-aloo",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/saag-aloo.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Saag Aloo",
+    "cuisine": "Indian",
+    "servings": 2,
+    "score": 0.848314824380165,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 12,
+      "matched": 11,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 11,
+      "canonicalIds": [
+        "aardappel",
+        "spinazie",
+        "ui",
+        "knoflook",
+        "gember",
+        "komijn",
+        "mosterd",
+        "kurkuma",
+        "rode-peper",
+        "zonnebloemolie",
+        "zout"
+      ],
+      "newConcepts": ["garam masala"]
+    },
+    "ingredients": [
+      {
+        "rawText": "500 g Waxy potatoes (Desiree or Charlotte), cut into 3 cm cubes",
+        "rawName": "Waxy potatoes (Desiree or Charlotte)",
+        "quantity": 500,
+        "unit": "g",
+        "preparation": "cut into 3 cm cubes"
+      },
+      {
+        "rawText": "300 g Fresh baby spinach",
+        "rawName": "Fresh baby spinach",
+        "quantity": 300,
+        "unit": "g"
+      },
+      {
+        "rawText": "150 g White onion, finely diced",
+        "rawName": "White onion",
+        "quantity": 150,
+        "unit": "g",
+        "preparation": "finely diced"
+      },
+      {
+        "rawText": "4 cloves Garlic cloves, minced",
+        "rawName": "Garlic cloves",
+        "quantity": 4,
+        "unit": "cloves",
+        "preparation": "minced"
+      },
+      {
+        "rawText": "15 g Fresh ginger, grated",
+        "rawName": "Fresh ginger",
+        "quantity": 15,
+        "unit": "g",
+        "preparation": "grated"
+      },
+      {
+        "rawText": "5 g Cumin seeds",
+        "rawName": "Cumin seeds",
+        "quantity": 5,
+        "unit": "g"
+      },
+      {
+        "rawText": "5 g Black or yellow mustard seeds",
+        "rawName": "Black or yellow mustard seeds",
+        "quantity": 5,
+        "unit": "g"
+      },
+      {
+        "rawText": "4 g Ground turmeric",
+        "rawName": "Ground turmeric",
+        "quantity": 4,
+        "unit": "g"
+      },
+      {
+        "rawText": "6 g Garam masala",
+        "rawName": "Garam masala",
+        "quantity": 6,
+        "unit": "g"
+      },
+      {
+        "rawText": "1 whole Green chili, finely sliced",
+        "rawName": "Green chili",
+        "quantity": 1,
+        "unit": "whole",
+        "preparation": "finely sliced"
+      },
+      {
+        "rawText": "40 ml Ghee (or neutral oil)",
+        "rawName": "Ghee (or neutral oil)",
+        "quantity": 40,
+        "unit": "ml"
+      },
+      {
+        "rawText": "8 g Fine salt",
+        "rawName": "Fine salt",
+        "quantity": 8,
+        "unit": "g"
+      }
+    ],
+    "review": {
+      "verdict": "GOOD",
+      "reviewedAt": "2026-09-15",
+      "note": "Direct bruikbaar; hoeveelheden en eenheden ongewijzigd overgenomen."
+    }
+  },
+  {
+    "source": "forkrecipe",
+    "externalId": "yangzhou-fried-rice",
+    "sourceUrl": "https://github.com/futurechef/forkrecipe-recipes/blob/main/recipes/yangzhou-fried-rice.js",
+    "rights": "CC_BY_SA",
+    "attribution": "Recept: ForkRecipe (CC BY-SA 4.0), forkrecipe.com",
+    "title": "Yangzhou Fried Rice",
+    "cuisine": "Chinese",
+    "servings": 2,
+    "score": 0.8368351411845729,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 12,
+      "matched": 11,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 11,
+      "canonicalIds": [
+        "basmatirijst",
+        "ei",
+        "garnalen",
+        "honing",
+        "doperwten",
+        "bosui",
+        "sojasaus",
+        "sesamzaad",
+        "peper",
+        "zonnebloemolie",
+        "zout"
+      ],
+      "newConcepts": ["oyster sauce"]
+    },
+    "ingredients": [
+      {
+        "rawText": "600 g Day-old cooked jasmine rice, cold",
+        "rawName": "Day-old cooked jasmine rice",
+        "quantity": 600,
+        "unit": "g",
+        "preparation": "cold"
+      },
+      {
+        "rawText": "3 whole Eggs",
+        "rawName": "Eggs",
+        "quantity": 3,
+        "unit": "whole"
+      },
+      {
+        "rawText": "150 g Medium shrimp, peeled and deveined",
+        "rawName": "Medium shrimp",
+        "quantity": 150,
+        "unit": "g",
+        "preparation": "peeled and deveined"
+      },
+      {
+        "rawText": "100 g Char siu or honey-glazed ham, diced",
+        "rawName": "Char siu or honey-glazed ham",
+        "quantity": 100,
+        "unit": "g",
+        "preparation": "diced"
+      },
+      {
+        "rawText": "80 g Frozen peas, thawed",
+        "rawName": "Frozen peas",
+        "quantity": 80,
+        "unit": "g",
+        "preparation": "thawed"
+      },
+      {
+        "rawText": "4 stalks Scallions, thinly sliced",
+        "rawName": "Scallions",
+        "quantity": 4,
+        "unit": "stalks",
+        "preparation": "thinly sliced"
+      },
+      {
+        "rawText": "30 ml Light soy sauce",
+        "rawName": "Light soy sauce",
+        "quantity": 30,
+        "unit": "ml"
+      },
+      {
+        "rawText": "15 ml Oyster sauce",
+        "rawName": "Oyster sauce",
+        "quantity": 15,
+        "unit": "ml"
+      },
+      {
+        "rawText": "5 ml Toasted sesame oil",
+        "rawName": "Toasted sesame oil",
+        "quantity": 5,
+        "unit": "ml"
+      },
+      {
+        "rawText": "2 g Ground white pepper",
+        "rawName": "Ground white pepper",
+        "quantity": 2,
+        "unit": "g"
+      },
+      {
+        "rawText": "45 ml Neutral oil (vegetable or peanut)",
+        "rawName": "Neutral oil (vegetable or peanut)",
+        "quantity": 45,
+        "unit": "ml"
+      },
+      {
+        "rawText": "3 g Fine sea salt",
+        "rawName": "Fine sea salt",
+        "quantity": 3,
+        "unit": "g"
+      }
+    ],
+    "review": {
+      "verdict": "GOOD",
+      "reviewedAt": "2026-09-15",
+      "note": "Direct bruikbaar; hoeveelheden en eenheden ongewijzigd overgenomen."
+    }
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/kalvkotlett-i-kastrull-veal-chops-in-casserole",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Kalvkotlett i kastrull (Veal Chops in Casserole)",
+    "cuisine": "sweden",
+    "score": 0.7672789351851851,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 5,
+      "needsNewCanonical": 1,
+      "rejectedLines": 0,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": ["zout", "peper", "roomboter", "aardappel"],
+      "newConcepts": ["veal chops"]
+    },
+    "ingredients": [
+      {
+        "rawText": "3 veal chops",
+        "rawName": "veal chops",
+        "quantity": 3
+      },
+      {
+        "rawText": "2 tsp. salt",
+        "rawName": "tsp. salt",
+        "quantity": 2
+      },
+      {
+        "rawText": "1/2 tsp. white pepper",
+        "rawName": "tsp. white pepper",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "4 tbsp. butter (80 g.)",
+        "rawName": "tbsp. butter (80 g.)",
+        "quantity": 4
+      },
+      {
+        "rawText": "12 small raw potatoes",
+        "rawName": "small raw potatoes",
+        "quantity": 12
+      },
+      {
+        "rawText": "1 tsp. salt",
+        "rawName": "tsp. salt",
+        "quantity": 1
+      }
+    ],
+    "review": {
+      "verdict": "FIXABLE_REPAIRED",
+      "reviewedAt": "2026-09-15",
+      "note": "Hectogram en deciliter zijn exacte omrekeningen; er is geen hoeveelheid bijverzonnen."
+    }
+  },
+  {
+    "source": "open-recipe-archive",
+    "externalId": "svenska-koket/br-ckt-skinka-med-ris-smoked-ham-with-rice",
+    "sourceUrl": "https://archive.org/details/arkivkopia.se-runeberg-idunskok",
+    "rights": "PUBLIC_DOMAIN",
+    "attribution": "Recept: Iduns kokbok (1911), publiek domein, via Open Recipe Archive",
+    "title": "Bräckt skinka med ris (Smoked Ham with Rice)",
+    "cuisine": "sweden",
+    "score": 0.7190333333333333,
+    "facts": {
+      "verdict": "DINNER",
+      "lines": 6,
+      "matched": 4,
+      "needsNewCanonical": 1,
+      "rejectedLines": 1,
+      "ambiguousLines": 0,
+      "parseableLines": 6,
+      "canonicalIds": ["witte-rijst", "zout", "ui", "roomboter"],
+      "newConcepts": ["hg smoked ham"]
+    },
+    "ingredients": [
+      {
+        "rawText": "1/2 dcl. rice grains (150 gr.)",
+        "rawName": "dcl. rice grains (150 gr.)",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1 1/2 liters water",
+        "rawName": "1/2 liters water",
+        "quantity": 1
+      },
+      {
+        "rawText": "1/2 tablespoon salt",
+        "rawName": "tablespoon salt",
+        "quantity": 0.5
+      },
+      {
+        "rawText": "1 Portuguese onion",
+        "rawName": "Portuguese onion",
+        "quantity": 1
+      },
+      {
+        "rawText": "50 gr. butter",
+        "rawName": "gr. butter",
+        "quantity": 50
+      },
+      {
+        "rawText": "5 hg. smoked ham",
+        "rawName": "hg. smoked ham",
+        "quantity": 5
+      }
+    ],
+    "review": {
+      "verdict": "FIXABLE_REPAIRED",
+      "reviewedAt": "2026-09-15",
+      "note": "Hectogram en deciliter zijn exacte omrekeningen; er is geen hoeveelheid bijverzonnen."
+    }
+  }
+]

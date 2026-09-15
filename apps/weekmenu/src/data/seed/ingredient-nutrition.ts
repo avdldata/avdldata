@@ -27,6 +27,28 @@ function n(
 }
 
 export const INGREDIENT_NUTRITION_PER_100: Readonly<Record<string, NutritionPer100>> = {
+  /* ---- Taxonomie-uitbreiding ---------------------------------------------
+   *
+   * Nieuwe canonical ingredienten uit de opportunity-analyse. Composites staan
+   * hier met hun EIGEN waarden en erven nooit van hun hoofdbestanddeel: pesto
+   * is niet basilicum, hummus is niet kikkererwt, en het energiegehalte van de
+   * pot lijkt op geen van beide. `assertNutritionIsSound` dwingt dat af.
+   */
+  pasta: n(359, 12.5, 71, 3.2, 1.5, 0.3, 3.2, 0.01),
+  rijst: n(354, 7, 78, 0.2, 0.9, 0.2, 1.3, 0.01),
+  maistortilla: n(310, 8, 53, 1.5, 6.5, 1.1, 5.5, 0.8),
+  asperges: n(20, 2.2, 2, 1.9, 0.2, 0.05, 2.1, 0.01),
+  geitenkaas: n(290, 19, 2.5, 2.5, 22, 15, 0, 1.6),
+  rookworst: n(290, 13, 2, 1, 26, 10, 0, 2.1),
+  shoarmavlees: n(200, 18, 2, 1, 13, 5, 0.3, 1.3),
+  hummus: n(230, 7.5, 12, 0.8, 17, 2.2, 5.5, 1.2),
+  pesto: n(450, 5.5, 5, 3, 45, 7.5, 1.8, 2.4),
+  pastasaus: n(60, 1.7, 8, 6, 2.2, 0.35, 1.6, 0.9),
+  satesaus: n(310, 9, 18, 13, 22, 4.5, 3, 1.5),
+  sriracha: n(105, 1.5, 22, 18, 1, 0.15, 1.2, 6),
+  'taco-kruidenmix': n(300, 10, 45, 8, 6, 1, 15, 14),
+  roerbakgroentemix: n(35, 1.8, 4.5, 3, 0.4, 0.06, 2.4, 0.05),
+
   // ---- Groente & fruit ----------------------------------------------------
   ui: n(40, 1.1, 9.3, 4.2, 0.1, 0.04, 1.7, 0.01),
   'rode-ui': n(42, 1.2, 9.5, 4.9, 0.1, 0.04, 1.7, 0.01),

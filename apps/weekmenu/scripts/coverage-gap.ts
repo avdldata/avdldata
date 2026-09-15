@@ -41,6 +41,8 @@ import { loadRealChains } from '../tests/support/real-data-store';
 import type { ExternalPromotion } from '../src/services/promotions/types';
 
 const markdown = process.argv.includes('--markdown');
+/** Print every candidate with a promotion, not just the top 30 — for the taxonomy pass. */
+const showAll = process.argv.includes('--all');
 
 /* ── The lexicon ─────────────────────────────────────────────────────────── */
 
@@ -875,7 +877,7 @@ if (!markdown) {
   console.log(
     `  E  niet te classificeren                     ${String(counts.E).padStart(5)}  ${share(counts.E)}\n`,
   );
-  console.log(`  Top-30 kandidaten op opportunity score\n`);
+  console.log(`  ${showAll ? 'Alle' : 'Top-30'} kandidaten op opportunity score\n`);
   const head =
     '    ' +
     'ingredient'.padEnd(26) +
@@ -889,7 +891,7 @@ if (!markdown) {
     'score'.padStart(8);
   console.log(head);
   console.log('    ' + '-'.repeat(head.length - 4));
-  for (const row of rows.slice(0, 30)) {
+  for (const row of showAll ? rows : rows.slice(0, 30)) {
     console.log(
       '    ' +
         row.candidate.label.padEnd(26) +

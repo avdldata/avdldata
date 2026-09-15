@@ -42,6 +42,15 @@ export type MatchKind =
 export interface IngredientMatch {
   readonly kind: MatchKind;
   readonly ingredientId?: string;
+  /**
+   * Which variant the line named, when it named one.
+   *
+   * "Risotto rice" is not "rice": carrying the variant here is what lets the
+   * compatibility layer refuse long-grain later. Dropping it would turn a
+   * specific requirement into a general one, which is the one direction the
+   * taxonomy forbids.
+   */
+  readonly variantId?: string;
   /** The concept we think it is, when we have no canonical for it yet. */
   readonly concept?: string;
   readonly normalised: string;
@@ -375,10 +384,66 @@ const TO_CANONICAL: Readonly<Record<string, string>> = {
   'chilli flakes': 'chilipoeder',
   'red pepper flakes': 'chilipoeder',
   'cayenne pepper': 'chilipoeder',
+  // Taxonomie-uitbreiding: de nieuwe concepten, zoals een Engelstalig recept
+  // ze schrijft.
+  pasta: 'pasta',
+  'dried pasta': 'pasta',
+  asparagus: 'asperges',
+  asperges: 'asperges',
+  'goat cheese': 'geitenkaas',
+  'goats cheese': 'geitenkaas',
+  geitenkaas: 'geitenkaas',
+  hummus: 'hummus',
+  houmous: 'hummus',
+  pesto: 'pesto',
+  'basil pesto': 'pesto',
+  'pasta sauce': 'pastasaus',
+  marinara: 'pastasaus',
+  'marinara sauce': 'pastasaus',
+  pastasaus: 'pastasaus',
+  'peanut sauce': 'satesaus',
+  'satay sauce': 'satesaus',
+  satesaus: 'satesaus',
+  sriracha: 'sriracha',
+  'taco seasoning': 'taco-kruidenmix',
+  'smoked sausage': 'rookworst',
+  rookworst: 'rookworst',
+  shoarma: 'shoarmavlees',
+  shoarmavlees: 'shoarmavlees',
+  'corn tortilla': 'maistortilla',
+  'corn tortillas': 'maistortilla',
+  maistortilla: 'maistortilla',
+  'stir fry vegetables': 'roerbakgroentemix',
+  'stir-fry vegetables': 'roerbakgroentemix',
+  roerbakgroentemix: 'roerbakgroentemix',
   vinegar: 'azijn',
   'white wine vinegar': 'azijn',
   'red wine vinegar': 'azijn',
   azijn: 'azijn',
+};
+
+/**
+ * Recipe words that name a *variant* rather than an ingredient.
+ *
+ * Mapped to the parent plus the variant id, so "fusilli" becomes pasta-as-
+ * fusilli and "arborio" becomes rice-as-risotto-rice. The second one is the
+ * reason this table exists at all: mapping arborio to plain rice would let a
+ * risotto be planned with long-grain, silently.
+ */
+const TO_VARIANT: Readonly<Record<string, { ingredientId: string; variantId: string }>> = {
+  fusilli: { ingredientId: 'pasta', variantId: 'fusilli' },
+  tagliatelle: { ingredientId: 'pasta', variantId: 'tagliatelle' },
+  orzo: { ingredientId: 'pasta', variantId: 'orzo' },
+  rigatoni: { ingredientId: 'pasta', variantId: 'rigatoni' },
+  farfalle: { ingredientId: 'pasta', variantId: 'farfalle' },
+  'risotto rice': { ingredientId: 'rijst', variantId: 'risottorijst' },
+  arborio: { ingredientId: 'rijst', variantId: 'risottorijst' },
+  'arborio rice': { ingredientId: 'rijst', variantId: 'risottorijst' },
+  carnaroli: { ingredientId: 'rijst', variantId: 'risottorijst' },
+  'pandan rice': { ingredientId: 'rijst', variantId: 'pandanrijst' },
+  'frozen spinach': { ingredientId: 'spinazie', variantId: 'spinazie-diepvries' },
+  'baby potatoes': { ingredientId: 'aardappel', variantId: 'krieltjes' },
+  krieltjes: { ingredientId: 'aardappel', variantId: 'krieltjes' },
 };
 
 /**
@@ -430,6 +495,18 @@ export function matchCanonicalIngredient(rawName: string): IngredientMatch {
   const direct = CANONICAL_BY_NAME.get(normalised);
   if (direct) return { kind: 'EXACT', ingredientId: direct, normalised };
   if (CANONICAL_IDS.has(normalised)) return { kind: 'EXACT', ingredientId: normalised, normalised };
+
+  // Variants are checked before the plain table, so "risotto rice" cannot fall
+  // through to "rice" and lose the very thing that makes it specific.
+  const variant = TO_VARIANT[cleaned];
+  if (variant) {
+    return {
+      kind: 'SAFE_ALIAS',
+      ingredientId: variant.ingredientId,
+      variantId: variant.variantId,
+      normalised,
+    };
+  }
 
   const exactKey = TO_CANONICAL[cleaned];
   if (exactKey) return { kind: 'SAFE_ALIAS', ingredientId: exactKey, normalised };

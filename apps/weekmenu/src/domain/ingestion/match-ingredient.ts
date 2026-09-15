@@ -1,4 +1,5 @@
 import type { CanonicalIngredient, IngredientId } from '../ingredients/types';
+import type { IngredientVariant, VariantId } from '../ingredients/taxonomy';
 import { INGREDIENT_ALIASES, INGREDIENT_SAFE_WORDS, type AliasType } from './ingredient-aliases';
 import { DISQUALIFYING_WORDS, isIgnorableWord, PRESERVING_WORDS } from './matching-vocabulary';
 
@@ -51,6 +52,8 @@ export type MatchReason =
 export interface ProductIngredientMatch {
   readonly productId: string;
   readonly canonicalIngredientId: IngredientId;
+  /** Which variant of that ingredient, when the name identified one. */
+  readonly variantId?: VariantId;
   /** Derived from the evidence tier, not a free-floating similarity score. */
   readonly confidence: number;
   readonly matchMethod: MatchMethod;
@@ -72,7 +75,20 @@ export interface MatchCandidate {
 
 export interface IngredientPhrases {
   readonly id: IngredientId;
-  readonly phrases: readonly { readonly phrase: string; readonly type: AliasType }[];
+  readonly phrases: readonly {
+    readonly phrase: string;
+    readonly type: AliasType;
+    /**
+     * Set when this phrase names a *variant* rather than the ingredient itself.
+     *
+     * "Fusilli" is how a shelf spells pasta, and without this the product never
+     * reaches the ingredient at all: the catalogue names the shape and our
+     * catalogue names the food. Carrying the variant id through the match is
+     * what lets the compatibility layer decide afterwards whether a recipe
+     * asking for generic pasta is allowed to have this one.
+     */
+    readonly variantId?: VariantId;
+  }[];
 }
 
 /**
@@ -90,8 +106,12 @@ export interface ManualOverride {
 export function buildIngredientPhrases(
   ingredients: readonly CanonicalIngredient[],
   aliases: readonly { readonly ingredientId: IngredientId; readonly alias: string }[] = [],
+  variants: readonly IngredientVariant[] = [],
 ): IngredientPhrases[] {
-  const byId = new Map<IngredientId, { phrase: string; type: AliasType }[]>();
+  const byId = new Map<
+    IngredientId,
+    { phrase: string; type: AliasType; variantId?: VariantId }[]
+  >();
 
   for (const ingredient of ingredients) {
     byId.set(ingredient.id, [{ phrase: normalise(ingredient.canonicalName), type: 'CANONICAL' }]);
@@ -103,6 +123,16 @@ export function buildIngredientPhrases(
     byId.get(alias.canonicalIngredientId)?.push({
       phrase: normalise(alias.phrase),
       type: alias.type,
+    });
+  }
+  // Variant names are the shelf's vocabulary for an ingredient we already have.
+  // They are added under the parent, tagged, so a match resolves to the food
+  // and still remembers which form it was.
+  for (const variant of variants) {
+    byId.get(variant.parentId)?.push({
+      phrase: normalise(variant.name),
+      type: 'SYNONYM',
+      variantId: variant.id,
     });
   }
 
@@ -141,12 +171,18 @@ export function matchProduct(
     };
   }
 
-  let best: { id: IngredientId; phrase: string; type: AliasType } | undefined;
+  let best:
+    { id: IngredientId; phrase: string; type: AliasType; variantId?: VariantId } | undefined;
   for (const ingredient of ingredients) {
     for (const entry of ingredient.phrases) {
       if (!containsWholePhrase(name, entry.phrase)) continue;
       if (!best || entry.phrase.length > best.phrase.length) {
-        best = { id: ingredient.id, phrase: entry.phrase, type: entry.type };
+        best = {
+          id: ingredient.id,
+          phrase: entry.phrase,
+          type: entry.type,
+          ...(entry.variantId ? { variantId: entry.variantId } : {}),
+        };
       }
       break;
     }
@@ -193,6 +229,7 @@ export function matchProduct(
     return {
       productId: candidate.productId,
       canonicalIngredientId: best.id,
+      ...(best.variantId ? { variantId: best.variantId } : {}),
       confidence: 0.97,
       matchMethod: 'NORMALIZED_NAME',
       status: 'AUTO_APPROVED',
@@ -206,6 +243,7 @@ export function matchProduct(
   return {
     productId: candidate.productId,
     canonicalIngredientId: best.id,
+    ...(best.variantId ? { variantId: best.variantId } : {}),
     confidence: unexplained.length === 1 ? 0.6 : 0.35,
     matchMethod: 'NORMALIZED_NAME',
     status: 'NEEDS_REVIEW',

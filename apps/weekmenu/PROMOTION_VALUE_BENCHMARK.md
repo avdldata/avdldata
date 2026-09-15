@@ -678,3 +678,16 @@ op 5.190 echte PrijsProfeet-records over 50 weken. Niet te lezen als de totale
 waarde van promoties: 1,0 % van de bron bereikt onze koopbare catalogus, en dat
 ligt niet aan identiteitsresolutie ([IDENTITY_BRIDGE.md](IDENTITY_BRIDGE.md))
 maar aan de omvang van de receptencatalogus.
+
+## Niet herhaald na de taxonomie-uitbreiding
+
+De ingrediënttaxonomie-fase bracht de bereikbare promoties in de huidige
+receptset van 53 naar 54 dinerrelevante promoties. De voorwaarde om deze
+benchmark opnieuw te draaien — een substantiële stijging — is daarmee niet
+gehaald, dus de cijfers hierboven staan er nog: € 0,32 per week, 0,6 promoties
+per week, 1,9 % van de boodschappenregels.
+
+De projectie mét de nieuwe ingredienten in recepten komt uit op 65 bereikbare
+dinerrelevante promoties. Die benchmark heeft pas zin zodra die recepten
+bestaan; tot dan zou hij recepten meten die er niet zijn. Zie
+[DINNER_PROMOTION_COVERAGE.md](DINNER_PROMOTION_COVERAGE.md).

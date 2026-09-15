@@ -36,6 +36,7 @@
     "recipes:census": "tsx scripts/recipes-census.ts",
     "recipes:select": "tsx scripts/recipes-select.ts",
     "coverage:gap": "tsx scripts/coverage-gap.ts",
+    "taxonomy:impact": "tsx scripts/taxonomy-impact.ts",
     "identity:gap": "tsx scripts/identity-gap.ts",
     "shelf:import": "tsx scripts/shelf-import.ts",
     "promo:import": "tsx scripts/promotion-import.ts",

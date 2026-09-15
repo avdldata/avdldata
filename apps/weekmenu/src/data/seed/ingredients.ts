@@ -152,6 +152,9 @@ export const SEED_INGREDIENTS: readonly CanonicalIngredient[] = [
   ing('gehakt-half', 'Half-om-half gehakt', 'vlees-vis-vega', 'g', 'perishable', {
     vegetarian: false,
     vegan: false,
+    // "Gemengd gehakt" kwam als eigen opportunity-concept uit de analyse. Het
+    // is hetzelfde product onder een andere schapnaam: één alias, geen concept.
+    synonyms: ['gemengd gehakt', 'half om half gehakt'],
   }),
   ing('runderstoof', 'Runderstoofvlees', 'vlees-vis-vega', 'g', 'perishable', {
     vegetarian: false,
@@ -205,6 +208,7 @@ export const SEED_INGREDIENTS: readonly CanonicalIngredient[] = [
   }),
   ing('vega-gehakt', 'Vegetarisch gehakt', 'vlees-vis-vega', 'g', 'semi', {
     allergens: ['soja', 'gluten'],
+    synonyms: ['plantaardig gehakt', 'vegetarisch gehakt'],
   }),
   ing('tofu', 'Tofu naturel', 'vlees-vis-vega', 'g', 'semi', { allergens: ['soja'] }),
   ing('tempeh', 'Tempeh', 'vlees-vis-vega', 'g', 'semi', { allergens: ['soja'] }),
@@ -359,6 +363,71 @@ export const SEED_INGREDIENTS: readonly CanonicalIngredient[] = [
   ing('azijn', 'Witte wijnazijn', 'kruiden-specerijen', 'ml', 'pantry', {
     density: 1.0,
     allergens: ['sulfiet'],
+  }),
+
+  /* ---- Taxonomie-uitbreiding ----------------------------------------------
+   *
+   * Veertien concepten uit de gemeten opportunity-analyse. Twee soorten:
+   *
+   *   **ouders** — `pasta` en `rijst` bestaan zodat fusilli, orzo, risottorijst
+   *   en pandanrijst varianten kunnen zijn in plaats van vier losse top-level
+   *   ingredienten. Zonder die laag groeit de catalogus mee met het schap in
+   *   plaats van met de keuken.
+   *
+   *   **composites** — pesto, hummus, pastasaus, satesaus, sriracha, taco-
+   *   kruidenmix en roerbakgroentemix. Die worden als één ding gekocht en
+   *   dragen hun eigen voedingswaarden; ze zijn nadrukkelijk geen alias voor
+   *   hun hoofdbestanddeel.
+   *
+   * `maistortilla` staat hier als eigen ingredient en niet als variant van
+   * `wraps`, om een reden die het allergenenmodel afdwingt: een gezamenlijke
+   * ouder zou óf gluten moeten declareren — waarmee maïstortilla's onzichtbaar
+   * worden voor een glutenvrij huishouden — óf niet, wat onveilig is. Twee
+   * ingredienten is hier het eerlijke antwoord.
+   */
+  ing('pasta', 'Pasta (droog)', 'brood-granen', 'g', 'pantry', {
+    allergens: ['gluten'],
+    synonyms: ['pasta droog', 'deegwaren'],
+  }),
+  ing('rijst', 'Rijst', 'brood-granen', 'g', 'pantry', { synonyms: ['rijstkorrels'] }),
+  ing('maistortilla', 'Maïstortilla', 'brood-granen', 'piece', 'semi', {
+    pieceWeightGrams: 30,
+    synonyms: ['mais tortilla', 'corn tortilla'],
+  }),
+  ing('asperges', 'Asperges', 'groente-fruit', 'g', 'perishable', {
+    synonyms: ['witte asperges', 'groene asperges'],
+  }),
+  ing('geitenkaas', 'Geitenkaas', 'zuivel', 'g', 'semi', {
+    allergens: ['melk'],
+    vegetarian: true,
+    vegan: false,
+    synonyms: ['geitekaas'],
+  }),
+  ing('rookworst', 'Rookworst', 'vlees-vis-vega', 'g', 'semi', {
+    vegetarian: false,
+    vegan: false,
+  }),
+  ing('shoarmavlees', 'Shoarmavlees', 'vlees-vis-vega', 'g', 'perishable', {
+    vegetarian: false,
+    vegan: false,
+    synonyms: ['shoarmareepjes', 'gyrosvlees'],
+  }),
+  ing('hummus', 'Hummus', 'conserven', 'g', 'semi', { allergens: ['sesam'] }),
+  ing('pesto', 'Pesto', 'conserven', 'g', 'semi', {
+    allergens: ['melk', 'noten'],
+    vegetarian: true,
+    vegan: false,
+  }),
+  ing('pastasaus', 'Pastasaus', 'conserven', 'g', 'pantry', {
+    synonyms: ['tomatenpastasaus'],
+  }),
+  ing('satesaus', 'Satésaus', 'conserven', 'g', 'pantry', { allergens: ['pinda'] }),
+  ing('sriracha', 'Sriracha', 'kruiden-specerijen', 'ml', 'pantry', { density: 1.1 }),
+  ing('taco-kruidenmix', 'Taco kruidenmix', 'kruiden-specerijen', 'g', 'pantry', {
+    synonyms: ['taco seasoning'],
+  }),
+  ing('roerbakgroentemix', 'Roerbakgroentemix', 'groente-fruit', 'g', 'perishable', {
+    synonyms: ['roerbakmix', 'wokgroenten'],
   }),
 ];
 

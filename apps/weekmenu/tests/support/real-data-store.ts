@@ -7,6 +7,9 @@ import { roadDistanceKm, type GeoPoint } from '@/domain/trip/distance';
 import type { ProductOffer } from '@/domain/stores/types';
 import { resolvePackage } from '@/domain/ingestion/package-parser';
 import { buildIngredientPhrases, matchProduct } from '@/domain/ingestion/match-ingredient';
+import { SEED_INGREDIENT_VARIANTS } from '@/data/seed/ingredient-taxonomy';
+import type { CanonicalIngredient } from '@/domain/ingredients/types';
+import type { IngredientVariant } from '@/domain/ingredients/taxonomy';
 import { reduceCandidates } from '@/domain/ingestion/candidate-reduction';
 import type { OfferProvenance } from '@/domain/ingestion/provenance';
 import { PRODUCT_MATCH_OVERRIDES } from '@/data/matching/overrides';
@@ -171,6 +174,24 @@ export function snapshotAvailable(): boolean {
 
 let cachedSnapshot: RawChain[] | undefined;
 
+/**
+ * Every product in a chain's snapshot, unmatched and unfiltered.
+ *
+ * `loadRealChain` deliberately keeps only what it can price; a measurement that
+ * wants to compare two versions of the matcher needs the input to both, so it
+ * gets the raw list here rather than reaching into the file itself.
+ */
+export function rawProducts(
+  chainId: RealChainId,
+): readonly { readonly productId: string; readonly productName: string }[] {
+  const chain = snapshot().find((c) => c.n === chainId);
+  if (!chain) throw new Error(`geen ${chainId} in de momentopname`);
+  return (chain.d ?? []).map((product) => ({
+    productId: `${chainId}:${product.l ?? product.n ?? ''}`,
+    productName: product.n ?? '',
+  }));
+}
+
 function snapshot(): RawChain[] {
   // Parsing 32k products per call turns a fifty-week audit into a coffee break.
   cachedSnapshot ??= JSON.parse(readFileSync(SNAPSHOT, 'utf8')) as RawChain[];
@@ -186,13 +207,33 @@ function snapshot(): RawChain[] {
  * than guessed at — a week priced on a guess is worse than a week that reports
  * the item as unavailable.
  */
-export function loadRealChain(chainId: RealChainId): RealDataFixture {
+/**
+ * An alternative ingredient catalogue, so a measurement can run the *same*
+ * pipeline twice.
+ *
+ * Added for the taxonomy phase: comparing "before" and "after" by rebuilding
+ * the matching by hand in a script produced a different baseline than the one
+ * everybody had been quoting, because the script skipped the package and price
+ * gate. Swapping the catalogue and keeping the gate is the only way the two
+ * columns mean the same thing.
+ */
+export interface CatalogueOverride {
+  readonly ingredients: readonly CanonicalIngredient[];
+  readonly variants: readonly IngredientVariant[];
+}
+
+export function loadRealChain(
+  chainId: RealChainId,
+  catalogue?: CatalogueOverride,
+): RealDataFixture {
   const chain = snapshot().find((c) => c.n === chainId);
   if (!chain) throw new Error(`geen ${chainId} in de momentopname`);
 
-  const ingredientIndex = buildIngredientIndex(SEED_INGREDIENTS);
+  const ingredients = catalogue?.ingredients ?? SEED_INGREDIENTS;
+  const variants = catalogue?.variants ?? SEED_INGREDIENT_VARIANTS;
+  const ingredientIndex = buildIngredientIndex(ingredients);
   const recipes = normaliseRecipes(SEED_RECIPES, ingredientIndex);
-  const phrases = buildIngredientPhrases(SEED_INGREDIENTS, SEED_INGREDIENT_ALIASES);
+  const phrases = buildIngredientPhrases(ingredients, SEED_INGREDIENT_ALIASES, variants);
   const profile = CHAIN_PROFILES[chainId];
 
   const allOffers: ProductOffer[] = [];
@@ -322,8 +363,9 @@ export function loadRealAlbertHeijn(): RealDataFixture {
 /** Both chains, as the optimizer sees them when it is allowed to visit either. */
 export function loadRealChains(
   chainIds: readonly RealChainId[] = ['ah', 'jumbo'],
+  catalogue?: CatalogueOverride,
 ): RealTwoChainFixture {
-  const chains = chainIds.map(loadRealChain);
+  const chains = chainIds.map((id) => loadRealChain(id, catalogue));
   const first = chains[0];
   if (!first) throw new Error('geen ketens opgegeven');
   const provenance = new Map<string, OfferProvenance>();

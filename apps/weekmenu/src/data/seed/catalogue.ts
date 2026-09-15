@@ -49,6 +49,112 @@ export interface SeedCatalogueEntry {
  * but they are not scraped from any retailer.
  */
 export const SEED_CATALOGUE: readonly SeedCatalogueEntry[] = [
+  /* ---- Taxonomie-uitbreiding ---------------------------------------------
+   *
+   * De veertien ingredienten uit de opportunity-analyse, met de verpakkingen
+   * die er in Nederland werkelijk liggen. Prijzen zijn net als de rest van dit
+   * bestand synthetisch: plausibel, niet van een winkel overgenomen.
+   */
+  {
+    ingredientId: 'pasta',
+    productName: 'Pasta',
+    packs: [
+      { amount: 500, unit: 'g', referencePriceCents: 129 },
+      { amount: 1, unit: 'kg', referencePriceCents: 239, chains: ['ah', 'jumbo'] },
+    ],
+  },
+  {
+    ingredientId: 'rijst',
+    productName: 'Rijst',
+    packs: [
+      { amount: 400, unit: 'g', referencePriceCents: 139 },
+      { amount: 1, unit: 'kg', referencePriceCents: 279, chains: ['ah', 'jumbo', 'lidl'] },
+    ],
+  },
+  {
+    ingredientId: 'maistortilla',
+    productName: 'Maistortillas',
+    packs: [{ amount: 8, unit: 'piece', referencePriceCents: 229 }],
+    notAtChains: ['lidl'],
+  },
+  {
+    ingredientId: 'asperges',
+    productName: 'Asperges',
+    packs: [
+      { amount: 500, unit: 'g', referencePriceCents: 499 },
+      { amount: 350, unit: 'g', referencePriceCents: 379, chains: ['ah', 'jumbo'] },
+    ],
+  },
+  {
+    ingredientId: 'geitenkaas',
+    productName: 'Geitenkaas',
+    packs: [
+      { amount: 125, unit: 'g', referencePriceCents: 279 },
+      { amount: 200, unit: 'g', referencePriceCents: 399, chains: ['ah', 'jumbo'] },
+    ],
+  },
+  {
+    ingredientId: 'rookworst',
+    productName: 'Rookworst',
+    packs: [
+      { amount: 275, unit: 'g', referencePriceCents: 289 },
+      { amount: 375, unit: 'g', referencePriceCents: 379, chains: ['ah', 'jumbo'] },
+    ],
+  },
+  {
+    ingredientId: 'shoarmavlees',
+    productName: 'Shoarmavlees',
+    packs: [{ amount: 400, unit: 'g', referencePriceCents: 549 }],
+  },
+  {
+    ingredientId: 'hummus',
+    productName: 'Hummus',
+    packs: [
+      { amount: 200, unit: 'g', referencePriceCents: 189 },
+      { amount: 400, unit: 'g', referencePriceCents: 329, chains: ['ah', 'jumbo'] },
+    ],
+  },
+  {
+    ingredientId: 'pesto',
+    productName: 'Groene pesto',
+    packs: [
+      { amount: 190, unit: 'g', referencePriceCents: 259 },
+      { amount: 120, unit: 'g', referencePriceCents: 179, chains: ['lidl', 'plus'] },
+    ],
+  },
+  {
+    ingredientId: 'pastasaus',
+    productName: 'Pastasaus',
+    packs: [
+      { amount: 500, unit: 'g', referencePriceCents: 189 },
+      { amount: 350, unit: 'g', referencePriceCents: 149, chains: ['jumbo', 'lidl'] },
+    ],
+  },
+  {
+    ingredientId: 'satesaus',
+    productName: 'Satesaus',
+    packs: [{ amount: 200, unit: 'g', referencePriceCents: 199 }],
+  },
+  {
+    ingredientId: 'sriracha',
+    productName: 'Sriracha',
+    packs: [{ amount: 215, unit: 'ml', referencePriceCents: 279 }],
+    notAtChains: ['lidl'],
+  },
+  {
+    ingredientId: 'taco-kruidenmix',
+    productName: 'Taco kruidenmix',
+    packs: [{ amount: 28, unit: 'g', referencePriceCents: 89 }],
+  },
+  {
+    ingredientId: 'roerbakgroentemix',
+    productName: 'Roerbakgroentemix',
+    packs: [
+      { amount: 400, unit: 'g', referencePriceCents: 229 },
+      { amount: 750, unit: 'g', referencePriceCents: 379, chains: ['ah', 'jumbo'] },
+    ],
+  },
+
   // ---- Groente & fruit ----------------------------------------------------
   {
     ingredientId: 'ui',
