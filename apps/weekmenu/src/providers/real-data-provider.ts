@@ -112,11 +112,25 @@ function brandsFor(): Brand[] {
   ];
 }
 
+/**
+ * How each chain signs its own products on the shelf.
+ *
+ * Not the chain's full name: Albert Heijn labels its house brand "AH", and an
+ * end-to-end test caught the whole catalogue coming back as "merk onbekend"
+ * because the comparison was against "Albert Heijn". Lidl's own brands carry
+ * neither its name nor a common prefix, so Lidl products stay unattributed —
+ * which is the honest answer rather than a guess.
+ */
+const HOUSE_BRAND_PREFIXES: Readonly<Record<RealChain, readonly string[]>> = {
+  ah: ['ah ', 'albert heijn', 'ah biologisch', 'ah terra', 'ah excellent'],
+  jumbo: ['jumbo ', "jumbo's ", 'jumbo biologisch'],
+  lidl: [],
+};
+
 function brandIdFor(chainId: RealChain, productName: string): string {
-  const chain = SEED_CHAINS.find((c) => c.id === chainId)?.name ?? '';
   const head = productName.trim().toLowerCase();
-  if (chain && head.startsWith(chain.toLowerCase())) return `huismerk-${chainId}`;
-  if (chainId === 'jumbo' && head.startsWith("jumbo's")) return 'huismerk-jumbo';
+  const prefixes = HOUSE_BRAND_PREFIXES[chainId];
+  if (prefixes.some((prefix) => head.startsWith(prefix))) return `huismerk-${chainId}`;
   return 'merk-onbekend';
 }
 

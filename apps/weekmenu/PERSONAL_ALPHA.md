@@ -177,3 +177,44 @@ de app dat met zoveel woorden.
 productnaam, verpakking, prijsbron en het moment van waarneming, plus bij een
 aanbieding de bron, de identiteit en de geldigheid. De draaiende app weet
 daarmee evenveel als de meetharnas.
+
+## Sprint 1 afgesloten
+
+**Browserbewijs van een echte aanbieding.** `tests/e2e/real-promotion.spec.ts`
+zoekt eerst in Node, uit dezelfde PrijsProfeet-momentopname, welke labels Albert
+Heijn deze week voert, en laat de browser daarna bevestigen dat een van die
+labels als badge op een boodschappenregel staat. Het vaste demo-huishouden maakt
+het reproduceerbaar: een vers geregistreerd huishouden krijgt andere porties,
+dus een ander menu, dus andere producten, en of daar toevallig een aanbieding
+tussen zit is dan geen test maar een loterij.
+
+**Twee ambiguïteiten beslist.**
+
+| product             | besluit                             | reden                                                                                               |
+| ------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------- |
+| halfvolle roomboter | **geweigerd** voor gewone roomboter | ~40 % vet tegen ~80 %: een week erop gerekend zit er een factor twee naast, en het bruint anders    |
+| paprika reepjes     | **toegestaan** als winkelvorm       | puur paprika, geen saus of kruiden, en het gewicht klopt; duurder per kilo is de keuze van de koper |
+
+Het woord "halfvol" blijft onschuldig op melk. De weigering geldt per
+ingrediënt, niet in het algemeen.
+
+**Definitieve productaudit**, over daadwerkelijk gekochte producten uit
+gegenereerde weken:
+
+| keten        | gecontroleerd | CORRECT | WRONG | AMBIGUOUS |
+| ------------ | ------------: | ------: | ----: | --------: |
+| Albert Heijn |            32 |      32 |     0 |         0 |
+| Jumbo        |            31 |      31 |     0 |         0 |
+| Lidl         |            32 |      32 |     0 |         0 |
+
+**Reiskosten echt uit.** De eerste poging zette alleen de coördinaten uit bij de
+winkelservice, maar de optimizer leidt zijn eigen vertrekpunt af uit het
+huishouden en rekende nog altijd € 2,67 reiskosten — genoeg om een tweede winkel
+te ontmoedigen. Nu is het tarief nul zolang de afstand onbekend is, en een test
+eist dat er geen cent reis in de rekening zit.
+
+**Over "fastest-of-N".** De prestatiebudgetten in de testsuite worden gemeten
+als de snelste van een paar runs. Dat is uitsluitend om roosterruis weg te
+nemen wanneer 62 testbestanden tegelijk draaien. Het is **geen** gebruikerscijfer
+en mag niet als p95 of gemiddelde worden gerapporteerd; de gemeten
+gebruikerslatency is ongeveer 1,6 s.

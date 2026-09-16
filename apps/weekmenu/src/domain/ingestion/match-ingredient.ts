@@ -1,6 +1,11 @@
 import type { CanonicalIngredient, IngredientId } from '../ingredients/types';
 import type { IngredientVariant, VariantId } from '../ingredients/taxonomy';
-import { INGREDIENT_ALIASES, INGREDIENT_SAFE_WORDS, type AliasType } from './ingredient-aliases';
+import {
+  INGREDIENT_ALIASES,
+  INGREDIENT_DENY_WORDS,
+  INGREDIENT_SAFE_WORDS,
+  type AliasType,
+} from './ingredient-aliases';
 import { DISQUALIFYING_WORDS, isIgnorableWord, PRESERVING_WORDS } from './matching-vocabulary';
 
 /**
@@ -200,7 +205,12 @@ export function matchProduct(
     .split(' ')
     .filter((word) => word !== '' && !isPackSizeToken(word));
 
-  const disqualifier = leftover.find((word) => DISQUALIFYING_WORDS.has(word));
+  // A word that is harmless in general but makes this particular ingredient a
+  // different food — "halfvolle" on butter, where it halves the fat.
+  const denied = new Set(INGREDIENT_DENY_WORDS[best.id] ?? []);
+  const disqualifier =
+    leftover.find((word) => denied.has(word)) ??
+    leftover.find((word) => DISQUALIFYING_WORDS.has(word));
   if (disqualifier !== undefined) {
     return {
       productId: candidate.productId,

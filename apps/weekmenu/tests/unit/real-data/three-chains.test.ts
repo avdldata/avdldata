@@ -198,15 +198,19 @@ async function planWeekFor(chainIds: readonly string[], maxStores: number) {
   const [
     { buildStoreCandidates },
     { getCatalogue },
+    { configFor },
     { optimiseWeek },
     { SEED_LOCATIONS },
     { DEMO_HOUSEHOLD },
+    { DEFAULT_WEEK_SETTINGS },
   ] = await Promise.all([
     import('@/services/store-service'),
     import('@/services/catalogue'),
+    import('@/services/plan-service'),
     import('@/domain/optimization/week-optimizer'),
     import('@/data/seed/stores'),
     import('@/data/seed/demo-household'),
+    import('@/data/repositories/types'),
   ]);
 
   const locationIds = chainIds.map(
@@ -226,6 +230,8 @@ async function planWeekFor(chainIds: readonly string[], maxStores: number) {
     budget: {},
     startDate: onDate,
     today: new Date(onDate),
+    // The production config, so the test exercises what the app runs.
+    config: configFor(DEFAULT_WEEK_SETTINGS),
   });
   return result.status === 'OK' ? result.plan : undefined;
 }
@@ -306,6 +312,36 @@ describe('a planned week and the folder', () => {
         expect(promotion.validFrom <= '2026-09-16').toBe(true);
         expect(promotion.validUntil >= '2026-09-16').toBe(true);
       }
+    },
+    120_000,
+  );
+});
+
+/**
+ * Seed branch addresses exist in REAL mode, and must change nothing.
+ *
+ * They are the one piece of invented data left in the real path. The guarantee
+ * is not that they are absent but that they are inert: no distance reaches the
+ * optimizer, so no travel cost can tip a recommendation that is otherwise made
+ * of real prices.
+ */
+describe('invented geography stays inert', () => {
+  const available = existsSync('data/external/checkjebon-snapshot.json');
+  const maybe = available ? it : it.skip;
+
+  maybe(
+    'plans the same week whether or not the household has coordinates',
+    async () => {
+      process.env.DATA_MODE = 'REAL';
+      const { travelCostStatus } = await import('@/services/store-service');
+      expect(travelCostStatus()).toBe('NOT_AVAILABLE');
+
+      const plan = await planWeekFor(['ah', 'jumbo'], 2);
+      expect(plan).toBeDefined();
+      // Not a cent of travel enters the bill, so no invented distance can make
+      // one shop look better than two.
+      expect(plan!.totals.travelCents).toBe(0);
+      expect(plan!.totals.groceryCents).toBeGreaterThan(0);
     },
     120_000,
   );

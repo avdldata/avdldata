@@ -140,7 +140,12 @@ export function ShoppingListView({
                           {line.units}× {line.ingredientName}
                         </span>
                         {line.promotionLabel ? (
-                          <Badge variant="promo">{line.promotionLabel}</Badge>
+                          // Marked so an end-to-end test can prove that a real
+                          // folder offer reached the screen, rather than
+                          // matching on styling that is free to change.
+                          <Badge variant="promo" data-promotion={line.promotionLabel}>
+                            {line.promotionLabel}
+                          </Badge>
                         ) : null}
                         {line.isLowestInWindow ? (
                           <Badge variant="brand">

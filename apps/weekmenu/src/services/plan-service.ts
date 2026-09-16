@@ -1,5 +1,6 @@
 import 'server-only';
 import type { Household } from '@/domain/household/types';
+import { cents } from '@/domain/units';
 import { DEFAULT_OPTIMIZER_CONFIG, type OptimizerConfig } from '@/domain/optimization/config';
 import { optimiseWeek, type OptimizerInput } from '@/domain/optimization/week-optimizer';
 import { findReplacements, type ReplacementCandidate } from '@/domain/optimization/replace';
@@ -27,6 +28,17 @@ export function mondayOf(date: Date): string {
 
 /** Fold the user's week settings into the optimizer configuration. */
 export function configFor(settings: WeekSettings): OptimizerConfig {
+  /*
+   * Driving costs nothing when we do not know how far it is.
+   *
+   * Removing the household's coordinates from the store candidates was not
+   * enough: the optimizer derives its own origin from the household and prices
+   * the trip itself, so a week planned with "travel not included" still carried
+   * € 2,67 of it — and a per-kilometre charge quietly discourages a second
+   * shop. Zeroing the rate is what actually makes invented geography inert.
+   * Found by a test that asserted the guarantee rather than trusting it.
+   */
+  const costPerKmCents = travelCostStatus() === 'AVAILABLE' ? settings.costPerKmCents : cents(0);
   return {
     ...DEFAULT_OPTIMIZER_CONFIG,
     trip: {
@@ -36,7 +48,7 @@ export function configFor(settings: WeekSettings): OptimizerConfig {
         ...DEFAULT_OPTIMIZER_CONFIG.trip.profiles,
         [settings.transportMode]: {
           ...DEFAULT_OPTIMIZER_CONFIG.trip.profiles[settings.transportMode],
-          costPerKmCents: settings.costPerKmCents,
+          costPerKmCents,
         },
       },
     },

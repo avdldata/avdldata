@@ -82,7 +82,14 @@ test.describe('the full journey, with the numbers checked', () => {
     await page.goto('/winkels');
     const stores = await page.locator('main').innerText();
     expect(stores).toContain('Boodschappen');
-    expect(stores).toContain('Reiskosten');
+    /*
+     * Travel is shown when we know the distance, and said to be missing when we
+     * do not. With real prices the branch addresses are still the seed's, so
+     * the app reports travel as not included rather than pricing an invented
+     * detour next to a real grocery bill. Either answer is honest; silence
+     * would not be.
+     */
+    expect(stores).toMatch(/Reiskosten|[Nn]og niet meegenomen/);
     expect(stores).toContain('Praktisch totaal');
     expect(await page.getByText(/Praktisch totaal/).count()).toBeGreaterThanOrEqual(3);
     // The advice on this screen is the week's own recommendation.

@@ -154,9 +154,36 @@ const GROUND_BY_DEFAULT: readonly string[] = [
   'peper',
 ];
 
+/**
+ * Words that make a product a *different* food, for one ingredient only.
+ *
+ * The general vocabulary treats fat-content words as harmless, and for milk it
+ * is right: "halfvolle melk" is milk. For butter it is not. Halfvolle roomboter
+ * is roughly 40 % fat against 80 %, so a recipe priced and counted on it would
+ * be wrong about the energy by a factor of two, and it browns and binds
+ * differently in a pan. An audit of a real shopping list found it bought as
+ * plain butter.
+ *
+ * Deliberately per ingredient. A global rule would take "halfvolle melk" with
+ * it, and that one is genuinely fine.
+ */
+export const INGREDIENT_DENY_WORDS: Readonly<Record<string, readonly string[]>> = {
+  roomboter: ['halfvol', 'halfvolle', 'light', 'halvarine', 'margarine'],
+};
+
 export const INGREDIENT_SAFE_WORDS: Readonly<Record<string, readonly string[]>> = {
   // Cured pork is sold smoked as a matter of course.
   spekblokjes: ['gerookt', 'gerookte'],
+  /*
+   * Pre-cut peppers, decided explicitly rather than left ambiguous.
+   *
+   * "Jumbo Paprika Reepjes 450 g" is pepper and nothing else: no sauce, no
+   * seasoning, and a stated weight that means what it says. It costs more per
+   * kilo than a whole pepper, which is the shopper's trade-off and not a
+   * correctness problem, so it is allowed on purpose.
+   */
+  'paprika-rood': ['reepjes', 'reepje', 'gesneden'],
+  'paprika-geel': ['reepjes', 'reepje', 'gesneden'],
   // Which cheese was grated does not change that it is grated cheese.
   'geraspte-kaas': ['goudse', 'cheddar', 'emmentaler', 'belegen', 'jong', 'kaas', '48'],
   // Flour grades.
