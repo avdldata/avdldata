@@ -228,21 +228,59 @@ test.describe('failure is shown, never crashed through', () => {
   test('excluding every cuisine explains itself instead of white-screening', async ({ page }) => {
     await openDemo(page);
 
-    // The demo household is shared across this run, so whatever this test wrecks
-    // it has to put back — otherwise the next spec inherits a household that can
-    // eat nothing and fails for a reason that has nothing to do with it.
-    const setEveryPreference = async (level: 'Nooit' | 'Neutraal'): Promise<number> => {
+    /*
+     * The demo household is shared across this run, so whatever this test
+     * wrecks it has to put back — otherwise the next spec inherits a household
+     * that can eat nothing and fails for a reason that has nothing to do with
+     * it.
+     *
+     * "Put back" used to mean setting everything to Neutraal, which is not the
+     * same thing: the demo household ships with real likes and dislikes, and
+     * flattening them changed the week every later spec planned. It went
+     * unnoticed while that different week still happened to contain a
+     * promotion; once the recipe library grew and the cheapest week changed,
+     * the promotion spec started failing for something this test did.
+     */
+    const save = async (): Promise<void> => {
+      const button = page.getByRole('button', { name: 'Voorkeuren opslaan' });
+      await button.click();
+      // Saving refreshes in place rather than navigating, so wait for the
+      // button to come back out of its pending state.
+      await expect(button).toBeEnabled({ timeout: 30_000 });
+    };
+
+    /** The accessible name of every radio that is currently selected. */
+    const currentPreferences = async (): Promise<string[]> => {
+      await page.goto('/gezin/voorkeuren');
+      const radios = page.getByRole('radio');
+      const names: string[] = [];
+      for (let index = 0; index < (await radios.count()); index += 1) {
+        const radio = radios.nth(index);
+        if (await radio.isChecked()) {
+          const name = await radio.getAttribute('aria-label');
+          if (name) names.push(name);
+        }
+      }
+      return names;
+    };
+
+    const setEveryPreference = async (level: 'Nooit'): Promise<number> => {
       await page.goto('/gezin/voorkeuren');
       const chips = page.getByRole('radio', { name: new RegExp(`: ${level}$`) });
       const count = await chips.count();
       for (let index = 0; index < count; index += 1) await chips.nth(index).click();
-      const save = page.getByRole('button', { name: 'Voorkeuren opslaan' });
-      await save.click();
-      // Saving refreshes in place rather than navigating, so wait for the
-      // button to come back out of its pending state.
-      await expect(save).toBeEnabled({ timeout: 30_000 });
+      await save();
       return count;
     };
+
+    const restorePreferences = async (names: readonly string[]): Promise<void> => {
+      await page.goto('/gezin/voorkeuren');
+      for (const name of names) await page.getByRole('radio', { name, exact: true }).click();
+      await save();
+    };
+
+    const original = await currentPreferences();
+    expect(original.length).toBeGreaterThan(0);
 
     try {
       expect(await setEveryPreference('Nooit')).toBeGreaterThan(0);
@@ -257,7 +295,7 @@ test.describe('failure is shown, never crashed through', () => {
       // It has to say something about why, not just fail quietly.
       expect(body).toMatch(/geen|niet|past/i);
     } finally {
-      await setEveryPreference('Neutraal');
+      await restorePreferences(original);
     }
   });
 });
