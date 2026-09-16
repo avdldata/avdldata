@@ -58,7 +58,8 @@ export type RealChain = (typeof REAL_CHAIN_IDS)[number];
  * worden geladen" rather than quietly fall back to demo prices. That refusal is
  * a promise, and a promise nobody can test is a promise nobody keeps.
  */
-const SNAPSHOT_PATH = process.env.WEEKMENU_PRICE_SNAPSHOT ?? 'data/external/checkjebon-snapshot.json';
+const SNAPSHOT_PATH =
+  process.env.WEEKMENU_PRICE_SNAPSHOT ?? 'data/external/checkjebon-snapshot.json';
 
 interface RawProduct {
   readonly n?: string;

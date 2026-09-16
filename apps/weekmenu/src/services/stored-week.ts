@@ -20,13 +20,18 @@ import type { StoreOption } from '@/domain/optimization/store-selection';
  * rather than left to a generic replacer, so adding a third map breaks the
  * build instead of losing data in production.
  */
-export interface SerialisedStoreOption extends Omit<StoreOption, 'purchasedByIngredient' | 'categoryWinners'> {
+export interface SerialisedStoreOption extends Omit<
+  StoreOption,
+  'purchasedByIngredient' | 'categoryWinners'
+> {
   readonly purchasedByIngredient: readonly (readonly [string, number])[];
   readonly categoryWinners: readonly (readonly [string, string])[];
 }
 
-export interface SerialisedWeeklyPlan
-  extends Omit<WeeklyPlan, 'recommendedOption' | 'alternativeOptions' | 'cheapestOption'> {
+export interface SerialisedWeeklyPlan extends Omit<
+  WeeklyPlan,
+  'recommendedOption' | 'alternativeOptions' | 'cheapestOption'
+> {
   readonly recommendedOption: SerialisedStoreOption;
   readonly alternativeOptions: readonly SerialisedStoreOption[];
   readonly cheapestOption: SerialisedStoreOption;

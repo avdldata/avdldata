@@ -38,7 +38,10 @@ async function setBudget(page: Page, mode: 'Hard maximum' | 'Geen budget', amoun
   await page.goto('/week/instellingen');
   await page.getByRole('button', { name: mode, exact: true }).click();
   if (amount !== undefined) {
-    await page.getByRole('textbox', { name: /bedrag|budget/i }).first().fill(amount);
+    await page
+      .getByRole('textbox', { name: /bedrag|budget/i })
+      .first()
+      .fill(amount);
   }
   await page.getByRole('button', { name: /Instellingen opslaan/ }).click();
   await expect(page.getByRole('button', { name: /^Maak mijn week$/ })).toBeVisible();
@@ -95,7 +98,9 @@ test.describe('when a week cannot be made the way you asked', () => {
       expect(body).not.toMatch(/\bat \w+ \(/);
       expect(body).toMatch(/geen|niet|past/i);
       // The way out has to be on the page.
-      await expect(page.getByRole('link', { name: /Instellingen|voorkeuren/i }).first()).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: /Instellingen|voorkeuren/i }).first(),
+      ).toBeVisible();
     } finally {
       await page.goto('/gezin/voorkeuren');
       for (const label of chosen) {

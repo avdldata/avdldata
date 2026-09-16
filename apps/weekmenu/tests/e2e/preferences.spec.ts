@@ -97,6 +97,26 @@ async function toggleAllergen(page: Page, name: string, allergen: string): Promi
   await expect(page).toHaveURL(/\/gezin$/, { timeout: 60_000 });
 }
 
+/** Tick exactly the chains named, leave the rest alone. */
+async function useChains(page: Page, wanted: RegExp): Promise<void> {
+  await page.goto('/week/instellingen');
+  const rows = page.locator('label').filter({ hasText: /Albert Heijn|Jumbo|Lidl/ });
+  for (let i = 0; i < (await rows.count()); i += 1) {
+    const row = rows.nth(i);
+    const box = row.locator('input[type=checkbox], [role=checkbox]').first();
+    if ((await box.count()) === 0) continue;
+    const shouldBeOn = wanted.test(await row.innerText());
+    const isOn = await box
+      .isChecked()
+      .catch(async () => (await box.getAttribute('aria-checked')) === 'true');
+    if (shouldBeOn !== isOn) await box.click();
+  }
+  await page.getByRole('button', { name: /Instellingen opslaan/ }).click();
+  await expect(page.getByRole('button', { name: /^Maak mijn week$/ })).toBeVisible({
+    timeout: 60_000,
+  });
+}
+
 async function setCuisine(page: Page, cuisine: string, level: string): Promise<void> {
   await page.goto('/gezin/voorkeuren');
   await page.getByRole('radio', { name: `${cuisine}: ${level}`, exact: true }).click();
@@ -119,6 +139,36 @@ test.describe('what you tell the app, the app does', () => {
       // The demo household likes Italian; putting it back on neutral would be a
       // different household than every other suite expects.
       await setCuisine(page, 'Italiaans', 'Lekker');
+    }
+  });
+
+  test('an ingredient you never want is never on the table', async ({ page }) => {
+    await signIn(page);
+    try {
+      await page.goto('/gezin/voorkeuren');
+      await page.getByLabel('Zoek een ingrediënt').fill('kipfilet');
+      await page.getByRole('button', { name: '+ Kipfilet' }).click();
+      await page.getByRole('radio', { name: 'Kipfilet: Nooit', exact: true }).click();
+      const save = page.getByRole('button', { name: 'Voorkeuren opslaan' });
+      await save.click();
+      await expect(page.getByRole('status')).toContainText('opgeslagen', { timeout: 60_000 });
+
+      // It has to survive a reload too, or the rule is a nice thought.
+      await page.goto('/gezin/voorkeuren');
+      await expect(
+        page.getByRole('radio', { name: 'Kipfilet: Nooit', exact: true }),
+      ).toHaveAttribute('aria-checked', 'true');
+
+      for (const dish of dishes(await newWeek(page))) {
+        const ids = dish.ingredients.map((i) => i.ingredientId);
+        expect(ids, `${dish.id} bevat kipfilet`).not.toContain('kipfilet');
+      }
+    } finally {
+      await page.goto('/gezin/voorkeuren');
+      const neutral = page.getByRole('radio', { name: 'Kipfilet: Neutraal', exact: true });
+      if ((await neutral.count()) > 0) await neutral.click();
+      await page.getByRole('button', { name: 'Voorkeuren opslaan' }).click();
+      await expect(page.getByRole('status')).toContainText('opgeslagen', { timeout: 60_000 });
     }
   });
 
@@ -200,6 +250,53 @@ test.describe('what you tell the app, the app does', () => {
     } finally {
       await page.goto('/week/instellingen');
       await page.getByRole('button', { name: 'Maakt niet uit', exact: true }).click();
+      await page.getByRole('button', { name: /Instellingen opslaan/ }).click();
+      await expect(page.getByRole('button', { name: /^Maak mijn week$/ })).toBeVisible({
+        timeout: 60_000,
+      });
+    }
+  });
+
+  test('the supermarkets you tick are the only ones you are sent to', async ({ page }) => {
+    await signIn(page);
+    try {
+      await useChains(page, /Jumbo/);
+      await newWeek(page);
+
+      await page.goto('/boodschappen');
+      const list = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+      expect(list, 'een winkel die niet is aangevinkt').not.toMatch(/Albert Heijn|Lidl/);
+      expect(list).toContain('Jumbo');
+    } finally {
+      await useChains(page, /Albert Heijn|Jumbo|Lidl/);
+    }
+  });
+
+  test('a maximum you can meet is met, to the cent', async ({ page }) => {
+    await signIn(page);
+    try {
+      await page.goto('/week/instellingen');
+      await page.getByRole('button', { name: 'Hard maximum', exact: true }).click();
+      await page
+        .getByRole('textbox', { name: /bedrag|budget/i })
+        .first()
+        .fill('50');
+      await page.getByRole('button', { name: /Instellingen opslaan/ }).click();
+      await expect(page.getByRole('button', { name: /^Maak mijn week$/ })).toBeVisible({
+        timeout: 60_000,
+      });
+
+      await newWeek(page);
+      const summary = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+      const total = summary.match(/€\s?(\d+),(\d{2})/);
+      expect(total, `geen totaal op het scherm: ${summary.slice(0, 200)}`).not.toBeNull();
+      const cents = Number(total![1]) * 100 + Number(total![2]);
+      // A week costs around € 30–36 here, so € 50 is reachable: the number on
+      // screen has to be under it, not "close enough".
+      expect(cents, `€ ${total![0]} boven het harde maximum van € 50,00`).toBeLessThanOrEqual(5000);
+    } finally {
+      await page.goto('/week/instellingen');
+      await page.getByRole('button', { name: 'Geen budget', exact: true }).click();
       await page.getByRole('button', { name: /Instellingen opslaan/ }).click();
       await expect(page.getByRole('button', { name: /^Maak mijn week$/ })).toBeVisible({
         timeout: 60_000,

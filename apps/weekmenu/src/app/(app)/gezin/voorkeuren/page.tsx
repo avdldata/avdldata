@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { PageHeader } from '@/components/app-shell/page-header';
 import { getRepositories } from '@/data';
 import { requireUser } from '@/services/auth';
+import { getCatalogue } from '@/services/catalogue';
 import { PreferencesPageClient } from '@/features/household/preferences-page-client';
 
 export const metadata: Metadata = { title: 'Voorkeuren — Weekmenu' };
@@ -12,6 +13,12 @@ export default async function PreferencesPage() {
   const household = await getRepositories().households.getByOwner(user.id);
   if (!household) return null;
 
+  // Two fields per ingredient. The catalogue also carries nutrition, allergens
+  // and densities, and none of that belongs in a browser.
+  const pickableIngredients = getCatalogue()
+    .ingredients.map((ingredient) => ({ id: ingredient.id, name: ingredient.canonicalName }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'nl'));
+
   return (
     <>
       <PageHeader
@@ -19,7 +26,10 @@ export default async function PreferencesPage() {
         subtitle="⛔ betekent: nooit inplannen. Dat is een harde regel die we niet wegrekenen voor een lagere prijs."
         backHref="/gezin"
       />
-      <PreferencesPageClient preferences={household.preferences} />
+      <PreferencesPageClient
+        preferences={household.preferences}
+        pickableIngredients={pickableIngredients}
+      />
     </>
   );
 }

@@ -51,7 +51,10 @@ test.describe('what the app remembers', () => {
     const original = await weight.inputValue();
     const changed = original === '91' ? '93' : '91';
     await weight.fill(changed);
-    await page.getByRole('button', { name: /opslaan/i }).first().click();
+    await page
+      .getByRole('button', { name: /opslaan/i })
+      .first()
+      .click();
 
     // Straight back from the server, not from whatever the form still holds.
     await page.goto(href);
@@ -69,7 +72,10 @@ test.describe('what the app remembers', () => {
     await signIn(page);
     await page.goto('/week/instellingen');
     await page.getByRole('button', { name: 'Richtbedrag', exact: true }).click();
-    await page.getByRole('textbox', { name: /bedrag|budget/i }).first().fill('95');
+    await page
+      .getByRole('textbox', { name: /bedrag|budget/i })
+      .first()
+      .fill('95');
     await page.getByRole('button', { name: 'Max. 2' }).click();
     await page.getByRole('button', { name: /Instellingen opslaan/ }).click();
     await expect(page.getByRole('button', { name: /^Maak mijn week$/ })).toBeVisible();
@@ -79,9 +85,7 @@ test.describe('what the app remembers', () => {
       'aria-pressed',
       'true',
     );
-    await expect(page.getByRole('textbox', { name: /bedrag|budget/i }).first()).toHaveValue(
-      /95/,
-    );
+    await expect(page.getByRole('textbox', { name: /bedrag|budget/i }).first()).toHaveValue(/95/);
     await expect(page.getByRole('button', { name: 'Max. 2' })).toHaveAttribute(
       'aria-pressed',
       'true',
@@ -112,7 +116,10 @@ test.describe('what the app remembers', () => {
     const before = await weekIds(page);
 
     await page.goto('/week/2');
-    await page.getByRole('link', { name: /Vervang/i }).first().click();
+    await page
+      .getByRole('link', { name: /Vervang/i })
+      .first()
+      .click();
     await expect(page).toHaveURL(/vervangen$/);
     const choose = page.getByRole('button', { name: /Kies dit gerecht|Vervang/i }).first();
     await expect(choose).toBeVisible({ timeout: 180_000 });
@@ -230,8 +237,6 @@ test.describe('what the app remembers', () => {
     // The screen says when the price was worked out, and offers the only way to
     // change it.
     await expect(page.getByText(/Prijzen berekend/)).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: /Bereken opnieuw/ }),
-    ).toBeVisible();
+    await expect(page.getByRole('button', { name: /Bereken opnieuw/ })).toBeVisible();
   });
 });

@@ -94,7 +94,10 @@ test.describe('on a phone', () => {
     await expect(page.locator('ol > li').first()).toBeVisible();
 
     // Replace it.
-    await page.getByRole('link', { name: /Vervang/i }).first().click();
+    await page
+      .getByRole('link', { name: /Vervang/i })
+      .first()
+      .click();
     await expect(page).toHaveURL(/vervangen$/);
     const choose = page.getByRole('button', { name: /Kies dit gerecht|Vervang/i }).first();
     await expect(choose).toBeVisible({ timeout: 180_000 });
