@@ -76,6 +76,41 @@ test.describe('on a phone', () => {
     });
   }
 
+  test('1440 px — the phone fixes did not cost the desktop anything', async ({ page }) => {
+    // Everything that made the layout survive a 375 px screen — wrapping
+    // labels, stacked buttons, generous tap targets — can look wrong on a wide
+    // one. This is the counter-check: same screens, desktop width.
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await signIn(page);
+    await ensureWeek(page);
+
+    for (const path of ['/week', '/week/0', '/boodschappen', '/winkels', '/gezin']) {
+      await page.goto(path);
+      await expect(page.locator('main')).toBeVisible();
+      expect(await horizontalOverflow(page), `${path} scrolt zijwaarts`).toBeLessThanOrEqual(1);
+
+      // No two buttons sitting on top of each other.
+      const boxes = await page.locator('main button:visible').evaluateAll((nodes) =>
+        nodes.map((node) => {
+          const r = node.getBoundingClientRect();
+          return { x: r.x, y: r.y, w: r.width, h: r.height, label: node.textContent?.trim() ?? '' };
+        }),
+      );
+      for (let i = 0; i < boxes.length; i += 1) {
+        for (let j = i + 1; j < boxes.length; j += 1) {
+          const a = boxes[i]!;
+          const b = boxes[j]!;
+          const overlaps = a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+          expect(overlaps, `${path}: "${a.label}" en "${b.label}" overlappen`).toBe(false);
+        }
+      }
+
+      // And the content is not a thin ribbon in the middle of a wide screen.
+      const main = await page.locator('main').boundingBox();
+      expect(main!.width, `${path}: hoofdkolom is maar ${main!.width} px`).toBeGreaterThan(500);
+    }
+  });
+
   test('390 px — the whole week, end to end, and the ticks survive a reload', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await signIn(page);

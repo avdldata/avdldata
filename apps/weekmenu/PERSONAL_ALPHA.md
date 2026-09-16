@@ -1,232 +1,278 @@
-# Personal Alpha v0.1 — status
+# Personal Alpha v0.1
 
-**Oordeel: NOT READY.** Nog één harde eis uit de v0.1-definitie wordt niet
-gehaald: het aantal recepten. De data-blocker is in Sprint 1 opgelost. Alles wat wél werkt staat hieronder, gemeten door de app zelf te
-gebruiken in een browser, zonder CLI, zonder devtools.
+**STATUS: READY**
 
-## De acceptatietest, stap voor stap
+Weekmenu stelt zeven avondmaaltijden samen voor jouw huishouden, schaalt de
+porties per persoon, kiest de producten bij de supermarkten die jij aanvinkt en
+zet er een boodschappenlijst onder met echte prijzen uit een echte
+prijsmomentopname. Het bewaart de week zoals hij gemaakt is, inclusief het
+bedrag, tot je zelf om een nieuwe berekening vraagt.
 
-Uitgevoerd op een productie-build (`pnpm build && pnpm start`) in een
-mobiel viewport van 390 × 844, als nieuwe gebruiker.
+Dit document is de oplevering: wat het kan, hoe je het start, waar de data
+vandaan komt, en — even belangrijk — wat het niet kan en waarom.
 
-| #   | stap                                                                                      | uitkomst                                                    |
-| --- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| 1   | app openen                                                                                | **PASS** — redirect naar inloggen                           |
-| 2   | account aanmaken                                                                          | **PASS**                                                    |
-| 3   | huishouden instellen (naam, postcode, huisnummer)                                         | **PASS**                                                    |
-| 4   | gezinslid toevoegen (naam, leeftijd, lengte, gewicht, geslacht, zwangerschap, allergieën) | **PASS**                                                    |
-| 5   | voorkeuren instellen                                                                      | **PASS**                                                    |
-| 6   | supermarkten kiezen                                                                       | **PASS** — AH, Jumbo én Lidl staan in de lijst, met afstand |
-| 7   | maxStores instellen                                                                       | **PASS** — 1 / max 2 / max 3 / maakt niet uit               |
-| 8   | budget instellen                                                                          | **PASS** — geen budget / richtbedrag / hard maximum         |
-| 9   | week genereren                                                                            | **PASS** — knop "Maak mijn week"                            |
-| 10  | 7 diners bekijken                                                                         | **PASS** — 7 dagkaarten met naam, tijd, prijs, portie       |
-| 11  | receptdetail openen                                                                       | **PASS** — ingrediënten, persoonlijke hoeveelheden, stappen |
-| 12  | maaltijd vervangen                                                                        | **PASS** — alternatieven met prijsverschil en hergebruik    |
-| 13  | boodschappenlijst                                                                         | **PASS** — 27 producten, gegroepeerd, met winkel en prijs   |
-| 14  | boodschappen afvinken                                                                     | **PASS** — 27 checkboxen                                    |
-| 15  | supermarktvergelijking                                                                    | **PASS** — advies met boodschappen- en reiskosten apart     |
-| 16  | refresh, week terugvinden                                                                 | **PASS**                                                    |
+## Wat het nu kan
 
-De kernlus werkt dus end-to-end. Dat is meer dan de status van de codebase
-suggereerde, en het is het goede nieuws van deze audit.
+- Een account aanmaken, een huishouden opzetten en per persoon leeftijd,
+  lengte, gewicht, activiteit, doel, voedingswijze, allergieën en een eventuele
+  zwangerschap vastleggen.
+- Voorkeuren per keuken, per soort gerecht en per ingrediënt, met vier niveaus
+  van 👍 tot ⛔. Een ⛔ is een harde regel die niet wordt weggerekend voor een
+  lagere prijs.
+- Een week van zeven diners samenstellen uit 126 unieke, op dit moment
+  koopbare recepten, met de porties per persoon uitgerekend.
+- Per dag een gerecht vervangen; de hele week wordt daarna opnieuw doorgerekend
+  — verpakkingen, winkelverdeling, aanbiedingen en het totaal.
+- Een andere week vragen zolang de bibliotheek nieuwe gerechten heeft.
+- Een boodschappenlijst met product, verpakking, aantal, prijs en winkel,
+  gegroepeerd zoals je een winkel doorloopt, met vinkjes die blijven staan.
+- De supermarkten vergelijken: wat kost deze week bij AH, bij Jumbo, bij Lidl,
+  en bij elke combinatie daarvan.
+- Alles op een telefoon, want daar wordt een boodschappenlijst gelezen.
 
-## Waarom toch NOT READY
+## HOW TO RUN PERSONAL ALPHA
 
-### ~~Blocker 1 — te weinig recepten~~ — opgelost in Sprint 2
+### Eenmalig, op de machine waar de app draait
 
-|                           | toen |      nu |                 eis |
-| ------------------------- | ---: | ------: | ------------------: |
-| production dinner recipes |   56 | **138** | ≥ 100, doel 120–150 |
-| uniek na dedupe           |   55 | **137** |                     |
-| weken zonder herhaling    |    7 |  **19** |                     |
+Dit deel is technisch. Het is één keer werk.
 
-De bibliotheek is met 82 zelfgeschreven recepten uitgebreid en haalt nu alle
-diversiteitseisen: geen koolhydraat boven 25%, geen cuisine of eiwit boven 30%,
-en elke maaltijdstijl minstens vier keer. Zie
-[RECIPE_LIBRARY.md](RECIPE_LIBRARY.md) voor de herkomst, de poorten en wat er
-nog ontbreekt.
+```bash
+# 1. Node 22 en pnpm 12 (de repo pint pnpm via packageManager)
+corepack enable
 
-Wat daarmee **niet** is opgelost: gevraagd om twintig weken achter elkaar geeft
-de planner nog altijd twintig keer dezelfde zeven gerechten. De optimizer
-onthoudt niet wat er vorige week op tafel stond, en meer recepten veranderen
-daar uit zichzelf niets aan.
+# 2. Dependencies
+cd apps/weekmenu
+pnpm install
 
-### ~~Blocker 2 — de app draait op demo-data~~ — opgelost in Sprint 1
+# 3. Prijsdata ophalen — verplicht, want de app weigert prijzen te verzinnen
+curl -L -o data/external/checkjebon-snapshot.json \
+  https://raw.githubusercontent.com/supermarkt/checkjebon/main/data/supermarkets.json
 
-De app rekent nu met de echte catalogus. Eén schakelaar (`DATA_MODE`, standaard
-`REAL`) bepaalt welke provider de winkelservice krijgt, en er is geen stille
-terugval: ontbreekt de momentopname, dan geeft de app een fout in plaats van een
-verzonnen prijs.
+# 4. Aanbiedingen (optioneel; zonder dit werkt alles, maar zonder folderkorting)
+#    Zet een PrijsProfeet-export neer als data/external/promotions-snapshot.json
+pnpm promo:import data/external/promotions-snapshot.json
 
-Gemeten door de app zelf te gebruiken, acht keer, met echte producten in het
-mandje:
+# 5. Bouwen en starten
+pnpm build
+pnpm start
+```
 
-| scenario                            | winkels |      totaal |
-| ----------------------------------- | ------- | ----------: |
-| alleen Albert Heijn                 | 1       |     € 35,94 |
-| alleen Jumbo                        | 1       |     € 35,34 |
-| alleen Lidl                         | 1       |     € 35,51 |
-| AH + Jumbo                          | 2       |     € 34,69 |
-| AH + Lidl                           | 2       | **€ 30,48** |
-| Jumbo + Lidl                        | 2       |     € 31,46 |
-| alle drie toegestaan, max 1 winkel  | **1**   |     € 33,24 |
-| alle drie toegestaan, max 2 winkels | **2**   |     € 30,48 |
+De app draait dan op <http://localhost:3000>. Er is geen database nodig: in de
+standaardopstelling (`DATA_ADAPTER=demo`) bewaart de app huishouden, week en
+vinkjes in `.data/demo.json` naast de applicatie. Voor een echte database staat
+`DATA_ADAPTER=supabase` klaar; zie [DATABASE.md](DATABASE.md).
 
-Elke week had zeven maaltijden en een complete mand. De boodschappenlijst noemt
-echte artikelen: "Jumbo Aardappelen Vastkokend 1 kg" voor € 1,29, "AH Andijvie
-fijngesneden kleinverpakking" voor € 1,39.
+### Daarna
 
-Weekgeneratie duurt gemeten **1,6 s** gemiddeld (5 runs: 1539–1679 ms).
+Openen in de browser, account aanmaken, en verder gaat alles via het scherm.
+Geen CLI, geen SQL, geen bestanden klaarzetten per week — ook niet voor een
+nieuwe week, een vervanging of de boodschappenlijst. De enige terugkerende
+CLI-handeling is het verversen van de prijsmomentopname (stap 3), en dat is een
+keuze: er is bewust geen automatische scheduler.
 
-## Lidl, opnieuw gemeten met de huidige code
+### Configuratie
 
-Geen enkel percentage hieronder komt uit een eerdere fase; alles is opnieuw
-gedraaid met de huidige matcher, package parser, taxonomie en varianten
-(`pnpm lidl:readiness`).
+| variabele                                                                                       | rol                                         | verplicht                                                     |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------- |
+| `DATA_ADAPTER`                                                                                  | `demo` (bestand naast de app) of `supabase` | optioneel, standaard `demo`                                   |
+| `DATA_MODE`                                                                                     | `REAL` of `DEMO`. Standaard **REAL**        | optioneel                                                     |
+| `NEXT_PUBLIC_SUPABASE_URL`                                                                      | Supabase-project                            | verplicht bij `DATA_ADAPTER=supabase`                         |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`                                                                 | publiceerbare sleutel, beschermd door RLS   | verplicht bij `DATA_ADAPTER=supabase`                         |
+| `WEEKMENU_DATA_DIR`                                                                             | waar de demo-store staat                    | optioneel, standaard `.data`                                  |
+| `WEEKMENU_PRICE_SNAPSHOT`                                                                       | pad naar de prijsmomentopname               | optioneel, standaard `data/external/checkjebon-snapshot.json` |
+| `WEEKMENU_PROMOTION_SNAPSHOT`                                                                   | pad naar de aanbiedingenmomentopname        | optioneel                                                     |
+| `DATABASE_URL`                                                                                  | alleen voor `pnpm db:verify`                | test/ontwikkeling                                             |
+| `E2E_PORT`, `E2E_BROKEN_PORT`, `E2E_AGED_PORT`, `E2E_NO_PROMO_PORT`, `PLAYWRIGHT_CHROMIUM_PATH` | de vier testservers                         | test                                                          |
 
-|                               |         AH |      Jumbo |   **Lidl** |
-| ----------------------------- | ---------: | ---------: | ---------: |
-| producten in momentopname     |     16.173 |     17.217 | **22.070** |
-| met geldige prijs             |      100 % |      100 % |  **100 %** |
-| met leesbare verpakking       |      100 % |      100 % |  **100 %** |
-| AUTO_APPROVED                 |        597 |        573 |    **410** |
-| NEEDS_REVIEW                  |      1.307 |      1.558 |    **851** |
-| REJECTED                      |        501 |        652 |    **116** |
-| optimizer-eligible            |        581 |        542 |    **242** |
-| na kandidaatreductie          |        370 |        345 |    **181** |
-| gedekte canonical ingredients |        111 |        112 |     **91** |
-| receptingrediënten gedekt     |     86,6 % |     83,9 % | **67,0 %** |
-| **gewogen receptdekking**     | **90,5 %** | **89,9 %** | **71,0 %** |
+Er staan geen sleutels in de repository en geen sleutels in de browserbundel;
+de enige sleutel die de client ooit ziet is de Supabase _publishable_ key, die
+daarvoor gemaakt is en door RLS wordt afgedekt. Ontbreekt verplichte config,
+dan zegt de app dat met zoveel woorden in plaats van half te starten:
+`DATA_ADAPTER=supabase requires NEXT_PUBLIC_SUPABASE_URL and
+NEXT_PUBLIC_SUPABASE_ANON_KEY`, en zonder prijsmomentopname een leesbare melding
+op het scherm in plaats van een prijs.
 
-**Lidl kan zelden een volledige mand leveren.** Bij 71 % gewogen dekking
-ontbreekt er in een gemiddelde week iets. Dat is geen reden om Lidl te weren —
-als tweede winkel naast AH of Jumbo is hij bruikbaar — maar het betekent dat de
-regel "een onvolledige mand mag nooit winnen" hier echt werk doet en niet
-theoretisch is.
+## De releasebaseline
 
-## Wat er verder nog niet af is
+|                            |                                                                           |
+| -------------------------- | ------------------------------------------------------------------------- |
+| release                    | tag `personal-alpha-v0.1` op branch `claude/weekly-menu-optimizer-fdagbe` |
+| productierecords recepten  | 141                                                                       |
+| nu selecteerbaar           | 127                                                                       |
+| uniek selecteerbaar        | **126**                                                                   |
+| geblokkeerd door datagaten | 14                                                                        |
+| prijsmomentopname          | Checkjebon, 14 september 2026                                             |
+| aanbiedingenmomentopname   | PrijsProfeet, 15 september 2026                                           |
+| unit- en integratietests   | 801 in 70 bestanden                                                       |
+| browsertests               | 86 in 20 bestanden, over vier testservers                                 |
 
-| onderwerp                                | status                                                         |
-| ---------------------------------------- | -------------------------------------------------------------- |
-| Lidl in de app-optimizer met echte data  | **aangesloten** — `REAL_CHAIN_IDS` bevat ah, jumbo en lidl     |
-| onvolledige-mand-afhandeling in de UI    | **af** — de lijst noemt bij naam wat de gekozen winkels missen |
-| drie-ketenscenario's A–H als test        | nog niet geschreven                                            |
-| 12 Playwright-scenario's uit de opdracht | **af** — 65 browsertests, zie [DAILY_USE.md](DAILY_USE.md)     |
-| "prijzen bijgewerkt op" in de UI         | **af** — op de lijst en bij de winkelverdeling                 |
-| demo/real-indicator in de UI             | **af** — naast dezelfde datum                                  |
-| afvinkstatus na refresh                  | **af** — bewezen, ook in een tweede tab                        |
+Per keten, opnieuw gemeten met de huidige matcher (`pnpm lidl:readiness`):
 
-Sprint 3 heeft de dagelijkse bruikbaarheid apart afgerekend; het volledige
-verslag, inclusief de vijf gevonden fouten en de gemeten wachttijden, staat in
-[DAILY_USE.md](DAILY_USE.md).
+|                                | Albert Heijn |      Jumbo |       Lidl |
+| ------------------------------ | -----------: | ---------: | ---------: |
+| producten in momentopname      |       16.173 |     17.217 |     22.070 |
+| optimizer-eligible             |          580 |        542 |        242 |
+| gedekte canonieke ingrediënten |          111 |        112 |         91 |
+| **gewogen receptdekking**      |   **92,7 %** | **92,2 %** | **76,2 %** |
 
-## Wat wel klopt en niet aangeraakt hoeft
+## Hoe lang je wacht
 
-- 658 unit- en integratietests groen, build groen, typecheck en lint schoon.
-- De optimizer, de verpakkingsoptimalisatie, de winkelkeuze met reiskosten en de
-  boodschappenlijst met provenance werken.
-- Geen API-sleutels in de client. De app draait zonder externe dienst in
-  demo-modus; `DATA_ADAPTER=supabase` is optioneel.
-- Nutritie is een richtlijn, geen medisch advies, en de app claimt dat nergens.
+Gemeten in een browser op een productiebuild, van klik tot leesbaar scherm.
+
+| handeling                       | tijd                                    |
+| ------------------------------- | --------------------------------------- |
+| eerste week op een verse server | 4,5 – 5,4 s                             |
+| week samenstellen daarna        | 2,4 – 3,0 s                             |
+| nog een andere week             | 2,8 s, oplopend tot ~5,4 s na drie keer |
+| vervangers ophalen              | ~1,1 s                                  |
+| gerecht vervangen               | ~1,4 s                                  |
+| opgeslagen week openen          | ~0,3 s                                  |
+| boodschappenlijst openen        | ~0,3 s                                  |
+| een boodschap afvinken          | ~0,1 s                                  |
+
+Twee dingen verklaren de uitschieters. De eerste week van een verse server
+leest de prijsmomentopname in (~1,9 s, daarna onthouden). En elke druk op "maak
+een andere week" sluit meer gerechten uit, waardoor de zoekruimte krimpt en het
+zoeken langer duurt — de derde druk kost ongeveer het dubbele van de eerste.
+
+## Databronnen en versheid
+
+| bron                      | wat                                         | licentie                                                  | hoe vers                          |
+| ------------------------- | ------------------------------------------- | --------------------------------------------------------- | --------------------------------- |
+| Checkjebon                | prijzen en verpakkingen van AH, Jumbo, Lidl | MIT, hergebruik expliciet toegestaan                      | bestandsdatum van de momentopname |
+| PrijsProfeet              | folderaanbiedingen AH en Jumbo              | gratis laag, bronvermelding verplicht, geen databasekopie | bestandsdatum van de export       |
+| eigen receptenbibliotheek | 141 recepten                                | zelf geschreven (INTERNAL)                                | statisch                          |
+
+**Versheid is een bestandsdatum.** De prijsmomentopname bevat geen tijdstempel
+per product, dus het enige wat de app eerlijk kan zeggen is wanneer het bestand
+is neergezet. Dat is wat er op het scherm staat ("prijzen bijgewerkt 14 sep") en
+dat is ook de basis voor de waarschuwing die na veertien dagen verschijnt. Het
+woord "live" komt nergens voor, want niets hier is live.
+
+Ontbreekt de aanbiedingenbron, dan zegt de herkomstregel "aanbiedingen niet
+beschikbaar" en rekent de app gewoon door met reguliere prijzen. Ontbreekt de
+prijsbron, dan komt er geen week: een verzonnen prijs is erger dan geen prijs.
+
+## Wat er bewaard blijft
+
+Huishouden, gezinsleden, voorkeuren, weekinstellingen, de week zelf en de
+vinkjes op de boodschappenlijst. De week wordt **geprijsd** opgeslagen: de
+gekozen producten, de verpakkingen, de aanbiedingen, de winkelverdeling en het
+totaal. Heropenen is lezen, geen herberekenen — het bedrag dat je maandag zag
+staat er zaterdag nog. Een nieuw bedrag komt er alleen via "Bereken opnieuw met
+de prijzen van nu", via een vervanging of via een nieuwe week.
+
+## Beveiliging: wat we aannemen
+
+- De sessiecookie is `httpOnly`, `sameSite=lax`, en in de demo-opstelling
+  ondertekend met een HMAC waarvan de sleutel naast de data staat. Een cookie
+  met een overgetypt gebruikers-id geeft geen toegang.
+- Geen enkele URL wijst een huishouden of een week aan. De één URL die een id
+  draagt (`/gezin/leden/<id>`) zoekt dat id op binnen het eigen huishouden.
+- Elk beschermd scherm controleert de sessie; uitgelogd kom je op het
+  inlogscherm, niet op een foutpagina.
+- Tijdens de hele flow gaat er geen enkel verzoek naar een derde partij. Een
+  supermarkt hoeft niet te weten wie er zwanger is, en er is hier geen
+  analytics die het per ongeluk doorgeeft.
+- **Aanname:** de demo-opstelling is bedoeld voor één persoon op één machine.
+  Wachtwoorden en huishoudens staan in een JSON-bestand naast de app. Voor
+  meerdere gebruikers is `DATA_ADAPTER=supabase` de weg, met Supabase Auth en
+  RLS.
 
 ## Voedingswaarde-disclaimer
 
-De getoonde energie- en voedingswaarden zijn een richtlijn op basis van
+De getoonde energie- en voedingswaarden zijn richtwaarden, berekend uit
 gemiddelde waarden per ingrediënt. Het is geen medisch of diëtistisch advies en
-de app is geen medisch hulpmiddel.
+Weekmenu is geen medisch hulpmiddel. De zwangerschapsfilter sluit gerechten uit
+waarvan het eten tijdens de zwangerschap vaak wordt afgeraden; dat is een
+voorzorg, geen medische beoordeling.
 
-## De volgorde die ik zou aanhouden
+## Known limitations
 
-1. **Recepten naar 100+.** De grootste blocker en puur inhoudelijk werk. De
-   basis ligt er: 10 gecontroleerde recepten staan al in
-   `data/recipes/reviewed/production-ready.json`, en eigen INTERNAL recepten
-   mogen. Reken op ~50 nieuwe recepten met eigen tekst.
-2. **Echte data aansluiten op de app.** De pijplijn bestaat en is gemeten; hij
-   moet van de testharnas naar een provider die de app gebruikt, met Lidl erbij
-   en een zichtbare "bijgewerkt op"-datum.
-3. **Onvolledige mand eerlijk tonen** en de drie-ketenscenario's vastleggen.
-4. **De twaalf E2E-scenario's** schrijven.
+Eerlijk, en zonder ze mooier te maken dan ze zijn.
 
-Stap 1 en 2 zijn samen het verschil tussen "de demo werkt" en "ik kan hem
-gebruiken".
+1. **126 unieke selecteerbare recepten.** Genoeg voor ongeveer achttien weken
+   zonder herhaling, niet genoeg om een jaar mee te vullen.
+2. **14 productierecords zijn geblokkeerd** doordat de retaildata een
+   ingrediënt niet kent — stokbrood, gele paprika, verse basilicum, rode peper,
+   rode currypasta, bosui, passata. Ze staan in de bibliotheek en worden nooit
+   ingepland.
+3. **Lidl dekt minder dan AH en Jumbo** (76 % tegen 92 %). Als tweede winkel is
+   Lidl prima; als enige winkel mist er in een gemiddelde week iets, en de app
+   zegt dan bij naam wat.
+4. **Reisafstand telt niet mee.** De prijsmomentopname is een catalogus, geen
+   kaart: we weten niet waar de filialen staan. Er staat daarom nergens een
+   afstand, een reistijd of een reiskostenbedrag, en het advies zegt dat.
+5. **Een nieuwe week zonder context kan dezelfde optimale week opleveren.** De
+   optimizer is deterministisch: dezelfde vraag geeft hetzelfde antwoord. "Maak
+   een andere week" verandert de vraag door wat je al zag uit te sluiten, en
+   geeft dan wél iets anders — maar dat geheugen leeft in die knop, niet in de
+   database, dus na een herlaadactie begint het opnieuw.
+6. **Prijzen komen uit een momentopname**, niet uit een winkel-API, en de
+   versheid is de bestandsdatum (zie hierboven).
+7. **Aanbiedingen dekken niet alles.** Alleen AH en Jumbo, alleen wat op
+   artikelnummer te koppelen is, en alleen mechaniek die veilig te lezen is;
+   de rest wordt overgeslagen en geteld in plaats van geraden.
+8. **Sommige ingrediënten ontbreken in de retailbron**, zie punt 2.
+9. **Geen automatische dataverversing.** Het ophalen van een nieuwe
+   momentopname is één commando dat je zelf draait.
+10. **Eén huishouden per account**, en de demo-opstelling is voor één persoon
+    op één machine (zie beveiliging).
 
-## Hoe de momentopnames worden ververst
+## Bugs
 
-Er is bewust nog geen scheduler. De prijsmomentopname staat als
-`data/external/checkjebon-snapshot.json` in de repository en wordt met de hand
-vervangen; de app leest hem bij de eerste aanvraag en onthoudt hem voor de rest
-van het proces. De datum die de app toont is de bestandsdatum, want dat is het
-enige wat we eerlijk weten.
+Gevonden tijdens de acceptatieruns van Sprint 3 en Sprint 4. P0 = kern, correctheid
+of veiligheid. P1 = raakt dagelijks gebruik of klopt niet. P2 = hinderlijk, niet
+blokkerend.
 
-Als eindgebruiker hoef je hier niets voor te doen: is het bestand er, dan
-gebruikt de app het. Is het er niet, dan zegt de app dat, in plaats van
-stilletjes demo-prijzen te tonen.
+| id    | ernst | wat                                                                                                                                                                            | status                                |
+| ----- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------- |
+| S3-01 | P1    | een opgeslagen week werd bij elke opening stil opnieuw doorgerekend, dus het bedrag kon van dag tot dag verschillen                                                            | opgelost                              |
+| S3-02 | P1    | uitgelogd gaf op elk beschermd scherm Next's kale foutpagina in plaats van het inlogformulier                                                                                  | opgelost                              |
+| S3-03 | P1    | een vers geregistreerd account kreeg op `/week` een foutpagina in plaats van onboarding                                                                                        | opgelost                              |
+| S3-04 | P1    | de demo-sessiecookie was het gebruikers-id zonder handtekening: overtypen gaf toegang tot een ander huishouden                                                                 | opgelost                              |
+| S3-05 | P2    | 24 px horizontale overloop op `/week` bij 375 en 390 px                                                                                                                        | opgelost                              |
+| S3-06 | P2    | de engine kende voorkeuren per ingrediënt, maar er was geen scherm om er een aan te wijzen                                                                                     | opgelost                              |
+| S4-01 | P1    | de winkelpagina zei "we kennen de filiaaladressen niet" en toonde twee regels lager "11,6 km · € 0,00 reiskosten" — op vier plekken stond een afstand die we niet kunnen weten | opgelost                              |
+| S4-02 | P2    | de weekpagina toonde een bedrag zonder erbij te zeggen of het echte of demoprijzen waren                                                                                       | opgelost                              |
+| S4-03 | P2    | "Maak een andere week" vergeet na een herlaadactie wat je al zag, dus twee keer drukken rond een refresh kan dezelfde week teruggeven                                          | open, bewuste keuze (zie beperking 5) |
+| S4-04 | P2    | na het opslaan van een gezinslid staat er geen bevestiging; je komt terug op `/gezin` en moet zelf zien dat het gelukt is                                                      | open                                  |
+| S4-05 | P2    | het bedragveld bij het budget verschijnt pas nadat je een budgetmodus kiest, waardoor de eerste klik niets lijkt te doen                                                       | open                                  |
+| S4-06 | P2    | de eerste week van een verse server kost ~1,9 s extra doordat de prijsmomentopname dan pas wordt ingelezen                                                                     | open, gemeten                         |
 
-## Sprint 1 close-out — wat er nog bij kwam
+**Open P0: 0. Open P1: 0.** De vier open P2's staan hierboven en zijn geen van
+alle een reden om de week niet te kunnen doen.
 
-**Echte aanbiedingen.** De PrijsProfeet-momentopname hangt nu aan dezelfde
-runtime als de catalogus. Van 5.190 folderregels koppelen er **48** op de
-peildatum aan een product dat wij verkopen (AH 36, Jumbo 12), uitsluitend op het
-artikelnummer van de winkel zelf — geen naamgelijkenis. 507 regels zijn
-overgeslagen omdat hun mechaniek niet veilig te lezen was, en dat aantal staat
-in de uitkomst in plaats van stilletjes te verdwijnen.
+## Wat bewust nog niet ondersteund wordt
 
-**Reisafstand uitgezet in REAL mode.** De momentopname is een catalogus, geen
-kaart: hij zegt wat Albert Heijn verkoopt, niet waar de filialen staan. Echte
-boodschappenprijzen naast een verzonnen omweg geven een advies dat half fictie
-is zonder zichtbare naad, dus in REAL mode staat de reiscomponent uit en meldt
-de app dat met zoveel woorden.
+Lunch en ontbijt, voorraadkast, favorieten, een boodschappengeschiedenis over
+weken heen, notificaties, delen met huisgenoten, barcodescannen, andere ketens
+dan AH/Jumbo/Lidl, en het bestellen van de boodschappen. Geen van deze dingen
+is half gebouwd; ze zijn er niet.
 
-**Twee correctheidsbugs uit de handmatige audit.**
+## Hoe dit is getest
 
-| bevinding                  | wat er gebeurde                                                                                                     | wat er nu gebeurt                                                         |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| breukdelen van een stuk    | "Wraps naturel" kwam binnen als een pak van 5,161290322580645 stuks, omdat het etiket alleen een gewicht noemde     | een pak in stuks moet een heel getal zijn, anders bestaat het aanbod niet |
-| winkelvorm zonder aanvraag | voorgesneden aardappelpartjes en mini-krieltjes werden gekocht voor gewone aardappel, tegen een voorbewerkingsprijs | een variant met een vorm waar geen recept om vroeg, doet niet mee         |
+De acceptatie is met een vers account in een browser gelopen, op een
+productiebuild, tegen de echte catalogus. Het volledige verslag van de
+dagelijkse bruikbaarheid staat in [DAILY_USE.md](DAILY_USE.md); de ruwe
+uitkomsten van de releaseacceptatie staan in `data/release/`.
 
-**Provenance.** Een aanbod draagt nu zijn eigen herkomst: keten, artikelnummer,
-productnaam, verpakking, prijsbron en het moment van waarneming, plus bij een
-aanbieding de bron, de identiteit en de geldigheid. De draaiende app weet
-daarmee evenveel als de meetharnas.
+- 801 unit- en integratietests, 86 browsertests, typecheck, lint, format en
+  productiebuild groen.
+- De kassabon is nagerekend met een tweede implementatie van de kassalogica
+  (`pnpm release:checkout`): geen cent verschil.
+- Acht winkelcombinaties doorlopen, met per combinatie het aantal winkels, de
+  ketens, het totaal en wat er niet verkrijgbaar was.
 
-## Sprint 1 afgesloten
+## Achtergrond per onderwerp
 
-**Browserbewijs van een echte aanbieding.** `tests/e2e/real-promotion.spec.ts`
-zoekt eerst in Node, uit dezelfde PrijsProfeet-momentopname, welke labels Albert
-Heijn deze week voert, en laat de browser daarna bevestigen dat een van die
-labels als badge op een boodschappenregel staat. Het vaste demo-huishouden maakt
-het reproduceerbaar: een vers geregistreerd huishouden krijgt andere porties,
-dus een ander menu, dus andere producten, en of daar toevallig een aanbieding
-tussen zit is dan geen test maar een loterij.
-
-**Twee ambiguïteiten beslist.**
-
-| product             | besluit                             | reden                                                                                               |
-| ------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------- |
-| halfvolle roomboter | **geweigerd** voor gewone roomboter | ~40 % vet tegen ~80 %: een week erop gerekend zit er een factor twee naast, en het bruint anders    |
-| paprika reepjes     | **toegestaan** als winkelvorm       | puur paprika, geen saus of kruiden, en het gewicht klopt; duurder per kilo is de keuze van de koper |
-
-Het woord "halfvol" blijft onschuldig op melk. De weigering geldt per
-ingrediënt, niet in het algemeen.
-
-**Definitieve productaudit**, over daadwerkelijk gekochte producten uit
-gegenereerde weken:
-
-| keten        | gecontroleerd | CORRECT | WRONG | AMBIGUOUS |
-| ------------ | ------------: | ------: | ----: | --------: |
-| Albert Heijn |            32 |      32 |     0 |         0 |
-| Jumbo        |            31 |      31 |     0 |         0 |
-| Lidl         |            32 |      32 |     0 |         0 |
-
-**Reiskosten echt uit.** De eerste poging zette alleen de coördinaten uit bij de
-winkelservice, maar de optimizer leidt zijn eigen vertrekpunt af uit het
-huishouden en rekende nog altijd € 2,67 reiskosten — genoeg om een tweede winkel
-te ontmoedigen. Nu is het tarief nul zolang de afstand onbekend is, en een test
-eist dat er geen cent reis in de rekening zit.
-
-**Over "fastest-of-N".** De prestatiebudgetten in de testsuite worden gemeten
-als de snelste van een paar runs. Dat is uitsluitend om roosterruis weg te
-nemen wanneer 62 testbestanden tegelijk draaien. Het is **geen** gebruikerscijfer
-en mag niet als p95 of gemiddelde worden gerapporteerd; de gemeten
-gebruikerslatency is ongeveer 1,6 s.
+| onderwerp                                   | document                                                                       |
+| ------------------------------------------- | ------------------------------------------------------------------------------ |
+| dagelijks gebruik en de Sprint 3-acceptatie | [DAILY_USE.md](DAILY_USE.md)                                                   |
+| de receptenbibliotheek                      | [RECIPE_LIBRARY.md](RECIPE_LIBRARY.md)                                         |
+| de optimizer en zijn benchmark              | [OPTIMIZER.md](OPTIMIZER.md), [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md) |
+| productmatching en datakwaliteit            | [MATCHING.md](MATCHING.md), [REAL_DATA_VALIDATION.md](REAL_DATA_VALIDATION.md) |
+| aanbiedingen                                | [PROMOTION_VALUE_BENCHMARK.md](PROMOTION_VALUE_BENCHMARK.md)                   |
+| databronnen en licenties                    | [DATA_SOURCES.md](DATA_SOURCES.md)                                             |
+| architectuur en database                    | [ARCHITECTURE.md](ARCHITECTURE.md), [DATABASE.md](DATABASE.md)                 |
+| de audit die aan Sprint 1 voorafging        | [AUDIT_REPORT.md](AUDIT_REPORT.md)                                             |

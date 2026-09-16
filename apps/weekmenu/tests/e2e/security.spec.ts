@@ -64,6 +64,24 @@ test.describe('what the app protects', () => {
     await expect(page, 'een vervalste handtekening gaf toegang').toHaveURL(/\/inloggen$/);
   });
 
+  test('uitloggen sluit de deur echt', async ({ page, context }) => {
+    await signIn(page);
+    await page.goto('/week');
+    await expect(page.getByRole('heading', { name: /Mijn week|Hoi /i })).toBeVisible();
+
+    await page.goto('/instellingen');
+    await page.getByRole('button', { name: 'Uitloggen' }).click();
+    await expect(page).toHaveURL(/\/inloggen$/, { timeout: 60_000 });
+
+    // The cookie is gone, and the pages behind it are gone with it.
+    const cookie = (await context.cookies()).find((c) => c.name === 'weekmenu_session');
+    expect(cookie?.value ?? '', 'de sessiecookie staat er nog').toBe('');
+    for (const path of ['/week', '/boodschappen', '/gezin']) {
+      await page.goto(path);
+      await expect(page, `${path} was nog bereikbaar na uitloggen`).toHaveURL(/\/inloggen$/);
+    }
+  });
+
   test('a second account sees nothing of the first', async ({ page }) => {
     const email = `tweede-${Date.now()}@voorbeeld.nl`;
     await page.goto('/registreren');

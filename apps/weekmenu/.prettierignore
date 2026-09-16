@@ -8,3 +8,6 @@ supabase/seed.sql
 
 # Externe recept-corpora: opgehaalde brondata, geen broncode.
 data/recipes/candidates
+
+# Bewijsbestanden die de acceptatieruns schrijven. Machinetekst, geen broncode.
+data/release
