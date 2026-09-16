@@ -45,13 +45,17 @@ export function SavedWeekNotice({
           : stamp
             ? `Prijzen berekend op ${stamp}.`
             : 'Prijzen berekend toen deze week is gemaakt.'}
-        {settingsChanged ? ' Je instellingen zijn daarna gewijzigd.' : ''}
+        {settingsChanged ? ' Je instellingen zijn daarna gewijzigd.' : ''} De bedragen blijven
+        staan tot je ze zelf opnieuw laat berekenen.
       </p>
       <Button
         type="button"
         variant="ghost"
         size="sm"
-        className="mt-1.5"
+        // The label wraps rather than pushing the page sideways: at 375 px the
+        // long version overflowed by 24 px, which on a phone is a page that
+        // slides under your thumb.
+        className="mt-1.5 h-auto whitespace-normal text-left"
         disabled={pending}
         onClick={() => {
           setError(undefined);

@@ -35,6 +35,9 @@ export function GenerateWeekButton({
         size={size}
         variant={variant}
         className="w-full"
+        // The label changes while the work runs, so the tests need something
+        // that does not move to prove the button disables itself.
+        data-action="generate-week"
         disabled={pending}
         onClick={() => {
           setError(undefined);

@@ -231,7 +231,7 @@ test.describe('what the app remembers', () => {
     // change it.
     await expect(page.getByText(/Prijzen berekend/)).toBeVisible();
     await expect(
-      page.getByRole('button', { name: /Bereken opnieuw met de prijzen van nu/ }),
+      page.getByRole('button', { name: /Bereken opnieuw/ }),
     ).toBeVisible();
   });
 });

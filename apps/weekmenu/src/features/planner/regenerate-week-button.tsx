@@ -36,6 +36,7 @@ export function RegenerateWeekButton({
         size="lg"
         variant="secondary"
         className="w-full"
+        data-action="regenerate-week"
         disabled={pending}
         onClick={() => {
           setError(undefined);
