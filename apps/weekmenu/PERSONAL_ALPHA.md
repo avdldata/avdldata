@@ -94,17 +94,17 @@ op het scherm in plaats van een prijs.
 
 ## De releasebaseline
 
-|                            |                                                                           |
-| -------------------------- | ------------------------------------------------------------------------- |
-| release                    | tag `personal-alpha-v0.1` op branch `claude/weekly-menu-optimizer-fdagbe` |
-| productierecords recepten  | 141                                                                       |
-| nu selecteerbaar           | 127                                                                       |
-| uniek selecteerbaar        | **126**                                                                   |
-| geblokkeerd door datagaten | 14                                                                        |
-| prijsmomentopname          | Checkjebon, 14 september 2026                                             |
-| aanbiedingenmomentopname   | PrijsProfeet, 15 september 2026                                           |
-| unit- en integratietests   | 801 in 70 bestanden                                                       |
-| browsertests               | 86 in 20 bestanden, over vier testservers                                 |
+|                            |                                                                                                                 |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| release                    | tag `personal-alpha-v0.1`, op de commit waarin dit document staat, branch `claude/weekly-menu-optimizer-fdagbe` |
+| productierecords recepten  | 141                                                                                                             |
+| nu selecteerbaar           | 127                                                                                                             |
+| uniek selecteerbaar        | **126**                                                                                                         |
+| geblokkeerd door datagaten | 14                                                                                                              |
+| prijsmomentopname          | Checkjebon, 14 september 2026                                                                                   |
+| aanbiedingenmomentopname   | PrijsProfeet, 15 september 2026                                                                                 |
+| unit- en integratietests   | 801 in 70 bestanden                                                                                             |
+| browsertests               | 86 in 20 bestanden, over vier testservers                                                                       |
 
 Per keten, opnieuw gemeten met de huidige matcher (`pnpm lidl:readiness`):
 
@@ -218,6 +218,14 @@ Eerlijk, en zonder ze mooier te maken dan ze zijn.
    momentopname is één commando dat je zelf draait.
 10. **Eén huishouden per account**, en de demo-opstelling is voor één persoon
     op één machine (zie beveiliging).
+
+## Over de tag
+
+De release is lokaal getagd als `personal-alpha-v0.1`. De omgeving waarin deze
+oplevering is gemaakt mag alleen branches naar de remote pushen, geen tags, dus
+de tag staat wel in de repository en (nog) niet op de remote. De branch is wel
+gepusht; de tag is met één `git push origin personal-alpha-v0.1` alsnog te
+plaatsen vanaf een machine die dat mag.
 
 ## Bugs
 
