@@ -1,3 +1,4 @@
+import type { SerialisedWeeklyPlan } from '@/services/stored-week';
 import type { Cents } from '@/domain/units';
 import type { Household } from '@/domain/household/types';
 import type { ConveniencePreference } from '@/domain/optimization/config';
@@ -46,6 +47,21 @@ export interface StoredPlan {
   readonly recipeIds: readonly string[];
   readonly settings: WeekSettings;
   readonly checkedItemKeys: readonly string[];
+  /**
+   * When this week was priced.
+   *
+   * Shown to the user, because "€ 71,40" means nothing without it once the
+   * price snapshot has moved on.
+   */
+  readonly generatedAt: string;
+  /**
+   * The priced week itself — see `services/stored-week.ts`.
+   *
+   * Absent only for a row written before weeks were stored priced. Such a week
+   * is re-priced once, on demand, and the caller says so rather than showing a
+   * new total as though it were the old one.
+   */
+  readonly plan?: SerialisedWeeklyPlan;
 }
 
 export interface HouseholdRepository {

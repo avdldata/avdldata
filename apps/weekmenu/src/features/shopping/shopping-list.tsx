@@ -125,13 +125,18 @@ export function ShoppingListView({
             {group.lines.map((line) => {
               const isChecked = checkedKeys.has(line.key);
               return (
-                <li key={line.key}>
-                  <label className="flex cursor-pointer items-start gap-3 px-4 py-3">
+                // The ids are here for the persistence tests: comparing rendered
+                // product names would break on every catalogue refresh.
+                <li key={line.key} data-item-key={line.key} data-ingredient-id={line.ingredientId}>
+                  {/* Generous padding and a 20px box: this list is used one-handed
+                      in a shop, and a 16px target is a miss waiting to happen. */}
+                  <label className="flex cursor-pointer items-start gap-3 px-4 py-3.5">
                     <input
                       type="checkbox"
                       checked={isChecked}
                       onChange={(event) => toggle(line.key, event.target.checked)}
-                      className="mt-1 size-4 shrink-0 accent-[var(--color-brand)]"
+                      data-item-key={line.key}
+                      className="mt-0.5 size-5 shrink-0 accent-[var(--color-brand)]"
                       aria-label={`${line.ingredientName} afvinken`}
                     />
                     <span className={cn('min-w-0 flex-1', isChecked && 'opacity-50')}>

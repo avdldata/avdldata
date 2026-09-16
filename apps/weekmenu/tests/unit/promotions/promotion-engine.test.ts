@@ -158,7 +158,9 @@ describe('the mistakes a promotion feed invites', () => {
  * exists because "structurally cannot" is a claim, and a later refactor that
  * moved filtering after pricing would break it silently.
  */
-describe('a promotion never outranks a dietary rule', () => {
+// A full week optimisation over the whole library, so the default five-second
+// budget is too tight: the library grew from 56 dishes to 141 in Sprint 2.
+describe('a promotion never outranks a dietary rule', { timeout: 120_000 }, () => {
   it('does not appear in a plan for a household that cannot eat it', async () => {
     const { optimiseWeek } = await import('@/domain/optimization/week-optimizer');
     const { demoHousehold, ingredientIndex, recipes, storeCandidates, TEST_DATE, TEST_TODAY } =

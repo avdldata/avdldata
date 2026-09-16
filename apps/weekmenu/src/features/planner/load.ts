@@ -1,7 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
 import type { Household } from '@/domain/household/types';
-import type { OptimizerResult, WeeklyPlan } from '@/domain/optimization/types';
+import type { WeeklyPlan } from '@/domain/optimization/types';
 import type { HistoricalPriceStats } from '@/domain/pricing/price-history';
 import { getRepositories } from '@/data';
 import {
@@ -11,7 +11,15 @@ import {
 } from '@/data/repositories/types';
 import { requireUser } from '@/services/auth';
 import { loadContext, repriceStoredPlan, type PlanContext } from '@/services/plan-service';
+import { deserialiseWeeklyPlan } from '@/services/stored-week';
 import { buildStoreCandidates } from '@/services/store-service';
+
+/** Why the week on screen is not the week that was saved. */
+export type WeekFreshness =
+  /** Saved priced, shown exactly as saved. */
+  | 'AS_SAVED'
+  /** Saved before weeks kept their prices, so it had to be priced once now. */
+  | 'REPRICED_LEGACY';
 
 export interface WeekView {
   readonly context: PlanContext;
@@ -19,18 +27,30 @@ export interface WeekView {
   readonly settings: WeekSettings;
   readonly stored: StoredPlan | null;
   readonly plan: WeeklyPlan | null;
+  readonly freshness: WeekFreshness | null;
+  /** True when the settings have changed since this week was priced. */
+  readonly settingsChangedSince: boolean;
   /** Price history per product, for the deal badges on the shopping list. */
   readonly priceStats: ReadonlyMap<string, HistoricalPriceStats>;
   /** Set when a stored week could no longer be priced with the current settings. */
   readonly error: string | null;
 }
 
+/** Do two settings objects describe the same shopping situation? */
+function sameSettings(a: WeekSettings, b: WeekSettings): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 /**
  * Load the current week for the signed-in household.
  *
+ * Opening a saved week is a **read**. The priced week was written down when it
+ * was made, so the totals, the shops, the packs and the promotions are the ones
+ * the user saw — not a fresh calculation against whatever the catalogue says
+ * today. A new number appears only when the user asks for one.
+ *
  * Cached per request, because several parts of a page (header totals, day list,
- * shopping list) all need the same priced week and re-running the optimizer
- * four times per render would be silly.
+ * shopping list) all want the same week.
  */
 export const getWeekView = cache(async (): Promise<WeekView> => {
   const user = await requireUser();
@@ -38,25 +58,25 @@ export const getWeekView = cache(async (): Promise<WeekView> => {
   if (!context) throw new Error('Geen huishouden gevonden.');
 
   const stored = await getRepositories().plans.getCurrent(context.household.id);
-  if (!stored) {
-    return {
-      context,
-      household: context.household,
-      settings: context.settings ?? DEFAULT_WEEK_SETTINGS,
-      stored: null,
-      plan: null,
-      priceStats: new Map(),
-      error: null,
-    };
-  }
+  const empty = {
+    context,
+    household: context.household,
+    settings: context.settings ?? DEFAULT_WEEK_SETTINGS,
+    stored: null,
+    plan: null,
+    freshness: null,
+    settingsChangedSince: false,
+    priceStats: new Map<string, HistoricalPriceStats>(),
+    error: null,
+  } satisfies WeekView;
+  if (!stored) return empty;
 
-  const result: OptimizerResult = await repriceStoredPlan(
-    { ...context, startDate: stored.startDate },
-    stored.recipeIds,
-  );
+  const settingsChangedSince = !sameSettings(stored.settings, context.settings);
 
-  const { candidates: _candidates, priceStats } = await buildStoreCandidates({
-    locationIds: context.settings.selectedLocationIds,
+  // Price history drives the deal badges. It is history, not this week's price,
+  // so reading today's is correct and changes nothing about the saved total.
+  const { priceStats } = await buildStoreCandidates({
+    locationIds: stored.settings.selectedLocationIds,
     home: {
       latitude: context.household.location.latitude ?? 0,
       longitude: context.household.location.longitude ?? 0,
@@ -64,12 +84,34 @@ export const getWeekView = cache(async (): Promise<WeekView> => {
     onDate: stored.startDate,
   });
 
+  if (stored.plan) {
+    return {
+      ...empty,
+      stored,
+      plan: deserialiseWeeklyPlan(stored.plan),
+      freshness: 'AS_SAVED',
+      settingsChangedSince,
+      priceStats,
+    };
+  }
+
+  /*
+   * A week saved before prices were stored with it.
+   *
+   * There is nothing to show but a fresh calculation, so that is what happens —
+   * once, and labelled. `freshness` is what the screen uses to say the total is
+   * today's rather than the one that was saved.
+   */
+  const result = await repriceStoredPlan(
+    { ...context, startDate: stored.startDate },
+    stored.recipeIds,
+  );
   return {
-    context,
-    household: context.household,
-    settings: context.settings,
+    ...empty,
     stored,
     plan: result.status === 'OK' ? result.plan : null,
+    freshness: 'REPRICED_LEGACY',
+    settingsChangedSince,
     priceStats,
     error: result.status === 'OK' ? null : result.message,
   };

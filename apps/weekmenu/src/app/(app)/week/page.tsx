@@ -7,6 +7,7 @@ import { getWeekView } from '@/features/planner/load';
 import { getChainNames, travelCostStatus } from '@/services/store-service';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
 import { RegenerateWeekButton } from '@/features/planner/regenerate-week-button';
+import { SavedWeekNotice } from '@/features/planner/saved-week-notice';
 import { WeekSummary } from '@/features/planner/week-summary';
 import { WhyPanel } from '@/features/planner/why-panel';
 import { DayCard } from '@/features/planner/day-card';
@@ -77,6 +78,14 @@ export default async function WeekPage() {
         </section>
 
         <WhyPanel reasons={plan.reasons} />
+
+        {view.stored ? (
+          <SavedWeekNotice
+            generatedAt={view.stored.generatedAt}
+            settingsChanged={view.settingsChangedSince}
+            repricedLegacy={view.freshness === 'REPRICED_LEGACY'}
+          />
+        ) : null}
 
         <RegenerateWeekButton currentRecipeIds={plan.days.map((day) => day.recipe.id)} />
 

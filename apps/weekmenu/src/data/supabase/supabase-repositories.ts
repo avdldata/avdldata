@@ -1,4 +1,5 @@
 import 'server-only';
+import type { SerialisedWeeklyPlan } from '@/services/stored-week';
 import type { Cents } from '@/domain/units';
 import type {
   ActivityLevel,
@@ -342,6 +343,8 @@ class SupabasePlanRepository implements PlanRepository {
       recipeIds: (days ?? []).map((d: Row) => d.recipe_id as string),
       settings: plan.settings as WeekSettings,
       checkedItemKeys: (items ?? []).map((i: Row) => i.item_key as string),
+      generatedAt: (plan.generated_at as string | null) ?? (plan.created_at as string),
+      ...(plan.priced_plan ? { plan: plan.priced_plan as SerialisedWeeklyPlan } : {}),
     };
   }
 
@@ -353,6 +356,9 @@ class SupabasePlanRepository implements PlanRepository {
         household_id: plan.householdId,
         start_date: plan.startDate,
         settings: plan.settings,
+        generated_at: plan.generatedAt,
+        // The priced week, so reopening it is a read rather than a new sum.
+        priced_plan: plan.plan ?? null,
       })
       .select()
       .single();
@@ -373,7 +379,9 @@ class SupabasePlanRepository implements PlanRepository {
       createdAt: (data as Row).created_at as string,
       recipeIds: plan.recipeIds,
       settings: plan.settings,
-      checkedItemKeys: [],
+      checkedItemKeys: plan.checkedItemKeys,
+      generatedAt: plan.generatedAt,
+      ...(plan.plan ? { plan: plan.plan } : {}),
     };
   }
 

@@ -130,6 +130,37 @@ export async function regenerateWeekAction(
   };
 }
 
+/**
+ * "Bereken deze week opnieuw met de prijzen van nu."
+ *
+ * The only way a saved week's total changes. The seven dishes stay exactly as
+ * they are; everything about the money — packs, shops, promotions — is worked
+ * out again against today's catalogue and written down as the new saved week.
+ * The ticks survive, because the trolley is largely the same trolley.
+ */
+export async function recalculateWeekAction(): Promise<PlannerResult> {
+  const user = await requireUser();
+  const context = await loadContext(user.id);
+  if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
+
+  const stored = await getRepositories().plans.getCurrent(context.household.id);
+  if (!stored) return { ok: false, error: 'Er is nog geen week om te berekenen.' };
+
+  const repriced = await repriceStoredPlan(
+    { ...context, startDate: stored.startDate },
+    stored.recipeIds,
+  );
+  if (repriced.status !== 'OK') return { ok: false, error: repriced.message };
+
+  await persistPlan({ ...context, startDate: stored.startDate }, repriced.plan, {
+    keepChecked: stored.checkedItemKeys,
+  });
+  revalidatePath('/week');
+  revalidatePath('/boodschappen');
+  revalidatePath('/winkels');
+  return { ok: true };
+}
+
 export async function generateWeekAndGoAction(): Promise<void> {
   const result = await generateWeekAction();
   if (!result.ok) {
@@ -213,13 +244,13 @@ export async function replaceDishAction(
   const repriced = await repriceStoredPlan({ ...context, startDate: stored.startDate }, recipeIds);
   if (repriced.status !== 'OK') return { ok: false, error: repriced.message };
 
-  await repositories.plans.save({
-    householdId: context.household.id,
-    startDate: stored.startDate,
-    recipeIds,
-    settings: context.settings,
-    checkedItemKeys: stored.checkedItemKeys,
-  });
+  // The swap is a deliberate act, so a new price is expected. The ticks stay:
+  // the other six days did not change, and neither did most of the trolley.
+  await persistPlan(
+    { ...context, startDate: stored.startDate },
+    repriced.plan,
+    { keepChecked: stored.checkedItemKeys },
+  );
 
   revalidatePath('/week');
   revalidatePath('/boodschappen');

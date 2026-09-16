@@ -11,6 +11,7 @@ import { DEFAULT_WEEK_SETTINGS } from '@/data/repositories/types';
 import { partitionByAvailability, type AvailabilityVerdict } from '@/domain/recipes/feasibility';
 import type { Recipe } from '@/domain/recipes/types';
 import { getCatalogue } from './catalogue';
+import { serialiseWeeklyPlan } from './stored-week';
 import { buildStoreCandidates, purchasableIngredientIds, travelCostStatus } from './store-service';
 
 export interface PlanContext {
@@ -252,13 +253,27 @@ export async function loadCurrentPlan(
   return { stored, result };
 }
 
-export async function persistPlan(context: PlanContext, plan: WeeklyPlan): Promise<StoredPlan> {
+/**
+ * Store a week, priced.
+ *
+ * The seven recipes are not the week; the week is those recipes at those
+ * prices, from those shops, with those promotions. All of it is written down,
+ * so opening the plan tomorrow shows what you saved rather than a fresh
+ * calculation wearing the same date. See `services/stored-week.ts`.
+ */
+export async function persistPlan(
+  context: PlanContext,
+  plan: WeeklyPlan,
+  options: { keepChecked?: readonly string[] } = {},
+): Promise<StoredPlan> {
   const repositories = getRepositories();
   return repositories.plans.save({
     householdId: context.household.id,
     startDate: plan.startDate,
     recipeIds: plan.days.map((d) => d.recipe.id),
     settings: context.settings,
-    checkedItemKeys: [],
+    checkedItemKeys: options.keepChecked ?? [],
+    generatedAt: new Date().toISOString(),
+    plan: serialiseWeeklyPlan(plan),
   });
 }
