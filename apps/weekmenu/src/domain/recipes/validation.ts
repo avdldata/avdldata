@@ -157,6 +157,9 @@ const LEGUME_IDS = new Set([
 ]);
 const OIL_IDS = new Set(['olijfolie', 'zonnebloemolie']);
 
+/** Starches that arrive ready to eat, so a "dry weight" floor says nothing. */
+const READY_CARB_IDS = new Set(['wraps', 'maistortilla', 'pitabrood', 'stokbrood']);
+
 /**
  * Vegetables the catalogue files under `conserven` or `overig`.
  *
@@ -468,7 +471,9 @@ export function validateRecipe(
   // A handful of pasta in a bean soup is a garnish on a dish whose carbohydrate
   // comes from somewhere else. The floor is about the base of the meal, so it
   // only fires when nothing else is carrying it.
-  const otherCarbGrams = potatoGrams + sumGrams(recipe, ingredients, (id) => LEGUME_IDS.has(id));
+  const otherCarbGrams =
+    potatoGrams +
+    sumGrams(recipe, ingredients, (id) => LEGUME_IDS.has(id) || READY_CARB_IDS.has(id));
   if (dryCarbGrams > 0 && dryCarbGrams < LIMITS.dryCarbMinGrams && otherCarbGrams < 100) {
     add(
       'TOO_LITTLE_CARB_PER_PERSON',

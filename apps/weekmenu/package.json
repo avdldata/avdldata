@@ -37,6 +37,7 @@
     "recipes:report": "tsx scripts/recipes-report.ts",
     "recipes:reassess": "tsx scripts/recipes-reassess.ts",
     "recipes:impact": "tsx scripts/recipes-sprint2-impact.ts",
+    "recipes:selectable": "tsx scripts/recipes-selectable.ts",
     "recipes:select": "tsx scripts/recipes-select.ts",
     "coverage:gap": "tsx scripts/coverage-gap.ts",
     "taxonomy:impact": "tsx scripts/taxonomy-impact.ts",

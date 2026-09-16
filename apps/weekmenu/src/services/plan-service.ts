@@ -8,8 +8,10 @@ import type { OptimizerResult, WeeklyPlan } from '@/domain/optimization/types';
 import { getRepositories } from '@/data';
 import type { StoredPlan, WeekSettings } from '@/data/repositories/types';
 import { DEFAULT_WEEK_SETTINGS } from '@/data/repositories/types';
+import { partitionByAvailability, type AvailabilityVerdict } from '@/domain/recipes/feasibility';
+import type { Recipe } from '@/domain/recipes/types';
 import { getCatalogue } from './catalogue';
-import { buildStoreCandidates, travelCostStatus } from './store-service';
+import { buildStoreCandidates, purchasableIngredientIds, travelCostStatus } from './store-service';
 
 export interface PlanContext {
   readonly household: Household;
@@ -63,11 +65,64 @@ function developmentLogger(): OptimizerInput['logger'] {
   };
 }
 
+/**
+ * The recipes the week generator is allowed to choose from.
+ *
+ * A recipe whose ingredients the catalogue cannot sell is not an option: the
+ * user would get a plan they cannot shop. It stays in the library as a record —
+ * see `partitionByAvailability` — and never reaches the optimizer.
+ *
+ * Re-pricing an already-chosen week is the exception. Those seven dishes were
+ * chosen when they were available, and a stored plan has to stay openable even
+ * if a later price snapshot drops a product; the full library is used there, so
+ * the week still prices and the missing item shows up as unavailable rather
+ * than as a crash.
+ */
+export async function selectableRecipes(
+  context: PlanContext,
+): Promise<{ recipes: readonly Recipe[]; unavailable: readonly AvailabilityVerdict[] }> {
+  const catalogue = getCatalogue();
+  const purchasable = await purchasableIngredientIds(context.startDate);
+  const { available, unavailable } = partitionByAvailability(
+    catalogue.recipes,
+    catalogue.ingredientIndex,
+    purchasable,
+  );
+  return { recipes: available, unavailable };
+}
+
+export interface GenerationOptions {
+  /**
+   * Dishes the user has already been offered and did not take.
+   *
+   * This is what makes "maak een andere week" mean something. The optimizer is
+   * deterministic by design — same household, same prices, same answer — so
+   * pressing regenerate can only return something else if the question itself
+   * changes. Excluding what was already on the table is the smallest honest
+   * change to the question, and it is exactly what a person means by "no, show
+   * me something else".
+   */
+  readonly excludeRecipeIds?: readonly string[];
+}
+
+/** How many dishes a week needs; below this an exclusion list has gone too far. */
+const DAYS_IN_WEEK = 7;
+
 async function buildOptimizerInput(
   context: PlanContext,
   lockedRecipeIds?: ReadonlyMap<number, string>,
+  options: GenerationOptions = {},
 ): Promise<OptimizerInput> {
   const catalogue = getCatalogue();
+  const selectable = lockedRecipeIds
+    ? catalogue.recipes
+    : (await selectableRecipes(context)).recipes;
+  const excluded = new Set(options.excludeRecipeIds ?? []);
+  const narrowed = selectable.filter((recipe) => !excluded.has(recipe.id));
+  // Running out is a real possibility — 123 selectable dishes is about
+  // seventeen weeks — and the caller is told, rather than silently served a
+  // repeat it asked not to get.
+  const recipes = narrowed.length >= DAYS_IN_WEEK ? narrowed : selectable;
   const { latitude, longitude } = context.household.location;
   /*
    * Distance is only computed when the branches are real.
@@ -92,7 +147,7 @@ async function buildOptimizerInput(
 
   return {
     household: context.household,
-    recipes: catalogue.recipes,
+    recipes,
     ingredients: catalogue.ingredientIndex,
     stores: candidates,
     maxStores,
@@ -118,8 +173,27 @@ async function buildOptimizerInput(
 }
 
 /** Run the optimizer for a household and return the winning week. */
-export async function generatePlan(context: PlanContext): Promise<OptimizerResult> {
-  return optimiseWeek(await buildOptimizerInput(context));
+export async function generatePlan(
+  context: PlanContext,
+  options: GenerationOptions = {},
+): Promise<OptimizerResult> {
+  return optimiseWeek(await buildOptimizerInput(context, undefined, options));
+}
+
+/**
+ * Did the exclusion list leave enough dishes to plan a week?
+ *
+ * The caller needs to know, because "we have shown you everything, so here is
+ * the best one again" is a different answer from "here is another week", and
+ * the button says so instead of pretending.
+ */
+export async function exclusionsLeaveEnough(
+  context: PlanContext,
+  excludeRecipeIds: readonly string[],
+): Promise<boolean> {
+  const { recipes } = await selectableRecipes(context);
+  const excluded = new Set(excludeRecipeIds);
+  return recipes.filter((r) => !excluded.has(r.id)).length >= DAYS_IN_WEEK;
 }
 
 /**

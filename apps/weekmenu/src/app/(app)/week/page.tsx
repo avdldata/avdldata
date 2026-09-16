@@ -6,6 +6,7 @@ import { ButtonLink } from '@/components/ui/button-link';
 import { getWeekView } from '@/features/planner/load';
 import { getChainNames, travelCostStatus } from '@/services/store-service';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
+import { RegenerateWeekButton } from '@/features/planner/regenerate-week-button';
 import { WeekSummary } from '@/features/planner/week-summary';
 import { WhyPanel } from '@/features/planner/why-panel';
 import { DayCard } from '@/features/planner/day-card';
@@ -77,7 +78,7 @@ export default async function WeekPage() {
 
         <WhyPanel reasons={plan.reasons} />
 
-        <GenerateWeekButton label="Maak een nieuwe week" variant="secondary" />
+        <RegenerateWeekButton currentRecipeIds={plan.days.map((day) => day.recipe.id)} />
 
         <p className="text-ink-faint pb-2 text-center text-xs">
           Porties en voedingswaarden zijn richtwaarden. Weekmenu is geen medisch hulpmiddel.

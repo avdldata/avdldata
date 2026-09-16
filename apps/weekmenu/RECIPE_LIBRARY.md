@@ -7,49 +7,64 @@ Alles hieronder komt uit `pnpm recipes:report`, `pnpm recipes:reassess` en
 
 ---
 
-## 1. Waar de bibliotheek nu staat
+## 1. Drie getallen, en waarom ze verschillen
 
-|                                           |     vóór |            na |
-| ----------------------------------------- | -------: | ------------: |
-| recepten                                  |       56 |       **138** |
-| uniek na dedupe                           |       55 |       **137** |
-| canonical ingrediënten gebruikt (van 136) |      112 |           129 |
-| koopbaar bij AH + Jumbo + Lidl samen      | 42 (75%) | **124 (90%)** |
-| koopbaar bij alleen AH                    | 34 (61%) |      96 (70%) |
-| koopbaar bij alleen Jumbo                 | 23 (41%) |      56 (41%) |
-| koopbaar bij alleen Lidl                  |  9 (16%) |      33 (24%) |
-| weken zonder dat een gerecht terugkomt    |        7 |        **19** |
-| gerechten die daarbij aan bod komen       |       49 |           133 |
-| diversiteitswaarschuwingen                |        4 |         **0** |
-| validatiefouten                           |        0 |             0 |
-| licenties buiten INTERNAL / PUBLIC_DOMAIN |        0 |         **0** |
+|                                    |         |
+| ---------------------------------- | ------: |
+| **A — productierecords**           |     141 |
+| **B — nu selecteerbaar**           | **127** |
+| **C — uniek binnen selecteerbaar** | **126** |
+| niet beschikbaar (datagat)         |      14 |
 
-De poort uit de opdracht was 120 ná deduplicatie. Dat is 137 geworden.
+Alleen **C** telt. A is wat er in de bibliotheek staat; B is wat de planner je
+vandaag mag voorzetten; C is hoeveel verschillende avondmaaltijden dat werkelijk
+zijn.
+
+Het verschil tussen A en B is geen kwaliteitsoordeel over die veertien
+gerechten. Het is een gat in onze prijsdata: ze noemen een ingrediënt dat in
+geen enkele momentopname voorkomt, en een weekmenu dat je niet kunt kopen is
+geen weekmenu. Ze blijven als record in de bibliotheek staan, met de reden
+eraan vast, en `partitionByAvailability` houdt ze uit de generatiepool. Er wordt
+niets gegokt, niets op € 0 gezet, geen demo-product voor in de plaats geschoven
+en geen regel stil overgeslagen — zie §10.
+
+## 2. Waar de bibliotheek nu staat
+
+|                                           |     vóór |        na |
+| ----------------------------------------- | -------: | --------: |
+| recepten                                  |       56 |   **141** |
+| uniek na dedupe                           |       55 |   **140** |
+| selecteerbaar op echte prijsdata          |       42 |   **127** |
+| canonical ingrediënten gebruikt (van 136) |      112 |       129 |
+| koopbaar bij alleen AH                    | 34 (61%) | 103 (73%) |
+| koopbaar bij alleen Jumbo                 | 23 (41%) |  60 (43%) |
+| koopbaar bij alleen Lidl                  |  9 (16%) |  33 (23%) |
+| weken zonder dat een gerecht terugkomt    |        7 |    **19** |
+| diversiteitswaarschuwingen                |        4 |     **0** |
+| validatiefouten                           |        0 |         0 |
+| licenties buiten INTERNAL / PUBLIC_DOMAIN |        0 |     **0** |
 
 ### Spreiding
 
 | primaire koolhydraat |            | cuisine     |            | primair eiwit |            |
 | -------------------- | ---------: | ----------- | ---------: | ------------- | ---------: |
-| aardappel            | 34 (24,6%) | nederlands  | 25 (18,1%) | peulvrucht    | 26 (18,8%) |
-| peulvruchten         | 23 (16,7%) | mediterraan | 25 (18,1%) | kip           | 24 (17,4%) |
-| rijst                | 22 (15,9%) | aziatisch   | 23 (16,7%) | zuivel        | 20 (14,5%) |
-| pasta                | 21 (15,2%) | italiaans   | 22 (15,9%) | vis           | 19 (13,8%) |
-| granen               |  12 (8,7%) | mexicaans   |  12 (8,7%) | rund          | 17 (12,3%) |
-| noedels              |   9 (6,5%) | indiaas     |  12 (8,7%) | varken        |  12 (8,7%) |
-| wraps                |   8 (5,8%) | grieks      |  11 (8,0%) | plantaardig   |   9 (6,5%) |
-| brood                |   8 (5,8%) | frans       |   8 (5,8%) | ei            |   6 (4,3%) |
-| geen                 |   1 (0,7%) |             |            | geen          |   5 (3,6%) |
+| aardappel            | 35 (24,8%) | mediterraan | 27 (19,1%) | peulvrucht    | 26 (18,4%) |
+| peulvruchten         | 23 (16,3%) | nederlands  | 25 (17,7%) | kip           | 24 (17,0%) |
+| rijst                | 22 (15,6%) | aziatisch   | 24 (17,0%) | zuivel        | 20 (14,2%) |
+| pasta                | 21 (14,9%) | italiaans   | 22 (15,6%) | vis           | 20 (14,2%) |
+| granen               |  13 (9,2%) | mexicaans   |  12 (8,5%) | rund          | 17 (12,1%) |
+| noedels              |  10 (7,1%) | indiaas     |  12 (8,5%) | varken        |  12 (8,5%) |
+| wraps                |   9 (6,4%) | grieks      |  11 (7,8%) | plantaardig   |  10 (7,1%) |
+| brood                |   7 (5,0%) | frans       |   8 (5,7%) | ei            |   7 (5,0%) |
+| geen                 |   1 (0,7%) |             |            | geen          |   5 (3,5%) |
 
-De poort: geen koolhydraat boven 25%, geen cuisine of eiwit boven 30%, en
-elke maaltijdstijl minstens vier keer. Alle zestien stijlen halen dat —
-noedels ging van 1 naar 9, wraps van 2 naar 8, curry van 2 naar 4.
+De poort: geen koolhydraat boven 25%, geen cuisine of eiwit boven 30%, en elke
+maaltijdstijl minstens vier keer. Alle zestien stijlen halen dat.
 
-63 van de 138 gerechten zijn vegetarisch, 31 veganistisch. Die twee labels
-komen uit de ingrediënten, nooit uit een tag; zie §5.
+65 van de 141 gerechten zijn vegetarisch, 32 veganistisch. Die twee labels komen
+uit de ingrediënten, nooit uit een tag; zie §5.
 
----
-
-## 2. Waarom alle 82 nieuwe recepten zelf zijn geschreven
+## 3. Waarom alle 85 nieuwe recepten zelf zijn geschreven
 
 Eerst is gemeten of het anders kon. Geen nieuwe internetresearch, geen
 scraping — alleen de drie corpora die er al lagen, opnieuw beoordeeld met de
@@ -114,29 +129,48 @@ zei dat al voor deze sprint.
 
 ---
 
-## 3. De kwaliteitspoort op de nieuwe recepten
+## 4. De kwaliteitspoort op de nieuwe recepten
 
-82 recepten, allemaal met de hand nagelopen op titel, stappen, hoeveelheid per
-persoon, eiwit, calorieën en koopbaarheid (`data/recipes/new-recipe-audit-sprint2.json`):
+85 recepten, allemaal met de hand nagelopen op titel, stappen, hoeveelheid per
+persoon, eiwit, calorieën en koopbaarheid, en na elke wijziging opnieuw door de
+automatische validatie (`data/recipes/new-recipe-audit-sprint2.json`):
 
-| verdict | aantal |   aandeel |
-| ------- | -----: | --------: |
-| GOOD    |     75 | **91,5%** |
-| FIXABLE |      7 |      8,5% |
-| REJECT  |      0 |        0% |
+| verdict | bij de audit | na de close-out |
+| ------- | -----------: | --------------: |
+| GOOD    |           75 |          **85** |
+| FIXABLE |            7 |           **0** |
+| REJECT  |            0 |           **0** |
 
-De eis was ≥90% GOOD.
+Alle 85 zijn selecteerbaar; geen van de datagaten in §10 raakt een recept uit
+deze batch.
 
-De zeven FIXABLE zijn geen fouten maar bekende beperkingen: zes gerechten
-gebruiken pitabrood, dat in de huidige prijssnapshot alleen bij Lidl staat, en
-`snijbonen-spek-aardappel` is met 419 kcal het lichtste gerecht van de batch.
+### De zeven FIXABLE, één voor één afgesloten
 
-Elf recepten zijn tijdens de audit aangepast, en dat is waar de audit zijn
-werk deed:
+Geen van de zeven is weggestreept of heretiketteerd; elk had een inhoudelijke
+oplossing:
+
+| recept                                  | wat er aan de hand was                                    | wat er is gebeurd                                                                        |
+| --------------------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `snijbonen-spek-aardappel`              | 419 kcal, 15 g eiwit — lichtste van de batch              | spek 200 → 300 g; nu 494 kcal, 19 g eiwit                                                |
+| `italiaanse-kipstoof-olijven`           | pitabrood als koolhydraat, in de snapshot alleen bij Lidl | een cacciatore heeft geen brood nodig: nu met aardappel, bij alle drie de ketens te koop |
+| `uiensoep-kaaskorst`                    | acht uien snijden voor doordeweeks                        | nu zes; het brood blijft, want de kaaskorst ís het gerecht                               |
+| `gigantes-witte-bonen-tomaat`           | pitabrood beperkte de koopbaarheid                        | brood naast een bonenschotel is een bijgerecht: nu `optional`                            |
+| `griekse-kikkererwtensalade-geitenkaas` | idem                                                      | idem                                                                                     |
+| `mexicaanse-bonensalade-avocado`        | idem                                                      | idem                                                                                     |
+| `kikkererwtenstoof-spinazie-citroen`    | idem                                                      | idem                                                                                     |
+
+Na die wijzigingen zijn alle 85 opnieuw langs schema, hoeveelheden, nutritie,
+dieet en allergenen, schaling naar 1–8 porties, deduplicatie en koopbaarheid:
+**0 fouten, 0 waarschuwingen, 85 van 85 selecteerbaar.**
+
+### De elf die tijdens de audit al waren aangepast
+
+Ook die zijn opnieuw door alle validators gehaald — een "fix" die niet opnieuw
+is nagerekend is geen fix:
 
 - `hollandse-groentesoep-balletjes` haalde 348 kcal — geen avondmaaltijd;
-- `aardappel-bloemkoolcurry` en `ratatouille-aardappel` bleven onder 15 g
-  eiwit per portie;
+- `aardappel-bloemkoolcurry` en `ratatouille-aardappel` bleven onder 15 g eiwit
+  per portie;
 - `enchilada-ovenschotel-kip` (899 kcal, 60 g eiwit), `pastaschotel-rookworst`
   (977 kcal) en `burrito-kip-zwarte-bonen` (941 kcal) waren te zwaar;
 - vier recepten deelden meer dan 75% van hun ingrediënten met een bestaand
@@ -149,9 +183,17 @@ handgeschreven nutritionregel is verwijderd in plaats van bijgewerkt: die
 beschreef het oude gerecht, en een bijgewerkte regel zou een tweede kopie van
 dezelfde berekening zijn.
 
+### En drie die bij de close-out zijn bijgeschreven
+
+Het verplaatsen van de kipstoof van brood naar aardappel tilde het
+aardappelaandeel naar 25,4% — net over de poort. Drie nieuwe gerechten met een
+ander koolhydraat brengen het terug naar 24,8%: `mie-vegagehakt-ketjap`,
+`wrap-roerei-paprika-spinazie` en `bulgur-zalm-venkel`. Alle drie gebruiken
+alleen bestaande canonical ingrediënten en zijn bij alle drie de ketens te koop.
+
 ---
 
-## 4. De guards
+## 5. De guards
 
 `src/domain/recipes/validation.ts` draait 28 controles over elk recept bij elke
 wijziging. Ze repareren niets; ze noemen het regelnummer en de reden, want de
@@ -192,7 +234,7 @@ Drie meetfouten die de guards zelf blootlegden en die dus hersteld zijn:
 
 ---
 
-## 5. Dieetlabels worden afgeleid, nooit beweerd
+## 6. Dieetlabels worden afgeleid, nooit beweerd
 
 `vegetarian`, `vegan`, `allergens` en `pregnancySuitable` komen uit de
 canonical ingrediënten, in `normaliseRecipe`. Een tag is een belofte aan wie
@@ -208,29 +250,44 @@ gluten, een zwangere geen rauw-risicogerecht, en een uitsluiting van `ui` en
 
 ---
 
-## 6. Wat een grotere bibliotheek níét oplost
+## 7. Variatie: wat werkt, en wat niet
 
-Gevraagd om twintig weken achter elkaar geeft de planner **twintig keer
-dezelfde zeven gerechten**.
+Drie verschillende dingen, die eerder op één hoop lagen.
 
-Dat is geen tekort aan recepten. Dezelfde bibliotheek levert negentien weken
-achter elkaar zonder dat één gerecht terugkomt, zodra je hem vraagt om iets wat
-er nog niet op tafel heeft gestaan. Het is dat de optimizer geen geheugen
-heeft: de herhalingsstraf telt herhaling _binnen_ een week, en nergens staat
-wat er vorige week is gegeten. Bij gelijke invoer is de goedkoopste week een
-constante.
+**"Maak mijn week" voor een nieuwe week.** De planner rekent de goedkoopste
+week uit die aan alle harde regels voldoet, uit de selecteerbare pool. Er is
+geen geheugen: dezelfde invoer levert dezelfde week. Vraag je twintig weken na
+elkaar, dan krijg je twintig keer hetzelfde menu. Dat is niet stuk — het is de
+determinismegarantie die de hele engine draagt — maar het is wel een beperking,
+en hij staat in §12.
 
-Cross-week-geschiedenis is een optimizerwijziging en valt buiten deze sprint.
-Het gedrag staat vastgepind in `tests/integration/recipe-library-planning.test.ts`
-in een test die hoort te falen zodra die geschiedenis er komt.
+**"Maak een andere week".** Deze knop deed hetzelfde als hierboven en gaf dus
+letterlijk dezelfde zeven gerechten terug: een knop die zichtbaar niets doet.
+Hij vraagt nu om een week _zonder_ de gerechten die je al hebt gezien. Gemeten
+over tien keer drukken, door de browser:
 
-**Dit is de belangrijkste conclusie van de sprint**: 82 recepten erbij leveren
-uit zichzelf geen variatie op. Ze maken variatie mogelijk; iets moet er nog om
-vragen.
+|                                         |               |
+| --------------------------------------- | ------------: |
+| volledig identieke weken                |  **0 van 10** |
+| gemiddeld gewijzigde gerechten per druk | **7,0 van 7** |
+
+De lijst met geziene gerechten zit in de knop, niet in de database. Het is het
+geheugen van één keukentafelsessie, geen voorkeur om te bewaren: na een reload
+begint de app weer bij zijn beste week. Raakt de bibliotheek op — zo'n zeventien
+weken — dan zegt de knop dat, en begint opnieuw.
+
+**Een andere startdatum.** De datum bepaalt welke prijzen en aanbiedingen
+gelden (`onDate`). In DEMO-modus verschuiven de aanbiedingen per week en kan de
+week daardoor veranderen; in REAL-modus is de prijsmomentopname één vaste
+opname, dus verandert er in de praktijk niets.
+
+Vastgepind in `tests/e2e/regenerate-week.spec.ts`: tien keer drukken mag geen
+enkele keer dezelfde week teruggeven, én "maak mijn week" moet reproduceerbaar
+blijven.
 
 ---
 
-## 7. Twee bugs die de grotere bibliotheek zichtbaar maakte
+## 8. Drie bugs die de grotere bibliotheek zichtbaar maakte
 
 **Een vastgezet gerecht buiten de pool liet de zoekopdracht leeglopen.** De
 beam plaatst alleen recepten die in `pool` staan, en dat is de gerangschikte
@@ -243,7 +300,7 @@ het "vervang dit gerecht" op drie van de zeven dagen.
 |                                           | vóór de fix | na de fix |
 | ----------------------------------------- | ----------: | --------: |
 | alternatieven over 7 dagen (56 recepten)  |          27 |        35 |
-| alternatieven over 7 dagen (138 recepten) |           4 |        35 |
+| alternatieven over 7 dagen (141 recepten) |           4 |        35 |
 | dagen zonder enige optie                  |           3 |     **0** |
 
 **`RangeError: Invalid array length`** kwam uit `new Array(NaN + 1)` in de
@@ -258,7 +315,7 @@ die week toevallig ook een aanbieding bevatte.
 
 ---
 
-## 8. Snelheid en aanbiedingen
+## 9. Snelheid en aanbiedingen
 
 Gemeten met beide bibliotheken in dezelfde run, afwisselend en na opwarmen
 (`pnpm recipes:impact`):
@@ -281,9 +338,37 @@ aanbiedingen zitten.
 
 ---
 
-## 9. Hoe je dit zelf naloopt
+## 10. De zeven ingrediënten zonder prijsdata
+
+Veertien recepten raken een ingrediënt dat in geen enkele momentopname
+voorkomt. Ze staan in de bibliotheek, maar de planner mag ze niet kiezen.
+
+| ingrediënt        | recepten | waarom er geen product is                                                                                                    |
+| ----------------- | -------: | ---------------------------------------------------------------------------------------------------------------------------- |
+| `stokbrood`       |        6 | Vers brood zit niet in de Checkjebon-prijslijst; die dekt het kruidenierschap, niet de bakkerijafdeling.                     |
+| `paprika-geel`    |        3 | Alleen rode paprika matcht; gele wordt in de productnamen zelden apart benoemd en valt daardoor uit de identiteitskoppeling. |
+| `verse-basilicum` |        2 | Verse kruidenpotjes staan wel in het schap maar niet in de momentopname.                                                     |
+| `rode-peper`      |        2 | Idem: losse verse pepers ontbreken in de feed.                                                                               |
+| `passata`         |        1 | Gezeefde tomaten matchen op `tomatenblokjes` of vallen af; er is geen eigen product overgebleven.                            |
+| `rode-currypasta` |        1 | Wereldkeuken-pasta's zijn dun gedekt in de momentopname.                                                                     |
+| `bosui`           |        1 | Idem als verse kruiden.                                                                                                      |
+
+Geraakte recepten: `linzensoep`, `pompoensoep`, `salade-blauwe-kaas`,
+`shakshuka`, `tofu-shakshuka-stijl`, `tonijnsteak-groenten`,
+`bulgur-gegrilde-groenten`, `couscous-geroosterde-groenten`,
+`geroosterde-groenten-couscous`, `pasta-pesto-kip`, `penne-arrabbiata`,
+`garnalen-knoflookpasta`, `thaise-rode-curry-kip`, `burrito-bowl`.
+
+Alle veertien zijn bestaande recepten van vóór deze sprint; geen van de 85
+nieuwe raakt een gat. Het dichten ervan is datawerk, geen receptwerk, en
+gebeurt niet in deze close-out.
+
+---
+
+## 11. Hoe je dit zelf naloopt
 
 ```bash
+pnpm recipes:selectable          # de drie getallen: records, selecteerbaar, uniek
 pnpm recipes:report              # profiel, diversiteitspoort, validatie, koopbaarheid
 pnpm recipes:report --menu base  # dezelfde meting op de bibliotheek van vóór sprint 2
 pnpm recipes:reassess            # de kandidaatcorpora opnieuw door de poort
@@ -303,28 +388,48 @@ Vastgelegde data:
 
 ---
 
-## 10. Wat er niet in zit
+## 12. Wat er niet in zit
 
-- **Zeven ingrediënten staan in geen enkele prijssnapshot**: stokbrood,
-  paprika-geel, rode peper, verse basilicum, bosui, passata en rode currypasta.
-  Veertien recepten raken er een. Ze zijn gewoon in de winkel te krijgen; ze
-  staan alleen niet in de folder- en prijsdata die we hebben.
+- **De planner onthoudt niet wat je vorige week at.** Een nieuwe week voor een
+  ongewijzigd huishouden levert opnieuw het optimizer-optimum op. Dat is
+  aanvaardbaar zolang "maak een andere week" één druk verderop staat en
+  aantoonbaar varieert (§7), maar het blijft een beperking: cross-week
+  geschiedenis is werk voor een volgende sprint.
+- **Zeven ingrediënten hebben geen prijsdata** en houden veertien bestaande
+  recepten buiten de pool — §10.
 - **Zeven canonical ingrediënten worden door geen enkel recept gebruikt**:
   crème fraîche, doperwten, kwark, maïstortilla, sriracha, tonijn in blik en
   zongedroogde tomaten. Maïstortilla en sriracha zijn twee van de negentien
-  nieuwe taxonomieconcepten, en juist die twee zijn met de huidige data
-  nergens te koop — een recept eromheen schrijven zou een onkoopbaar recept
-  opleveren.
+  nieuwe taxonomieconcepten, en juist die twee zijn nergens te koop — een
+  recept eromheen schrijven zou een onkoopbaar recept opleveren.
 - **Vormgebonden varianten** (krieltjes, diepvriesspinazie, aardappelpartjes)
   worden nog door geen recept gevraagd. De provider filtert ze eruit zolang
   geen recept zich er expliciet voor opgeeft, en dat opgeven loopt via de
   product-matching, die deze sprint niet wordt aangeraakt.
-- **Risottorijst** staat in de taxonomie als niet-uitwisselbaar, maar er is
-  geen enkel risottorijstproduct in de snapshot. Een risotto zou dus gewone
-  rijst kopen, en dat is precies wat `substitutable: false` verbiedt. Er is
-  daarom geen risottorecept; `aspergerijst-parmezaan` vraagt om gewone rijst en
-  heet ook niet anders.
-- **Hachee en hutspot** blijven als enige duplicaatpaar staan: zes van de zeven
-  ingrediënten gemeen, allebei Nederlands gestoofd rundvlees op gestampte
-  aardappel. Voor een kok twee gerechten, voor de maat bijna één — en de maat
-  heeft er een punt.
+- **Risottorijst** staat in de taxonomie als niet-uitwisselbaar, maar er is geen
+  enkel risottorijstproduct in de momentopname. Een risotto zou dus gewone rijst
+  kopen, en dat is precies wat `substitutable: false` verbiedt. Er is daarom
+  geen risottorecept; `aspergerijst-parmezaan` vraagt om gewone rijst en heet
+  ook niet anders.
+
+### Hachee en hutspot: beoordeeld en allebei behouden
+
+Het enige duplicaatpaar dat overblijft, met 86% gedeelde ingrediënten. De maat
+is hier een false positive, en dat is te controleren aan de recepten zelf:
+
+|                       | hachee                       | hutspot met rundvlees          |
+| --------------------- | ---------------------------- | ------------------------------ |
+| techniek              | twee uur stoven              | samen koken en stampen         |
+| wat het gerecht maakt | azijn en laurier bij veel ui | 500 g wortel door de puree     |
+| rol van de aardappel  | bijgerecht naast de stoof    | onderdeel van het gerecht zelf |
+| kooktijd              | 135 min                      | 105 min                        |
+
+De overlap komt doordat beide Nederlandse gerechten dezelfde basis delen —
+runderstoof, aardappel, ui, boter, melk, bouillon — en die basis is nu eenmaal
+zes van de zeven regels. Wat ze onderscheidt zit in één ingrediënt dat de maat
+niet kan wegen (`wortel` in de een, `azijn` in de ander) en in een techniek die
+alleen in de stappen staat.
+
+De drempel is daarom niet verlaagd en er is niets verwijderd: het paar staat
+vastgepind in `tests/integration/recipe-selectability.test.ts` als het enige
+geaccepteerde duplicaat, zodat een tweede paar wél opvalt.

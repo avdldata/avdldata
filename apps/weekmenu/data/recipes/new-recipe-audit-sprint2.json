@@ -1,18 +1,20 @@
 {
   "auditedAt": "2026-09-16",
-  "scope": "alle 82 recepten die in sprint 2 zijn geschreven",
+  "closedOutAt": "2026-09-16",
+  "scope": "alle 85 recepten die in sprint 2 zijn geschreven",
   "rubric": {
     "GOOD": "zou vanavond zo op tafel kunnen: het gerecht klopt, de hoeveelheden kloppen, de stappen leveren op wat de titel belooft, en het is met de huidige prijsdata te kopen",
     "FIXABLE": "het gerecht klopt, maar er is een concreet punt dat beter kan",
     "REJECT": "geen avondmaaltijd, of het recept levert niet op wat de titel belooft"
   },
-  "method": "Elk recept is met de hand nagelopen op titel, stappen, hoeveelheid per persoon, eiwit- en caloriegehalte en koopbaarheid. De automatische guards in domain/recipes/validation.ts liepen parallel mee; wat zij vonden is tijdens de audit gerepareerd en staat per recept in adjustedDuringAudit.",
-  "total": 82,
-  "good": 75,
-  "fixable": 7,
+  "method": "Elk recept is met de hand nagelopen op titel, stappen, hoeveelheid per persoon, eiwit- en caloriegehalte en koopbaarheid. De automatische guards in domain/recipes/validation.ts liepen parallel mee. Bij de close-out zijn de zeven FIXABLE inhoudelijk opgelost en zijn alle 82 opnieuw door schema-, hoeveelheid-, nutritie-, dieet-, schalings- en koopbaarheidscontroles gehaald; het resultaat staat per recept in revalidated.",
+  "total": 85,
+  "good": 85,
+  "fixable": 0,
   "reject": 0,
-  "goodShare": 0.9146,
+  "selectable": 85,
   "adjustedDuringAudit": 11,
+  "resolvedDuringCloseOut": 7,
   "results": [
     {
       "id": "prei-aardappelschotel-rookworst",
@@ -24,7 +26,13 @@
       "minutes": 55,
       "kcal": 829,
       "proteinGrams": 29,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "andijvieschotel-gehakt",
@@ -36,7 +44,13 @@
       "minutes": 50,
       "kcal": 585,
       "proteinGrams": 29,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "bloemkool-gehaktsaus",
@@ -48,7 +62,13 @@
       "minutes": 40,
       "kcal": 490,
       "proteinGrams": 29,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "snijbonen-spek-aardappel",
@@ -58,10 +78,16 @@
       "carb": "aardappel",
       "method": "bakken",
       "minutes": 40,
-      "kcal": 419,
-      "proteinGrams": 15,
-      "verdict": "FIXABLE",
-      "note": "Lichtste gerecht van de batch (419 kcal, 15 g eiwit). Klopt als Hollandse doordeweekse maaltijd, maar zit op de ondergrens; een extra component zou het steviger maken."
+      "kcal": 494,
+      "proteinGrams": 19,
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "resolvedDuringCloseOut": "Was FIXABLE: 419 kcal en 15 g eiwit, het lichtste gerecht van de batch. Spek van 200 naar 300 g; nu 494 kcal en 19 g eiwit."
     },
     {
       "id": "wortelstamppot-rookworst",
@@ -73,7 +99,13 @@
       "minutes": 40,
       "kcal": 704,
       "proteinGrams": 25,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "boerenkool-kipdij",
@@ -85,7 +117,13 @@
       "minutes": 50,
       "kcal": 510,
       "proteinGrams": 35,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "spinazie-ei-aardappel",
@@ -97,7 +135,13 @@
       "minutes": 30,
       "kcal": 454,
       "proteinGrams": 21,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "kabeljauw-mosterdsaus",
@@ -109,7 +153,13 @@
       "minutes": 40,
       "kcal": 414,
       "proteinGrams": 35,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "kip-appel-rode-ui",
@@ -121,7 +171,13 @@
       "minutes": 50,
       "kcal": 444,
       "proteinGrams": 34,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "bruine-bonensoep-rookworst",
@@ -133,7 +189,13 @@
       "minutes": 45,
       "kcal": 619,
       "proteinGrams": 29,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "zalm-sperziebonen-aardappel",
@@ -145,7 +207,13 @@
       "minutes": 30,
       "kcal": 536,
       "proteinGrams": 32,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "hollandse-groentesoep-balletjes",
@@ -157,7 +225,13 @@
       "minutes": 50,
       "kcal": 580,
       "proteinGrams": 30,
+      "selectable": true,
       "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
       "adjustedDuringAudit": "Tijdens de audit aangepast: 348 kcal was geen avondmaaltijd; aardappel en meer mie toegevoegd."
     },
     {
@@ -170,7 +244,13 @@
       "minutes": 30,
       "kcal": 570,
       "proteinGrams": 21,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "fusilli-pesto-cherrytomaat",
@@ -182,7 +262,13 @@
       "minutes": 28,
       "kcal": 608,
       "proteinGrams": 19,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "rigatoni-zalm-spinazie",
@@ -194,7 +280,13 @@
       "minutes": 32,
       "kcal": 712,
       "proteinGrams": 38,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "orzo-courgette-geitenkaas",
@@ -206,7 +298,13 @@
       "minutes": 28,
       "kcal": 513,
       "proteinGrams": 20,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "pasta-alla-norma",
@@ -218,7 +316,13 @@
       "minutes": 45,
       "kcal": 565,
       "proteinGrams": 19,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "garnalenrijst-citroen",
@@ -230,7 +334,13 @@
       "minutes": 40,
       "kcal": 496,
       "proteinGrams": 29,
+      "selectable": true,
       "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
       "adjustedDuringAudit": "Tijdens de audit vervangen: de eerste versie was een tweede knoflook-garnalenpasta naast de bestaande."
     },
     {
@@ -243,7 +353,13 @@
       "minutes": 65,
       "kcal": 669,
       "proteinGrams": 50,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "minestrone",
@@ -255,7 +371,13 @@
       "minutes": 45,
       "kcal": 511,
       "proteinGrams": 22,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "aspergerijst-parmezaan",
@@ -267,7 +389,13 @@
       "minutes": 45,
       "kcal": 476,
       "proteinGrams": 16,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "farfalle-kip-broccoli",
@@ -279,20 +407,32 @@
       "minutes": 30,
       "kcal": 658,
       "proteinGrams": 45,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "italiaanse-kipstoof-olijven",
-      "name": "Italiaanse kipstoof met olijven",
+      "name": "Italiaanse kipstoof met olijven en aardappel",
       "cuisine": "italiaans",
       "protein": "kip",
-      "carb": "brood",
+      "carb": "aardappel",
       "method": "stoof",
       "minutes": 55,
-      "kcal": 588,
-      "proteinGrams": 38,
-      "verdict": "FIXABLE",
-      "note": "Het gerecht klopt, maar pitabrood staat in de prijssnapshot alleen bij Lidl. Bij AH of Jumbo alleen is deze week niet compleet te kopen."
+      "kcal": 577,
+      "proteinGrams": 37,
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "resolvedDuringCloseOut": "Was FIXABLE: pitabrood als koolhydraat, in de prijssnapshot alleen bij Lidl. Een cacciatore heeft geen brood nodig — nu met aardappel, en daarmee bij alle drie de ketens te koop."
     },
     {
       "id": "mie-kip-satesaus",
@@ -304,7 +444,13 @@
       "minutes": 28,
       "kcal": 674,
       "proteinGrams": 43,
+      "selectable": true,
       "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
       "adjustedDuringAudit": "Tijdens de audit vervangen: de eerste versie deelde 78% van de ingredienten met het bestaande bami-met-kip."
     },
     {
@@ -317,7 +463,13 @@
       "minutes": 30,
       "kcal": 550,
       "proteinGrams": 26,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "bami-ei-spek",
@@ -329,7 +481,13 @@
       "minutes": 30,
       "kcal": 679,
       "proteinGrams": 26,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "noedelsoep-kip-gember",
@@ -341,7 +499,13 @@
       "minutes": 40,
       "kcal": 449,
       "proteinGrams": 37,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "mie-garnalen-broccoli",
@@ -353,7 +517,13 @@
       "minutes": 25,
       "kcal": 531,
       "proteinGrams": 35,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "nasi-kipdij-ei",
@@ -365,7 +535,13 @@
       "minutes": 35,
       "kcal": 682,
       "proteinGrams": 35,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "varkenshaas-ketjap-rijst",
@@ -377,7 +553,13 @@
       "minutes": 32,
       "kcal": 584,
       "proteinGrams": 36,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "roerbak-rund-sperziebonen",
@@ -389,7 +571,13 @@
       "minutes": 33,
       "kcal": 621,
       "proteinGrams": 36,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "kokoscurry-kip-bloemkool",
@@ -401,7 +589,13 @@
       "minutes": 40,
       "kcal": 710,
       "proteinGrams": 39,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "zalm-teriyaki-rijst",
@@ -413,7 +607,13 @@
       "minutes": 30,
       "kcal": 664,
       "proteinGrams": 34,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "gebakken-rijst-garnalen-ei",
@@ -425,7 +625,13 @@
       "minutes": 27,
       "kcal": 628,
       "proteinGrams": 35,
+      "selectable": true,
       "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
       "adjustedDuringAudit": "Tijdens de audit aangepast: deelde 75% van de ingredienten met zalm-teriyaki-rijst."
     },
     {
@@ -438,7 +644,13 @@
       "minutes": 30,
       "kcal": 763,
       "proteinGrams": 37,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "burrito-kip-zwarte-bonen",
@@ -450,7 +662,13 @@
       "minutes": 40,
       "kcal": 870,
       "proteinGrams": 44,
+      "selectable": true,
       "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
       "adjustedDuringAudit": "Tijdens de audit aangepast: 941 kcal per portie teruggebracht."
     },
     {
@@ -463,7 +681,13 @@
       "minutes": 25,
       "kcal": 819,
       "proteinGrams": 31,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "mexicaanse-rijstschotel-kidneybonen",
@@ -475,7 +699,13 @@
       "minutes": 37,
       "kcal": 606,
       "proteinGrams": 19,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "chili-con-carne",
@@ -487,7 +717,13 @@
       "minutes": 55,
       "kcal": 547,
       "proteinGrams": 37,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "enchilada-ovenschotel-kip",
@@ -499,7 +735,13 @@
       "minutes": 50,
       "kcal": 826,
       "proteinGrams": 51,
+      "selectable": true,
       "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
       "adjustedDuringAudit": "Tijdens de audit aangepast: 899 kcal en 60 g eiwit per portie teruggebracht naar een normale portie."
     },
     {
@@ -510,10 +752,16 @@
       "carb": "peulvruchten",
       "method": "salade",
       "minutes": 25,
-      "kcal": 655,
-      "proteinGrams": 21,
-      "verdict": "FIXABLE",
-      "note": "Klopt inhoudelijk; pitabrood beperkt de koopbaarheid tot Lidl."
+      "kcal": 490,
+      "proteinGrams": 15,
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "resolvedDuringCloseOut": "Was FIXABLE: idem. Pitabrood is nu optional."
     },
     {
       "id": "dal-linzen-spinazie",
@@ -525,7 +773,13 @@
       "minutes": 40,
       "kcal": 470,
       "proteinGrams": 20,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "kipcurry-yoghurt-basmati",
@@ -537,7 +791,13 @@
       "minutes": 45,
       "kcal": 591,
       "proteinGrams": 42,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "aardappel-bloemkoolcurry",
@@ -549,8 +809,14 @@
       "minutes": 45,
       "kcal": 670,
       "proteinGrams": 20,
+      "selectable": true,
       "verdict": "GOOD",
-      "adjustedDuringAudit": "Tijdens de audit aangepast: had 13 g eiwit per portie, kikkererwten toegevoegd en primaryProtein naar peulvrucht."
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "adjustedDuringAudit": "Tijdens de audit aangepast: had 13 g eiwit per portie; kikkererwten toegevoegd en primaryProtein naar peulvrucht."
     },
     {
       "id": "pompoen-kikkererwtencurry",
@@ -562,7 +828,13 @@
       "minutes": 45,
       "kcal": 628,
       "proteinGrams": 17,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "tandoori-kip-oven",
@@ -574,7 +846,13 @@
       "minutes": 55,
       "kcal": 592,
       "proteinGrams": 38,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "linzencurry-kokos",
@@ -586,7 +864,13 @@
       "minutes": 40,
       "kcal": 573,
       "proteinGrams": 18,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "indiase-roerbak-tofu-spinazie",
@@ -598,7 +882,13 @@
       "minutes": 33,
       "kcal": 585,
       "proteinGrams": 24,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "viscurry-kabeljauw-kokos",
@@ -610,7 +900,13 @@
       "minutes": 40,
       "kcal": 640,
       "proteinGrams": 36,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "gyros-varkenshaas-tzatziki",
@@ -622,7 +918,13 @@
       "minutes": 50,
       "kcal": 514,
       "proteinGrams": 37,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "griekse-orzo-garnalen",
@@ -634,7 +936,13 @@
       "minutes": 45,
       "kcal": 656,
       "proteinGrams": 40,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "souvlaki-kip-bulgur",
@@ -646,7 +954,13 @@
       "minutes": 40,
       "kcal": 628,
       "proteinGrams": 46,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "gigantes-witte-bonen-tomaat",
@@ -656,10 +970,16 @@
       "carb": "peulvruchten",
       "method": "ovenschotel",
       "minutes": 55,
-      "kcal": 592,
-      "proteinGrams": 23,
-      "verdict": "FIXABLE",
-      "note": "Klopt inhoudelijk; pitabrood beperkt de koopbaarheid tot Lidl."
+      "kcal": 427,
+      "proteinGrams": 17,
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "resolvedDuringCloseOut": "Was FIXABLE: pitabrood beperkte de koopbaarheid. Brood naast een bonenschotel is een bijgerecht, dus nu optional; het gerecht staat zonder."
     },
     {
       "id": "spinazie-feta-aardappelschotel",
@@ -671,7 +991,13 @@
       "minutes": 60,
       "kcal": 523,
       "proteinGrams": 25,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "griekse-kikkererwtensalade-geitenkaas",
@@ -681,10 +1007,16 @@
       "carb": "peulvruchten",
       "method": "salade",
       "minutes": 25,
-      "kcal": 665,
-      "proteinGrams": 25,
-      "verdict": "FIXABLE",
-      "note": "Klopt inhoudelijk; pitabrood beperkt de koopbaarheid tot Lidl."
+      "kcal": 500,
+      "proteinGrams": 19,
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "resolvedDuringCloseOut": "Was FIXABLE: idem. Pitabrood is nu optional."
     },
     {
       "id": "uiensoep-kaaskorst",
@@ -694,10 +1026,16 @@
       "carb": "brood",
       "method": "soep",
       "minutes": 60,
-      "kcal": 523,
-      "proteinGrams": 19,
-      "verdict": "FIXABLE",
-      "note": "Acht uien snijden en dertig minuten karamelliseren is veel voor doordeweeks, en het brood staat alleen bij Lidl in de snapshot."
+      "kcal": 501,
+      "proteinGrams": 18,
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "resolvedDuringCloseOut": "Was FIXABLE: acht uien snijden voor doordeweeks. Nu zes. Het brood blijft, want de kaaskorst is het gerecht."
     },
     {
       "id": "kip-mosterdroomsaus",
@@ -709,8 +1047,14 @@
       "minutes": 40,
       "kcal": 557,
       "proteinGrams": 39,
+      "selectable": true,
       "verdict": "GOOD",
-      "adjustedDuringAudit": "Tijdens de audit aangepast: 88 g groente per persoon, wortel toegevoegd."
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "adjustedDuringAudit": "Tijdens de audit aangepast: 88 g groente per persoon; wortel toegevoegd."
     },
     {
       "id": "ratatouille-aardappel",
@@ -722,8 +1066,14 @@
       "minutes": 55,
       "kcal": 544,
       "proteinGrams": 18,
+      "selectable": true,
       "verdict": "GOOD",
-      "adjustedDuringAudit": "Tijdens de audit aangepast: had 11 g eiwit per portie, witte bonen toegevoegd en primaryProtein naar peulvrucht."
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "adjustedDuringAudit": "Tijdens de audit aangepast: had 11 g eiwit per portie; witte bonen toegevoegd en primaryProtein naar peulvrucht."
     },
     {
       "id": "kabeljauw-provencaals",
@@ -735,7 +1085,13 @@
       "minutes": 55,
       "kcal": 472,
       "proteinGrams": 34,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "rundstoof-wortel-rodewijnstijl",
@@ -747,7 +1103,13 @@
       "minutes": 140,
       "kcal": 618,
       "proteinGrams": 46,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "franse-linzenschotel-spek",
@@ -759,7 +1121,13 @@
       "minutes": 50,
       "kcal": 407,
       "proteinGrams": 22,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "aardappelgratin-champignons",
@@ -771,7 +1139,13 @@
       "minutes": 70,
       "kcal": 532,
       "proteinGrams": 20,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "kikkererwtenstoof-spinazie-citroen",
@@ -781,10 +1155,16 @@
       "carb": "peulvruchten",
       "method": "stoof",
       "minutes": 37,
-      "kcal": 588,
-      "proteinGrams": 24,
-      "verdict": "FIXABLE",
-      "note": "Klopt inhoudelijk; pitabrood beperkt de koopbaarheid tot Lidl."
+      "kcal": 423,
+      "proteinGrams": 19,
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "resolvedDuringCloseOut": "Was FIXABLE: idem. Pitabrood is nu optional."
     },
     {
       "id": "traybake-kabeljauw-cherrytomaat",
@@ -796,7 +1176,13 @@
       "minutes": 50,
       "kcal": 560,
       "proteinGrams": 36,
+      "selectable": true,
       "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
       "adjustedDuringAudit": "Tijdens de audit aangepast: deelde 86% van de ingredienten met zalm-uit-de-oven."
     },
     {
@@ -809,7 +1195,13 @@
       "minutes": 33,
       "kcal": 634,
       "proteinGrams": 24,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "quinoa-bloemkool-hummus",
@@ -821,7 +1213,13 @@
       "minutes": 45,
       "kcal": 636,
       "proteinGrams": 23,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "couscous-kip-courgette",
@@ -833,7 +1231,13 @@
       "minutes": 35,
       "kcal": 579,
       "proteinGrams": 43,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "gevulde-aubergine-linzen",
@@ -845,7 +1249,13 @@
       "minutes": 60,
       "kcal": 430,
       "proteinGrams": 19,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "zalm-quinoa-asperges",
@@ -857,7 +1267,13 @@
       "minutes": 32,
       "kcal": 687,
       "proteinGrams": 40,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "bonen-tomaat-oregano-pasta",
@@ -869,7 +1285,13 @@
       "minutes": 35,
       "kcal": 590,
       "proteinGrams": 24,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "spaghetti-vegaballetjes-tomaat",
@@ -881,7 +1303,13 @@
       "minutes": 45,
       "kcal": 712,
       "proteinGrams": 37,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "snelle-pasta-pastasaus-groenten",
@@ -893,7 +1321,13 @@
       "minutes": 35,
       "kcal": 662,
       "proteinGrams": 25,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "pastaschotel-rookworst-oven",
@@ -905,7 +1339,13 @@
       "minutes": 50,
       "kcal": 833,
       "proteinGrams": 34,
+      "selectable": true,
       "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
       "adjustedDuringAudit": "Tijdens de audit aangepast: 977 kcal per portie teruggebracht."
     },
     {
@@ -918,7 +1358,13 @@
       "minutes": 32,
       "kcal": 603,
       "proteinGrams": 36,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "pastasalade-feta-olijven",
@@ -930,7 +1376,13 @@
       "minutes": 32,
       "kcal": 641,
       "proteinGrams": 20,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "mie-varkenshaas-spitskool",
@@ -942,7 +1394,13 @@
       "minutes": 30,
       "kcal": 579,
       "proteinGrams": 39,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "mie-ei-champignons",
@@ -954,7 +1412,13 @@
       "minutes": 25,
       "kcal": 538,
       "proteinGrams": 27,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "noedelsalade-tempeh-pinda",
@@ -966,7 +1430,13 @@
       "minutes": 35,
       "kcal": 723,
       "proteinGrams": 37,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "wrap-shoarma-groenten",
@@ -978,7 +1448,13 @@
       "minutes": 30,
       "kcal": 718,
       "proteinGrams": 37,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "wrap-gehakt-feta-grieks",
@@ -990,7 +1466,13 @@
       "minutes": 33,
       "kcal": 818,
       "proteinGrams": 37,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "bulgur-gehakt-tomaat",
@@ -1002,7 +1484,13 @@
       "minutes": 37,
       "kcal": 633,
       "proteinGrams": 34,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
     },
     {
       "id": "couscoussalade-geitenkaas-walnoot",
@@ -1014,7 +1502,71 @@
       "minutes": 30,
       "kcal": 732,
       "proteinGrams": 24,
-      "verdict": "GOOD"
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      }
+    },
+    {
+      "id": "mie-vegagehakt-ketjap",
+      "name": "Mie met vegagehakt in ketjap",
+      "cuisine": "aziatisch",
+      "protein": "plantaardig-vlees",
+      "carb": "noedels",
+      "method": "wok",
+      "minutes": 28,
+      "kcal": 625,
+      "proteinGrams": 30,
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "addedDuringCloseOut": "Bij de close-out toegevoegd om de aardappelverhouding onder 25% te houden nadat de Italiaanse kipstoof van brood naar aardappel ging."
+    },
+    {
+      "id": "wrap-roerei-paprika-spinazie",
+      "name": "Wraps met roerei, paprika en spinazie",
+      "cuisine": "mediterraan",
+      "protein": "ei",
+      "carb": "wraps",
+      "method": "bakken",
+      "minutes": 25,
+      "kcal": 787,
+      "proteinGrams": 35,
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "addedDuringCloseOut": "Bij de close-out toegevoegd, idem."
+    },
+    {
+      "id": "bulgur-zalm-venkel",
+      "name": "Bulgur met zalm en venkel",
+      "cuisine": "mediterraan",
+      "protein": "vis",
+      "carb": "granen",
+      "method": "stoof",
+      "minutes": 32,
+      "kcal": 677,
+      "proteinGrams": 37,
+      "selectable": true,
+      "verdict": "GOOD",
+      "revalidated": {
+        "errors": 0,
+        "warnings": 0,
+        "retailFeasible": true
+      },
+      "addedDuringCloseOut": "Bij de close-out toegevoegd, idem."
     }
-  ]
+  ],
+  "addedDuringCloseOut": 3
 }

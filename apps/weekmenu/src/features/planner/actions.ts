@@ -12,6 +12,7 @@ import {
 } from '@/data/repositories/types';
 import { requireUser } from '@/services/auth';
 import {
+  exclusionsLeaveEnough,
   findAlternatives,
   generatePlan,
   loadContext,
@@ -82,6 +83,51 @@ export async function generateWeekAction(): Promise<PlannerResult> {
   revalidatePath('/boodschappen');
   revalidatePath('/winkels');
   return { ok: true };
+}
+
+export interface RegenerateResult extends PlannerResult {
+  /** The dishes that ended up on the new week, so the caller can keep asking. */
+  readonly recipeIds?: readonly string[];
+  /** True when the library ran out and the exclusions had to be dropped. */
+  readonly wrapped?: boolean;
+}
+
+/**
+ * "Show me a different week."
+ *
+ * The optimizer gives the same answer to the same question, which is the right
+ * behaviour and also the reason this action exists: to get a different week you
+ * have to ask a different question. The caller passes everything it has already
+ * been shown, and those dishes are taken out of the running.
+ *
+ * The list lives in the button rather than in the database. That keeps a
+ * browsing session's "not that one either" out of the household's stored data,
+ * and it means a reload starts fresh — which is the honest behaviour, because
+ * nothing here is a lasting preference. Whether the user liked a dish is a
+ * different question, for a different sprint.
+ */
+export async function regenerateWeekAction(
+  seenRecipeIds: readonly string[] = [],
+): Promise<RegenerateResult> {
+  const user = await requireUser();
+  const context = await loadContext(user.id);
+  if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
+
+  const enough = await exclusionsLeaveEnough(context, seenRecipeIds);
+  const result = await generatePlan(context, {
+    ...(enough ? { excludeRecipeIds: seenRecipeIds } : {}),
+  });
+  if (result.status !== 'OK') return { ok: false, error: result.message };
+
+  await persistPlan(context, result.plan);
+  revalidatePath('/week');
+  revalidatePath('/boodschappen');
+  revalidatePath('/winkels');
+  return {
+    ok: true,
+    recipeIds: result.plan.days.map((d) => d.recipe.id),
+    ...(enough ? {} : { wrapped: true }),
+  };
 }
 
 export async function generateWeekAndGoAction(): Promise<void> {

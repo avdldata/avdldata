@@ -204,3 +204,40 @@ export async function buildStoreCandidates(
 
   return { candidates, unpricedProductCount: unpriced, priceStats };
 }
+
+/**
+ * Every canonical ingredient the active catalogue can actually sell.
+ *
+ * "Can sell" is deliberately the whole chain of conditions the shopping list
+ * depends on, not just "a product row exists": the product must match a
+ * canonical ingredient, its pack must convert into that ingredient's unit, and
+ * it must carry a price on the day. `resolveOffersForLocation` is what decides
+ * all three, so this asks it rather than re-deriving the rules and drifting.
+ *
+ * The universe is the union over every branch the locator knows, not the
+ * shops one household happened to tick. A recipe that no chain stocks is a gap
+ * in our data; a recipe that the user's own two shops do not stock is a
+ * different matter, and the optimizer already prices that as unavailability.
+ *
+ * Cached per process per date: availability barely moves within a day, and the
+ * full resolve is the expensive part of planning a week.
+ */
+const purchasableCache = new Map<string, ReadonlySet<string>>();
+
+export async function purchasableIngredientIds(onDate: string): Promise<ReadonlySet<string>> {
+  const cached = purchasableCache.get(onDate);
+  if (cached) return cached;
+
+  const locations = await catalogProvider.getStores();
+  const { candidates } = await buildStoreCandidates({
+    locationIds: locations.map((l) => l.id),
+    onDate,
+  });
+
+  const purchasable = new Set<string>();
+  for (const candidate of candidates) {
+    for (const offer of candidate.offers) purchasable.add(offer.ingredientId);
+  }
+  purchasableCache.set(onDate, purchasable);
+  return purchasable;
+}

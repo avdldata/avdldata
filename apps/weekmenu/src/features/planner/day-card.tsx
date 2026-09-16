@@ -7,7 +7,9 @@ import { formatEuro, weekdayName } from '@/lib/format';
 
 export function DayCard({ day }: { day: PlannedDayResult }) {
   return (
-    <li>
+    // The recipe id is on the card because the regenerate test needs to compare
+    // two weeks, and comparing rendered titles would break on every rename.
+    <li data-recipe-id={day.recipe.id}>
       <Link
         href={`/week/${day.dayIndex}`}
         className="card hover:border-line-strong flex items-stretch gap-0 overflow-hidden transition-colors"
