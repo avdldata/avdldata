@@ -10,6 +10,7 @@ import { Stat } from '@/components/ui/stat';
 import { getWeekView } from '@/features/planner/load';
 import { WhyPanel } from '@/features/planner/why-panel';
 import { getCatalogue } from '@/services/catalogue';
+import { travelCostStatus } from '@/services/store-service';
 import { formatDayDate, formatEuro, formatQuantity, weekdayName } from '@/lib/format';
 
 export const metadata: Metadata = { title: 'Gerecht — Weekmenu' };
@@ -224,7 +225,11 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
           </CardContent>
         </Card>
 
-        <WhyPanel reasons={day.reasons} title="Waarom dit gerecht?" />
+        <WhyPanel
+          reasons={day.reasons}
+          title="Waarom dit gerecht?"
+          travelKnown={travelCostStatus() === 'AVAILABLE'}
+        />
 
         <ButtonLink
           href={`/week/${dayIndex}/vervangen`}

@@ -1,0 +1,205 @@
+{
+  "ranAt": "2026-09-16T22:04:32.579Z",
+  "household": {
+    "members": [
+      "Sanne (36, 172 cm, 68 kg)",
+      "Joris (41, 186 cm, 92 kg)"
+    ],
+    "preferences": [
+      "Italiaans: lekker",
+      "Ovenschotel: liever niet"
+    ],
+    "shopsOffered": 5,
+    "chains": [
+      "Lidl",
+      "Jumbo",
+      "Albert Heijn"
+    ]
+  },
+  "week": {
+    "recipeIds": [
+      "andijviestamppot",
+      "boerenkoolstamppot",
+      "champignonrijst",
+      "pasta-alla-norma",
+      "spinazie-ei-aardappel",
+      "spaghetti-carbonara",
+      "tortilla-espanola"
+    ],
+    "titles": [
+      "Andijviestamppot",
+      "Boerenkoolstamppot met spekjes",
+      "Romige champignonrijst",
+      "Pasta alla norma",
+      "Romige spinazie met ei en aardappel",
+      "Spaghetti carbonara",
+      "Spaanse tortilla"
+    ],
+    "totalCents": 3640,
+    "dataMode": "REAL",
+    "eindTotaalCent": 4423,
+    "eindRecipeIds": [
+      "falafel-wrap",
+      "kikkererwtenstoof-spinazie-citroen",
+      "mexicaanse-bonensalade-avocado",
+      "minestrone",
+      "orzo-courgette-geitenkaas",
+      "quesadilla-kaas-paprika",
+      "tagliatelle-champignonroom"
+    ]
+  },
+  "recipes": [
+    {
+      "id": "andijviestamppot",
+      "titel": "Andijviestamppot",
+      "ingredienten": 19,
+      "stappen": 4,
+      "persoonlijkeHoeveelheden": true,
+      "porties": true,
+      "tijd": true,
+      "voedingswaarde": true,
+      "dieetlabels": true,
+      "geenInterneIds": true,
+      "geenRareDecimalen": true
+    },
+    {
+      "id": "pasta-alla-norma",
+      "titel": "Pasta alla norma",
+      "ingredienten": 21,
+      "stappen": 4,
+      "persoonlijkeHoeveelheden": true,
+      "porties": true,
+      "tijd": true,
+      "voedingswaarde": true,
+      "dieetlabels": true,
+      "geenInterneIds": true,
+      "geenRareDecimalen": true
+    },
+    {
+      "id": "tortilla-espanola",
+      "titel": "Spaanse tortilla",
+      "ingredienten": 14,
+      "stappen": 4,
+      "persoonlijkeHoeveelheden": true,
+      "porties": true,
+      "tijd": true,
+      "voedingswaarde": true,
+      "dieetlabels": true,
+      "geenInterneIds": true,
+      "geenRareDecimalen": true
+    }
+  ],
+  "replacements": [
+    {
+      "dag": 1,
+      "van": "Boerenkoolstamppot met spekjes",
+      "naar": "Griekse bonen in tomatensaus",
+      "totaalVoorCent": 3640,
+      "totaalNaCent": 3851,
+      "regelsVoor": 23,
+      "regelsNa": 26,
+      "regelsGewijzigd": 6
+    },
+    {
+      "dag": 4,
+      "van": "Romige spinazie met ei en aardappel",
+      "naar": "Ratatouille met witte bonen en aardappel",
+      "totaalVoorCent": 3851,
+      "totaalNaCent": 4205,
+      "regelsVoor": 26,
+      "regelsNa": 28,
+      "regelsGewijzigd": 3
+    }
+  ],
+  "regenerated": [
+    {
+      "druk": 1,
+      "titels": [
+        "Witte bonen met tomaat en oregano",
+        "Indiase roerbak met tofu en spinazie",
+        "Mexicaanse rijstschotel met kidneybonen",
+        "Nasi goreng",
+        "Tempeh in ketjap met rijst",
+        "Wraps met zwarte bonen",
+        "Roerbakmie met tofu"
+      ],
+      "nieuweGerechten": 7,
+      "totaalCent": 3999
+    },
+    {
+      "druk": 2,
+      "titels": [
+        "Vegan bloemkoolcurry",
+        "Dal van linzen en spinazie",
+        "Snijbonen met spek en aardappel",
+        "Linzencurry met kokos en wortel",
+        "Romige spinazie met ei en aardappel",
+        "Bulgur met tempeh en pindasaus",
+        "Wortelstamppot met rookworst"
+      ],
+      "nieuweGerechten": 7,
+      "totaalCent": 4302
+    },
+    {
+      "druk": 3,
+      "titels": [
+        "Falafelwrap met yoghurtsaus",
+        "Kikkererwtenstoof met spinazie en citroen",
+        "Mexicaanse bonensalade met avocado",
+        "Minestrone met witte bonen",
+        "Orzo met courgette en geitenkaas",
+        "Quesadilla met kaas en paprika",
+        "Tagliatelle met champignonroomsaus"
+      ],
+      "nieuweGerechten": 7,
+      "totaalCent": 4423
+    }
+  ],
+  "shopping": {
+    "regels": 33,
+    "gecontroleerd": 25,
+    "groepen": 6,
+    "voorbeeld": [
+      {
+        "key": "avocado:ah:wi169797/ah-avocado",
+        "tekst": "2× Avocado Albert Heijn AH Avocado (huismerk) · 170 g per verpakking · samen 340 g Je hebt 308 g nodig, dus 32 g houd je over. € 2,70"
+      },
+      {
+        "key": "champignons:ah:wi67842/ah-witte-champignons",
+        "tekst": "1× Champignons Albert Heijn AH Witte champignons (huismerk) · 400 g per verpakking · samen 400 g Je hebt 294 g nodig, dus 106 g houd je over. € 1,69"
+      },
+      {
+        "key": "cherrytomaat:lidl:82400",
+        "tekst": "1× Cherrytomaten Merk onbekend Cherrytomaten · 250 g per verpakking · samen 250 g Je hebt 166 g nodig, dus 84 g houd je over. € 0,99"
+      },
+      {
+        "key": "citroen:ah:wi230708/ah-citroen",
+        "tekst": "2× Citroen Albert Heijn AH Citroen (huismerk) · 100 g per verpakking · samen 200 g Je hebt 198 g nodig, dus 2 g houd je over. € 1,38"
+      },
+      {
+        "key": "courgette:ah:wi4164/ah-courgette",
+        "tekst": "2× Courgette Albert Heijn AH Courgette (huismerk) · 300 g per verpakking · samen 600 g Je hebt 563 g nodig, dus 37 g houd je over. € 1,30"
+      }
+    ],
+    "totaalCent": 4423
+  },
+  "persistence": {
+    "huishouden": "PASS",
+    "week": "PASS",
+    "afvinken": "PASS",
+    "heropenen": "PASS",
+    "prijsmomentopname": "PASS"
+  },
+  "timings": {
+    "eerste week genereren": 4497,
+    "vervangers ophalen (dag 1)": 1091,
+    "gerecht vervangen (dag 1)": 1347,
+    "vervangers ophalen (dag 4)": 1059,
+    "gerecht vervangen (dag 4)": 1361,
+    "andere week 1": 2922,
+    "andere week 2": 4397,
+    "andere week 3": 5361,
+    "opgeslagen week openen": 321,
+    "boodschappenlijst openen": 301
+  }
+}

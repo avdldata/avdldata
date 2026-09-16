@@ -7,6 +7,7 @@ import { getWeekView } from '@/features/planner/load';
 import { getChainNames, travelCostStatus } from '@/services/store-service';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
 import { RegenerateWeekButton } from '@/features/planner/regenerate-week-button';
+import { PriceFreshness } from '@/features/planner/price-freshness';
 import { SavedWeekNotice } from '@/features/planner/saved-week-notice';
 import { WeekSummary } from '@/features/planner/week-summary';
 import { WhyPanel } from '@/features/planner/why-panel';
@@ -68,6 +69,10 @@ export default async function WeekPage() {
           travelKnown={travelCostStatus() === 'AVAILABLE'}
         />
 
+        {/* This is the first screen that names an amount, so it is the first
+            screen that owes the reader whose prices those are. */}
+        <PriceFreshness />
+
         <section>
           <h2 className="text-ink-soft mb-3 text-sm font-semibold">Het menu</h2>
           <ul className="space-y-3">
@@ -77,7 +82,7 @@ export default async function WeekPage() {
           </ul>
         </section>
 
-        <WhyPanel reasons={plan.reasons} />
+        <WhyPanel reasons={plan.reasons} travelKnown={travelCostStatus() === 'AVAILABLE'} />
 
         {view.stored ? (
           <SavedWeekNotice

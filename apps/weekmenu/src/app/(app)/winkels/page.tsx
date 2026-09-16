@@ -111,12 +111,14 @@ export default async function StoresPage() {
                   </dd>
                 </div>
               )}
-              <div>
-                <dt className="stat-label">Tijd onderweg</dt>
-                <dd className="mt-0.5 font-semibold">
-                  {formatMinutes(plan.recommendedOption.trip.estimatedMinutes)}
-                </dd>
-              </div>
+              {travelKnown ? (
+                <div>
+                  <dt className="stat-label">Tijd onderweg</dt>
+                  <dd className="mt-0.5 font-semibold">
+                    {formatMinutes(plan.recommendedOption.trip.estimatedMinutes)}
+                  </dd>
+                </div>
+              ) : null}
             </dl>
 
             {bestSingle && bestSingle !== plan.recommendedOption ? (
@@ -183,11 +185,17 @@ export default async function StoresPage() {
                       </span>
                     </div>
                     <p className="text-ink-faint mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
-                      <span className="inline-flex items-center gap-1">
-                        <Route className="size-3" aria-hidden />
-                        {formatDistance(option.trip.estimatedDistanceKm)} ·{' '}
-                        {formatEuro(option.trip.estimatedTravelCostCents)} reiskosten
-                      </span>
+                      {/* Only when we know where the shops are. The block
+                          above says we do not, and printing "11,6 km · € 0,00
+                          reiskosten" underneath that made the same page say
+                          both things at once. */}
+                      {travelKnown ? (
+                        <span className="inline-flex items-center gap-1">
+                          <Route className="size-3" aria-hidden />
+                          {formatDistance(option.trip.estimatedDistanceKm)} ·{' '}
+                          {formatEuro(option.trip.estimatedTravelCostCents)} reiskosten
+                        </span>
+                      ) : null}
                       <span>Praktisch totaal {formatEuro(option.practicalTotalCents)}</span>
                       {difference !== 0 ? (
                         <span className={difference < 0 ? 'text-brand' : 'text-ink-faint'}>
@@ -207,8 +215,18 @@ export default async function StoresPage() {
             })}
           </ul>
           <p className="text-ink-faint mt-3 text-xs">
-            &quot;Praktisch totaal&quot; telt boodschappen, geschatte reiskosten en de moeite van
-            een extra winkel bij elkaar op. Dat laatste stel je in bij Weekinstellingen.
+            {travelKnown ? (
+              <>
+                &quot;Praktisch totaal&quot; telt boodschappen, geschatte reiskosten en de moeite
+                van een extra winkel bij elkaar op. Dat laatste stel je in bij Weekinstellingen.
+              </>
+            ) : (
+              <>
+                &quot;Praktisch totaal&quot; telt boodschappen en de moeite van een extra winkel bij
+                elkaar op — reiskosten zitten er niet in, want de filiaaladressen kennen we nog
+                niet. De moeite van een extra winkel stel je in bij Weekinstellingen.
+              </>
+            )}
           </p>
         </section>
 
@@ -224,6 +242,7 @@ export default async function StoresPage() {
             ].includes(reason.code),
           )}
           title="Waarom deze verdeling?"
+          travelKnown={travelKnown}
         />
 
         <ButtonLink href="/week/instellingen" variant="secondary" className="w-full">

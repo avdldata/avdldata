@@ -14,19 +14,44 @@ const str = (value: unknown, fallback = ''): string =>
  * numbers. All user-facing wording lives here, which is why the explanations
  * can never drift away from the actual calculation.
  */
-export function explainReason(reason: Reason): string {
+export interface ExplainOptions {
+  /**
+   * Do we know where the branches are?
+   *
+   * In REAL mode we do not: the price snapshot is a catalogue, not a map. The
+   * engine still computes a distance from the seeded coordinates, and four of
+   * its reasons quote it — which put "11,6 km rijden" on the same screen as
+   * "we kennen de echte filiaaladressen nog niet". The number is dropped here
+   * rather than in the engine, because what the user is told is this layer's
+   * job and the engine's arithmetic is unchanged.
+   */
+  readonly travelKnown?: boolean;
+}
+
+/** A reason that says nothing once its distance is removed. */
+export const DISTANCE_ONLY_REASONS: readonly ReasonCode[] = ['SHORT_TRAVEL_DISTANCE'];
+
+export function explainReason(reason: Reason, options: ExplainOptions = {}): string {
   const p = reason.params;
+  const travelKnown = options.travelKnown ?? true;
   switch (reason.code) {
     case 'STORE_CONSOLIDATION':
-      return `Alles bij ${str(p.store)} — één keer boodschappen doen, ${formatDistance(num(p.distanceKm))} rijden.`;
+      return travelKnown
+        ? `Alles bij ${str(p.store)} — één keer boodschappen doen, ${formatDistance(num(p.distanceKm))} rijden.`
+        : `Alles bij ${str(p.store)} — één keer boodschappen doen.`;
 
     case 'EXTRA_STORE_WORTH_IT':
-      return num(p.savingCents) > 0
+      if (num(p.savingCents) <= 0) {
+        return `We verdelen de boodschappen over ${num(p.storeCount)} winkels: ${str(p.stores)}.`;
+      }
+      return travelKnown
         ? `${str(p.stores)} samen scheelt ${formatEuro(num(p.savingCents))} ten opzichte van alles bij één winkel, voor ongeveer ${formatDistance(num(p.extraKm))} extra rijden.`
-        : `We verdelen de boodschappen over ${num(p.storeCount)} winkels: ${str(p.stores)}.`;
+        : `${str(p.stores)} samen scheelt ${formatEuro(num(p.savingCents))} ten opzichte van alles bij één winkel.`;
 
     case 'EXTRA_STORE_NOT_WORTH_IT':
-      return `Een extra supermarkt zou nog ${formatEuro(num(p.savingCents))} besparen, maar kost ongeveer ${formatDistance(num(p.extraKm))} extra rijden. Dat weegt niet op.`;
+      return travelKnown
+        ? `Een extra supermarkt zou nog ${formatEuro(num(p.savingCents))} besparen, maar kost ongeveer ${formatDistance(num(p.extraKm))} extra rijden. Dat weegt niet op.`
+        : `Een extra supermarkt zou nog ${formatEuro(num(p.savingCents))} besparen, maar dat weegt niet op tegen een tweede keer boodschappen doen.`;
 
     case 'CHEAPEST_STORE_FOR_CATEGORY':
       return `${str(p.store)} is deze week het voordeligst voor ${(CATEGORY_LABELS[str(p.category)] ?? str(p.category)).toLowerCase()}.`;

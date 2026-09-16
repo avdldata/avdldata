@@ -1,0 +1,78 @@
+[
+  {
+    "scenario": "alleen Albert Heijn",
+    "chains": [
+      "Albert Heijn"
+    ],
+    "groceryCents": 3551,
+    "shops": 1,
+    "unavailable": "Niet verkrijgbaar bij de gekozen supermarkten: Runderstoofvlees."
+  },
+  {
+    "scenario": "alleen Jumbo",
+    "chains": [
+      "Jumbo"
+    ],
+    "groceryCents": 5169,
+    "shops": 1,
+    "unavailable": "geen"
+  },
+  {
+    "scenario": "alleen Lidl",
+    "chains": [
+      "Lidl"
+    ],
+    "groceryCents": 3274,
+    "shops": 1,
+    "unavailable": "Niet verkrijgbaar bij de gekozen supermarkten: Bulgur, Ketjap manis, Prei, Sambal, Spitskool, Witte rijst."
+  },
+  {
+    "scenario": "AH + Jumbo",
+    "chains": [
+      "Albert Heijn",
+      "Jumbo"
+    ],
+    "groceryCents": 3542,
+    "shops": 2,
+    "unavailable": "geen"
+  },
+  {
+    "scenario": "AH + Lidl",
+    "chains": [
+      "Albert Heijn",
+      "Lidl"
+    ],
+    "groceryCents": 3647,
+    "shops": 2,
+    "unavailable": "geen"
+  },
+  {
+    "scenario": "Jumbo + Lidl",
+    "chains": [
+      "Jumbo",
+      "Lidl"
+    ],
+    "groceryCents": 3917,
+    "shops": 2,
+    "unavailable": "geen"
+  },
+  {
+    "scenario": "alle drie, hoogstens één winkel",
+    "chains": [
+      "Albert Heijn"
+    ],
+    "groceryCents": 4024,
+    "shops": 1,
+    "unavailable": "geen"
+  },
+  {
+    "scenario": "alle drie, hoogstens twee winkels",
+    "chains": [
+      "Albert Heijn",
+      "Lidl"
+    ],
+    "groceryCents": 3442,
+    "shops": 2,
+    "unavailable": "geen"
+  }
+]
