@@ -202,4 +202,14 @@ export interface ProductOffer {
   readonly nutritionSource?: NutritionSource;
   /** Which of the two the nutrition above came from. */
   readonly nutritionOrigin: 'product' | 'ingredient' | 'none';
+  /**
+   * Where this price came from and when it was seen.
+   *
+   * Carried on the offer rather than looked up again later, so that a shopping
+   * list line can always answer "says who, and how old is that?" without
+   * reaching back into the catalogue. A price with real money attached to it
+   * should never be anonymous.
+   */
+  readonly priceSource?: PriceSource;
+  readonly priceObservedAt?: string;
 }

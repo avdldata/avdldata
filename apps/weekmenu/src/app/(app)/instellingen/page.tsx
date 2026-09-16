@@ -155,7 +155,11 @@ export default async function SettingsPage() {
             {data.pricesCapturedAt ? (
               <p>Prijzen bijgewerkt: {formatCapturedAt(data.pricesCapturedAt)}</p>
             ) : null}
-            <p>Aanbiedingen: nog niet gekoppeld in deze versie.</p>
+            {data.promotionsCapturedAt ? (
+              <p>Aanbiedingen bijgewerkt: {formatCapturedAt(data.promotionsCapturedAt)}</p>
+            ) : (
+              <p>Aanbiedingen: geen momentopname beschikbaar.</p>
+            )}
             <p className="text-ink-faint text-xs">
               Prijzen komen uit een momentopname van de catalogus, niet uit een live koppeling. Ze
               kunnen in de winkel afwijken.

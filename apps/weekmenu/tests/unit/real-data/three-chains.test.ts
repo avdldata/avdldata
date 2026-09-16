@@ -8,6 +8,7 @@ import {
   type StoreCandidate,
 } from '@/domain/optimization/store-selection';
 import type { WeekIngredientRequirement } from '@/domain/aggregation/aggregate';
+import { existsSync } from 'node:fs';
 import { makeOffer } from '../../support/builders';
 
 /**
@@ -185,4 +186,127 @@ describe('maxStores is a limit, not a preference', () => {
     const options = optionsFor(stores, requirements, 3);
     expect(options.some((o) => new Set(o.locationIds).size === 3)).toBe(true);
   });
+});
+
+/**
+ * One week, planned through the production path: the real provider, the real
+ * store service and `optimiseWeek`. Deliberately not a miniature rebuild — a
+ * test that reimplements the thing it checks can only ever agree with itself.
+ */
+async function planWeekFor(chainIds: readonly string[], maxStores: number) {
+  process.env.DATA_MODE = 'REAL';
+  const [
+    { buildStoreCandidates },
+    { getCatalogue },
+    { optimiseWeek },
+    { SEED_LOCATIONS },
+    { DEMO_HOUSEHOLD },
+  ] = await Promise.all([
+    import('@/services/store-service'),
+    import('@/services/catalogue'),
+    import('@/domain/optimization/week-optimizer'),
+    import('@/data/seed/stores'),
+    import('@/data/seed/demo-household'),
+  ]);
+
+  const locationIds = chainIds.map(
+    (chainId) => SEED_LOCATIONS.find((l) => l.chainId === chainId)!.id,
+  );
+  const onDate = '2026-09-16';
+  const { candidates } = await buildStoreCandidates({ locationIds, onDate });
+  const catalogue = getCatalogue();
+
+  const result = optimiseWeek({
+    household: DEMO_HOUSEHOLD,
+    recipes: catalogue.recipes,
+    ingredients: catalogue.ingredientIndex,
+    stores: candidates,
+    maxStores,
+    conveniencePreference: 'gebalanceerd',
+    budget: {},
+    startDate: onDate,
+    today: new Date(onDate),
+  });
+  return result.status === 'OK' ? result.plan : undefined;
+}
+
+/**
+ * The eight combinations a user can actually choose, against the real
+ * catalogue and the production optimizer — not a rebuilt miniature of it.
+ *
+ * These were proven by hand in a browser first. They live here so that the next
+ * change to matching, packaging or store selection has to keep them true.
+ */
+describe('the eight store combinations, on real data', () => {
+  const available = existsSync('data/external/checkjebon-snapshot.json');
+  const maybe = available ? it : it.skip;
+
+  const CASES: readonly { name: string; chains: readonly string[]; maxStores: number }[] = [
+    { name: 'A  alleen Albert Heijn', chains: ['ah'], maxStores: 1 },
+    { name: 'B  alleen Jumbo', chains: ['jumbo'], maxStores: 1 },
+    { name: 'C  alleen Lidl', chains: ['lidl'], maxStores: 1 },
+    { name: 'D  AH + Jumbo', chains: ['ah', 'jumbo'], maxStores: 2 },
+    { name: 'E  AH + Lidl', chains: ['ah', 'lidl'], maxStores: 2 },
+    { name: 'F  Jumbo + Lidl', chains: ['jumbo', 'lidl'], maxStores: 2 },
+    {
+      name: 'G  alle drie toegestaan, hoogstens één winkel',
+      chains: ['ah', 'jumbo', 'lidl'],
+      maxStores: 1,
+    },
+    {
+      name: 'H  alle drie toegestaan, hoogstens twee',
+      chains: ['ah', 'jumbo', 'lidl'],
+      maxStores: 2,
+    },
+  ];
+
+  for (const testCase of CASES) {
+    maybe(
+      `${testCase.name} plans a complete week within its limit`,
+      async () => {
+        const plan = await planWeekFor(testCase.chains, testCase.maxStores);
+        expect(plan, testCase.name).toBeDefined();
+        expect(plan!.days).toHaveLength(7);
+        const chains = new Set(plan!.recommendedOption.chainIds);
+        expect(chains.size, `${testCase.name}: winkels`).toBeLessThanOrEqual(testCase.maxStores);
+        for (const chainId of chains) expect(testCase.chains).toContain(chainId);
+        expect(plan!.totals.groceryCents).toBeGreaterThan(0);
+      },
+      120_000,
+    );
+  }
+});
+
+/**
+ * A real promotion, actually used.
+ *
+ * Linking promotions to products proves the join; it does not prove the
+ * optimizer ever buys one. This asserts the whole chain: folder -> article
+ * number -> catalogue product -> offer -> a line on a planned week that costs
+ * less than its shelf price.
+ */
+describe('a planned week and the folder', () => {
+  const available = existsSync('data/external/checkjebon-snapshot.json');
+  const maybe = available ? it : it.skip;
+
+  maybe(
+    'applies at least one real promotion when Albert Heijn is in play',
+    async () => {
+      const plan = await planWeekFor(['ah'], 1);
+      expect(plan).toBeDefined();
+      const lines = plan!.recommendedOption.assignments.flatMap((a) => a.packaging.lines);
+      const promoted = lines.filter((line) => line.promotionApplied);
+
+      expect(promoted.length, 'geen enkele aanbieding toegepast').toBeGreaterThan(0);
+      for (const line of promoted) {
+        const promotion = line.offer.promotion!;
+        expect(promotion.source).toBe('folder');
+        // Paying the shelf price for every pack would have cost more.
+        expect(line.lineTotalCents).toBeLessThan(line.offer.unitPriceCents * line.units);
+        expect(promotion.validFrom <= '2026-09-16').toBe(true);
+        expect(promotion.validUntil >= '2026-09-16').toBe(true);
+      }
+    },
+    120_000,
+  );
 });

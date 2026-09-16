@@ -38,7 +38,10 @@ export const RETAIL_PIECE_IS_NOT_RECIPE_PIECE: ReadonlySet<string> = new Set([
 
 export type PackConversion =
   | { readonly ok: true; readonly quantity: Quantity }
-  | { readonly ok: false; readonly reason: 'PIECE_MISMATCH' | 'UNCONVERTIBLE' | 'NOT_POSITIVE' };
+  | {
+      readonly ok: false;
+      readonly reason: 'PIECE_MISMATCH' | 'UNCONVERTIBLE' | 'NOT_POSITIVE' | 'FRACTIONAL_PIECES';
+    };
 
 export function packToQuantity(pack: PackageInfo, ingredient: CanonicalIngredient): PackConversion {
   if (pack.baseUnit === 'piece' && RETAIL_PIECE_IS_NOT_RECIPE_PIECE.has(ingredient.id)) {
@@ -66,5 +69,18 @@ export function packToQuantity(pack: PackageInfo, ingredient: CanonicalIngredien
     return { ok: false, reason: 'UNCONVERTIBLE' };
   }
   if (converted.amount <= 0) return { ok: false, reason: 'NOT_POSITIVE' };
+  /*
+   * A pack counted in pieces must contain a whole number of them.
+   *
+   * Found by auditing a real shopping list: "Wraps naturel" arrived as a pack
+   * of 5,161290322580645 pieces, because the label stated only a weight and the
+   * conversion divided it by an average wrap. Nobody sells 5,16 wraps, and a
+   * requirement of 4,3 wraps met by a pack of 5,16 is arithmetic about a
+   * quantity that does not exist. Refused, which drops the offer rather than
+   * printing a number no shelf can honour.
+   */
+  if (converted.unit === 'piece' && !Number.isInteger(converted.amount)) {
+    return { ok: false, reason: 'FRACTIONAL_PIECES' };
+  }
   return { ok: true, quantity: converted };
 }

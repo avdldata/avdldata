@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getWeekView } from '@/features/planner/load';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
 import { WhyPanel } from '@/features/planner/why-panel';
-import { getChainNames } from '@/services/store-service';
+import { getChainNames, travelCostStatus } from '@/services/store-service';
 import { formatDistance, formatEuro, formatMinutes } from '@/lib/format';
 import { cn } from '@/lib/cn';
 
@@ -18,6 +18,7 @@ export const dynamic = 'force-dynamic';
 export default async function StoresPage() {
   const view = await getWeekView();
   const chainNames = await getChainNames();
+  const travelKnown = travelCostStatus() === 'AVAILABLE';
   const chainName = (id: string): string => chainNames[id] ?? id;
 
   if (!view.plan) {
@@ -85,18 +86,30 @@ export default async function StoresPage() {
                   {plan.recommendedOption.locationIds.length}
                 </dd>
               </div>
-              <div>
-                <dt className="stat-label">Rijafstand</dt>
-                <dd className="mt-0.5 font-semibold">
-                  {formatDistance(plan.recommendedOption.trip.estimatedDistanceKm)}
-                </dd>
-              </div>
-              <div>
-                <dt className="stat-label">Reiskosten</dt>
-                <dd className="mt-0.5 font-semibold">
-                  {formatEuro(plan.recommendedOption.trip.estimatedTravelCostCents)}
-                </dd>
-              </div>
+              {travelKnown ? (
+                <>
+                  <div>
+                    <dt className="stat-label">Rijafstand</dt>
+                    <dd className="mt-0.5 font-semibold">
+                      {formatDistance(plan.recommendedOption.trip.estimatedDistanceKm)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="stat-label">Reiskosten</dt>
+                    <dd className="mt-0.5 font-semibold">
+                      {formatEuro(plan.recommendedOption.trip.estimatedTravelCostCents)}
+                    </dd>
+                  </div>
+                </>
+              ) : (
+                <div className="col-span-2">
+                  <dt className="stat-label">Reisafstand</dt>
+                  <dd className="text-ink-soft mt-0.5 text-sm">
+                    Nog niet meegenomen — we kennen de echte filiaaladressen nog niet, en een
+                    geschatte omweg naast een echte boodschappenprijs zou net zo hard lijken.
+                  </dd>
+                </div>
+              )}
               <div>
                 <dt className="stat-label">Tijd onderweg</dt>
                 <dd className="mt-0.5 font-semibold">

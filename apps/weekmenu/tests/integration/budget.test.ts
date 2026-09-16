@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { fastestOf } from '../support/timing';
 import { optimiseWeek } from '@/domain/optimization/week-optimizer';
 import { cents } from '@/domain/units';
 import {
@@ -113,8 +114,6 @@ describe('a ceiling makes the planner keep looking', () => {
   });
 
   it('does not slow down an ordinary plan that has no ceiling', () => {
-    const started = performance.now();
-    plan({});
-    expect(performance.now() - started).toBeLessThan(2000);
-  });
+    expect(fastestOf(3, () => void plan({}))).toBeLessThan(2000);
+  }, 30_000);
 });

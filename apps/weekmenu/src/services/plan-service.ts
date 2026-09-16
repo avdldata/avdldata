@@ -8,7 +8,7 @@ import { getRepositories } from '@/data';
 import type { StoredPlan, WeekSettings } from '@/data/repositories/types';
 import { DEFAULT_WEEK_SETTINGS } from '@/data/repositories/types';
 import { getCatalogue } from './catalogue';
-import { buildStoreCandidates } from './store-service';
+import { buildStoreCandidates, travelCostStatus } from './store-service';
 
 export interface PlanContext {
   readonly household: Household;
@@ -57,11 +57,21 @@ async function buildOptimizerInput(
 ): Promise<OptimizerInput> {
   const catalogue = getCatalogue();
   const { latitude, longitude } = context.household.location;
+  /*
+   * Distance is only computed when the branches are real.
+   *
+   * In REAL mode they are not — the price snapshot is a catalogue, not a map —
+   * and a real bill combined with an invented detour makes a recommendation
+   * that is half fiction with no visible seam. See `travelCostStatus`.
+   */
+  const travelKnown = travelCostStatus() === 'AVAILABLE';
   const { candidates } = await buildStoreCandidates({
     locationIds: context.settings.selectedLocationIds,
     // Without coordinates there is no distance to compute. Passing (0, 0) would
     // put the household in the Atlantic and make every shop 5.900 km away.
-    ...(latitude !== undefined && longitude !== undefined ? { home: { latitude, longitude } } : {}),
+    ...(travelKnown && latitude !== undefined && longitude !== undefined
+      ? { home: { latitude, longitude } }
+      : {}),
     onDate: context.startDate,
   });
 

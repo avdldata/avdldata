@@ -15,9 +15,16 @@ import { formatDistance, formatEuro, formatQuantity, formatWeekRange } from '@/l
 export function WeekSummary({
   plan,
   chainNames,
+  travelKnown = true,
 }: {
   plan: WeeklyPlan;
   chainNames: Record<string, string>;
+  /**
+   * False when the branch locations are not the real ones, which is the case
+   * whenever real prices are in play. A travel cost computed from an invented
+   * distance would sit next to a real grocery total and look just as solid.
+   */
+  travelKnown?: boolean;
 }) {
   const { totals } = plan;
   const chains = plan.recommendedOption.chainIds.map((id) => chainNames[id] ?? id);
@@ -64,8 +71,14 @@ export function WeekSummary({
           </span>
           <span className="inline-flex items-center gap-1.5">
             <Route className="size-4" aria-hidden />
-            Reiskosten {formatEuro(totals.travelCents)} ·{' '}
-            {formatDistance(plan.recommendedOption.trip.estimatedDistanceKm)}
+            {travelKnown ? (
+              <>
+                Reiskosten {formatEuro(totals.travelCents)} ·{' '}
+                {formatDistance(plan.recommendedOption.trip.estimatedDistanceKm)}
+              </>
+            ) : (
+              'Reisafstand nog niet meegenomen'
+            )}
           </span>
           {/* The padding is the point: a 20 px inline link is a miss waiting to
               happen on a phone, and the negative margin keeps it where it was. */}

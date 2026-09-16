@@ -188,6 +188,9 @@ export function resolveOffersForLocation(
       ...(nutrition.per100 ? { nutritionPer100: nutrition.per100 } : {}),
       ...(nutrition.source ? { nutritionSource: nutrition.source } : {}),
       nutritionOrigin: nutrition.origin,
+      // Provenance travels with the price, not beside it.
+      ...(current.source ? { priceSource: current.source } : {}),
+      ...(current.observedAt ? { priceObservedAt: current.observedAt } : {}),
     });
   }
 

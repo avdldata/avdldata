@@ -150,3 +150,30 @@ enige wat we eerlijk weten.
 Als eindgebruiker hoef je hier niets voor te doen: is het bestand er, dan
 gebruikt de app het. Is het er niet, dan zegt de app dat, in plaats van
 stilletjes demo-prijzen te tonen.
+
+## Sprint 1 close-out — wat er nog bij kwam
+
+**Echte aanbiedingen.** De PrijsProfeet-momentopname hangt nu aan dezelfde
+runtime als de catalogus. Van 5.190 folderregels koppelen er **48** op de
+peildatum aan een product dat wij verkopen (AH 36, Jumbo 12), uitsluitend op het
+artikelnummer van de winkel zelf — geen naamgelijkenis. 507 regels zijn
+overgeslagen omdat hun mechaniek niet veilig te lezen was, en dat aantal staat
+in de uitkomst in plaats van stilletjes te verdwijnen.
+
+**Reisafstand uitgezet in REAL mode.** De momentopname is een catalogus, geen
+kaart: hij zegt wat Albert Heijn verkoopt, niet waar de filialen staan. Echte
+boodschappenprijzen naast een verzonnen omweg geven een advies dat half fictie
+is zonder zichtbare naad, dus in REAL mode staat de reiscomponent uit en meldt
+de app dat met zoveel woorden.
+
+**Twee correctheidsbugs uit de handmatige audit.**
+
+| bevinding                  | wat er gebeurde                                                                                                     | wat er nu gebeurt                                                         |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| breukdelen van een stuk    | "Wraps naturel" kwam binnen als een pak van 5,161290322580645 stuks, omdat het etiket alleen een gewicht noemde     | een pak in stuks moet een heel getal zijn, anders bestaat het aanbod niet |
+| winkelvorm zonder aanvraag | voorgesneden aardappelpartjes en mini-krieltjes werden gekocht voor gewone aardappel, tegen een voorbewerkingsprijs | een variant met een vorm waar geen recept om vroeg, doet niet mee         |
+
+**Provenance.** Een aanbod draagt nu zijn eigen herkomst: keten, artikelnummer,
+productnaam, verpakking, prijsbron en het moment van waarneming, plus bij een
+aanbieding de bron, de identiteit en de geldigheid. De draaiende app weet
+daarmee evenveel als de meetharnas.

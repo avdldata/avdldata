@@ -15,6 +15,7 @@ import { cents } from '@/domain/units';
 import { buildIngredientPhrases, matchProduct } from '@/domain/ingestion/match-ingredient';
 import { resolvePackage } from '@/domain/ingestion/package-parser';
 import { packToQuantity } from '@/domain/ingestion/pack-to-quantity';
+import { buildVariantIndex, DEFAULT_ACCEPTED_FORMS } from '@/domain/ingredients/taxonomy';
 import { buildIngredientIndex } from '@/domain/ingredients/types';
 import { SEED_CHAINS, SEED_LOCATIONS } from '@/data/seed/stores';
 import { SEED_INGREDIENTS, SEED_INGREDIENT_ALIASES } from '@/data/seed/ingredients';
@@ -25,6 +26,7 @@ import { extractRetailerProductId } from '@/services/promotions/retailer-id';
 import type { ProductCatalogProvider, ProductSearchQuery } from './catalog/types';
 import type { PriceQuery, SupermarketPriceProvider } from './pricing/types';
 import type { NutritionDataProvider } from './nutrition/types';
+import { loadRealPromotions } from './real-promotions';
 
 /**
  * The real Albert Heijn, Jumbo and Lidl catalogue, as the app prices with it.
@@ -130,6 +132,7 @@ export function buildRealCatalogue(path = SNAPSHOT_PATH): BuiltCatalogue {
     SEED_INGREDIENT_VARIANTS,
   );
   const ingredientIndex = buildIngredientIndex(SEED_INGREDIENTS);
+  const variantIndex = buildVariantIndex(SEED_INGREDIENT_VARIANTS);
 
   const products: Product[] = [];
   const observations: PriceObservation[] = [];
@@ -166,6 +169,18 @@ export function buildRealCatalogue(path = SNAPSHOT_PATH): BuiltCatalogue {
       if (!ingredient) continue;
       const converted = packToQuantity(pack.info, ingredient);
       if (!converted.ok) continue;
+
+      /*
+       * A retail form no recipe asked for is not an offer.
+       *
+       * The taxonomy says frozen spinach is spinach in a state a salad cannot
+       * use, and pre-cut potato wedges are potatoes a stamppot does not want.
+       * Until a recipe opts into a form, an offer carrying one is left out —
+       * the audit found wedges and strips being bought for plain potato and
+       * plain pepper, at a pre-preparation price.
+       */
+      const variant = match.variantId ? variantIndex.get(match.variantId) : undefined;
+      if (variant?.form && !DEFAULT_ACCEPTED_FORMS.includes(variant.form)) continue;
 
       products.push({
         id: productId,
@@ -257,14 +272,20 @@ export class RealDataProvider
   }
 
   /**
-   * Promotions are supplied separately; see `real-promotions.ts`.
+   * Real promotions, joined on the shop's own article number.
    *
-   * Returning none here is not a silent failure: the app is required to price a
-   * week correctly on ordinary prices alone, and a missing promotion makes a
-   * week slightly more expensive rather than wrong.
+   * A missing or unreadable folder yields none rather than an error: a week
+   * priced on ordinary prices alone is slightly more expensive and entirely
+   * correct, so losing the folder must never stop someone cooking. What it must
+   * not do is fall back to demo promotions, and it does not.
    */
-  async getPromotions(_query: PriceQuery): Promise<readonly Promotion[]> {
-    return [];
+  async getPromotions(query: PriceQuery): Promise<readonly Promotion[]> {
+    const { retailerIdByProduct } = this.catalogue();
+    return loadRealPromotions({
+      onDate: query.onDate,
+      ...(query.chainIds ? { chainIds: query.chainIds } : {}),
+      retailerIdByProduct,
+    }).promotions;
   }
 
   async getProductNutrition(): Promise<readonly ProductNutrition[]> {

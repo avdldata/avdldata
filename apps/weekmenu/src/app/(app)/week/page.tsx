@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/app-shell/page-header';
 import { EmptyState } from '@/components/app-shell/empty-state';
 import { ButtonLink } from '@/components/ui/button-link';
 import { getWeekView } from '@/features/planner/load';
-import { getChainNames } from '@/services/store-service';
+import { getChainNames, travelCostStatus } from '@/services/store-service';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
 import { WeekSummary } from '@/features/planner/week-summary';
 import { WhyPanel } from '@/features/planner/why-panel';
@@ -60,7 +60,11 @@ export default async function WeekPage() {
       />
 
       <div className="space-y-5">
-        <WeekSummary plan={plan} chainNames={chainNames} />
+        <WeekSummary
+          plan={plan}
+          chainNames={chainNames}
+          travelKnown={travelCostStatus() === 'AVAILABLE'}
+        />
 
         <section>
           <h2 className="text-ink-soft mb-3 text-sm font-semibold">Het menu</h2>

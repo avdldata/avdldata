@@ -94,10 +94,107 @@ describeSnapshot('the real catalogue', () => {
     expect(new Set(onlyLidl.map((p) => p.chainId))).toEqual(new Set(['lidl']));
   });
 
-  it('works with no promotions at all', async () => {
+  it('serves real promotions for the chains that were asked for', async () => {
     const provider = new RealDataProvider();
-    await expect(
-      provider.getPromotions({ onDate: '2026-09-15', chainIds: ['ah'] }),
-    ).resolves.toEqual([]);
+    const ah = await provider.getPromotions({ onDate: '2026-09-16', chainIds: ['ah'] });
+    expect(ah.length).toBeGreaterThan(0);
+    for (const promotion of ah) {
+      expect(promotion.scope).toEqual({ kind: 'chain', chainId: 'ah' });
+      expect(promotion.source).toBe('folder');
+    }
+    // Asking for one chain never leaks another's folder.
+    const jumbo = await provider.getPromotions({ onDate: '2026-09-16', chainIds: ['jumbo'] });
+    expect(jumbo.every((p) => p.scope.kind === 'chain' && p.scope.chainId === 'jumbo')).toBe(true);
+  });
+});
+
+/**
+ * Provenance, end to end: what a shopping-list line can say about itself.
+ *
+ * The rule is that the running app knows at least as much as the measurement
+ * harness does. Richer provenance in a test than in production would mean the
+ * thing we audit is not the thing that ships.
+ */
+describeSnapshot('a real offer carries its own history', () => {
+  it('names the retailer, the article, the price source and when it was seen', async () => {
+    process.env.DATA_MODE = 'REAL';
+    const { buildStoreCandidates } = await import('@/services/store-service');
+    const { SEED_LOCATIONS } = await import('@/data/seed/stores');
+    const locationIds = ['ah', 'jumbo', 'lidl'].map(
+      (chainId) => SEED_LOCATIONS.find((l) => l.chainId === chainId)!.id,
+    );
+    const { candidates } = await buildStoreCandidates({ locationIds, onDate: '2026-09-16' });
+    expect(candidates.length).toBe(3);
+
+    for (const candidate of candidates) {
+      expect(candidate.offers.length, candidate.chain.id).toBeGreaterThan(0);
+      for (const offer of candidate.offers) {
+        expect(offer.chainId).toBe(candidate.chain.id);
+        // The article number is the second half of the id, and it is real.
+        expect(offer.productId.startsWith(`${candidate.chain.id}:`)).toBe(true);
+        expect(offer.name.trim()).not.toBe('');
+        expect(offer.packageAmount.amount).toBeGreaterThan(0);
+        expect(offer.unitPriceCents).toBeGreaterThan(0);
+        expect(offer.priceSource).toBe('prijs-snapshot');
+        expect(offer.priceObservedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+      }
+    }
+  }, 120_000);
+
+  it('records the folder behind every promotion it applies', async () => {
+    process.env.DATA_MODE = 'REAL';
+    const { buildStoreCandidates } = await import('@/services/store-service');
+    const { SEED_LOCATIONS } = await import('@/data/seed/stores');
+    const locationIds = ['ah', 'jumbo'].map(
+      (chainId) => SEED_LOCATIONS.find((l) => l.chainId === chainId)!.id,
+    );
+    const { candidates } = await buildStoreCandidates({ locationIds, onDate: '2026-09-16' });
+    const promoted = candidates.flatMap((c) => c.offers.filter((o) => o.promotion));
+    expect(promoted.length).toBeGreaterThan(0);
+    for (const offer of promoted) {
+      const promotion = offer.promotion!;
+      expect(promotion.source).toBe('folder');
+      expect(promotion.id).toMatch(/:/);
+      expect(promotion.validFrom <= '2026-09-16').toBe(true);
+      expect(promotion.validUntil >= '2026-09-16').toBe(true);
+      expect(promotion.label.trim()).not.toBe('');
+    }
+  }, 120_000);
+});
+
+/**
+ * A retail form no recipe asked for is not an offer.
+ *
+ * The audit found pre-cut potato wedges bought for plain potato and mini new
+ * potatoes bought for a stamppot — both real potatoes, both at a
+ * pre-preparation price, and neither what the recipe meant. The taxonomy
+ * already said so; this is the gate that enforces it in the catalogue.
+ */
+describeSnapshot('retail forms', () => {
+  it('admits no product whose variant carries a form a recipe has to opt into', async () => {
+    const { SEED_INGREDIENT_VARIANTS } = await import('@/data/seed/ingredient-taxonomy');
+    const { DEFAULT_ACCEPTED_FORMS } = await import('@/domain/ingredients/taxonomy');
+    const gated = SEED_INGREDIENT_VARIANTS.filter(
+      (v) => v.form && !DEFAULT_ACCEPTED_FORMS.includes(v.form),
+    );
+    expect(gated.length).toBeGreaterThan(0);
+
+    const catalogue = buildRealCatalogue();
+    const names = catalogue.products.map((p) => p.productName.toLowerCase());
+    for (const variant of gated) {
+      const needle = variant.name.toLowerCase();
+      expect(
+        names.some((n) => n.includes(needle)),
+        `${variant.name} hoort geweerd te zijn`,
+      ).toBe(false);
+    }
+  });
+
+  it('never offers a pack of a fraction of a piece', () => {
+    const catalogue = buildRealCatalogue();
+    for (const product of catalogue.products) {
+      if (product.packageAmount.unit !== 'piece') continue;
+      expect(Number.isInteger(product.packageAmount.amount), product.productName).toBe(true);
+    }
   });
 });

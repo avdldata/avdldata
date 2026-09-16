@@ -6,6 +6,7 @@ import { buildIngredientIndex } from '@/domain/ingredients/types';
 import type { StoreCandidate } from '@/domain/optimization/store-selection';
 import { SeedDataProvider } from '@/providers/seed-data-provider';
 import { RealDataProvider, realSnapshotCapturedAt } from '@/providers/real-data-provider';
+import { realPromotionsCapturedAt } from '@/providers/real-promotions';
 import { dataMode } from '@/config/data-mode';
 import { SeedStoreLocatorProvider } from '@/providers/locator/seed-locator';
 import type { ProductCatalogProvider } from '@/providers/catalog/types';
@@ -32,20 +33,44 @@ const priceProvider: SupermarketPriceProvider = backing;
 const nutritionProvider: NutritionDataProvider = backing;
 const locatorProvider: StoreLocatorProvider = new SeedStoreLocatorProvider();
 
+/**
+ * Are the branch locations we price travel from the real ones?
+ *
+ * They are not, in `REAL` mode. The snapshot is a catalogue, not a map: it says
+ * what Albert Heijn sells and for how much, and nothing about where its shops
+ * are. The branches therefore still come from the seed.
+ *
+ * That combination is the dangerous one. Real grocery prices plus an invented
+ * distance produces a *recommendation* — "one shop is better, the detour is not
+ * worth € 0,40" — that is part real and part fiction, and the reader cannot see
+ * the seam. So in REAL mode the travel component is switched off entirely and
+ * labelled as absent, rather than computed from coordinates nobody checked.
+ *
+ * In DEMO mode the seed branches are used, which is coherent: everything on the
+ * screen is then demo data and says so.
+ */
+export function travelCostStatus(): 'AVAILABLE' | 'NOT_AVAILABLE' {
+  return mode === 'REAL' ? 'NOT_AVAILABLE' : 'AVAILABLE';
+}
+
 /** What the interface should tell the reader about the prices it is showing. */
 export function dataModeView(): {
   mode: 'REAL' | 'DEMO';
   label: string;
+  /** Two snapshots, two dates. They are refreshed separately, so they differ. */
   pricesCapturedAt?: string;
+  promotionsCapturedAt?: string;
 } {
   if (mode === 'DEMO') {
     return { mode, label: 'Demo-data — dit zijn geen echte winkelprijzen' };
   }
   const capturedAt = realSnapshotCapturedAt();
+  const promotionsAt = realPromotionsCapturedAt();
   return {
     mode,
     label: 'Echte prijsdata',
     ...(capturedAt ? { pricesCapturedAt: capturedAt } : {}),
+    ...(promotionsAt ? { promotionsCapturedAt: promotionsAt } : {}),
   };
 }
 

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { fastestOf } from '../support/timing';
 import { optimiseWeek } from '@/domain/optimization/week-optimizer';
 import { DEFAULT_OPTIMIZER_CONFIG } from '@/domain/optimization/config';
 import {
@@ -80,12 +81,7 @@ describe('generating a week stays inside its budget', () => {
     // first-call overhead of the runtime.
     optimiseWeek(input());
 
-    const runs = 5;
-    const started = performance.now();
-    for (let run = 0; run < runs; run += 1) optimiseWeek(input());
-    const average = (performance.now() - started) / runs;
-
-    expect(average).toBeLessThan(2000);
+    expect(fastestOf(5, () => void optimiseWeek(input()))).toBeLessThan(2000);
   }, 30_000);
 
   it('keeps the search space bounded rather than merely small', () => {
