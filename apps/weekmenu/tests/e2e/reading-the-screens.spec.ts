@@ -68,9 +68,7 @@ async function regenerate(page: Page): Promise<string[]> {
   const button = page.locator('button[data-action="regenerate-week"]');
   await button.click();
   await expect(button).toBeEnabled({ timeout: 180_000 });
-  await expect
-    .poll(async () => (await weekIds(page)).join(), { timeout: 60_000 })
-    .not.toBe(before);
+  await expect.poll(async () => (await weekIds(page)).join(), { timeout: 60_000 }).not.toBe(before);
   return weekIds(page);
 }
 
@@ -157,6 +155,14 @@ test.describe('the screens read like Dutch, not like a database', () => {
     const headings = await page.locator('main h2, main h3').allInnerTexts();
     expect(headings.join(' ')).toMatch(/Groente|Vlees|Zuivel|Brood|Conserven|Kruiden/i);
     expect(main).toMatch(/Albert Heijn|Jumbo|Lidl/);
+
+    // Whose prices these are, and from when. A total without that is a number
+    // the reader has no way to judge.
+    expect(main, 'de lijst zegt niet welke prijsdata dit is').toMatch(
+      /Demo-data — geen echte winkelprijzen|Echte prijsdata/,
+    );
+    expect(main, 'geen datum bij de prijzen').toMatch(/prijzen bijgewerkt \d+ \w+/);
+    expect(main, 'niets hier is live').not.toMatch(/\blive\b/i);
   });
 
   test('products land in a real category, not all in "overig"', async ({ page }) => {
@@ -189,6 +195,9 @@ test.describe('the screens read like Dutch, not like a database', () => {
     expect(main).toMatch(/€\s?\d+[.,]\d{2}/);
     expect(main, 'geen uitleg waarom deze winkels').toMatch(/Waarom deze verdeling/i);
     expect(main, 'reiskosten worden verzonnen').not.toMatch(/Reiskosten €\s?0,00/);
+    expect(main, 'de winkelverdeling zegt niet welke prijsdata dit is').toMatch(
+      /Demo-data — geen echte winkelprijzen|Echte prijsdata/,
+    );
   });
 
   test('none of the recipes that cannot be bought is ever offered', async ({ page }) => {

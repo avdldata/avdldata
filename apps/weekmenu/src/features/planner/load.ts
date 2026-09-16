@@ -1,5 +1,6 @@
 import 'server-only';
 import { cache } from 'react';
+import { redirect } from 'next/navigation';
 import type { Household } from '@/domain/household/types';
 import type { WeeklyPlan } from '@/domain/optimization/types';
 import type { HistoricalPriceStats } from '@/domain/pricing/price-history';
@@ -55,7 +56,11 @@ function sameSettings(a: WeekSettings, b: WeekSettings): boolean {
 export const getWeekView = cache(async (): Promise<WeekView> => {
   const user = await requireUser();
   const context = await loadContext(user.id);
-  if (!context) throw new Error('Geen huishouden gevonden.');
+  // A fresh account has no household yet. The app layout sends it to
+  // onboarding, but a layout and the page inside it render concurrently, so
+  // throwing here wins that race often enough to show an error page to someone
+  // whose only mistake was signing up. Same reason `requireUser` redirects.
+  if (!context) redirect('/onboarding');
 
   const stored = await getRepositories().plans.getCurrent(context.household.id);
   const empty = {

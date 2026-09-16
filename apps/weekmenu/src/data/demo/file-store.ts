@@ -11,6 +11,8 @@ export interface DemoDatabase {
   households: Record<string, Household>;
   settings: Record<string, WeekSettings>;
   plans: Record<string, StoredPlan>;
+  /** Signing key for demo session cookies. Created on first use. */
+  sessionSecret?: string;
 }
 
 const EMPTY_DB: DemoDatabase = {
