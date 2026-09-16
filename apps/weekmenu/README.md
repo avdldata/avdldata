@@ -44,25 +44,27 @@ niets geïnstalleerd hebt.
 
 ## Commando's
 
-| Commando                    | Wat het doet                                         |
-| --------------------------- | ---------------------------------------------------- |
-| `pnpm dev`                  | Ontwikkelserver, demo-modus                          |
-| `pnpm build` / `pnpm start` | Productiebuild draaien                               |
-| `pnpm test`                 | Unit- en integratietests                             |
-| `pnpm test:e2e`             | Playwright: de volledige primaire flow               |
-| `pnpm typecheck`            | TypeScript strict                                    |
-| `pnpm lint`                 | ESLint, inclusief de laaggrens rond `src/domain`     |
-| `pnpm format:check`         | Prettier controleren zonder te schrijven             |
-| `pnpm verify`               | Typecheck, lint en tests achter elkaar               |
-| `pnpm bench [n]`            | Optimizer versus uitputtend zoeken, n scenario's     |
-| `pnpm bench:recall [n]`     | Waar in de pijplijn een optimale week verdwijnt      |
-| `pnpm bench:ablation [n]`   | Wat elke stap van de zoektocht oplevert              |
-| `pnpm bench:budget [n]`     | Wordt een haalbaar budgetplafond ook echt gehaald    |
-| `pnpm bench:large`          | 25–250 recepten tegen het best bekende resultaat     |
-| `pnpm bench:perf`           | Hoe lang een week plannen duurt                      |
-| `pnpm seed:sql`             | `supabase/seed.sql` genereren uit de TypeScript-seed |
-| `pnpm seed:images`          | Placeholder-illustraties per recept                  |
-| `pnpm db:verify`            | Migraties en seed in een PostgreSQL laden            |
+| Commando                    | Wat het doet                                            |
+| --------------------------- | ------------------------------------------------------- |
+| `pnpm dev`                  | Ontwikkelserver, demo-modus                             |
+| `pnpm build` / `pnpm start` | Productiebuild draaien                                  |
+| `pnpm test`                 | Unit- en integratietests                                |
+| `pnpm test:e2e`             | Playwright: de volledige primaire flow                  |
+| `pnpm typecheck`            | TypeScript strict                                       |
+| `pnpm lint`                 | ESLint, inclusief de laaggrens rond `src/domain`        |
+| `pnpm format:check`         | Prettier controleren zonder te schrijven                |
+| `pnpm verify`               | Typecheck, lint en tests achter elkaar                  |
+| `pnpm bench [n]`            | Optimizer versus uitputtend zoeken, n scenario's        |
+| `pnpm bench:recall [n]`     | Waar in de pijplijn een optimale week verdwijnt         |
+| `pnpm bench:ablation [n]`   | Wat elke stap van de zoektocht oplevert                 |
+| `pnpm bench:budget [n]`     | Wordt een haalbaar budgetplafond ook echt gehaald       |
+| `pnpm bench:large`          | 25–250 recepten tegen het best bekende resultaat        |
+| `pnpm bench:perf`           | Hoe lang een week plannen duurt                         |
+| `pnpm recipes:report`       | Profiel, diversiteitspoort en validatie van de recepten |
+| `pnpm recipes:impact`       | Receptbibliotheek vóór en na, in één run                |
+| `pnpm seed:sql`             | `supabase/seed.sql` genereren uit de TypeScript-seed    |
+| `pnpm seed:images`          | Placeholder-illustraties per recept                     |
+| `pnpm db:verify`            | Migraties en seed in een PostgreSQL laden               |
 
 Met een Checkjebon-momentopname in `data/external` (zie
 [data/external/README.md](data/external/README.md)) komen daar de
@@ -81,6 +83,7 @@ seed.
 | `pnpm match:weeks -- --chains ah,jumbo` | 50 echte weken, elke regel gecontroleerd    |
 | `pnpm perf:real -- --chains ah,jumbo`   | Waar de tijd heen gaat, per fase            |
 | `pnpm identity:gap`                     | Waar de promotietrechter echt knijpt        |
+| `pnpm recipes:reassess`                 | Kandidaatcorpora opnieuw door de poort      |
 | `pnpm shelf:import <export>.json`       | Schapdata inlezen en de crosswalk bouwen    |
 | `pnpm promo:import <export>.json`       | Promotie-export valideren, tellen, opslaan  |
 | `pnpm promo:probe`                      | Welke velden een promotiefeed echt levert   |
@@ -217,20 +220,21 @@ is, komt uit data, regels en berekeningen.
 
 ## Verder lezen
 
-|                                                                    |                                                      |
-| ------------------------------------------------------------------ | ---------------------------------------------------- |
-| [ARCHITECTURE.md](ARCHITECTURE.md)                                 | Lagen, providers, adapters, privacy                  |
-| [DATA_MODEL.md](DATA_MODEL.md)                                     | Waarom ingredient, product en prijs gescheiden zijn  |
-| [OPTIMIZER.md](OPTIMIZER.md)                                       | De pijplijn, de scorefunctie, complexiteit           |
-| [DATABASE.md](DATABASE.md)                                         | Schema, constraints, row level security              |
-| [DATA_SOURCES.md](DATA_SOURCES.md)                                 | Hoe je NEVO, GS1 of een prijsfeed aansluit           |
-| [AUDIT_REPORT.md](AUDIT_REPORT.md)                                 | Wat een kritische doorlichting van V1 opleverde      |
-| [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md)                   | Hoe dicht de optimizer bij het echte optimum komt    |
-| [MATCHING.md](MATCHING.md)                                         | Van supermarktproduct naar canoniek ingrediënt       |
-| [JUMBO_DATA_QUALITY.md](JUMBO_DATA_QUALITY.md)                     | Twee ketens: kwaliteit, dekking, en wat het oplevert |
-| [PRIJSPROFEET_INTEGRATION.md](PRIJSPROFEET_INTEGRATION.md)         | De promotielaag, en waarom de bron nog ontbreekt     |
-| [PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md) | Het contract voor een promotiemomentopname           |
-| [PROMOTION_VALUE_BENCHMARK.md](PROMOTION_VALUE_BENCHMARK.md)       | Wat aanbiedingen aan de weekprijs veranderen         |
+|                                                                    |                                                       |
+| ------------------------------------------------------------------ | ----------------------------------------------------- |
+| [ARCHITECTURE.md](ARCHITECTURE.md)                                 | Lagen, providers, adapters, privacy                   |
+| [DATA_MODEL.md](DATA_MODEL.md)                                     | Waarom ingredient, product en prijs gescheiden zijn   |
+| [OPTIMIZER.md](OPTIMIZER.md)                                       | De pijplijn, de scorefunctie, complexiteit            |
+| [DATABASE.md](DATABASE.md)                                         | Schema, constraints, row level security               |
+| [DATA_SOURCES.md](DATA_SOURCES.md)                                 | Hoe je NEVO, GS1 of een prijsfeed aansluit            |
+| [AUDIT_REPORT.md](AUDIT_REPORT.md)                                 | Wat een kritische doorlichting van V1 opleverde       |
+| [OPTIMIZER_BENCHMARK.md](OPTIMIZER_BENCHMARK.md)                   | Hoe dicht de optimizer bij het echte optimum komt     |
+| [RECIPE_LIBRARY.md](RECIPE_LIBRARY.md)                             | 138 avondmaaltijden: herkomst, poorten, wat ontbreekt |
+| [MATCHING.md](MATCHING.md)                                         | Van supermarktproduct naar canoniek ingrediënt        |
+| [JUMBO_DATA_QUALITY.md](JUMBO_DATA_QUALITY.md)                     | Twee ketens: kwaliteit, dekking, en wat het oplevert  |
+| [PRIJSPROFEET_INTEGRATION.md](PRIJSPROFEET_INTEGRATION.md)         | De promotielaag, en waarom de bron nog ontbreekt      |
+| [PRIJSPROFEET_SNAPSHOT_SCHEMA.md](PRIJSPROFEET_SNAPSHOT_SCHEMA.md) | Het contract voor een promotiemomentopname            |
+| [PROMOTION_VALUE_BENCHMARK.md](PROMOTION_VALUE_BENCHMARK.md)       | Wat aanbiedingen aan de weekprijs veranderen          |
 
 ## Wat V1 bewust niet doet
 

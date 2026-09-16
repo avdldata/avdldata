@@ -20,7 +20,7 @@
     "wraps": 2,
     "wok": 7,
     "curry": 2,
-    "ovenschotel": 10,
+    "ovenschotel": 11,
     "stoof": 8,
     "soep": 2,
     "salade": 8,
@@ -33,12 +33,12 @@
   "methods": {
     "stoof": 8,
     "wok": 7,
-    "ovenschotel": 10,
+    "ovenschotel": 11,
     "bakken": 9,
     "salade": 8,
     "pasta-koken": 5,
     "curry": 2,
-    "overig": 5,
+    "overig": 4,
     "soep": 2
   },
   "primaryCarbs": {
@@ -68,11 +68,11 @@
   "fish": 6,
   "chicken": 8,
   "beefPork": 12,
-  "avgIngredientCount": 9.36,
+  "avgIngredientCount": 9.45,
   "avgPrepMinutes": 13.5,
   "avgCookMinutes": 26.4,
   "avgTotalMinutes": 40,
-  "avgKcal": 577,
+  "avgKcal": 590,
   "canonicalIngredientsUsed": 112,
   "canonicalIngredientsAvailable": 136,
   "canonicalIngredientsUnused": [
@@ -104,6 +104,12 @@
   "licences": {
     "INTERNAL": 56
   },
+  "feasiblePerChain": {
+    "ah": 34,
+    "jumbo": 23,
+    "lidl": 9
+  },
+  "feasibleCombined": 42,
   "diversityWarnings": 4,
   "validationProblems": 6
 }

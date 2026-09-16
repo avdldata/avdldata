@@ -725,30 +725,37 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
     nutrition: n(714, 44, 74, 27, 5.0, 1.6),
   }),
 
-  r('nasi-goreng', 'Nasi goreng', 'aziatisch', 'ei', ['rijst', 'vegetarisch', 'eenpansgerecht', 'budget'], {
-    description: 'Gebakken rijst met ei, spitskool, wortel en ketjap.',
-    prep: 15,
-    cook: 20,
-    steps: [
-      'Kook de rijst en laat afkoelen.',
-      'Wok de groenten met knoflook en sambal.',
-      'Bak roerei apart en schep erdoor.',
-      'Breng op smaak met ketjap.',
-    ],
-    ingredients: [
-      li('witte-rijst', 350, 'g'),
-      li('ei', 4, 'piece'),
-      li('spitskool', 300, 'g'),
-      li('wortel', 200, 'g'),
-      li('ui', 1, 'piece'),
-      li('knoflook', 3, 'piece'),
-      li('ketjap', 60, 'ml'),
-      li('sambal', 10, 'g', true),
-      li('zonnebloemolie', 2, 'tbsp'),
-      li('bosui', 3, 'piece', true),
-    ],
-    nutrition: n(556, 20, 86, 15, 6.4, 2.3),
-  }),
+  r(
+    'nasi-goreng',
+    'Nasi goreng',
+    'aziatisch',
+    'ei',
+    ['rijst', 'vegetarisch', 'eenpansgerecht', 'budget'],
+    {
+      description: 'Gebakken rijst met ei, spitskool, wortel en ketjap.',
+      prep: 15,
+      cook: 20,
+      steps: [
+        'Kook de rijst en laat afkoelen.',
+        'Wok de groenten met knoflook en sambal.',
+        'Bak roerei apart en schep erdoor.',
+        'Breng op smaak met ketjap.',
+      ],
+      ingredients: [
+        li('witte-rijst', 350, 'g'),
+        li('ei', 4, 'piece'),
+        li('spitskool', 300, 'g'),
+        li('wortel', 200, 'g'),
+        li('ui', 1, 'piece'),
+        li('knoflook', 3, 'piece'),
+        li('ketjap', 60, 'ml'),
+        li('sambal', 10, 'g', true),
+        li('zonnebloemolie', 2, 'tbsp'),
+        li('bosui', 3, 'piece', true),
+      ],
+      nutrition: n(556, 20, 86, 15, 6.4, 2.3),
+    },
+  ),
 
   r('bami-met-kip', 'Bami met kip', 'aziatisch', 'kip', ['noedels', 'kip'], {
     description: 'Mienoedels met kipreepjes, prei en tauge.',
@@ -1596,7 +1603,8 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
     'geen',
     ['vegetarisch', 'veganistisch', 'snel', 'budget'],
     {
-      description: 'Courgette, aubergine en paprika uit de oven, met kikkererwten en citroen door de couscous.',
+      description:
+        'Courgette, aubergine en paprika uit de oven, met kikkererwten en citroen door de couscous.',
       prep: 12,
       cook: 25,
       steps: [
@@ -1660,7 +1668,8 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
     'geen',
     ['aardappelen', 'ovenschotel', 'vegetarisch', 'veganistisch', 'budget'],
     {
-      description: 'Bloemkool, aardappel en kikkererwten uit de oven, met mosterd en een krokante korst.',
+      description:
+        'Bloemkool, aardappel en kikkererwten uit de oven, met mosterd en een krokante korst.',
       prep: 15,
       cook: 35,
       steps: [

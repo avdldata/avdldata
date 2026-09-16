@@ -95,4 +95,3 @@ export const n = (
   fiberGrams: number,
   saltGrams: number,
 ): NutritionPerServing => ({ kcal, proteinGrams, carbGrams, fatGrams, fiberGrams, saltGrams });
-

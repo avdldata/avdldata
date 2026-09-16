@@ -51,7 +51,10 @@ test.describe('a recipe from the new library', () => {
     ).toBeTruthy();
     expect(NEW_IDS.has(match!.id)).toBe(true);
 
-    await page.getByRole('link', { name: new RegExp(match!.name) }).first().click();
+    await page
+      .getByRole('link', { name: new RegExp(match!.name) })
+      .first()
+      .click();
     await expect(page).toHaveURL(/\/week\/\w+$/);
     await expect(page.getByRole('heading', { name: match!.name })).toBeVisible();
 
@@ -65,7 +68,10 @@ test.describe('a recipe from the new library', () => {
     expect(await steps.count()).toBeGreaterThanOrEqual(3);
 
     // And the dish can be swapped for something else.
-    await page.getByRole('link', { name: /Vervang/i }).first().click();
+    await page
+      .getByRole('link', { name: /Vervang/i })
+      .first()
+      .click();
     await expect(page).toHaveURL(/\/vervangen$/);
     const alternatives = page.getByRole('button', { name: /Kies dit gerecht|Vervang/i });
     await expect(alternatives.first()).toBeVisible({ timeout: 60_000 });

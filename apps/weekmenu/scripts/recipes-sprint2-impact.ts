@@ -139,5 +139,7 @@ row('optimizer, snelste van 5 (ms)', beforeMs.toFixed(0), afterMs.toFixed(0));
 row(`bereikbare promoties (van ${promotions.length})`, beforeReach, afterReach);
 console.log('');
 if (promotions.length === 0) {
-  console.log('  let op: geen promotiesnapshot geladen, de laatste regel is nul bij gebrek aan data');
+  console.log(
+    '  let op: geen promotiesnapshot geladen, de laatste regel is nul bij gebrek aan data',
+  );
 }

@@ -234,53 +234,57 @@ describe('variation over twenty consecutive weeks', { timeout: 600_000 }, () => 
   });
 });
 
-describe('what the library can supply when it is asked for something new', { timeout: 600_000 }, () => {
-  /*
-   * The library question, separated from the planner question above: how many
-   * weeks of dinners are actually in here? Each week is planned from the
-   * recipes that have not been served yet, which is the same thing a
-   * cross-week history would do, without touching the optimizer.
-   */
-  function weeksWithoutRepeating(pool: typeof recipes) {
-    const used = new Set<string>();
-    let planned = 0;
-    for (let i = 0; i < 30; i += 1) {
-      const remaining = pool.filter((r) => !used.has(r.id));
-      const result = planFor({
-        household: demoHousehold,
-        startDate: '2026-03-02',
-        pool: remaining,
-      });
-      if (result.status !== 'OK') break;
-      for (const day of result.plan.days) used.add(day.recipe.id);
-      planned += 1;
+describe(
+  'what the library can supply when it is asked for something new',
+  { timeout: 600_000 },
+  () => {
+    /*
+     * The library question, separated from the planner question above: how many
+     * weeks of dinners are actually in here? Each week is planned from the
+     * recipes that have not been served yet, which is the same thing a
+     * cross-week history would do, without touching the optimizer.
+     */
+    function weeksWithoutRepeating(pool: typeof recipes) {
+      const used = new Set<string>();
+      let planned = 0;
+      for (let i = 0; i < 30; i += 1) {
+        const remaining = pool.filter((r) => !used.has(r.id));
+        const result = planFor({
+          household: demoHousehold,
+          startDate: '2026-03-02',
+          pool: remaining,
+        });
+        if (result.status !== 'OK') break;
+        for (const day of result.plan.days) used.add(day.recipe.id);
+        planned += 1;
+      }
+      return { planned, used };
     }
-    return { planned, used };
-  }
 
-  // Each of these costs a few dozen full week optimisations, so both sides are
-  // computed once and the assertions read from the result.
-  const now = weeksWithoutRepeating(recipes);
-  const then = weeksWithoutRepeating(recipes.filter((r) => BASE_IDS.has(r.id)));
+    // Each of these costs a few dozen full week optimisations, so both sides are
+    // computed once and the assertions read from the result.
+    const now = weeksWithoutRepeating(recipes);
+    const then = weeksWithoutRepeating(recipes.filter((r) => BASE_IDS.has(r.id)));
 
-  it('carries at least sixteen weeks of dinners with no dish ever repeating', () => {
-    expect(now.planned).toBeGreaterThanOrEqual(16);
-    expect(now.used.size).toBeGreaterThanOrEqual(112);
-  });
+    it('carries at least sixteen weeks of dinners with no dish ever repeating', () => {
+      expect(now.planned).toBeGreaterThanOrEqual(16);
+      expect(now.used.size).toBeGreaterThanOrEqual(112);
+    });
 
-  it('carries far more than it did before the library was grown', () => {
-    // The original 56 ran dry after seven weeks. The floor here is what makes
-    // the growth worth something: more than double that.
-    expect(then.planned).toBeLessThanOrEqual(8);
-    expect(now.planned).toBeGreaterThan(2 * then.planned);
-  });
+    it('carries far more than it did before the library was grown', () => {
+      // The original 56 ran dry after seven weeks. The floor here is what makes
+      // the growth worth something: more than double that.
+      expect(then.planned).toBeLessThanOrEqual(8);
+      expect(now.planned).toBeGreaterThan(2 * then.planned);
+    });
 
-  it('keeps a real spread of cuisines across those weeks', () => {
-    const byId = new Map(recipes.map((r) => [r.id, r]));
-    const cuisines = new Set([...now.used].map((id) => byId.get(id)!.cuisine));
-    expect(cuisines.size).toBeGreaterThanOrEqual(7);
-  });
-});
+    it('keeps a real spread of cuisines across those weeks', () => {
+      const byId = new Map(recipes.map((r) => [r.id, r]));
+      const cuisines = new Set([...now.used].map((id) => byId.get(id)!.cuisine));
+      expect(cuisines.size).toBeGreaterThanOrEqual(7);
+    });
+  },
+);
 
 describe('replacing a dish', { timeout: 600_000 }, () => {
   const base = planFor({ household: demoHousehold, startDate: '2026-03-02' });

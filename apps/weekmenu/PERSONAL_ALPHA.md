@@ -33,16 +33,24 @@ suggereerde, en het is het goede nieuws van deze audit.
 
 ## Waarom toch NOT READY
 
-### Blocker 1 — te weinig recepten
+### ~~Blocker 1 — te weinig recepten~~ — opgelost in Sprint 2
 
-|                           | gemeten |                 eis |
-| ------------------------- | ------: | ------------------: |
-| production dinner recipes |  **56** | ≥ 100, doel 120–150 |
+|                           | toen |      nu |                 eis |
+| ------------------------- | ---: | ------: | ------------------: |
+| production dinner recipes |   56 | **138** | ≥ 100, doel 120–150 |
+| uniek na dedupe           |   55 | **137** |                     |
+| weken zonder herhaling    |    7 |  **19** |                     |
 
-Met 56 recepten en 7 diners per week is de bibliotheek na acht weken op. De
-verdeling is op zichzelf redelijk (mediterraan 14, Nederlands 12, Italiaans 9,
-Aziatisch 9, Mexicaans 5, Indiaas 4, Grieks 2, Frans 1; 29 vegetarisch,
-10 veganistisch, 8 vis, 8 kip), maar het aantal is de helft van wat v0.1 vraagt.
+De bibliotheek is met 82 zelfgeschreven recepten uitgebreid en haalt nu alle
+diversiteitseisen: geen koolhydraat boven 25%, geen cuisine of eiwit boven 30%,
+en elke maaltijdstijl minstens vier keer. Zie
+[RECIPE_LIBRARY.md](RECIPE_LIBRARY.md) voor de herkomst, de poorten en wat er
+nog ontbreekt.
+
+Wat daarmee **niet** is opgelost: gevraagd om twintig weken achter elkaar geeft
+de planner nog altijd twintig keer dezelfde zeven gerechten. De optimizer
+onthoudt niet wat er vorige week op tafel stond, en meer recepten veranderen
+daar uit zichzelf niets aan.
 
 ### ~~Blocker 2 — de app draait op demo-data~~ — opgelost in Sprint 1
 

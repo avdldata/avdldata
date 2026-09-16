@@ -438,7 +438,11 @@ export function validateRecipe(
   if (proteinGrams > LIMITS.proteinMaxGrams) {
     add('EXTREME_PROTEIN_PER_PERSON', 'ERROR', `${proteinGrams.toFixed(0)} g eiwitbron pp`);
   }
-  if (recipe.primaryProtein !== 'geen' && mainProteinGrams > 0 && mainProteinGrams < LIMITS.proteinMinGrams) {
+  if (
+    recipe.primaryProtein !== 'geen' &&
+    mainProteinGrams > 0 &&
+    mainProteinGrams < LIMITS.proteinMinGrams
+  ) {
     add(
       'TOO_LITTLE_PROTEIN_PER_PERSON',
       'WARNING',
@@ -446,7 +450,11 @@ export function validateRecipe(
     );
   }
   if (dryCarbGrams > LIMITS.dryCarbHardMaxGrams) {
-    add('EXTREME_DRY_CARB_PER_PERSON', 'ERROR', `${dryCarbGrams.toFixed(0)} g droge koolhydraat pp`);
+    add(
+      'EXTREME_DRY_CARB_PER_PERSON',
+      'ERROR',
+      `${dryCarbGrams.toFixed(0)} g droge koolhydraat pp`,
+    );
   } else if (dryCarbGrams > LIMITS.dryCarbMaxGrams) {
     add(
       'EXTREME_DRY_CARB_PER_PERSON',
@@ -460,10 +468,13 @@ export function validateRecipe(
   // A handful of pasta in a bean soup is a garnish on a dish whose carbohydrate
   // comes from somewhere else. The floor is about the base of the meal, so it
   // only fires when nothing else is carrying it.
-  const otherCarbGrams =
-    potatoGrams + sumGrams(recipe, ingredients, (id) => LEGUME_IDS.has(id));
+  const otherCarbGrams = potatoGrams + sumGrams(recipe, ingredients, (id) => LEGUME_IDS.has(id));
   if (dryCarbGrams > 0 && dryCarbGrams < LIMITS.dryCarbMinGrams && otherCarbGrams < 100) {
-    add('TOO_LITTLE_CARB_PER_PERSON', 'WARNING', `${dryCarbGrams.toFixed(0)} g droge koolhydraat pp`);
+    add(
+      'TOO_LITTLE_CARB_PER_PERSON',
+      'WARNING',
+      `${dryCarbGrams.toFixed(0)} g droge koolhydraat pp`,
+    );
   }
   if (vegetableGrams < LIMITS.vegetableMinGrams) {
     add('TOO_LITTLE_VEGETABLE_PER_PERSON', 'WARNING', `${vegetableGrams.toFixed(0)} g groente pp`);

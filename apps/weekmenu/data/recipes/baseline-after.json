@@ -1,0 +1,98 @@
+{
+  "total": 138,
+  "uniqueAfterDedupe": 137,
+  "duplicatePairs": 1,
+  "cuisines": {
+    "italiaans": 22,
+    "aziatisch": 23,
+    "mexicaans": 12,
+    "nederlands": 25,
+    "mediterraan": 25,
+    "grieks": 11,
+    "indiaas": 12,
+    "frans": 8
+  },
+  "mealStyles": {
+    "aardappel": 34,
+    "pasta": 21,
+    "rijst": 22,
+    "noedels": 9,
+    "wraps": 8,
+    "wok": 17,
+    "curry": 4,
+    "ovenschotel": 28,
+    "stoof": 17,
+    "soep": 7,
+    "salade": 17,
+    "peulvruchten": 28,
+    "vegetarisch": 63,
+    "vis": 19,
+    "kip": 24,
+    "vlees": 29
+  },
+  "methods": {
+    "stoof": 17,
+    "wok": 17,
+    "ovenschotel": 28,
+    "bakken": 24,
+    "salade": 17,
+    "pasta-koken": 13,
+    "curry": 4,
+    "overig": 11,
+    "soep": 7
+  },
+  "primaryCarbs": {
+    "pasta": 21,
+    "rijst": 22,
+    "peulvruchten": 23,
+    "aardappel": 34,
+    "wraps": 8,
+    "granen": 12,
+    "brood": 8,
+    "geen": 1,
+    "noedels": 9
+  },
+  "proteins": {
+    "rund": 17,
+    "kip": 24,
+    "zuivel": 20,
+    "peulvrucht": 26,
+    "varken": 12,
+    "vis": 19,
+    "plantaardig-vlees": 9,
+    "ei": 6,
+    "geen": 5
+  },
+  "vegetarian": 63,
+  "vegan": 31,
+  "fish": 19,
+  "chicken": 24,
+  "beefPork": 29,
+  "avgIngredientCount": 9.94,
+  "avgPrepMinutes": 14.5,
+  "avgCookMinutes": 26.4,
+  "avgTotalMinutes": 40.9,
+  "avgKcal": 599,
+  "canonicalIngredientsUsed": 129,
+  "canonicalIngredientsAvailable": 136,
+  "canonicalIngredientsUnused": [
+    "creme-fraiche",
+    "doperwten",
+    "kwark",
+    "maistortilla",
+    "sriracha",
+    "tonijn-blik",
+    "zongedroogde-tomaten"
+  ],
+  "licences": {
+    "INTERNAL": 138
+  },
+  "feasiblePerChain": {
+    "ah": 96,
+    "jumbo": 56,
+    "lidl": 33
+  },
+  "feasibleCombined": 124,
+  "diversityWarnings": 0,
+  "validationProblems": 7
+}

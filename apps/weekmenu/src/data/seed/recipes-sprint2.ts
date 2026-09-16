@@ -503,36 +503,29 @@ export const SPRINT2_RECIPES: readonly AuthoredRecipe[] = [
     },
   ),
 
-  r(
-    'pasta-alla-norma',
-    'Pasta alla norma',
-    'italiaans',
-    'zuivel',
-    ['pasta', 'vegetarisch'],
-    {
-      description: 'Gebakken aubergine in tomatensaus met basilicum en geraspte kaas.',
-      prep: 15,
-      cook: 30,
-      steps: [
-        'Bak de blokjes aubergine in olie goudbruin en laat uitlekken.',
-        'Fruit knoflook en voeg de tomatenblokjes en oregano toe.',
-        'Laat de saus twintig minuten inkoken en schep de aubergine erdoor.',
-        'Meng met de gekookte pasta en bestrooi met kaas.',
-      ],
-      ingredients: [
-        li('pasta', 350, 'g'),
-        li('aubergine', 600, 'g'),
-        li('tomatenblokjes', 800, 'g'),
-        li('knoflook', 3, 'piece'),
-        li('ui', 1, 'piece'),
-        li('geraspte-kaas', 60, 'g'),
-        li('oregano', 3, 'g'),
-        li('olijfolie', 3, 'tbsp'),
-        li('peper', 2, 'g'),
-        li('zout', 4, 'g'),
-      ],
-    },
-  ),
+  r('pasta-alla-norma', 'Pasta alla norma', 'italiaans', 'zuivel', ['pasta', 'vegetarisch'], {
+    description: 'Gebakken aubergine in tomatensaus met basilicum en geraspte kaas.',
+    prep: 15,
+    cook: 30,
+    steps: [
+      'Bak de blokjes aubergine in olie goudbruin en laat uitlekken.',
+      'Fruit knoflook en voeg de tomatenblokjes en oregano toe.',
+      'Laat de saus twintig minuten inkoken en schep de aubergine erdoor.',
+      'Meng met de gekookte pasta en bestrooi met kaas.',
+    ],
+    ingredients: [
+      li('pasta', 350, 'g'),
+      li('aubergine', 600, 'g'),
+      li('tomatenblokjes', 800, 'g'),
+      li('knoflook', 3, 'piece'),
+      li('ui', 1, 'piece'),
+      li('geraspte-kaas', 60, 'g'),
+      li('oregano', 3, 'g'),
+      li('olijfolie', 3, 'tbsp'),
+      li('peper', 2, 'g'),
+      li('zout', 4, 'g'),
+    ],
+  }),
 
   r(
     'garnalenrijst-citroen',
@@ -722,36 +715,30 @@ export const SPRINT2_RECIPES: readonly AuthoredRecipe[] = [
   ),
 
   /* ── Aziatisch ───────────────────────────────────────────────────────── */
-  r(
-    'mie-kip-satesaus',
-    'Mie met kip in satésaus',
-    'aziatisch',
-    'kip',
-    ['noedels', 'kip', 'snel'],
-    {
-      description: 'Mienoedels met kipreepjes in een pittige satésaus, met roerbakgroente en komkommer.',
-      prep: 10,
-      cook: 18,
-      steps: [
-        'Kook de mie volgens de verpakking en spoel koud.',
-        'Bak de kipreepjes gaar met ui en knoflook.',
-        'Roer de satésaus los met een scheut water en een lepel pindakaas.',
-        'Wok de roerbakgroente kort mee en schep alles door de mie.',
-      ],
-      ingredients: [
-        li('mie', 320, 'g'),
-        li('kipfilet', 450, 'g'),
-        li('roerbakgroentemix', 500, 'g'),
-        li('satesaus', 150, 'g'),
-        li('pindakaas', 40, 'g'),
-        li('komkommer', 200, 'g'),
-        li('ui', 1, 'piece'),
-        li('knoflook', 3, 'piece'),
-        li('zonnebloemolie', 1, 'tbsp'),
-        li('sambal', 8, 'g'),
-      ],
-    },
-  ),
+  r('mie-kip-satesaus', 'Mie met kip in satésaus', 'aziatisch', 'kip', ['noedels', 'kip', 'snel'], {
+    description:
+      'Mienoedels met kipreepjes in een pittige satésaus, met roerbakgroente en komkommer.',
+    prep: 10,
+    cook: 18,
+    steps: [
+      'Kook de mie volgens de verpakking en spoel koud.',
+      'Bak de kipreepjes gaar met ui en knoflook.',
+      'Roer de satésaus los met een scheut water en een lepel pindakaas.',
+      'Wok de roerbakgroente kort mee en schep alles door de mie.',
+    ],
+    ingredients: [
+      li('mie', 320, 'g'),
+      li('kipfilet', 450, 'g'),
+      li('roerbakgroentemix', 500, 'g'),
+      li('satesaus', 150, 'g'),
+      li('pindakaas', 40, 'g'),
+      li('komkommer', 200, 'g'),
+      li('ui', 1, 'piece'),
+      li('knoflook', 3, 'piece'),
+      li('zonnebloemolie', 1, 'tbsp'),
+      li('sambal', 8, 'g'),
+    ],
+  }),
 
   r(
     'mie-tofu-tauge',
@@ -1611,38 +1598,31 @@ export const SPRINT2_RECIPES: readonly AuthoredRecipe[] = [
     },
   ),
 
-  r(
-    'souvlaki-kip-bulgur',
-    'Kipsouvlaki met bulgur',
-    'grieks',
-    'kip',
-    ['kip', 'salade'],
-    {
-      description: 'Gemarineerde kipspiesjes met citroen en oregano, op bulgur met tomatensalade.',
-      prep: 20,
-      cook: 20,
-      steps: [
-        'Marineer de kipblokjes in olie, citroen, knoflook en oregano.',
-        'Kook de bulgur in bouillon in twaalf minuten gaar.',
-        'Gril of bak de kip in tien minuten rondom bruin.',
-        'Meng tomaat, komkommer en rode ui tot een salade en serveer alles samen.',
-      ],
-      ingredients: [
-        li('bulgur', 300, 'g'),
-        li('kipfilet', 550, 'g'),
-        li('tomaat', 350, 'g'),
-        li('komkommer', 250, 'g'),
-        li('rode-ui', 1, 'piece'),
-        li('feta', 100, 'g'),
-        li('citroen', 2, 'piece'),
-        li('knoflook', 3, 'piece'),
-        li('oregano', 6, 'g'),
-        li('groentebouillon', 10, 'g'),
-        li('olijfolie', 3, 'tbsp'),
-        li('peper', 2, 'g'),
-      ],
-    },
-  ),
+  r('souvlaki-kip-bulgur', 'Kipsouvlaki met bulgur', 'grieks', 'kip', ['kip', 'salade'], {
+    description: 'Gemarineerde kipspiesjes met citroen en oregano, op bulgur met tomatensalade.',
+    prep: 20,
+    cook: 20,
+    steps: [
+      'Marineer de kipblokjes in olie, citroen, knoflook en oregano.',
+      'Kook de bulgur in bouillon in twaalf minuten gaar.',
+      'Gril of bak de kip in tien minuten rondom bruin.',
+      'Meng tomaat, komkommer en rode ui tot een salade en serveer alles samen.',
+    ],
+    ingredients: [
+      li('bulgur', 300, 'g'),
+      li('kipfilet', 550, 'g'),
+      li('tomaat', 350, 'g'),
+      li('komkommer', 250, 'g'),
+      li('rode-ui', 1, 'piece'),
+      li('feta', 100, 'g'),
+      li('citroen', 2, 'piece'),
+      li('knoflook', 3, 'piece'),
+      li('oregano', 6, 'g'),
+      li('groentebouillon', 10, 'g'),
+      li('olijfolie', 3, 'tbsp'),
+      li('peper', 2, 'g'),
+    ],
+  }),
 
   r(
     'gigantes-witte-bonen-tomaat',
@@ -1841,7 +1821,8 @@ export const SPRINT2_RECIPES: readonly AuthoredRecipe[] = [
     'vis',
     ['aardappelen', 'vis', 'ovenschotel'],
     {
-      description: 'Kabeljauw uit de oven op tomaat, olijven en aardappelschijf, met veel knoflook.',
+      description:
+        'Kabeljauw uit de oven op tomaat, olijven en aardappelschijf, met veel knoflook.',
       prep: 20,
       cook: 35,
       steps: [
@@ -1938,7 +1919,8 @@ export const SPRINT2_RECIPES: readonly AuthoredRecipe[] = [
     'zuivel',
     ['aardappelen', 'vegetarisch', 'ovenschotel', 'comfortfood'],
     {
-      description: 'Dunne aardappelschijven in room met knoflook en champignons, goudbruin gebakken.',
+      description:
+        'Dunne aardappelschijven in room met knoflook en champignons, goudbruin gebakken.',
       prep: 20,
       cook: 50,
       steps: [
@@ -2157,36 +2139,29 @@ export const SPRINT2_RECIPES: readonly AuthoredRecipe[] = [
     },
   ),
 
-  r(
-    'zalm-quinoa-asperges',
-    'Zalm met quinoa en asperges',
-    'mediterraan',
-    'vis',
-    ['vis', 'snel'],
-    {
-      description: 'Zalmfilet uit de pan op quinoa, met groene asperges en citroendressing.',
-      prep: 12,
-      cook: 20,
-      steps: [
-        'Kook de quinoa in bouillon in vijftien minuten gaar.',
-        'Bak de asperges vier minuten beetgaar met knoflook.',
-        'Bak de zalm drie minuten per kant.',
-        'Meng quinoa met asperges, citroen en olie en leg de zalm erop.',
-      ],
-      ingredients: [
-        li('quinoa', 300, 'g'),
-        li('zalmfilet', 500, 'g'),
-        li('asperges', 500, 'g'),
-        li('cherrytomaat', 250, 'g'),
-        li('rucola', 60, 'g'),
-        li('knoflook', 2, 'piece'),
-        li('citroen', 1, 'piece'),
-        li('groentebouillon', 10, 'g'),
-        li('olijfolie', 3, 'tbsp'),
-        li('peper', 2, 'g'),
-      ],
-    },
-  ),
+  r('zalm-quinoa-asperges', 'Zalm met quinoa en asperges', 'mediterraan', 'vis', ['vis', 'snel'], {
+    description: 'Zalmfilet uit de pan op quinoa, met groene asperges en citroendressing.',
+    prep: 12,
+    cook: 20,
+    steps: [
+      'Kook de quinoa in bouillon in vijftien minuten gaar.',
+      'Bak de asperges vier minuten beetgaar met knoflook.',
+      'Bak de zalm drie minuten per kant.',
+      'Meng quinoa met asperges, citroen en olie en leg de zalm erop.',
+    ],
+    ingredients: [
+      li('quinoa', 300, 'g'),
+      li('zalmfilet', 500, 'g'),
+      li('asperges', 500, 'g'),
+      li('cherrytomaat', 250, 'g'),
+      li('rucola', 60, 'g'),
+      li('knoflook', 2, 'piece'),
+      li('citroen', 1, 'piece'),
+      li('groentebouillon', 10, 'g'),
+      li('olijfolie', 3, 'tbsp'),
+      li('peper', 2, 'g'),
+    ],
+  }),
 
   r(
     'bonen-tomaat-oregano-pasta',

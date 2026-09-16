@@ -11,6 +11,7 @@
 import { writeFileSync } from 'node:fs';
 import { SEED_INGREDIENTS } from '@/data/seed/ingredients';
 import { SEED_RECIPES } from '@/data/seed/recipes';
+import { SPRINT2_RECIPES } from '@/data/seed/recipes-sprint2';
 import { buildIngredientIndex } from '@/domain/ingredients/types';
 import { normaliseRecipes } from '@/domain/recipes/normalise';
 import { checkDiversity, MEAL_STYLES, profileLibrary } from '@/domain/recipes/library';
@@ -19,11 +20,25 @@ import { isProductionSafeLicence } from '@/domain/recipes/types';
 import { loadRealChains } from '../tests/support/real-data-store';
 import { validateLibrary } from '@/domain/recipes/validation';
 
+/**
+ * `--menu base` reports the library as it stood before Sprint 2.
+ *
+ * The before/after comparison has to come out of the same code, or the two
+ * columns start measuring subtly different things the moment either side is
+ * touched. Keeping it a flag on one script means there is only ever one
+ * definition of "primary carbohydrate" or "buyable".
+ */
+const baseOnly =
+  process.argv.includes('--menu') && process.argv[process.argv.indexOf('--menu') + 1] === 'base';
+const authored = baseOnly
+  ? SEED_RECIPES.filter((r) => !SPRINT2_RECIPES.some((s) => s.id === r.id))
+  : SEED_RECIPES;
+
 const ingredients = buildIngredientIndex(SEED_INGREDIENTS);
-const recipes = normaliseRecipes(SEED_RECIPES, ingredients);
+const recipes = normaliseRecipes(authored, ingredients);
 const profile = profileLibrary(recipes, ingredients);
 const warnings = checkDiversity(profile);
-const problems = validateLibrary(recipes, ingredients, SEED_RECIPES);
+const problems = validateLibrary(recipes, ingredients, authored);
 
 const fixture = loadRealChains(['ah', 'jumbo', 'lidl']);
 const offersByChain = new Map<string, Set<string>>();
@@ -118,11 +133,21 @@ if (asJson) {
   );
 
   console.log('\n  dieet');
-  console.log(`    vegetarisch            ${String(profile.vegetarian).padStart(4)}  ${pct(profile.vegetarian)}`);
-  console.log(`    veganistisch           ${String(profile.vegan).padStart(4)}  ${pct(profile.vegan)}`);
-  console.log(`    vis                    ${String(profile.fish).padStart(4)}  ${pct(profile.fish)}`);
-  console.log(`    kip                    ${String(profile.chicken).padStart(4)}  ${pct(profile.chicken)}`);
-  console.log(`    rund/varken            ${String(profile.beefPork).padStart(4)}  ${pct(profile.beefPork)}`);
+  console.log(
+    `    vegetarisch            ${String(profile.vegetarian).padStart(4)}  ${pct(profile.vegetarian)}`,
+  );
+  console.log(
+    `    veganistisch           ${String(profile.vegan).padStart(4)}  ${pct(profile.vegan)}`,
+  );
+  console.log(
+    `    vis                    ${String(profile.fish).padStart(4)}  ${pct(profile.fish)}`,
+  );
+  console.log(
+    `    kip                    ${String(profile.chicken).padStart(4)}  ${pct(profile.chicken)}`,
+  );
+  console.log(
+    `    rund/varken            ${String(profile.beefPork).padStart(4)}  ${pct(profile.beefPork)}`,
+  );
 
   console.log('\n  gemiddelden');
   console.log(`    ingredienten           ${profile.avgIngredientCount.toFixed(2)}`);

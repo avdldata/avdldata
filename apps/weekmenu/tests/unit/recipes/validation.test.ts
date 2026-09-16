@@ -40,7 +40,11 @@ const ingredients = buildIngredientIndex([
     category: 'kruiden-specerijen',
     nutritionPer100: per100(375, 18, 34, 22),
   }),
-  makeIngredient('olijfolie', { baseUnit: 'ml', density: 0.92, nutritionPer100: per100(884, 0, 0, 100) }),
+  makeIngredient('olijfolie', {
+    baseUnit: 'ml',
+    density: 0.92,
+    nutritionPer100: per100(884, 0, 0, 100),
+  }),
   makeIngredient('tomatenpuree', { nutritionPer100: per100(82, 4, 15, 0.5) }),
   makeIngredient('zout', { pantryStaple: true, nutritionPer100: per100(0, 0, 0, 0) }),
 ]);
@@ -97,9 +101,9 @@ describe('quantity guards', () => {
       l.ingredientId === 'kipfilet' ? { ...l, amount: 2, unit: 'kg' as const } : l,
     );
     const problems = check({ ingredients: lines });
-    expect(problems.some((p) => p.code === 'EXTREME_PROTEIN_PER_PERSON' && p.severity === 'ERROR')).toBe(
-      true,
-    );
+    expect(
+      problems.some((p) => p.code === 'EXTREME_PROTEIN_PER_PERSON' && p.severity === 'ERROR'),
+    ).toBe(true);
     expect(LIMITS.proteinMaxGrams).toBe(350);
   });
 
