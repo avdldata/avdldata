@@ -335,11 +335,10 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
         li('andijvie', 400, 'g'),
         li('melk', 125, 'ml'),
         li('roomboter', 30, 'g'),
-        li('geraspte-kaas', 100, 'g'),
+        li('geraspte-kaas', 175, 'g'),
         li('zout', 4, 'g'),
         li('peper', 1, 'g'),
       ],
-      nutrition: n(498, 18, 72, 15, 8.0, 1.5),
     },
   ),
 
@@ -871,7 +870,7 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
     'geen',
     ['soep', 'vegetarisch', 'veganistisch', 'budget', 'snel'],
     {
-      description: 'Zijdezachte soep van pompoen, wortel en kokosmelk.',
+      description: 'Zijdezachte soep van pompoen, wortel en rode linzen, met kokosmelk.',
       prep: 15,
       cook: 25,
       steps: [
@@ -882,6 +881,7 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
       ],
       ingredients: [
         li('pompoen', 800, 'g'),
+        li('linzen', 250, 'g'),
         li('wortel', 250, 'g'),
         li('ui', 1, 'piece'),
         li('gember', 15, 'g'),
@@ -891,7 +891,6 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
         li('olijfolie', 2, 'tbsp'),
         li('kurkuma', 3, 'g'),
       ],
-      nutrition: n(432, 11, 62, 15, 9.0, 1.7),
     },
   ),
 
@@ -1597,7 +1596,7 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
     'geen',
     ['vegetarisch', 'veganistisch', 'snel', 'budget'],
     {
-      description: 'Courgette, aubergine en paprika uit de oven, met citroen door de couscous.',
+      description: 'Courgette, aubergine en paprika uit de oven, met kikkererwten en citroen door de couscous.',
       prep: 12,
       cook: 25,
       steps: [
@@ -1612,6 +1611,7 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
         li('paprika-geel', 300, 'g'),
         li('ui', 1, 'piece'),
         li('couscous', 300, 'g'),
+        li('kikkererwten', 300, 'g'),
         li('groentebouillon', 12, 'g'),
         li('olijfolie', 3, 'tbsp'),
         li('citroen', 1, 'piece'),
@@ -1619,7 +1619,6 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
         li('zout', 3, 'g'),
         li('peper', 1, 'g'),
       ],
-      nutrition: n(486, 13, 74, 15, 9.6, 1.9),
     },
   ),
 
@@ -1630,7 +1629,7 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
     'geen',
     ['rijst', 'vegetarisch', 'veganistisch', 'comfortfood'],
     {
-      description: 'Pompoen die uit elkaar valt in de rijst, met tijm en een scheut olijfolie.',
+      description: 'Pompoen die uit elkaar valt in de rijst, met geroosterde cashewnoten erover.',
       prep: 15,
       cook: 30,
       steps: [
@@ -1642,6 +1641,7 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
       ingredients: [
         li('pompoen', 600, 'g'),
         li('witte-rijst', 320, 'g'),
+        li('cashewnoten', 200, 'g'),
         li('ui', 1, 'piece'),
         li('knoflook', 2, 'piece'),
         li('groentebouillon', 20, 'g'),
@@ -1650,7 +1650,6 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
         li('zout', 3, 'g'),
         li('peper', 1, 'g'),
       ],
-      nutrition: n(524, 11, 92, 12, 6.8, 2.2),
     },
   ),
 
@@ -1661,7 +1660,7 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
     'geen',
     ['aardappelen', 'ovenschotel', 'vegetarisch', 'veganistisch', 'budget'],
     {
-      description: 'Bloemkool en aardappel uit de oven met mosterd, oregano en een krokante korst.',
+      description: 'Bloemkool, aardappel en kikkererwten uit de oven, met mosterd en een krokante korst.',
       prep: 15,
       cook: 35,
       steps: [
@@ -1676,12 +1675,13 @@ const BASE_RECIPES: readonly AuthoredRecipe[] = [
         li('ui', 1, 'piece'),
         li('mosterd', 20, 'g'),
         li('paneermeel', 60, 'g'),
+        li('kikkererwten', 350, 'g'),
+        li('walnoten', 50, 'g'),
         li('olijfolie', 3, 'tbsp'),
         li('oregano', 3, 'g'),
         li('zout', 4, 'g'),
         li('peper', 1, 'g'),
       ],
-      nutrition: n(498, 14, 78, 14, 10.2, 2.4),
     },
   ),
 

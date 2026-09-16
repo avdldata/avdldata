@@ -5,8 +5,8 @@ import { DEFAULT_PACKAGING_CONFIG } from '@/domain/packaging/types';
 import { priceForUnits } from '@/domain/pricing/promotions';
 import {
   demoHousehold,
+  demoMenuRecipes,
   ingredientIndex,
-  recipes,
   storeCandidates,
   TEST_DATE,
   TEST_TODAY,
@@ -21,9 +21,10 @@ import {
  * These are made-up prices. They are shaped to be instructive, not observed.
  */
 
+// Pinned to the menu these prices were shaped around; see `demoMenuRecipes`.
 const base = (over: Partial<Parameters<typeof optimiseWeek>[0]> = {}) => ({
   household: demoHousehold,
-  recipes,
+  recipes: demoMenuRecipes,
   ingredients: ingredientIndex,
   stores: storeCandidates(),
   maxStores: 3,

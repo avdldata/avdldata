@@ -161,8 +161,12 @@ describe('recipe nutrition is derived from the ingredient catalogue', () => {
     // Only recipes that carry a second, independently written nutrition set can
     // cross-check anything. A recipe authored here has one number, computed
     // from its ingredients, and comparing that to itself would prove nothing.
+    // Fifty-one of the original fifty-six still carry one. The other five were
+    // rewritten during the Sprint 2 audit — a dinner with 8 g of protein is not
+    // a dinner — and their hand-written line described the old dish, so it was
+    // removed rather than rewritten to match.
     const withAuthored = catalogue.filter((r) => r.authoredNutritionPerServing !== undefined);
-    expect(withAuthored.length).toBeGreaterThanOrEqual(56);
+    expect(withAuthored.length).toBeGreaterThanOrEqual(51);
 
     const deviations = withAuthored
       .map((r) => nutritionDeviation(r.nutritionPerServing, r.authoredNutritionPerServing!))

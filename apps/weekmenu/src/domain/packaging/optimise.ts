@@ -57,6 +57,14 @@ export function optimisePackaging(
    */
   requiredUnit?: BaseUnit,
 ): PackagingResult {
+  // A non-finite requirement used to reach the cost table and surface as
+  // `RangeError: Invalid array length` from `new Array(NaN + 1)` — a message
+  // that says nothing about the household field that produced the NaN. The
+  // refusal is named instead, so the caller can point at the actual cause.
+  if (!Number.isFinite(requiredAmount)) {
+    return { status: 'UNAVAILABLE', ingredientId, reason: 'REQUIREMENT_NOT_FINITE' };
+  }
+
   const relevant = offers.filter((o) => o.ingredientId === ingredientId);
   if (relevant.length === 0) {
     return { status: 'UNAVAILABLE', ingredientId, reason: 'NO_PRODUCTS' };

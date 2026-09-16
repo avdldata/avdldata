@@ -40,6 +40,7 @@ export const VALIDATION_CODES = [
   'TOO_LITTLE_VEGETABLE_PER_PERSON',
   'EXTREME_KCAL',
   'IMPLAUSIBLE_KCAL_LOW',
+  'TOO_LITTLE_TOTAL_PROTEIN',
   'NUTRITION_NOT_DERIVED',
   'SCALING_BROKEN',
   'STEPS_TOO_FEW',
@@ -86,6 +87,8 @@ export const LIMITS = {
   oilMaxMl: 40,
   spiceMaxGrams: 20,
   vegetableMinGrams: 100,
+  /** Grams of protein a dinner should deliver, whatever it is made of. */
+  totalProteinMinGrams: 15,
   kcalMax: 1200,
   kcalMin: 350,
   kcalHardMax: 2000,
@@ -227,6 +230,72 @@ function millilitresPerServing(
 }
 
 /**
+ * Unit checks that run on the *authored* lines, before normalisation.
+ *
+ * These have to be reachable without a normalised recipe, because
+ * `normaliseRecipe` throws on exactly the mistakes they describe: a volume on a
+ * solid with no density never becomes a `Recipe` at all. Running them
+ * separately turns a crash on import into a list of lines and reasons, which is
+ * what someone writing a batch of recipes actually needs.
+ */
+export function validateAuthoredUnits(
+  authored: AuthoredRecipe,
+  ingredients: IngredientIndex,
+): RecipeProblem[] {
+  const problems: RecipeProblem[] = [];
+  const add = (code: ValidationCode, detail: string, ingredientId: string): void => {
+    problems.push({ recipeId: authored.id, code, severity: 'ERROR', detail, ingredientId });
+  };
+
+  for (const line of authored.ingredients) {
+    const ingredient = ingredients.get(line.ingredientId);
+    if (!ingredient) {
+      add('UNKNOWN_INGREDIENT', 'onbekend ingredient', line.ingredientId);
+      continue;
+    }
+    // A volume unit on a solid, or a mass unit on a liquid, only works because
+    // a density happens to exist. When the authored unit and the ingredient's
+    // own base unit disagree and no density bridges them, the line is a guess.
+    const authoredIsVolume = line.unit === 'ml' || line.unit === 'l';
+    const authoredIsMass = line.unit === 'g' || line.unit === 'kg';
+    if (authoredIsVolume && ingredient.baseUnit === 'g' && !ingredient.density) {
+      add(
+        'GRAM_MILLILITRE_CONFUSION',
+        `${line.amount} ${line.unit} op een gram-basis`,
+        line.ingredientId,
+      );
+      continue;
+    }
+    if (authoredIsMass && ingredient.baseUnit === 'ml' && !ingredient.density) {
+      add(
+        'GRAM_MILLILITRE_CONFUSION',
+        `${line.amount} ${line.unit} op een ml-basis`,
+        line.ingredientId,
+      );
+      continue;
+    }
+    if (line.unit === 'piece' && ingredient.baseUnit === 'g' && !ingredient.pieceWeightGrams) {
+      add('PIECES_WITHOUT_PIECE_WEIGHT', 'stuks zonder stukgewicht', line.ingredientId);
+      continue;
+    }
+    try {
+      toBaseQuantity(line.amount, line.unit, {
+        baseUnit: ingredient.baseUnit,
+        density: ingredient.density,
+        pieceWeightGrams: ingredient.pieceWeightGrams,
+      });
+    } catch (error) {
+      if (error instanceof UnitConversionError) {
+        add('UNIT_NOT_CONVERTIBLE', error.message, line.ingredientId);
+        continue;
+      }
+      throw error;
+    }
+  }
+  return problems;
+}
+
+/**
  * Check one normalised recipe.
  *
  * `authored` is optional but wanted: the authored lines are where a unit
@@ -332,40 +401,7 @@ export function validateRecipe(
   }
 
   // ---- unit handling ------------------------------------------------------
-  for (const line of authored?.ingredients ?? []) {
-    const ingredient = ingredients.get(line.ingredientId);
-    if (!ingredient) {
-      add('UNKNOWN_INGREDIENT', 'ERROR', `onbekend ingredient`, line.ingredientId);
-      continue;
-    }
-    try {
-      toBaseQuantity(line.amount, line.unit, {
-        baseUnit: ingredient.baseUnit,
-        density: ingredient.density,
-        pieceWeightGrams: ingredient.pieceWeightGrams,
-      });
-    } catch (error) {
-      if (error instanceof UnitConversionError) {
-        add('UNIT_NOT_CONVERTIBLE', 'ERROR', error.message, line.ingredientId);
-        continue;
-      }
-      throw error;
-    }
-    // A volume unit on a solid, or a mass unit on a liquid, only works because
-    // a density happens to exist. When the authored unit and the ingredient's
-    // own base unit disagree and no density bridges them, the line is a guess.
-    const authoredIsVolume = line.unit === 'ml' || line.unit === 'l';
-    const authoredIsMass = line.unit === 'g' || line.unit === 'kg';
-    if (authoredIsVolume && ingredient.baseUnit === 'g' && !ingredient.density) {
-      add('GRAM_MILLILITRE_CONFUSION', 'ERROR', `${line.amount} ${line.unit} op een gram-basis`, line.ingredientId);
-    }
-    if (authoredIsMass && ingredient.baseUnit === 'ml' && !ingredient.density) {
-      add('GRAM_MILLILITRE_CONFUSION', 'ERROR', `${line.amount} ${line.unit} op een ml-basis`, line.ingredientId);
-    }
-    if (line.unit === 'piece' && ingredient.baseUnit === 'g' && !ingredient.pieceWeightGrams) {
-      add('PIECES_WITHOUT_PIECE_WEIGHT', 'ERROR', 'stuks zonder stukgewicht', line.ingredientId);
-    }
-  }
+  if (authored) problems.push(...validateAuthoredUnits(authored, ingredients));
 
   // Pieces that cannot be bought: 1.5 wraps per person is fine, 1.5 wraps for
   // the whole recipe is a rounding artefact that reaches the shopping list.
@@ -462,6 +498,16 @@ export function validateRecipe(
     add('EXTREME_KCAL', 'WARNING', `${kcal} kcal per portie`);
   }
   if (kcal < LIMITS.kcalMin) add('IMPLAUSIBLE_KCAL_LOW', 'WARNING', `${kcal} kcal per portie`);
+  // Protein is checked on the nutrition, not on a list of protein ingredients:
+  // a bean stew and a chicken traybake get there by completely different
+  // routes, and only the computed figure knows whether the dish arrives.
+  if (recipe.nutritionPerServing.proteinGrams < LIMITS.totalProteinMinGrams) {
+    add(
+      'TOO_LITTLE_TOTAL_PROTEIN',
+      'WARNING',
+      `${recipe.nutritionPerServing.proteinGrams.toFixed(0)} g eiwit per portie`,
+    );
+  }
   if (recipe.nutritionSource !== 'derived') {
     add(
       'NUTRITION_NOT_DERIVED',

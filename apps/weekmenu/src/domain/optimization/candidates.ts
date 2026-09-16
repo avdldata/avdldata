@@ -73,13 +73,39 @@ export function generateCandidateWeeks(input: CandidateGenerationInput): Candida
     );
   }
 
-  const pool = rankCandidates(input.candidates, {
+  const ranked = rankCandidates(input.candidates, {
     amountsByRecipe,
     referenceOffers,
     preferencePenalties,
     portionsByRecipe: input.portionsByRecipe,
     memberNutrition: input.memberNutrition,
-  }).slice(0, Math.max(config.search.candidatesPerSlot, config.days * 4));
+  });
+
+  /*
+   * A locked day is not a suggestion, so its dish must be in the pool.
+   *
+   * The beam only ever places a recipe it finds in `pool`, and the pool is the
+   * ranked shortlist — 28 dishes by default. A locked dish outside that
+   * shortlist leaves the slot with nothing to place, the beam returns no weeks
+   * at all, and the caller reports "not enough recipes fit your settings"
+   * while a hundred of them do.
+   *
+   * It was invisible at 56 recipes, where the shortlist was half the library
+   * and usually contained whatever the user picked. At 138 it broke "replace
+   * this dish" on most days: three of seven for the demo household, offering
+   * no alternative at all where there were dozens.
+   */
+  const shortlist = ranked.slice(0, Math.max(config.search.candidatesPerSlot, config.days * 4));
+  const pool = input.locked
+    ? [
+        ...shortlist,
+        ...ranked.filter(
+          (recipe) =>
+            !shortlist.some((s) => s.id === recipe.id) &&
+            [...input.locked!.values()].includes(recipe.id),
+        ),
+      ]
+    : shortlist;
 
   // One beam per configured width, interleaved rather than concatenated.
   //

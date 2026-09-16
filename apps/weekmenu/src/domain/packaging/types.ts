@@ -38,7 +38,7 @@ export interface PackagingSolution {
 }
 
 export type PackagingUnavailableReason =
-  'NO_PRODUCTS' | 'NO_MATCHING_UNIT' | 'NO_VALID_COMBINATION';
+  'NO_PRODUCTS' | 'NO_MATCHING_UNIT' | 'NO_VALID_COMBINATION' | 'REQUIREMENT_NOT_FINITE';
 
 export type PackagingResult =
   | { readonly status: 'OK'; readonly solution: PackagingSolution }

@@ -133,7 +133,15 @@ export function cookingMethodOf(recipe: Recipe): CookingMethod {
     const method = METHOD_FROM_TAG[tag];
     if (method) return method;
   }
-  const haystack = `${recipe.name} ${recipe.description} ${recipe.steps.join(' ')}`;
+  // The ingredient ids join the haystack because a title can hide the method:
+  // "Romige kippasta" contains no standalone word "pasta", and a dish whose
+  // method the duplicate check cannot read ends up in a partition of its own.
+  const haystack = [
+    recipe.name,
+    recipe.description,
+    recipe.steps.join(' '),
+    recipe.ingredients.map((line) => line.ingredientId).join(' '),
+  ].join(' ');
   for (const [pattern, method] of METHOD_KEYWORDS) if (pattern.test(haystack)) return method;
   return 'overig';
 }
