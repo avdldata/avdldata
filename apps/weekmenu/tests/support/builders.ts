@@ -127,6 +127,7 @@ export function makeRecipe(id: string, options: Partial<Recipe> = {}): Recipe {
     totalMinutes: (options.prepMinutes ?? 10) + (options.cookMinutes ?? 20),
     difficulty: options.difficulty ?? 'makkelijk',
     cuisine: options.cuisine ?? 'nederlands',
+    mealType: options.mealType ?? 'dinner',
     tags: options.tags ?? [],
     baseServings: options.baseServings ?? 4,
     ingredients: options.ingredients ?? [],
@@ -141,6 +142,11 @@ export function makeRecipe(id: string, options: Partial<Recipe> = {}): Recipe {
     vegan: options.vegan ?? false,
     pregnancySuitable: options.pregnancySuitable ?? true,
     pregnancyRiskReasons: options.pregnancyRiskReasons ?? [],
+    provenance: options.provenance ?? {
+      kind: 'INTERNAL',
+      licence: 'INTERNAL',
+      addedAt: '2026-01-01T00:00:00.000Z',
+    },
   };
 }
 

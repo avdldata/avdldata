@@ -152,6 +152,7 @@ function recipe(
     totalMinutes: 30,
     difficulty: 'makkelijk',
     cuisine: random.pick(CUISINES),
+    mealType: 'dinner',
     tags,
     baseServings: 4,
     ingredients: lines,
@@ -165,6 +166,7 @@ function recipe(
     vegan: true,
     pregnancySuitable: true,
     pregnancyRiskReasons: [],
+    provenance: { kind: 'INTERNAL', licence: 'INTERNAL', addedAt: '2026-01-01T00:00:00.000Z' },
   };
 }
 

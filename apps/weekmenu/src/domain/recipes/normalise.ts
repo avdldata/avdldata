@@ -68,6 +68,7 @@ export function normaliseRecipe(authored: AuthoredRecipe, ingredients: Ingredien
         },
         optional: line.optional ?? false,
         ...(line.note !== undefined ? { note: line.note } : {}),
+        ...(line.variantId !== undefined ? { variantId: line.variantId } : {}),
       },
     });
   }
@@ -94,6 +95,12 @@ export function normaliseRecipe(authored: AuthoredRecipe, ingredients: Ingredien
   const lines = resolved.map((r) => r.line);
   const computed = computeRecipeNutrition(lines, ingredients);
   const derived = computed.coverage >= MINIMUM_NUTRITION_COVERAGE;
+  if (!derived && authored.nutritionPerServing === undefined) {
+    throw new RecipeNormalisationError(
+      `Nutrition coverage is ${(computed.coverage * 100).toFixed(0)}% and there is no authored fallback`,
+      { recipeId: authored.id, ingredientId: computed.missingIngredientIds[0] },
+    );
+  }
 
   return {
     id: authored.id,
@@ -106,11 +113,14 @@ export function normaliseRecipe(authored: AuthoredRecipe, ingredients: Ingredien
     totalMinutes: authored.prepMinutes + authored.cookMinutes,
     difficulty: authored.difficulty,
     cuisine: authored.cuisine,
+    mealType: authored.mealType,
     tags: authored.tags,
     baseServings: authored.baseServings,
     ingredients: lines,
-    nutritionPerServing: derived ? computed.perServing : authored.nutritionPerServing,
-    authoredNutritionPerServing: authored.nutritionPerServing,
+    nutritionPerServing: derived ? computed.perServing : authored.nutritionPerServing!,
+    ...(authored.nutritionPerServing !== undefined
+      ? { authoredNutritionPerServing: authored.nutritionPerServing }
+      : {}),
     nutritionSource: derived ? 'derived' : 'authored',
     nutritionCoverage: computed.coverage,
     primaryProtein: authored.primaryProtein,
@@ -119,6 +129,7 @@ export function normaliseRecipe(authored: AuthoredRecipe, ingredients: Ingredien
     vegan,
     pregnancySuitable,
     pregnancyRiskReasons: [...pregnancyReasons].sort(),
+    provenance: authored.provenance,
   };
 }
 

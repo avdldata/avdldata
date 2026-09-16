@@ -36,6 +36,8 @@ function authored(overrides: Partial<AuthoredRecipe> = {}): AuthoredRecipe {
     cookMinutes: 20,
     difficulty: 'makkelijk',
     cuisine: 'nederlands',
+    mealType: 'dinner',
+    provenance: { kind: 'INTERNAL', licence: 'INTERNAL', addedAt: '2026-01-01T00:00:00.000Z' },
     tags: [],
     baseServings: 4,
     ingredients: [{ ingredientId: 'ui', amount: 2, unit: 'piece' }],

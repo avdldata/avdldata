@@ -1,72 +1,6 @@
-import type { AuthoringUnit } from '@/domain/units';
-import type {
-  AuthoredRecipe,
-  AuthoredRecipeIngredient,
-  Cuisine,
-  Difficulty,
-  NutritionPerServing,
-  PrimaryProtein,
-  RecipeTag,
-} from '@/domain/recipes/types';
-
-function li(
-  ingredientId: string,
-  amount: number,
-  unit: AuthoringUnit,
-  optional = false,
-): AuthoredRecipeIngredient {
-  return { ingredientId, amount, unit, ...(optional ? { optional: true } : {}) };
-}
-
-interface RecipeSpec {
-  readonly description: string;
-  readonly prep: number;
-  readonly cook: number;
-  readonly difficulty?: Difficulty;
-  readonly servings?: number;
-  readonly steps: readonly string[];
-  readonly ingredients: readonly AuthoredRecipeIngredient[];
-  readonly nutrition: NutritionPerServing;
-  readonly pregnancySuitableOverride?: boolean;
-}
-
-function r(
-  id: string,
-  name: string,
-  cuisine: Cuisine,
-  primaryProtein: PrimaryProtein,
-  tags: readonly RecipeTag[],
-  spec: RecipeSpec,
-): AuthoredRecipe {
-  return {
-    id,
-    name,
-    description: spec.description,
-    imageUrl: `/recipes/${id}.svg`,
-    steps: spec.steps,
-    prepMinutes: spec.prep,
-    cookMinutes: spec.cook,
-    difficulty: spec.difficulty ?? 'makkelijk',
-    cuisine,
-    tags,
-    baseServings: spec.servings ?? 4,
-    ingredients: spec.ingredients,
-    nutritionPerServing: spec.nutrition,
-    primaryProtein,
-    ...(spec.pregnancySuitableOverride !== undefined
-      ? { pregnancySuitableOverride: spec.pregnancySuitableOverride }
-      : {}),
-  };
-}
-
-const n = (
-  kcal: number,
-  proteinGrams: number,
-  carbGrams: number,
-  fatGrams: number,
-  fiberGrams: number,
-  saltGrams: number,
-): NutritionPerServing => ({ kcal, proteinGrams, carbGrams, fatGrams, fiberGrams, saltGrams });
+import type { AuthoredRecipe } from '@/domain/recipes/types';
+import { li, n, r } from './recipe-authoring';
+import { SPRINT2_RECIPES } from './recipes-sprint2';
 
 /**
  * Demo recipe catalogue.
@@ -75,7 +9,7 @@ const n = (
  * between dishes — that overlap is what gives the optimizer something real to
  * work with when it decides how many packs of chicken or carrots to buy.
  */
-export const SEED_RECIPES: readonly AuthoredRecipe[] = [
+const BASE_RECIPES: readonly AuthoredRecipe[] = [
   r(
     'spaghetti-bolognese',
     'Spaghetti bolognese',
@@ -180,7 +114,7 @@ export const SEED_RECIPES: readonly AuthoredRecipe[] = [
     'Chili sin carne',
     'mexicaans',
     'peulvrucht',
-    ['rijst', 'vegetarisch', 'eenpansgerecht', 'budget'],
+    ['rijst', 'vegetarisch', 'veganistisch', 'eenpansgerecht', 'budget'],
     {
       description: 'Stevige bonenschotel met paprika, maïs en een flinke snuf chili.',
       prep: 10,
@@ -354,7 +288,7 @@ export const SEED_RECIPES: readonly AuthoredRecipe[] = [
     'Roerbakmie met tofu',
     'aziatisch',
     'plantaardig-vlees',
-    ['noedels', 'vegetarisch', 'snel'],
+    ['noedels', 'vegetarisch', 'veganistisch', 'snel'],
     {
       description: 'Snelle wokschotel met tofu, spitskool, wortel en ketjap.',
       prep: 12,
@@ -477,7 +411,7 @@ export const SEED_RECIPES: readonly AuthoredRecipe[] = [
     'Stevige linzensoep',
     'mediterraan',
     'peulvrucht',
-    ['soep', 'vegetarisch', 'budget'],
+    ['soep', 'vegetarisch', 'veganistisch', 'budget'],
     {
       description: 'Vullende soep van linzen, wortel, prei en tomaat.',
       prep: 10,
@@ -738,7 +672,7 @@ export const SEED_RECIPES: readonly AuthoredRecipe[] = [
     'Indiase kikkererwtencurry',
     'indiaas',
     'peulvrucht',
-    ['rijst', 'vegetarisch', 'eenpansgerecht', 'budget'],
+    ['rijst', 'vegetarisch', 'veganistisch', 'eenpansgerecht', 'budget'],
     {
       description: 'Kikkererwten in een kruidige tomaten-kokossaus.',
       prep: 10,
@@ -792,7 +726,7 @@ export const SEED_RECIPES: readonly AuthoredRecipe[] = [
     nutrition: n(714, 44, 74, 27, 5.0, 1.6),
   }),
 
-  r('nasi-goreng', 'Nasi goreng', 'aziatisch', 'ei', ['rijst', 'eenpansgerecht', 'budget'], {
+  r('nasi-goreng', 'Nasi goreng', 'aziatisch', 'ei', ['rijst', 'vegetarisch', 'eenpansgerecht', 'budget'], {
     description: 'Gebakken rijst met ei, spitskool, wortel en ketjap.',
     prep: 15,
     cook: 20,
@@ -847,7 +781,7 @@ export const SEED_RECIPES: readonly AuthoredRecipe[] = [
     'Couscous met geroosterde groenten',
     'mediterraan',
     'peulvrucht',
-    ['vegetarisch', 'salade', 'snel'],
+    ['vegetarisch', 'veganistisch', 'salade', 'snel'],
     {
       description: 'Couscous met paprika, courgette, kikkererwten en citroen.',
       prep: 15,
@@ -935,7 +869,7 @@ export const SEED_RECIPES: readonly AuthoredRecipe[] = [
     'Pompoensoep met kokos',
     'nederlands',
     'geen',
-    ['soep', 'vegetarisch', 'budget', 'snel'],
+    ['soep', 'vegetarisch', 'veganistisch', 'budget', 'snel'],
     {
       description: 'Zijdezachte soep van pompoen, wortel en kokosmelk.',
       prep: 15,
@@ -1458,7 +1392,7 @@ export const SEED_RECIPES: readonly AuthoredRecipe[] = [
     'Spinazie-kikkererwtencurry',
     'indiaas',
     'peulvrucht',
-    ['rijst', 'vegetarisch', 'snel', 'budget'],
+    ['rijst', 'vegetarisch', 'veganistisch', 'snel', 'budget'],
     {
       description: 'Snelle curry met spinazie, kikkererwten en kokosmelk.',
       prep: 8,
@@ -1784,3 +1718,14 @@ export const SEED_RECIPES: readonly AuthoredRecipe[] = [
     },
   ),
 ];
+
+/**
+ * The dinner library the planner draws from.
+ *
+ * `BASE_RECIPES` are the original demo dishes, each with a hand-written
+ * nutrition line kept as a cross-check. `SPRINT2_RECIPES` are the recipes
+ * written to grow the library past 120; they carry no second nutrition set
+ * because there is nothing independent to cross-check against — see
+ * `AuthoredRecipe.nutritionPerServing`.
+ */
+export const SEED_RECIPES: readonly AuthoredRecipe[] = [...BASE_RECIPES, ...SPRINT2_RECIPES];

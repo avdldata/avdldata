@@ -1,0 +1,1644 @@
+{
+  "auditedAt": "2026-09-16",
+  "corpus": "open-recipe-archive",
+  "rights": "PUBLIC_DOMAIN",
+  "gate": "dinner-verdict + canonical coverage >= 90% + unit parseability >= 80% + every canonical id buyable at AH/Jumbo/Lidl",
+  "candidates": 110,
+  "rubric": {
+    "GOOD": "zou vanavond als avondmaaltijd op tafel kunnen, zonder inhoudelijke wijziging",
+    "FIXABLE": "een echt hoofdgerecht, maar mist een component of heeft onbruikbare hoeveelheden",
+    "REJECT": "geen avondmaaltijd, of het hoofdingredient matchte niet zodat import een onwaar recept zou opleveren"
+  },
+  "results": [
+    {
+      "externalId": "australian-table/rice-cakes-5",
+      "title": "Rice Cakes",
+      "lines": 5,
+      "canonicalIds": [
+        "ei",
+        "melk",
+        "roomboter",
+        "witte-rijst",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "BAKED_GOOD"
+    },
+    {
+      "externalId": "australian-table/rice-oakes",
+      "title": "Rice Oakes",
+      "lines": 6,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "melk",
+        "roomboter",
+        "witte-rijst",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "BAKED_GOOD"
+    },
+    {
+      "externalId": "canadian-kitchen/creamed-eggs",
+      "title": "Creamed Eggs",
+      "lines": 7,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "melk",
+        "peper",
+        "roomboter",
+        "ui",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "canadian-kitchen/devilled-crabs-2",
+      "title": "Devilled Crabs",
+      "lines": 10,
+      "canonicalIds": [
+        "bloem",
+        "champignons",
+        "citroen",
+        "ei",
+        "melk",
+        "paprika-rood",
+        "roomboter",
+        "verse-peterselie",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "MAIN_INGREDIENT_UNMATCHED"
+    },
+    {
+      "externalId": "canadian-kitchen/english-monkey-3",
+      "title": "English Monkey",
+      "lines": 5,
+      "canonicalIds": [
+        "ei",
+        "geraspte-kaas",
+        "melk",
+        "paneermeel",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "NOT_A_DINNER"
+    },
+    {
+      "externalId": "canadian-kitchen/meat-souffle",
+      "title": "Meat Souffle",
+      "lines": 8,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "kipfilet",
+        "melk",
+        "peper",
+        "roomboter",
+        "ui",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "NOT_A_DINNER"
+    },
+    {
+      "externalId": "canadian-kitchen/milk-potato-soup",
+      "title": "Milk Potato Soup",
+      "lines": 7,
+      "canonicalIds": [
+        "aardappel",
+        "bloem",
+        "melk",
+        "peper",
+        "roomboter",
+        "ui",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_PROTEIN_AND_VEGETABLE"
+    },
+    {
+      "externalId": "canadian-kitchen/potato-croquettes-2-2",
+      "title": "Potato Croquettes 2",
+      "lines": 6,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "paneermeel",
+        "peper",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "canadian-kitchen/potato-puff-2",
+      "title": "Potato Puff",
+      "lines": 5,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "melk",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "canadian-kitchen/potato-salad-7-2",
+      "title": "Potato Salad 7",
+      "lines": 10,
+      "canonicalIds": [
+        "azijn",
+        "ei",
+        "gember",
+        "komkommer",
+        "kookroom",
+        "mosterd",
+        "peper",
+        "ui",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "canadian-kitchen/scalloped-cheese-3",
+      "title": "Scalloped Cheese",
+      "lines": 6,
+      "canonicalIds": [
+        "ei",
+        "geraspte-kaas",
+        "melk",
+        "paneermeel",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "NOT_A_DINNER"
+    },
+    {
+      "externalId": "canadian-kitchen/vegetable-soup-5",
+      "title": "Vegetable Soup",
+      "lines": 11,
+      "canonicalIds": [
+        "aardappel",
+        "bloem",
+        "mais",
+        "peper",
+        "roomboter",
+        "tomaat",
+        "ui",
+        "verse-peterselie",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_PROTEIN"
+    },
+    {
+      "externalId": "ceska-kuchyne/pol-vka-z-mouky-flour-soup-4",
+      "title": "Polévka z mouky (Flour Soup)",
+      "lines": 5,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "STARTER_SOUP"
+    },
+    {
+      "externalId": "ceska-kuchyne/potato-dumplings-zem-kov-knedl-ky-2",
+      "title": "Potato Dumplings (Zemákové knedlíky)",
+      "lines": 6,
+      "canonicalIds": [
+        "aardappel",
+        "bloem",
+        "ei",
+        "melk",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "chinese-kitchen/fried-eggs-yout-jar-don",
+      "title": "Fried Eggs Yout Jar Don",
+      "lines": 5,
+      "canonicalIds": [
+        "champignons",
+        "ei",
+        "gember",
+        "kipfilet",
+        "ui"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "cocina-argentina/sopa-de-albondiguillas-meatball-soup-3",
+      "title": "Sopa de Albondiguillas (Meatball Soup)",
+      "lines": 6,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "melk",
+        "peper",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "MAIN_INGREDIENT_UNMATCHED"
+    },
+    {
+      "externalId": "cocina-espanola/pasta-dough-for-ravioles",
+      "title": "Pasta Dough (for Ravioles)",
+      "lines": 6,
+      "canonicalIds": [
+        "bloem",
+        "citroen",
+        "ei",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "COMPONENT"
+    },
+    {
+      "externalId": "cocina-mexicana/fideos-pasta-de-noodle-dough",
+      "title": "Fideos (Pasta de) (Noodle Dough)",
+      "lines": 5,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "COMPONENT"
+    },
+    {
+      "externalId": "cocina-mexicana/manjar-blanco-sevillano-seville-style-blancmange",
+      "title": "Manjar-Blanco Sevillano (Seville-Style Blancmange)",
+      "lines": 5,
+      "canonicalIds": [
+        "ei",
+        "kipfilet",
+        "melk",
+        "roomboter",
+        "witte-rijst"
+      ],
+      "verdict": "REJECT",
+      "reason": "DESSERT"
+    },
+    {
+      "externalId": "cocina-mexicana/soplillo-de-papas-potato-puff",
+      "title": "Soplillo de Papas (Potato Puff)",
+      "lines": 3,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "kookroom"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "cozinha-brasileira/lentilhas-ensopadas-stewed-lentils",
+      "title": "Lentilhas Ensopadas (Stewed Lentils)",
+      "lines": 6,
+      "canonicalIds": [
+        "azijn",
+        "linzen",
+        "roomboter",
+        "ui",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_VEGETABLE"
+    },
+    {
+      "externalId": "cozinha-portuguesa/sopa-brasica-de-arroz-brasica-rice-soup",
+      "title": "Sopa Brasica de arroz (Brasica Rice Soup)",
+      "lines": 4,
+      "canonicalIds": [
+        "ei",
+        "groentebouillon",
+        "roomboter",
+        "witte-rijst"
+      ],
+      "verdict": "REJECT",
+      "reason": "STARTER_SOUP"
+    },
+    {
+      "externalId": "cucina-italiana/sformato-di-cavolfiore-cauliflower-souffl",
+      "title": "Sformato di cavolfiore (Cauliflower Soufflé)",
+      "lines": 6,
+      "canonicalIds": [
+        "bloem",
+        "bloemkool",
+        "ei",
+        "melk",
+        "parmezaan",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "danske-kokken/oste-kiks-cheese-crackers",
+      "title": "Oste-Kiks (Cheese Crackers)",
+      "lines": 5,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "geraspte-kaas",
+        "paprika-rood",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "BAKED_GOOD"
+    },
+    {
+      "externalId": "danske-kokken/ris-med-tomat-pur-rice-with-tomato-pur-e",
+      "title": "Ris med Tomat-Puré (Rice with Tomato Purée)",
+      "lines": 6,
+      "canonicalIds": [
+        "groentebouillon",
+        "tomaat",
+        "ui",
+        "witte-rijst",
+        "wortel",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "danske-kokken/souffl-s-cheese-souffl-s",
+      "title": "Soufflés (Cheese Soufflés)",
+      "lines": 5,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "melk",
+        "parmezaan",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "filipino-kitchen/baked-eggplant-2",
+      "title": "Baked Eggplant",
+      "lines": 6,
+      "canonicalIds": [
+        "aubergine",
+        "ei",
+        "paneermeel",
+        "tomaat",
+        "witte-rijst"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_PROTEIN"
+    },
+    {
+      "externalId": "filipino-kitchen/baked-rice-3",
+      "title": "Baked Rice",
+      "lines": 6,
+      "canonicalIds": [
+        "ei",
+        "geraspte-kaas",
+        "melk",
+        "roomboter",
+        "witte-rijst",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "filipino-kitchen/codfish-balls-and-codfish-souffle",
+      "title": "Codfish Balls and Codfish Souffle",
+      "lines": 6,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "paneermeel",
+        "peper",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "MAIN_INGREDIENT_UNMATCHED"
+    },
+    {
+      "externalId": "filipino-kitchen/corn-soup-6",
+      "title": "Corn Soup",
+      "lines": 7,
+      "canonicalIds": [
+        "bloem",
+        "mais",
+        "melk",
+        "roomboter",
+        "ui"
+      ],
+      "verdict": "REJECT",
+      "reason": "STARTER_SOUP"
+    },
+    {
+      "externalId": "german-kitchen/bratkartoffeln-fried-potatoes",
+      "title": "Bratkartoffeln (Fried Potatoes)",
+      "lines": 3,
+      "canonicalIds": [
+        "aardappel",
+        "spekblokjes",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "hollandse-keuken/eieren-met-tomatensaus-eggs-with-tomato-sauce",
+      "title": "Eieren met tomatensaus (Eggs with Tomato Sauce)",
+      "lines": 2,
+      "canonicalIds": [
+        "ei",
+        "tomaat"
+      ],
+      "verdict": "REJECT",
+      "reason": "TOO_FEW_LINES"
+    },
+    {
+      "externalId": "hollandse-keuken/uiensaus-onion-sauce",
+      "title": "Uiensaus (Onion Sauce)",
+      "lines": 5,
+      "canonicalIds": [
+        "azijn",
+        "bloem",
+        "roomboter",
+        "ui",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "COMPONENT"
+    },
+    {
+      "externalId": "jewish-kitchen/herb-omelet",
+      "title": "Herb Omelet",
+      "lines": 7,
+      "canonicalIds": [
+        "ei",
+        "peper",
+        "roomboter",
+        "ui",
+        "verse-peterselie",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "kuchnia-polska/polewka-z-kapusty-cabbage-soup-2",
+      "title": "Polewka z Kapusty (Cabbage Soup)",
+      "lines": 6,
+      "canonicalIds": [
+        "bloem",
+        "melk",
+        "roomboter",
+        "spitskool"
+      ],
+      "verdict": "REJECT",
+      "reason": "STARTER_SOUP"
+    },
+    {
+      "externalId": "kuchnia-polska/pomidory-faszerowane-stuffed-tomatoes",
+      "title": "Pomidory Faszerowane (Stuffed Tomatoes)",
+      "lines": 7,
+      "canonicalIds": [
+        "ei",
+        "paneermeel",
+        "paprika-rood",
+        "roomboter",
+        "tomaat",
+        "verse-peterselie",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "kuchnia-polska/ry-po-turecku-turkish-rice",
+      "title": "Ryż po Turecku (Turkish Rice)",
+      "lines": 6,
+      "canonicalIds": [
+        "groentebouillon",
+        "peper",
+        "roomboter",
+        "tomaat",
+        "witte-rijst",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "kuchnia-polska/suflet-z-kartofli-potato-souffl",
+      "title": "Suflet z Kartofli (Potato Soufflé)",
+      "lines": 6,
+      "canonicalIds": [
+        "aardappel",
+        "creme-fraiche",
+        "ei",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "louisiana-creole/baked-shrimps-2",
+      "title": "Baked Shrimps",
+      "lines": 4,
+      "canonicalIds": [
+        "garnalen",
+        "paneermeel",
+        "roomboter",
+        "tomaat"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_CARBOHYDRATE"
+    },
+    {
+      "externalId": "louisiana-creole/boiled-spaghetti-italian-style",
+      "title": "Boiled Spaghetti, Italian Style",
+      "lines": 5,
+      "canonicalIds": [
+        "bloem",
+        "parmezaan",
+        "roomboter",
+        "spaghetti"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "louisiana-creole/chicken-croquettes-6",
+      "title": "Chicken Croquettes",
+      "lines": 10,
+      "canonicalIds": [
+        "ei",
+        "kipfilet",
+        "melk",
+        "paneermeel",
+        "peper",
+        "roomboter",
+        "ui",
+        "verse-peterselie",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "louisiana-creole/chicken-with-rice-2",
+      "title": "Chicken With Rice",
+      "lines": 2,
+      "canonicalIds": [
+        "kipfilet",
+        "witte-rijst"
+      ],
+      "verdict": "REJECT",
+      "reason": "TOO_FEW_LINES"
+    },
+    {
+      "externalId": "louisiana-creole/macaroni-creole-style",
+      "title": "Macaroni, Creole Style",
+      "lines": 5,
+      "canonicalIds": [
+        "bloem",
+        "macaroni",
+        "roomboter",
+        "tomaat"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_PROTEIN_AND_VEGETABLE"
+    },
+    {
+      "externalId": "louisiana-creole/mushroom-omelet-2",
+      "title": "Mushroom Omelet",
+      "lines": 3,
+      "canonicalIds": [
+        "champignons",
+        "ei",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "louisiana-creole/onion-omelet-3",
+      "title": "Onion Omelet",
+      "lines": 3,
+      "canonicalIds": [
+        "ei",
+        "roomboter",
+        "ui"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "louisiana-creole/potato-souffle-3",
+      "title": "Potato Souffle",
+      "lines": 5,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "kookroom",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "louisiana-creole/puffs",
+      "title": "Puffs",
+      "lines": 4,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "melk",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "louisiana-creole/rice-fritters-4",
+      "title": "Rice Fritters",
+      "lines": 5,
+      "canonicalIds": [
+        "citroen",
+        "ei",
+        "kaneel",
+        "roomboter",
+        "witte-rijst"
+      ],
+      "verdict": "REJECT",
+      "reason": "BAKED_GOOD"
+    },
+    {
+      "externalId": "louisiana-creole/stewed-chicken-white-sauce",
+      "title": "Stewed Chicken, White Sauce",
+      "lines": 6,
+      "canonicalIds": [
+        "bloem",
+        "kipfilet",
+        "melk",
+        "roomboter",
+        "ui"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_CARBOHYDRATE"
+    },
+    {
+      "externalId": "suomen-keittio/egg-souffle-2",
+      "title": "Egg Souffle",
+      "lines": 7,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "melk",
+        "roomboter",
+        "ui",
+        "verse-peterselie"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "suomen-keittio/filled-green-pepper",
+      "title": "Filled Green Pepper",
+      "lines": 10,
+      "canonicalIds": [
+        "champignons",
+        "paneermeel",
+        "peper",
+        "roomboter",
+        "tomaat",
+        "ui",
+        "witte-rijst",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "MAIN_INGREDIENT_UNMATCHED"
+    },
+    {
+      "externalId": "suomen-keittio/juusto-py-ryj-no-2-cheese-balls-no-2",
+      "title": "Juusto-pyöryjä No. 2 (Cheese Balls No. 2)",
+      "lines": 6,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "geraspte-kaas",
+        "melk",
+        "paneermeel",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "suomen-keittio/liha-kvenellej-meat-quenelles",
+      "title": "Liha Kvenellejä (Meat Quenelles)",
+      "lines": 7,
+      "canonicalIds": [
+        "ei",
+        "kipfilet",
+        "melk",
+        "paneermeel",
+        "roomboter",
+        "ui"
+      ],
+      "verdict": "REJECT",
+      "reason": "COMPONENT"
+    },
+    {
+      "externalId": "suomen-keittio/lohikeitto-salmon-soup",
+      "title": "Lohikeitto (Salmon Soup)",
+      "lines": 7,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "kookroom",
+        "roomboter",
+        "zalmfilet"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_VEGETABLE"
+    },
+    {
+      "externalId": "suomen-keittio/makarooni-muhennus-stewed-macaroni",
+      "title": "Makarooni-Muhennus (Stewed Macaroni)",
+      "lines": 12,
+      "canonicalIds": [
+        "bloem",
+        "champignons",
+        "geraspte-kaas",
+        "macaroni",
+        "peper",
+        "roomboter",
+        "tomaat",
+        "ui",
+        "wortel",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_PROTEIN"
+    },
+    {
+      "externalId": "suomen-keittio/perunatippoja-potato-fritters",
+      "title": "Perunatippoja (Potato Fritters)",
+      "lines": 5,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "kookroom",
+        "peper",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "suomen-keittio/porkkanatippoja-carrot-fritters-2",
+      "title": "Porkkanatippoja (Carrot Fritters)",
+      "lines": 5,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "roomboter",
+        "wortel"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "suomen-keittio/puffed-potatoes-peruna-vanukas",
+      "title": "Puffed Potatoes (Peruna-vanukas)",
+      "lines": 6,
+      "canonicalIds": [
+        "aardappel",
+        "bloem",
+        "ei",
+        "kookroom",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "suomen-keittio/sienikastike-no-1-mushroom-sauce-no-1",
+      "title": "Sienikastike No. 1 (Mushroom Sauce No. 1)",
+      "lines": 6,
+      "canonicalIds": [
+        "bloem",
+        "champignons",
+        "citroen",
+        "groentebouillon",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "COMPONENT"
+    },
+    {
+      "externalId": "suomen-keittio/sienimureke-mushroom-farce",
+      "title": "Sienimureke (Mushroom Farce)",
+      "lines": 7,
+      "canonicalIds": [
+        "champignons",
+        "ei",
+        "melk",
+        "paneermeel",
+        "roomboter",
+        "ui"
+      ],
+      "verdict": "REJECT",
+      "reason": "COMPONENT"
+    },
+    {
+      "externalId": "suomen-keittio/sieni-munien-kanssa-mushrooms-with-eggs",
+      "title": "Sieniä munien kanssa (Mushrooms with Eggs)",
+      "lines": 6,
+      "canonicalIds": [
+        "champignons",
+        "ei",
+        "melk",
+        "roomboter",
+        "ui"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "suomen-keittio/sillipallerot-herring-balls",
+      "title": "Sillipallerot (Herring Balls)",
+      "lines": 7,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "kookroom",
+        "paneermeel",
+        "roomboter",
+        "ui",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "COMPONENT"
+    },
+    {
+      "externalId": "suomen-keittio/stewed-macaroni",
+      "title": "Stewed Macaroni",
+      "lines": 11,
+      "canonicalIds": [
+        "bloem",
+        "champignons",
+        "geraspte-kaas",
+        "macaroni",
+        "peper",
+        "roomboter",
+        "tomaat",
+        "ui",
+        "wortel",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_PROTEIN"
+    },
+    {
+      "externalId": "suomen-keittio/tomaattipalleroita-tomato-croquettes",
+      "title": "Tomaattipalleroita (Tomato Croquettes)",
+      "lines": 7,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "paneermeel",
+        "roomboter",
+        "tomaat",
+        "ui",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "suomen-keittio/t-ytetty-viheri-pippuria-stuffed-green-pepper",
+      "title": "Täytettyä Viheriää Pippuria (Stuffed Green Pepper)",
+      "lines": 10,
+      "canonicalIds": [
+        "champignons",
+        "paneermeel",
+        "peper",
+        "roomboter",
+        "tomaat",
+        "ui",
+        "witte-rijst",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "MAIN_INGREDIENT_UNMATCHED"
+    },
+    {
+      "externalId": "svenska-koket/biff-av-svinfil-pork-tenderloin-steak-2",
+      "title": "Biff av svinfilé (Pork Tenderloin Steak)",
+      "lines": 8,
+      "canonicalIds": [
+        "groentebouillon",
+        "peper",
+        "roomboter",
+        "ui",
+        "varkenshaas",
+        "verse-peterselie",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_CARBOHYDRATE"
+    },
+    {
+      "externalId": "svenska-koket/biffpaj-beef-pie-3",
+      "title": "Biffpaj (Beef Pie)",
+      "lines": 11,
+      "canonicalIds": [
+        "aardappel",
+        "bloem",
+        "groentebouillon",
+        "peper",
+        "roomboter",
+        "ui",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "MAIN_INGREDIENT_UNMATCHED"
+    },
+    {
+      "externalId": "svenska-koket/blomk-lssuffl-cauliflower-souffl",
+      "title": "Blomkålssufflé (Cauliflower Soufflé)",
+      "lines": 13,
+      "canonicalIds": [
+        "bloem",
+        "bloemkool",
+        "ei",
+        "melk",
+        "paneermeel",
+        "peper",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "svenska-koket/el-skomelett-elk-omelet",
+      "title": "Eläskomelett (Elk Omelet)",
+      "lines": 6,
+      "canonicalIds": [
+        "bloem",
+        "creme-fraiche",
+        "ei",
+        "prei",
+        "spekblokjes",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "svenska-koket/fylld-l-k-stuffed-onion",
+      "title": "Fylld Lök (Stuffed Onion)",
+      "lines": 13,
+      "canonicalIds": [
+        "champignons",
+        "paneermeel",
+        "peper",
+        "rode-ui",
+        "roomboter",
+        "tomatenpuree",
+        "ui",
+        "verse-peterselie",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "svenska-koket/fyllda-potatismoskrustader-filled-potato-basket-cases",
+      "title": "Fyllda Potatismoskrustader (Filled Potato Basket Cases)",
+      "lines": 9,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "geraspte-kaas",
+        "peper",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "svenska-koket/j-mtska-kotletter-jamtland-cutlets",
+      "title": "Jämtska Kotletter (Jamtland Cutlets)",
+      "lines": 12,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "paneermeel",
+        "peper",
+        "rode-ui",
+        "roomboter",
+        "spekblokjes",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_VEGETABLE"
+    },
+    {
+      "externalId": "svenska-koket/laxkotletter-salmon-cutlets",
+      "title": "Laxkotletter (Salmon Cutlets)",
+      "lines": 9,
+      "canonicalIds": [
+        "bloem",
+        "citroen",
+        "ei",
+        "paneermeel",
+        "peper",
+        "roomboter",
+        "zalmfilet",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_CARBOHYDRATE"
+    },
+    {
+      "externalId": "svenska-koket/linskotletter-lentil-cutlets",
+      "title": "Linskotletter (Lentil Cutlets)",
+      "lines": 10,
+      "canonicalIds": [
+        "ei",
+        "linzen",
+        "mais",
+        "paneermeel",
+        "roomboter",
+        "ui",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_VEGETABLE"
+    },
+    {
+      "externalId": "svenska-koket/l-kdolmar-stuffed-onion-rolls-serves-6",
+      "title": "Lökdolmar (Stuffed Onion Rolls, Serves 6)",
+      "lines": 11,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "kookroom",
+        "peper",
+        "roomboter",
+        "ui",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "svenska-koket/macaroni-with-tomato-for-6-persons-2",
+      "title": "Macaroni with Tomato (for 6 persons)",
+      "lines": 5,
+      "canonicalIds": [
+        "macaroni",
+        "parmezaan",
+        "tomaat",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_PROTEIN"
+    },
+    {
+      "externalId": "svenska-koket/mellanr-tt-av-nudel-creamed-pasta-course-for-6-persons",
+      "title": "Mellanrätt av Nudel (Creamed Pasta Course for 6 persons)",
+      "lines": 8,
+      "canonicalIds": [
+        "kookroom",
+        "parmezaan",
+        "pasta",
+        "peper",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "INTERMEDIATE_COURSE"
+    },
+    {
+      "externalId": "svenska-koket/pirog-p-lax-salmon-pirog-3",
+      "title": "Pirog på lax (Salmon Pirog)",
+      "lines": 12,
+      "canonicalIds": [
+        "ei",
+        "kookroom",
+        "rode-ui",
+        "roomboter",
+        "witte-rijst",
+        "zalmfilet",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "BAKED_GOOD"
+    },
+    {
+      "externalId": "svenska-koket/potatiskroketter-med-tomater-potato-croquettes-with-tomatoes",
+      "title": "Potatiskroketter med tomater (Potato Croquettes with Tomatoes)",
+      "lines": 3,
+      "canonicalIds": [
+        "aardappel",
+        "ei",
+        "tomatenpuree"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "svenska-koket/p-smunkar-15-pieces",
+      "title": "Pösmunkar (15 pieces)",
+      "lines": 5,
+      "canonicalIds": [
+        "aardappel",
+        "bloem",
+        "ei",
+        "kookroom",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "BAKED_GOOD"
+    },
+    {
+      "externalId": "svenska-koket/schnellklopps-german-style-beef-patties",
+      "title": "Schnellklopps (German-Style Beef Patties)",
+      "lines": 10,
+      "canonicalIds": [
+        "bloem",
+        "kookroom",
+        "peper",
+        "rode-ui",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "MAIN_INGREDIENT_UNMATCHED"
+    },
+    {
+      "externalId": "svenska-koket/sillgratin-herring-gratin-4",
+      "title": "Sillgratin (Herring Gratin)",
+      "lines": 8,
+      "canonicalIds": [
+        "aardappel",
+        "paneermeel",
+        "peper",
+        "roomboter",
+        "ui",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "MAIN_INGREDIENT_UNMATCHED"
+    },
+    {
+      "externalId": "svenska-koket/sparrissuffl-asparagus-souffl",
+      "title": "Sparrissufflé (Asparagus Soufflé)",
+      "lines": 11,
+      "canonicalIds": [
+        "asperges",
+        "bloem",
+        "ei",
+        "melk",
+        "paneermeel",
+        "peper",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "svenska-koket/timbal-p-kalv-veal-timbal",
+      "title": "Timbal på Kalv (Veal Timbal)",
+      "lines": 11,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "kookroom",
+        "macaroni",
+        "peper",
+        "roomboter",
+        "sperziebonen",
+        "wortel",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "MAIN_INGREDIENT_UNMATCHED"
+    },
+    {
+      "externalId": "svenska-koket/tomatbiff-tomato-beef",
+      "title": "Tomatbiff (Tomato Beef)",
+      "lines": 7,
+      "canonicalIds": [
+        "ei",
+        "paneermeel",
+        "peper",
+        "roomboter",
+        "tomaat",
+        "ui",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "MAIN_INGREDIENT_UNMATCHED"
+    },
+    {
+      "externalId": "svenska-koket/turska-b-nor-french-green-beans",
+      "title": "Turska Bönor (French Green Beans)",
+      "lines": 3,
+      "canonicalIds": [
+        "sperziebonen",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "svenska-koket/vegetariansk-morotpur-vegetarian-carrot-pur-e",
+      "title": "Vegetariansk Morotpuré (Vegetarian Carrot Purée)",
+      "lines": 12,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "kookroom",
+        "peper",
+        "roomboter",
+        "ui",
+        "witte-rijst",
+        "wortel",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "svenska-koket/gg-med-sparrisknoppar-eggs-with-asparagus-tips-3",
+      "title": "Ägg med sparrisknoppar (Eggs with Asparagus Tips)",
+      "lines": 5,
+      "canonicalIds": [
+        "asperges",
+        "ei",
+        "peper",
+        "roomboter",
+        "tomatenpuree"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "svenska-koket/ggr-ra-med-blomk-l-scrambled-eggs-with-cauliflower",
+      "title": "Äggröra med blomkål (Scrambled Eggs with Cauliflower)",
+      "lines": 6,
+      "canonicalIds": [
+        "bloemkool",
+        "ei",
+        "melk",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "victorian-britain/soup-a-la-solferino",
+      "title": "Soup a la Solferino",
+      "lines": 6,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "groentebouillon",
+        "kookroom",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "STARTER_SOUP"
+    },
+    {
+      "externalId": "wiener-kueche/ged-nsteter-reis-pilau-steamed-rice-pilau",
+      "title": "Gedünsteter Reis Pilau (Steamed Rice Pilau)",
+      "lines": 6,
+      "canonicalIds": [
+        "roomboter",
+        "ui",
+        "verse-peterselie",
+        "witte-rijst",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "wiener-kueche/geroestete-wurfel-roasted-noodle-soup",
+      "title": "Geroestete Wurfel (Roasted Noodle Soup)",
+      "lines": 5,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "groentebouillon",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "STARTER_SOUP"
+    },
+    {
+      "externalId": "wiener-kueche/geschnittenes-wurm-cut-noodle-soup",
+      "title": "Geschnittenes Wurm (Cut Noodle Soup)",
+      "lines": 4,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "groentebouillon"
+      ],
+      "verdict": "REJECT",
+      "reason": "STARTER_SOUP"
+    },
+    {
+      "externalId": "wiener-kueche/karfiol-mit-b-chamel-cauliflower-with-b-chamel",
+      "title": "Karfiol mit Béchamel (Cauliflower with Béchamel)",
+      "lines": 7,
+      "canonicalIds": [
+        "bloem",
+        "bloemkool",
+        "ei",
+        "melk",
+        "parmezaan",
+        "roomboter"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "wiener-kueche/kartoffelpolenta-potato-polenta",
+      "title": "Kartoffelpolenta (Potato Polenta)",
+      "lines": 6,
+      "canonicalIds": [
+        "aardappel",
+        "bloem",
+        "ei",
+        "parmezaan",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "wiener-kueche/noodles-with-loin-and-fat-nudeln-mit-lenden-und-spett",
+      "title": "Noodles with Loin and Fat (Nudeln mit Lenden und Spett)",
+      "lines": 3,
+      "canonicalIds": [
+        "champignons",
+        "mie",
+        "spekblokjes"
+      ],
+      "verdict": "REJECT",
+      "reason": "TOO_FEW_LINES"
+    },
+    {
+      "externalId": "ye-old-american/eggs-in-batter",
+      "title": "Eggs in Batter",
+      "lines": 4,
+      "canonicalIds": [
+        "ei",
+        "kookroom",
+        "paneermeel",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "ye-old-american/macaroni-with-tomato-sauce",
+      "title": "Macaroni with Tomato Sauce",
+      "lines": 6,
+      "canonicalIds": [
+        "geraspte-kaas",
+        "kookroom",
+        "macaroni",
+        "tomaat",
+        "zout"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_PROTEIN"
+    },
+    {
+      "externalId": "ye-old-american/mashed-potatoes-warmed-over",
+      "title": "Mashed Potatoes (Warmed Over)",
+      "lines": 6,
+      "canonicalIds": [
+        "aardappel",
+        "bloem",
+        "ei",
+        "melk",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "ye-old-american/rice-muffins",
+      "title": "Rice Muffins",
+      "lines": 6,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "melk",
+        "roomboter",
+        "witte-rijst",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "BAKED_GOOD"
+    },
+    {
+      "externalId": "ye-old-american/rice-omelet",
+      "title": "Rice Omelet",
+      "lines": 7,
+      "canonicalIds": [
+        "ei",
+        "melk",
+        "peper",
+        "roomboter",
+        "witte-rijst",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "ye-old-american/turkish-pilaf-i",
+      "title": "Turkish Pilaf I",
+      "lines": 5,
+      "canonicalIds": [
+        "roomboter",
+        "tomaat",
+        "witte-rijst"
+      ],
+      "verdict": "REJECT",
+      "reason": "SIDE_DISH"
+    },
+    {
+      "externalId": "ceska-kuchyne/bavln-n-pol-vka-velvet-soup",
+      "title": "Bavlněná polévka (Velvet Soup)",
+      "lines": 4,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "groentebouillon",
+        "kookroom"
+      ],
+      "verdict": "REJECT",
+      "reason": "STARTER_SOUP"
+    },
+    {
+      "externalId": "ceska-kuchyne/zelnice-ili-coura-ka-cabbage-soup",
+      "title": "Zelnice čili Couračka (Cabbage Soup)",
+      "lines": 7,
+      "canonicalIds": [
+        "bloem",
+        "creme-fraiche",
+        "ei",
+        "roomboter",
+        "spitskool"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_PROTEIN"
+    },
+    {
+      "externalId": "ceska-kuchyne/zeln-pol-vka-na-jin-zp-sob-cabbage-soup-another-way",
+      "title": "Zelná Polévka na Jiný Způsob (Cabbage Soup, Another Way)",
+      "lines": 6,
+      "canonicalIds": [
+        "bloem",
+        "creme-fraiche",
+        "ei",
+        "spitskool",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "STARTER_SOUP"
+    },
+    {
+      "externalId": "german-kitchen/stra-burger-waffeln-strasbourg-waffles",
+      "title": "Straßburger Waffeln (Strasbourg Waffles)",
+      "lines": 5,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "melk",
+        "roomboter",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "BAKED_GOOD"
+    },
+    {
+      "externalId": "kuchnia-polska/jajecznica-po-hiszpa-sku-spanish-scrambled-eggs",
+      "title": "Jajecznica po Hiszpańsku (Spanish Scrambled Eggs)",
+      "lines": 5,
+      "canonicalIds": [
+        "ei",
+        "roomboter",
+        "witte-rijst",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    },
+    {
+      "externalId": "kuchnia-polska/zupa-grzybowa-ameryka-ska-american-mushroom-soup",
+      "title": "Zupa Grzybowa Amerykańska (American Mushroom Soup)",
+      "lines": 5,
+      "canonicalIds": [
+        "bloem",
+        "champignons",
+        "kipfilet",
+        "roomboter"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_PROTEIN"
+    },
+    {
+      "externalId": "kuchnia-polska/zupa-pomidorowa-z-ry-em-tomato-soup-with-rice",
+      "title": "Zupa Pomidorowa z Ryżem (Tomato Soup with Rice)",
+      "lines": 8,
+      "canonicalIds": [
+        "bloem",
+        "roomboter",
+        "tomaat",
+        "ui",
+        "witte-rijst",
+        "wortel"
+      ],
+      "verdict": "FIXABLE",
+      "reason": "NEEDS_PROTEIN"
+    },
+    {
+      "externalId": "ye-old-american/curried-eggs-ii",
+      "title": "Curried Eggs II",
+      "lines": 9,
+      "canonicalIds": [
+        "bloem",
+        "ei",
+        "kerriepoeder",
+        "melk",
+        "paprika-rood",
+        "roomboter",
+        "ui",
+        "witte-rijst",
+        "zout"
+      ],
+      "verdict": "REJECT",
+      "reason": "LIGHT_EGG_DISH"
+    }
+  ],
+  "summary": {
+    "REJECT": 89,
+    "FIXABLE": 21
+  },
+  "byReason": {
+    "SIDE_DISH": 35,
+    "LIGHT_EGG_DISH": 14,
+    "MAIN_INGREDIENT_UNMATCHED": 10,
+    "NEEDS_PROTEIN": 9,
+    "STARTER_SOUP": 9,
+    "BAKED_GOOD": 8,
+    "COMPONENT": 7,
+    "NEEDS_VEGETABLE": 4,
+    "NEEDS_CARBOHYDRATE": 4,
+    "NOT_A_DINNER": 3,
+    "TOO_FEW_LINES": 3,
+    "NEEDS_PROTEIN_AND_VEGETABLE": 2,
+    "DESSERT": 1,
+    "INTERMEDIATE_COURSE": 1
+  }
+}

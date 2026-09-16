@@ -185,7 +185,10 @@ sections.push(
       'pregnancy_suitable_override',
     ],
     recipes.map((r) => {
-      const authored = r.authoredNutritionPerServing;
+      // A recipe written here carries no second, hand-written nutrition set —
+      // see AuthoredRecipe.nutritionPerServing. The engine's own figure is then
+      // what the row stores, which is also what the app shows.
+      const authored = r.authoredNutritionPerServing ?? r.nutritionPerServing;
       const override = SEED_RECIPES.find((s) => s.id === r.id)?.pregnancySuitableOverride;
       return [
         r.id,

@@ -34,6 +34,8 @@
     "data:scenarios": "tsx scripts/two-chain-scenarios.ts",
     "recipes:fetch": "tsx scripts/fetch-recipe-candidates.ts",
     "recipes:census": "tsx scripts/recipes-census.ts",
+    "recipes:report": "tsx scripts/recipes-report.ts",
+    "recipes:reassess": "tsx scripts/recipes-reassess.ts",
     "recipes:select": "tsx scripts/recipes-select.ts",
     "coverage:gap": "tsx scripts/coverage-gap.ts",
     "taxonomy:impact": "tsx scripts/taxonomy-impact.ts",

@@ -158,8 +158,14 @@ describe('recipe nutrition is derived from the ingredient catalogue', () => {
   });
 
   it('stays close to the hand-written values, which cross-checks both datasets', () => {
-    const deviations = catalogue
-      .map((r) => nutritionDeviation(r.nutritionPerServing, r.authoredNutritionPerServing))
+    // Only recipes that carry a second, independently written nutrition set can
+    // cross-check anything. A recipe authored here has one number, computed
+    // from its ingredients, and comparing that to itself would prove nothing.
+    const withAuthored = catalogue.filter((r) => r.authoredNutritionPerServing !== undefined);
+    expect(withAuthored.length).toBeGreaterThanOrEqual(56);
+
+    const deviations = withAuthored
+      .map((r) => nutritionDeviation(r.nutritionPerServing, r.authoredNutritionPerServing!))
       .sort((a, b) => a - b);
     const median = deviations[Math.floor(deviations.length / 2)]!;
     const worst = deviations[deviations.length - 1]!;
