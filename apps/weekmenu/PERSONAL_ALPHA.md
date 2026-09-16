@@ -107,15 +107,19 @@ theoretisch is.
 
 ## Wat er verder nog niet af is
 
-| onderwerp                                | status                                       |
-| ---------------------------------------- | -------------------------------------------- |
-| Lidl in de app-optimizer met echte data  | niet aangesloten (wel in demo-data aanwezig) |
-| onvolledige-mand-afhandeling in de UI    | nog niet expliciet getoond                   |
-| drie-ketenscenario's A–H als test        | nog niet geschreven                          |
-| 12 Playwright-scenario's uit de opdracht | nog niet geschreven                          |
-| "prijzen bijgewerkt op" in de UI         | ontbreekt                                    |
-| demo/real-indicator in de UI             | ontbreekt                                    |
-| afvinkstatus na refresh                  | nog niet geverifieerd                        |
+| onderwerp                                | status                                                         |
+| ---------------------------------------- | -------------------------------------------------------------- |
+| Lidl in de app-optimizer met echte data  | **aangesloten** — `REAL_CHAIN_IDS` bevat ah, jumbo en lidl     |
+| onvolledige-mand-afhandeling in de UI    | **af** — de lijst noemt bij naam wat de gekozen winkels missen |
+| drie-ketenscenario's A–H als test        | nog niet geschreven                                            |
+| 12 Playwright-scenario's uit de opdracht | **af** — 62 browsertests, zie [DAILY_USE.md](DAILY_USE.md)     |
+| "prijzen bijgewerkt op" in de UI         | **af** — op de lijst en bij de winkelverdeling                 |
+| demo/real-indicator in de UI             | **af** — naast dezelfde datum                                  |
+| afvinkstatus na refresh                  | **af** — bewezen, ook in een tweede tab                        |
+
+Sprint 3 heeft de dagelijkse bruikbaarheid apart afgerekend; het volledige
+verslag, inclusief de vijf gevonden fouten en de gemeten wachttijden, staat in
+[DAILY_USE.md](DAILY_USE.md).
 
 ## Wat wel klopt en niet aangeraakt hoeft
 
