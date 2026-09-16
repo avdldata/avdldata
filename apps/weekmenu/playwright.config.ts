@@ -1,5 +1,11 @@
 import { existsSync } from 'node:fs';
 import { defineConfig } from '@playwright/test';
+import {
+  AGED_PRICES,
+  DATA_DIRS,
+  MISSING_PRICES,
+  MISSING_PROMOTIONS,
+} from './tests/e2e/snapshot-paths';
 
 const PORT = Number(process.env.E2E_PORT ?? 3100);
 const baseURL = `http://127.0.0.1:${PORT}`;
@@ -15,6 +21,21 @@ const baseURL = `http://127.0.0.1:${PORT}`;
  */
 const BROKEN_PORT = Number(process.env.E2E_BROKEN_PORT ?? 3101);
 const brokenBaseURL = `http://127.0.0.1:${BROKEN_PORT}`;
+
+/**
+ * Two more apps, each missing one thing and nothing else.
+ *
+ * The app claims it will say when its prices are old, and that it keeps working
+ * when the offers cannot be read. Both claims are about data that is present or
+ * absent at start-up, so neither can be reached by clicking: they need a server
+ * that was started that way. `tests/e2e/snapshot-paths.ts` says which file each
+ * one gets, and the specs import the same URLs from here.
+ */
+const AGED_PORT = Number(process.env.E2E_AGED_PORT ?? 3102);
+export const agedPricesBaseURL = `http://127.0.0.1:${AGED_PORT}`;
+
+const NO_PROMO_PORT = Number(process.env.E2E_NO_PROMO_PORT ?? 3103);
+export const withoutPromotionsBaseURL = `http://127.0.0.1:${NO_PROMO_PORT}`;
 
 /**
  * Use the browser this environment already provides.
@@ -82,7 +103,7 @@ export default defineConfig({
       timeout: 300_000,
       env: {
         DATA_ADAPTER: 'demo',
-        WEEKMENU_DATA_DIR: '.data/e2e',
+        WEEKMENU_DATA_DIR: DATA_DIRS.healthy,
       },
     },
     {
@@ -93,10 +114,38 @@ export default defineConfig({
       timeout: 300_000,
       env: {
         DATA_ADAPTER: 'demo',
-        WEEKMENU_DATA_DIR: '.data/e2e-kapot',
+        WEEKMENU_DATA_DIR: DATA_DIRS.withoutPrices,
         DATA_MODE: 'REAL',
-        WEEKMENU_PRICE_SNAPSHOT: 'data/external/bestaat-niet.json',
-        WEEKMENU_PROMOTION_SNAPSHOT: 'data/external/bestaat-ook-niet.json',
+        WEEKMENU_PRICE_SNAPSHOT: MISSING_PRICES,
+        WEEKMENU_PROMOTION_SNAPSHOT: MISSING_PROMOTIONS,
+      },
+    },
+    {
+      // Real prices, real offers, but the price file is weeks old. Everything
+      // still works; the app has to say so. `globalSetup` makes the copy.
+      command: `pnpm start --port ${AGED_PORT}`,
+      url: `${agedPricesBaseURL}/inloggen`,
+      reuseExistingServer: false,
+      timeout: 300_000,
+      env: {
+        DATA_ADAPTER: 'demo',
+        WEEKMENU_DATA_DIR: DATA_DIRS.agedPrices,
+        DATA_MODE: 'REAL',
+        WEEKMENU_PRICE_SNAPSHOT: AGED_PRICES,
+      },
+    },
+    {
+      // Real prices, no offers. A promotion is an extra, so the week has to
+      // come out anyway — at the ordinary shelf price, with no badge.
+      command: `pnpm start --port ${NO_PROMO_PORT}`,
+      url: `${withoutPromotionsBaseURL}/inloggen`,
+      reuseExistingServer: false,
+      timeout: 300_000,
+      env: {
+        DATA_ADAPTER: 'demo',
+        WEEKMENU_DATA_DIR: DATA_DIRS.withoutPromotions,
+        DATA_MODE: 'REAL',
+        WEEKMENU_PROMOTION_SNAPSHOT: MISSING_PROMOTIONS,
       },
     },
   ],

@@ -101,7 +101,11 @@ eerste klik. Dat is een aparte beslissing en is hier niet gedaan.
 
 ## Wat de browsertests vastleggen
 
-62 Playwright-tests, waarvan 41 nieuw in deze sprint — acht nieuwe bestanden.
+65 Playwright-tests, waarvan 44 nieuw in deze sprint — tien nieuwe bestanden.
+Vier testservers draaien naast elkaar op dezelfde build: één gezonde, één
+zonder prijsdata, één met prijsdata van weken oud en één zonder
+aanbiedingenfolder. Drie beloftes zijn alleen te bewijzen door iets weg te
+nemen, en dat kan niet met een muisklik.
 
 | suite                             | wat het bewijst                                                                                                                                                                                             |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -114,6 +118,32 @@ eerste klik. Dat is een aparte beslissing en is hier niet gedaan.
 | `interaction.spec.ts` (5)         | dubbelklik op genereren en op vervangen, terug/vooruit, herladen, toetsenbord en focus                                                                                                                      |
 | `reading-the-screens.spec.ts` (5) | 20 receptpagina's zonder rauwe decimalen, motorwoorden of interne ids; de lijst; de categorieën; de winkelverdeling; de veertien onkoopbare recepten                                                        |
 | `timings.spec.ts` (1)             | de tabel hierboven, met budgetten eromheen                                                                                                                                                                  |
+
+## De vier testservers
+
+Drie beloftes gaan over data die er bij het opstarten wel of niet is, en die
+kun je niet met een muisklik bereiken. Daarom draait `pnpm test:e2e` vier
+servers op dezelfde build:
+
+| server | prijzen                   | aanbiedingen     | waarvoor                           |
+| ------ | ------------------------- | ---------------- | ---------------------------------- |
+| 3100   | echt, vers                | echt             | alles behalve de drie hieronder    |
+| 3101   | pad bestaat niet          | pad bestaat niet | weigert prijzen te verzinnen       |
+| 3102   | echte kopie, 40 dagen oud | echt             | waarschuwt dat de prijzen oud zijn |
+| 3103   | echt, vers                | pad bestaat niet | werkt door zonder folder           |
+
+De verouderde momentopname wordt in `globalSetup` gemaakt: een kopie van het
+echte bestand, met `utimes` veertig dagen teruggezet. De app leest de
+peildatum van de bestandsdatum — dat is het enige wat we eerlijk weten over
+een bestand dat iemand in een map heeft gezet — dus een kopie verouderen is
+genoeg om de waarschuwing te bereiken. Het echte bestand houdt zijn echte
+datum, er staat geen datum hardcoded in productiecode, en de kopie wordt elke
+run opnieuw gemaakt zodat hij nooit toevallig te vers of te oud is.
+
+Dat de test iets meet en niet alleen iets bevestigt, komt van de tegenproef:
+op 3100 staat de waarschuwing er niet, en `real-promotion.spec.ts` laat op
+diezelfde server juist wél een aanbiedingsbadge zien. Zonder die twee zouden
+"geen waarschuwing" en "geen badge" niets bewijzen.
 
 ## De 35 antwoorden
 
@@ -144,19 +174,22 @@ eerste klik. Dat is een aparte beslissing en is hier niet gedaan.
 15. **Catalogus ontbreekt** — PASS. Tweede server zonder momentopname: lege
     staat, een menselijke melding, en nergens een demoprijs die voor echt
     doorgaat.
-16. **Promoties ontbreken** — PASS, bewezen bij de provider en niet in de
-    browser. `tests/unit/real-data/real-promotions.test.ts` laat zien dat een
-    ontbrekende folder een lege lijst plus een reden oplevert, nooit een
-    uitzondering en nooit een demo-aanbieding in de plaats; de weekgeneratie
-    loopt er gewoon doorheen. In de browser is de gecombineerde variant
-    gedekt: de tweede testserver mist zowel prijzen als aanbiedingen en zegt
-    dat met zoveel woorden.
+16. **Promoties ontbreken** — PASS, in de browser. Een vierde testserver
+    draait met de echte catalogus en de echte prijzen, maar met de
+    aanbiedingenfolder op een pad dat niet bestaat: de week komt er gewoon uit
+    (zeven maaltijden, een totaal), elk product komt aantoonbaar uit de echte
+    momentopname, er staat geen enkele aanbiedingsbadge, en de herkomstregel
+    zegt "aanbiedingen niet beschikbaar" in plaats van te zwijgen. Daaronder
+    ligt `tests/unit/real-data/real-promotions.test.ts`, dat de provider zelf
+    afdekt.
 17. **Onvolledige winkel** — PASS. De lijst noemt wat de gekozen winkels niet
     kunnen leveren, bij naam.
-18. **Verouderde data** — PASS, met een kanttekening: de regel (ouder dan 14
-    dagen → waarschuwing) is met een unittest bewezen, niet in de browser. De
-    momentopname in de repo is daar te vers voor en een oude datum verzinnen om
-    de test te laten slagen zou de test waardeloos maken.
+18. **Verouderde data** — PASS, in de browser, in twee richtingen. Een derde
+    testserver draait op een kopie van de echte momentopname waarvan de
+    bestandsdatum veertig dagen terug is gezet; daar staat de waarschuwing op
+    de boodschappenlijst en bij de winkelverdeling, met de werkelijke leeftijd
+    erin, terwijl de prijzen bruikbaar blijven. Op de gewone server staat hij
+    er niet. De echte momentopname houdt zijn echte datum.
 19. **Dislikes afgedwongen** — PASS. Nieuw deze sprint: er was geen UI om een
     ingrediënt aan te wijzen. Nu wel, en kipfilet op ⛔ verdwijnt uit de week.
 20. **Vegetarisch** — PASS. Eén vegetariër aan tafel maakt alle zeven gerechten
@@ -192,26 +225,23 @@ eerste klik. Dat is een aparte beslissing en is hier niet gedaan.
     foutpagina bij uitgelogd, foutpagina bij een vers account, ongetekende
     sessiecookie. Plus één P2 (horizontale overloop) en één ontbrekende UI
     (ingrediëntvoorkeuren).
-31. **E2E toegevoegd** — 41 nieuwe tests in acht nieuwe bestanden:
+31. **E2E toegevoegd** — 44 nieuwe tests in tien nieuwe bestanden:
     `persistence` (8), `preferences` (10), `security` (5), `mobile` (4),
-    `interaction` (5), `reading-the-screens` (5), `failure-states` (3) en
-    `timings` (1), plus een tweede testserver die draait zonder prijsdata.
-    Totaal 62.
+    `interaction` (5), `reading-the-screens` (5), `failure-states` (3),
+    `freshness` (2), `promotions-unavailable` (1) en `timings` (1), plus drie
+    extra testservers: zonder prijsdata, met prijsdata van weken oud, en
+    zonder aanbiedingenfolder. Totaal 65.
 32. **Timings** — zie de tabel hierboven. Alles onder een seconde behalve het
     samenstellen van een week (3,4 s warm, 5,4 s koud), het ophalen van
     vervangers (1,1 s) en het vervangen zelf (1,4 s).
 33. **tests / typecheck / lint / build** — groen: 801 unit- en
-    integratietests, 62 Playwright-tests, `tsc --noEmit` schoon, `eslint`
+    integratietests, 65 Playwright-tests, `tsc --noEmit` schoon, `eslint`
     schoon, productiebuild groen.
 34. **Open blockers** — geen.
 35. **SPRINT 3 = DONE.**
 
 ## Wat er open blijft (geen Sprint-3-blockers)
 
-- **De stale-datawaarschuwing is niet in een browser gezien.** De regel is
-  getest; het scherm dat hem toont is dat niet, omdat de data daarvoor te vers
-  is. Bij de eerstvolgende momentopname die ouder is dan veertien dagen is dat
-  alsnog te zien.
 - **De koude start kost 1,9 s extra.** Bekend, gemeten, en op te lossen met
   warmdraaien bij serverstart. Buiten deze sprint gelaten.
 - **De demo-adapter blijft een demo.** De sessiecookie is nu ondertekend, maar

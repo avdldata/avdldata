@@ -33,7 +33,14 @@ export function PriceFreshness({ now = new Date() }: { now?: Date }) {
         <span>
           {data.mode === 'DEMO' ? 'Demo-data — geen echte winkelprijzen' : 'Echte prijsdata'}
           {prices ? ` · prijzen bijgewerkt ${prices}` : ''}
-          {promotions ? ` · aanbiedingen bijgewerkt ${promotions}` : ''}
+          {/* Saying nothing about the offers would let "no offers this week"
+              and "we could not read the folder" look identical. The prices are
+              fine either way, so this is a clause, not an alarm. */}
+          {promotions
+            ? ` · aanbiedingen bijgewerkt ${promotions}`
+            : data.mode === 'REAL'
+              ? ' · aanbiedingen niet beschikbaar'
+              : ''}
         </span>
       </p>
       {stale ? (

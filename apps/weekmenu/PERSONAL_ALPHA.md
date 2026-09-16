@@ -112,7 +112,7 @@ theoretisch is.
 | Lidl in de app-optimizer met echte data  | **aangesloten** — `REAL_CHAIN_IDS` bevat ah, jumbo en lidl     |
 | onvolledige-mand-afhandeling in de UI    | **af** — de lijst noemt bij naam wat de gekozen winkels missen |
 | drie-ketenscenario's A–H als test        | nog niet geschreven                                            |
-| 12 Playwright-scenario's uit de opdracht | **af** — 62 browsertests, zie [DAILY_USE.md](DAILY_USE.md)     |
+| 12 Playwright-scenario's uit de opdracht | **af** — 65 browsertests, zie [DAILY_USE.md](DAILY_USE.md)     |
 | "prijzen bijgewerkt op" in de UI         | **af** — op de lijst en bij de winkelverdeling                 |
 | demo/real-indicator in de UI             | **af** — naast dezelfde datum                                  |
 | afvinkstatus na refresh                  | **af** — bewezen, ook in een tweede tab                        |
