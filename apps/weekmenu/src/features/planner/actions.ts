@@ -26,6 +26,46 @@ export interface PlannerResult {
   readonly error?: string;
 }
 
+/**
+ * Turn a thrown data failure into something the screen can say.
+ *
+ * Without this a missing price snapshot rejects the server action, React
+ * surfaces the rejection as a generic error, and the user is told nothing about
+ * the one thing that is actually wrong. The refusal to invent prices is
+ * deliberate; being unable to explain it is not.
+ *
+ * `redirect()` also works by throwing, so its control-flow error is passed
+ * straight through — catching it would strand a signed-out visitor on the page
+ * they are being sent away from.
+ */
+function isRedirect(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'digest' in error &&
+    typeof (error as { digest?: unknown }).digest === 'string' &&
+    (error as { digest: string }).digest.startsWith('NEXT_REDIRECT')
+  );
+}
+
+async function guarded<T extends PlannerResult>(run: () => Promise<T>): Promise<T | PlannerResult> {
+  try {
+    return await run();
+  } catch (error) {
+    if (isRedirect(error)) throw error;
+    const message = error instanceof Error ? error.message : '';
+    if (/RealDataUnavailable|momentopname|snapshot/i.test(message)) {
+      return {
+        ok: false,
+        error:
+          'De prijsgegevens konden niet worden geladen. We rekenen geen week door met verzonnen prijzen — probeer het later opnieuw.',
+      };
+    }
+    console.error('[weekmenu:planner]', message);
+    return { ok: false, error: 'Er ging iets mis. Probeer het opnieuw.' };
+  }
+}
+
 function toCents(value: string): Cents | undefined {
   if (value === '') return undefined;
   return cents(Number(value.replace(',', '.')) * 100);
@@ -71,18 +111,20 @@ export async function saveWeekSettingsAction(input: WeekSettingsInput): Promise<
 
 /** Run the optimizer and store the resulting week. */
 export async function generateWeekAction(): Promise<PlannerResult> {
-  const user = await requireUser();
-  const context = await loadContext(user.id);
-  if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
+  return guarded(async () => {
+    const user = await requireUser();
+    const context = await loadContext(user.id);
+    if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
 
-  const result = await generatePlan(context);
-  if (result.status !== 'OK') return { ok: false, error: result.message };
+    const result = await generatePlan(context);
+    if (result.status !== 'OK') return { ok: false, error: result.message };
 
-  await persistPlan(context, result.plan);
-  revalidatePath('/week');
-  revalidatePath('/boodschappen');
-  revalidatePath('/winkels');
-  return { ok: true };
+    await persistPlan(context, result.plan);
+    revalidatePath('/week');
+    revalidatePath('/boodschappen');
+    revalidatePath('/winkels');
+    return { ok: true };
+  });
 }
 
 export interface RegenerateResult extends PlannerResult {
@@ -109,25 +151,27 @@ export interface RegenerateResult extends PlannerResult {
 export async function regenerateWeekAction(
   seenRecipeIds: readonly string[] = [],
 ): Promise<RegenerateResult> {
-  const user = await requireUser();
-  const context = await loadContext(user.id);
-  if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
+  return guarded(async () => {
+    const user = await requireUser();
+    const context = await loadContext(user.id);
+    if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
 
-  const enough = await exclusionsLeaveEnough(context, seenRecipeIds);
-  const result = await generatePlan(context, {
-    ...(enough ? { excludeRecipeIds: seenRecipeIds } : {}),
+    const enough = await exclusionsLeaveEnough(context, seenRecipeIds);
+    const result = await generatePlan(context, {
+      ...(enough ? { excludeRecipeIds: seenRecipeIds } : {}),
+    });
+    if (result.status !== 'OK') return { ok: false, error: result.message };
+
+    await persistPlan(context, result.plan);
+    revalidatePath('/week');
+    revalidatePath('/boodschappen');
+    revalidatePath('/winkels');
+    return {
+      ok: true,
+      recipeIds: result.plan.days.map((d) => d.recipe.id),
+      ...(enough ? {} : { wrapped: true }),
+    };
   });
-  if (result.status !== 'OK') return { ok: false, error: result.message };
-
-  await persistPlan(context, result.plan);
-  revalidatePath('/week');
-  revalidatePath('/boodschappen');
-  revalidatePath('/winkels');
-  return {
-    ok: true,
-    recipeIds: result.plan.days.map((d) => d.recipe.id),
-    ...(enough ? {} : { wrapped: true }),
-  };
 }
 
 /**
@@ -139,26 +183,28 @@ export async function regenerateWeekAction(
  * The ticks survive, because the trolley is largely the same trolley.
  */
 export async function recalculateWeekAction(): Promise<PlannerResult> {
-  const user = await requireUser();
-  const context = await loadContext(user.id);
-  if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
+  return guarded(async () => {
+    const user = await requireUser();
+    const context = await loadContext(user.id);
+    if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
 
-  const stored = await getRepositories().plans.getCurrent(context.household.id);
-  if (!stored) return { ok: false, error: 'Er is nog geen week om te berekenen.' };
+    const stored = await getRepositories().plans.getCurrent(context.household.id);
+    if (!stored) return { ok: false, error: 'Er is nog geen week om te berekenen.' };
 
-  const repriced = await repriceStoredPlan(
-    { ...context, startDate: stored.startDate },
-    stored.recipeIds,
-  );
-  if (repriced.status !== 'OK') return { ok: false, error: repriced.message };
+    const repriced = await repriceStoredPlan(
+      { ...context, startDate: stored.startDate },
+      stored.recipeIds,
+    );
+    if (repriced.status !== 'OK') return { ok: false, error: repriced.message };
 
-  await persistPlan({ ...context, startDate: stored.startDate }, repriced.plan, {
-    keepChecked: stored.checkedItemKeys,
+    await persistPlan({ ...context, startDate: stored.startDate }, repriced.plan, {
+      keepChecked: stored.checkedItemKeys,
+    });
+    revalidatePath('/week');
+    revalidatePath('/boodschappen');
+    revalidatePath('/winkels');
+    return { ok: true };
   });
-  revalidatePath('/week');
-  revalidatePath('/boodschappen');
-  revalidatePath('/winkels');
-  return { ok: true };
 }
 
 export async function generateWeekAndGoAction(): Promise<void> {
@@ -226,36 +272,39 @@ export async function replaceDishAction(
   dayIndex: number,
   recipeId: string,
 ): Promise<PlannerResult> {
-  const user = await requireUser();
-  const context = await loadContext(user.id);
-  if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
+  return guarded(async () => {
+    const user = await requireUser();
+    const context = await loadContext(user.id);
+    if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
 
-  const repositories = getRepositories();
-  const stored = await repositories.plans.getCurrent(context.household.id);
-  if (!stored) return { ok: false, error: 'Er is nog geen week om aan te passen.' };
+    const repositories = getRepositories();
+    const stored = await repositories.plans.getCurrent(context.household.id);
+    if (!stored) return { ok: false, error: 'Er is nog geen week om aan te passen.' };
 
-  const recipeIds = stored.recipeIds.map((id, index) => (index === dayIndex ? recipeId : id));
-  if (new Set(recipeIds).size !== recipeIds.length) {
-    return { ok: false, error: 'Dit gerecht staat al ergens anders in de week.' };
-  }
+    const recipeIds = stored.recipeIds.map((id, index) => (index === dayIndex ? recipeId : id));
+    if (new Set(recipeIds).size !== recipeIds.length) {
+      return { ok: false, error: 'Dit gerecht staat al ergens anders in de week.' };
+    }
 
-  // Re-price the whole week before saving: a swap changes what you buy, which
-  // changes packs, which can change which supermarket is cheapest.
-  const repriced = await repriceStoredPlan({ ...context, startDate: stored.startDate }, recipeIds);
-  if (repriced.status !== 'OK') return { ok: false, error: repriced.message };
+    // Re-price the whole week before saving: a swap changes what you buy, which
+    // changes packs, which can change which supermarket is cheapest.
+    const repriced = await repriceStoredPlan(
+      { ...context, startDate: stored.startDate },
+      recipeIds,
+    );
+    if (repriced.status !== 'OK') return { ok: false, error: repriced.message };
 
-  // The swap is a deliberate act, so a new price is expected. The ticks stay:
-  // the other six days did not change, and neither did most of the trolley.
-  await persistPlan(
-    { ...context, startDate: stored.startDate },
-    repriced.plan,
-    { keepChecked: stored.checkedItemKeys },
-  );
+    // The swap is a deliberate act, so a new price is expected. The ticks stay:
+    // the other six days did not change, and neither did most of the trolley.
+    await persistPlan({ ...context, startDate: stored.startDate }, repriced.plan, {
+      keepChecked: stored.checkedItemKeys,
+    });
 
-  revalidatePath('/week');
-  revalidatePath('/boodschappen');
-  revalidatePath('/winkels');
-  return { ok: true };
+    revalidatePath('/week');
+    revalidatePath('/boodschappen');
+    revalidatePath('/winkels');
+    return { ok: true };
+  });
 }
 
 export async function toggleShoppingItemAction(

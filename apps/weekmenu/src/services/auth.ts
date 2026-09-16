@@ -1,5 +1,6 @@
 import 'server-only';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { getRepositories } from '@/data';
 import type { AppUser } from '@/data/repositories/types';
 
@@ -30,9 +31,22 @@ export async function getCurrentUser(): Promise<AppUser | null> {
   return repositories.users.findById(userId);
 }
 
+/**
+ * The signed-in user, or a trip to the sign-in screen.
+ *
+ * This used to throw. The app layout redirects a signed-out visitor to
+ * `/inloggen`, so that looked harmless — but a layout and the page inside it
+ * render concurrently, and the page's throw wins the race often enough. The
+ * visitor then got Next's raw error page instead of a login form, on every
+ * protected route, with no way back.
+ *
+ * `redirect` is the right tool in both places it is used from: in a server
+ * component it renders the sign-in page, and from a server action it sends the
+ * browser there.
+ */
 export async function requireUser(): Promise<AppUser> {
   const user = await getCurrentUser();
-  if (!user) throw new Error('UNAUTHENTICATED');
+  if (!user) redirect('/inloggen');
   return user;
 }
 

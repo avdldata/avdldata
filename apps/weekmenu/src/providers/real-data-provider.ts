@@ -50,7 +50,15 @@ import { loadRealPromotions } from './real-promotions';
 export const REAL_CHAIN_IDS = ['ah', 'jumbo', 'lidl'] as const;
 export type RealChain = (typeof REAL_CHAIN_IDS)[number];
 
-const SNAPSHOT_PATH = 'data/external/checkjebon-snapshot.json';
+/**
+ * Where the price snapshot lives.
+ *
+ * Overridable so the failure state can be exercised for real — point it at a
+ * path that does not exist and the app must say "prijsgegevens konden niet
+ * worden geladen" rather than quietly fall back to demo prices. That refusal is
+ * a promise, and a promise nobody can test is a promise nobody keeps.
+ */
+const SNAPSHOT_PATH = process.env.WEEKMENU_PRICE_SNAPSHOT ?? 'data/external/checkjebon-snapshot.json';
 
 interface RawProduct {
   readonly n?: string;

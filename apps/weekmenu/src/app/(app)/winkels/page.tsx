@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getWeekView } from '@/features/planner/load';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
 import { WhyPanel } from '@/features/planner/why-panel';
+import { PriceFreshness } from '@/features/planner/price-freshness';
 import { getChainNames, travelCostStatus } from '@/services/store-service';
 import { formatDistance, formatEuro, formatMinutes } from '@/lib/format';
 import { cn } from '@/lib/cn';
@@ -228,6 +229,8 @@ export default async function StoresPage() {
         <ButtonLink href="/week/instellingen" variant="secondary" className="w-full">
           Winkels of gemak aanpassen
         </ButtonLink>
+
+        <PriceFreshness />
       </div>
     </>
   );

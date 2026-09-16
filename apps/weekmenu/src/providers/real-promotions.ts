@@ -27,7 +27,9 @@ import { extractRetailerProductId } from '@/services/promotions/retailer-id';
  * promotions to link to anyway.
  */
 
-const PROMOTION_SNAPSHOT = 'data/external/promotions-snapshot.json';
+/** Overridable for the same reason as the price snapshot; see that comment. */
+const PROMOTION_SNAPSHOT =
+  process.env.WEEKMENU_PROMOTION_SNAPSHOT ?? 'data/external/promotions-snapshot.json';
 
 export interface RealPromotionResult {
   readonly promotions: readonly Promotion[];

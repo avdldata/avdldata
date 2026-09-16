@@ -5,6 +5,7 @@ import { getWeekView } from '@/features/planner/load';
 import { GenerateWeekButton } from '@/features/planner/generate-week-button';
 import { buildShoppingList } from '@/features/shopping/build-list';
 import { ShoppingListView } from '@/features/shopping/shopping-list';
+import { PriceFreshness } from '@/features/planner/price-freshness';
 import { getChainNames } from '@/services/store-service';
 
 export const metadata: Metadata = { title: 'Boodschappen — Weekmenu' };
@@ -41,6 +42,9 @@ export default async function ShoppingPage() {
       />
       {/* Keyed on the stored plan so a newly generated week starts with a clean list. */}
       <ShoppingListView key={view.stored?.id ?? 'geen-plan'} list={list} chains={chains} />
+      <div className="mt-5">
+        <PriceFreshness />
+      </div>
     </>
   );
 }
