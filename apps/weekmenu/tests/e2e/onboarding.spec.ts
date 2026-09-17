@@ -42,10 +42,11 @@ test('a new household can onboard and generate its first week', async ({ page })
   await expect(page.getByRole('heading', { name: 'Wat eten jullie graag?' })).toBeVisible();
   await page.getByRole('button', { name: 'Verder' }).click();
 
-  // Step 4 — nearby supermarkets, priority chains pre-selected
+  // Step 4 — the supported chains, all ticked to begin with
   await expect(
-    page.getByRole('heading', { name: /Supermarkten bij jou in de buurt/ }),
+    page.getByRole('heading', { name: /Welke supermarkten wil je meenemen/ }),
   ).toBeVisible();
+  await expect(page.locator('input[type=checkbox][data-chain-id]')).toHaveCount(3);
   expect(await page.getByRole('checkbox', { checked: true }).count()).toBeGreaterThanOrEqual(2);
   await page.getByRole('button', { name: 'Klaar' }).click();
 

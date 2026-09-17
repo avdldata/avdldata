@@ -10,21 +10,28 @@ import { Badge } from '@/components/ui/badge';
 import { HouseholdForm } from '@/features/household/household-form';
 import { MemberForm } from '@/features/household/member-form';
 import { PreferencesForm } from '@/features/household/preferences-form';
-import { StorePicker, type NearbyStoreOption } from '@/features/stores/store-picker';
+import { ChainPicker, type ChainOption } from '@/features/stores/chain-picker';
 import {
   ALLERGEN_LABELS,
   DIET_LABELS,
   type HouseholdInput,
   type MemberFormValues,
 } from '@/features/household/schema';
-import { completeOnboardingAction, lookupNearbyStoresAction } from '@/features/household/actions';
+import { completeOnboardingAction } from '@/features/household/actions';
 import { cn } from '@/lib/cn';
 
 const STEPS = ['Huishouden', 'Gezinsleden', 'Voorkeuren', 'Supermarkten'] as const;
 
 const EMPTY_PREFERENCES: Preferences = { ingredients: [], cuisines: [], tags: [] };
 
-export function OnboardingFlow() {
+/** How many shops you are willing to visit — the same setting the planner uses. */
+const MAX_STORES = [
+  { value: 1, label: '1 winkel' },
+  { value: 2, label: 'Max. 2' },
+  { value: 0, label: 'Maakt niet uit' },
+] as const;
+
+export function OnboardingFlow({ chains }: { chains: readonly ChainOption[] }) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [household, setHousehold] = useState<HouseholdInput>();
@@ -32,32 +39,12 @@ export function OnboardingFlow() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [addingMember, setAddingMember] = useState(true);
   const [preferences, setPreferences] = useState<Preferences>(EMPTY_PREFERENCES);
-  const [radiusKm, setRadiusKm] = useState(10);
-  const [stores, setStores] = useState<NearbyStoreOption[]>([]);
-  const [selectedStores, setSelectedStores] = useState<string[]>([]);
-  const [storesLoading, setStoresLoading] = useState(false);
+  // Every supported chain is ticked to begin with: this is the shortest road to
+  // a first week, and unticking one is a single tap.
+  const [selectedChains, setSelectedChains] = useState<string[]>(chains.map((c) => c.chainId));
+  const [maxStores, setMaxStores] = useState<number>(2);
   const [error, setError] = useState<string>();
   const [pending, startTransition] = useTransition();
-
-  const loadStores = (postalCode: string, radius: number) => {
-    setStoresLoading(true);
-    startTransition(async () => {
-      const result = await lookupNearbyStoresAction({ postalCode, radiusKm: radius });
-      setStoresLoading(false);
-      if (!result.ok) {
-        setError(result.error);
-        setStores([]);
-        return;
-      }
-      setError(undefined);
-      setStores(result.stores ?? []);
-      setSelectedStores((current) =>
-        current.length > 0
-          ? current.filter((id) => (result.stores ?? []).some((s) => s.locationId === id))
-          : (result.suggested ?? []),
-      );
-    });
-  };
 
   const finish = () => {
     if (!household) return;
@@ -71,8 +58,8 @@ export function OnboardingFlow() {
           tags: preferences.tags as never,
           ingredients: [...preferences.ingredients],
         },
-        selectedLocationIds: selectedStores,
-        searchRadiusKm: radiusKm,
+        selectedChainIds: selectedChains,
+        maxStores,
       });
       if (!result.ok) {
         setError(result.error ?? 'Opslaan is niet gelukt.');
@@ -122,7 +109,6 @@ export function OnboardingFlow() {
             submitLabel="Verder"
             onSubmit={(values) => {
               setHousehold(values);
-              loadStores(values.postalCode, radiusKm);
               setStep(1);
             }}
           />
@@ -268,26 +254,42 @@ export function OnboardingFlow() {
       {step === 3 ? (
         <section>
           <h1 className="text-2xl font-semibold tracking-tight">
-            Supermarkten bij jou in de buurt
+            Welke supermarkten wil je meenemen?
           </h1>
           <p className="text-ink-soft mt-1.5 mb-6 text-sm">
-            Vink aan waar je boodschappen wilt doen. We vergelijken alleen deze winkels.
+            We vergelijken je boodschappen alleen bij de supermarkten die je kiest.
           </p>
-          <StorePicker
-            stores={stores}
-            selected={selectedStores}
-            loading={storesLoading}
-            radiusKm={radiusKm}
-            onRadiusChange={(radius) => {
-              setRadiusKm(radius);
-              if (household) loadStores(household.postalCode, radius);
-            }}
-            onToggle={(id) =>
-              setSelectedStores((prev) =>
-                prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id],
+          <ChainPicker
+            chains={chains}
+            selected={selectedChains}
+            onToggle={(chainId) =>
+              setSelectedChains((prev) =>
+                prev.includes(chainId) ? prev.filter((c) => c !== chainId) : [...prev, chainId],
               )
             }
           />
+
+          <div className="mt-6">
+            <p className="field-label">Hoeveel supermarkten wil je maximaal bezoeken?</p>
+            <div className="flex flex-wrap gap-2">
+              {MAX_STORES.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  aria-pressed={maxStores === option.value}
+                  onClick={() => setMaxStores(option.value)}
+                  className={cn(
+                    'rounded-[var(--radius-pill)] px-4 py-2 text-sm font-medium transition-colors',
+                    maxStores === option.value
+                      ? 'bg-brand text-brand-ink'
+                      : 'border-line-strong text-ink-soft hover:bg-surface-muted border',
+                  )}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="mt-6 flex gap-3">
             <Button variant="secondary" onClick={() => setStep(2)}>
@@ -296,13 +298,13 @@ export function OnboardingFlow() {
             <Button
               className="flex-1"
               size="lg"
-              disabled={pending || selectedStores.length === 0}
+              disabled={pending || selectedChains.length === 0}
               onClick={finish}
             >
               {pending ? 'Opslaan…' : 'Klaar'}
             </Button>
           </div>
-          {selectedStores.length === 0 ? (
+          {selectedChains.length === 0 ? (
             <p className="text-ink-faint mt-2 text-center text-xs">Kies minimaal één supermarkt.</p>
           ) : null}
         </section>

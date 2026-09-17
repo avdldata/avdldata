@@ -8,8 +8,7 @@ import type { WeekSettings } from '@/data/repositories/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Hint, Input, Label, Select } from '@/components/ui/input';
-import { StorePicker, type NearbyStoreOption } from '@/features/stores/store-picker';
-import { lookupNearbyStoresAction } from '@/features/household/actions';
+import { ChainPicker, type ChainOption } from '@/features/stores/chain-picker';
 import { saveWeekSettingsAction } from './actions';
 import { cn } from '@/lib/cn';
 
@@ -50,22 +49,20 @@ function centsToInput(value: number | undefined): string {
 
 export function WeekSettingsForm({
   settings,
-  postalCode,
-  initialStores,
+  chains,
+  selectedChainIds,
 }: {
   settings: WeekSettings;
-  postalCode: string;
-  initialStores: readonly NearbyStoreOption[];
+  chains: readonly ChainOption[];
+  /** The stored branches, read back as the chains they belong to. */
+  selectedChainIds: readonly string[];
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string>();
   const [saved, setSaved] = useState(false);
 
-  const [stores, setStores] = useState<readonly NearbyStoreOption[]>(initialStores);
-  const [storesLoading, setStoresLoading] = useState(false);
-  const [radiusKm, setRadiusKm] = useState<number>(settings.searchRadiusKm);
-  const [selected, setSelected] = useState<string[]>([...settings.selectedLocationIds]);
+  const [selected, setSelected] = useState<string[]>([...selectedChainIds]);
   const [maxStores, setMaxStores] = useState<number>(settings.maxStores);
   const [convenience, setConvenience] = useState<ConveniencePreference>(
     settings.conveniencePreference,
@@ -86,34 +83,16 @@ export function WeekSettingsForm({
     settings.maxMinutes === undefined ? '' : String(settings.maxMinutes),
   );
 
-  const changeRadius = (radius: number) => {
-    setRadiusKm(radius);
-    setStoresLoading(true);
-    startTransition(async () => {
-      const result = await lookupNearbyStoresAction({ postalCode, radiusKm: radius });
-      setStoresLoading(false);
-      if (!result.ok) {
-        setError(result.error);
-        return;
-      }
-      setStores(result.stores ?? []);
-      setSelected((current) =>
-        current.filter((id) => (result.stores ?? []).some((s) => s.locationId === id)),
-      );
-    });
-  };
-
   const save = () => {
     setError(undefined);
     setSaved(false);
     startTransition(async () => {
       const result = await saveWeekSettingsAction({
-        selectedLocationIds: selected,
+        selectedChainIds: selected,
         maxStores: String(maxStores),
         conveniencePreference: convenience,
         budgetMode,
         budgetAmount: budgetMode === 'geen' ? '' : budgetAmount,
-        searchRadiusKm: String(radiusKm),
         transportMode,
         costPerKm,
         maxMinutes,
@@ -134,15 +113,12 @@ export function WeekSettingsForm({
           <CardTitle>Welke winkels mogen we gebruiken?</CardTitle>
         </CardHeader>
         <CardContent>
-          <StorePicker
-            stores={stores}
+          <ChainPicker
+            chains={chains}
             selected={selected}
-            loading={storesLoading}
-            radiusKm={radiusKm}
-            onRadiusChange={changeRadius}
-            onToggle={(id) =>
+            onToggle={(chainId) =>
               setSelected((prev) =>
-                prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id],
+                prev.includes(chainId) ? prev.filter((c) => c !== chainId) : [...prev, chainId],
               )
             }
           />

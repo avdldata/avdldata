@@ -19,12 +19,11 @@ const euroString = z
   );
 
 export const weekSettingsSchema = z.object({
-  selectedLocationIds: z.array(z.string()).min(1, 'Kies minimaal één supermarkt.'),
+  selectedChainIds: z.array(z.string()).min(1, 'Kies minimaal één supermarkt.'),
   maxStores: z.coerce.number().int().min(0).max(3),
   conveniencePreference: z.enum(CONVENIENCE_PREFERENCES),
   budgetMode: z.enum(['geen', 'richtbedrag', 'maximum']),
   budgetAmount: euroString,
-  searchRadiusKm: z.coerce.number().int(),
   transportMode: z.enum(TRANSPORT_MODES),
   costPerKm: euroString,
   maxMinutes: z.string().trim(),

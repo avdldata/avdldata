@@ -151,24 +151,23 @@ test.describe('Personal Alpha v0.1 — acceptatie met een nieuw account', () => 
     await page.getByRole('button', { name: 'Verder' }).click();
 
     await expect(
-      page.getByRole('heading', { name: 'Supermarkten bij jou in de buurt' }),
+      page.getByRole('heading', { name: 'Welke supermarkten wil je meenemen?' }),
     ).toBeVisible();
-    const rows = page.locator('li').filter({ hasText: /Albert Heijn|Jumbo|Lidl/ });
-    await expect.poll(async () => rows.count(), { timeout: 60_000 }).toBeGreaterThanOrEqual(3);
-    for (let i = 0; i < (await rows.count()); i += 1) {
-      const box = rows.nth(i).locator('input[type=checkbox]').first();
-      if ((await box.count()) > 0 && !(await box.isChecked())) await box.click();
+    const boxes = page.locator('input[type=checkbox][data-chain-id]');
+    await expect(boxes).toHaveCount(3);
+    for (let i = 0; i < 3; i += 1) {
+      if (!(await boxes.nth(i).isChecked())) await boxes.nth(i).check();
     }
-    const chains = await rows.allInnerTexts();
+    const chainIds = await boxes.evaluateAll((nodes) =>
+      nodes.map((node) => node.getAttribute('data-chain-id') ?? ''),
+    );
+    expect([...chainIds].sort()).toEqual(['ah', 'jumbo', 'lidl']);
     evidence.household = {
       members: ['Sanne (36, 172 cm, 68 kg)', 'Joris (41, 186 cm, 92 kg)'],
       preferences: ['Italiaans: lekker', 'Ovenschotel: liever niet'],
-      shopsOffered: chains.length,
-      chains: [...new Set(chains.flatMap((c) => c.match(/Albert Heijn|Jumbo|Lidl/g) ?? []))],
+      chains: chainIds,
+      maxStores: 2,
     };
-    expect(evidence.household.chains).toEqual(
-      expect.arrayContaining(['Albert Heijn', 'Jumbo', 'Lidl']),
-    );
 
     await page.getByRole('button', { name: 'Klaar' }).click();
     await expect(page).toHaveURL(/\/week\/instellingen$/, { timeout: 120_000 });

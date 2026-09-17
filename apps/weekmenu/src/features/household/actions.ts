@@ -12,7 +12,7 @@ import {
   toDomainMember,
   toDomainPreferences,
 } from '@/services/household-service';
-import { defaultSelectedLocationIds, findNearbyStores } from '@/services/store-service';
+import { locationIdsForChains } from '@/services/store-service';
 import {
   householdSchema,
   memberSchema,
@@ -31,68 +31,16 @@ async function loadHousehold(userId: string): Promise<Household | null> {
   return getRepositories().households.getByOwner(userId);
 }
 
-/** Nearby supermarkets for a postcode — used live during onboarding. */
-export async function lookupNearbyStoresAction(input: {
-  postalCode: string;
-  radiusKm: number;
-}): Promise<{
-  ok: boolean;
-  city?: string;
-  error?: string;
-  stores?: {
-    locationId: string;
-    chainId: string;
-    chainName: string;
-    name: string;
-    city: string;
-    distanceKm: number;
-  }[];
-  suggested?: string[];
-}> {
-  const parsed = householdSchema
-    .pick({ postalCode: true })
-    .safeParse({ postalCode: input.postalCode });
-  if (!parsed.success) {
-    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Ongeldige postcode.' };
-  }
-
-  const location = await locateHousehold({
-    name: 'tijdelijk',
-    postalCode: parsed.data.postalCode,
-    country: 'Nederland',
-  } as HouseholdInput);
-
-  if (location.latitude === undefined || location.longitude === undefined) {
-    return { ok: false, error: 'We herkennen deze postcode niet.' };
-  }
-
-  const stores = await findNearbyStores({
-    latitude: location.latitude,
-    longitude: location.longitude,
-    radiusKm: input.radiusKm,
-  });
-
-  return {
-    ok: true,
-    city: location.city,
-    stores: stores.map((s) => ({
-      locationId: s.location.id,
-      chainId: s.chain.id,
-      chainName: s.chain.name,
-      name: s.location.name,
-      city: s.location.city,
-      distanceKm: s.distanceKm,
-    })),
-    suggested: defaultSelectedLocationIds(stores),
-  };
-}
-
 export interface OnboardingPayload {
   readonly household: HouseholdInput;
   readonly members: MemberInput[];
   readonly preferences: PreferencesInput;
-  readonly selectedLocationIds: string[];
-  readonly searchRadiusKm: number;
+  /**
+   * Chains, not branches. See `supportedChains`: the prices are per chain, and
+   * asking for a branch made onboarding impossible outside the seeded city.
+   */
+  readonly selectedChainIds: string[];
+  readonly maxStores: number;
 }
 
 /** Create the household, its members, preferences and store selection in one go. */
@@ -131,10 +79,14 @@ export async function completeOnboardingAction(payload: OnboardingPayload): Prom
     preferences: toDomainPreferences(preferences.data),
   });
 
+  const currentSettings = (await repositories.settings.get(saved.id)) ?? DEFAULT_WEEK_SETTINGS;
   const settings: WeekSettings = {
-    ...((await repositories.settings.get(saved.id)) ?? DEFAULT_WEEK_SETTINGS),
-    selectedLocationIds: payload.selectedLocationIds,
-    searchRadiusKm: (payload.searchRadiusKm as WeekSettings['searchRadiusKm']) ?? 10,
+    ...currentSettings,
+    selectedLocationIds: locationIdsForChains(
+      payload.selectedChainIds,
+      currentSettings.selectedLocationIds,
+    ),
+    maxStores: payload.maxStores,
   };
   await repositories.settings.save(saved.id, settings);
 

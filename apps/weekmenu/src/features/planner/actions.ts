@@ -5,12 +5,9 @@ import { redirect } from 'next/navigation';
 import type { Cents } from '@/domain/units';
 import { cents } from '@/domain/units';
 import { getRepositories } from '@/data';
-import {
-  DEFAULT_WEEK_SETTINGS,
-  SEARCH_RADII_KM,
-  type WeekSettings,
-} from '@/data/repositories/types';
+import { DEFAULT_WEEK_SETTINGS, type WeekSettings } from '@/data/repositories/types';
 import { requireUser } from '@/services/auth';
+import { locationIdsForChains } from '@/services/store-service';
 import {
   exclusionsLeaveEnough,
   findAlternatives,
@@ -82,12 +79,15 @@ export async function saveWeekSettingsAction(input: WeekSettingsInput): Promise<
   if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
 
   const budget = toCents(parsed.data.budgetAmount);
-  const radius = SEARCH_RADII_KM.includes(parsed.data.searchRadiusKm as never)
-    ? (parsed.data.searchRadiusKm as WeekSettings['searchRadiusKm'])
-    : DEFAULT_WEEK_SETTINGS.searchRadiusKm;
 
   const settings: WeekSettings = {
-    selectedLocationIds: parsed.data.selectedLocationIds,
+    // The screen speaks chains; the settings keep branches, because that is
+    // what the optimizer and a future real locator use. A chain the household
+    // already had keeps the branch it already had.
+    selectedLocationIds: locationIdsForChains(
+      parsed.data.selectedChainIds,
+      context.settings.selectedLocationIds,
+    ),
     maxStores: parsed.data.maxStores,
     conveniencePreference: parsed.data.conveniencePreference,
     ...(parsed.data.budgetMode === 'richtbedrag' && budget !== undefined
@@ -96,7 +96,9 @@ export async function saveWeekSettingsAction(input: WeekSettingsInput): Promise<
     ...(parsed.data.budgetMode === 'maximum' && budget !== undefined
       ? { budgetHardMaxCents: budget }
       : {}),
-    searchRadiusKm: radius,
+    // Kept as stored: the radius no longer has a control, but the field is
+    // still part of the settings a future store locator would use.
+    searchRadiusKm: context.settings.searchRadiusKm,
     transportMode: parsed.data.transportMode,
     costPerKmCents: toCents(parsed.data.costPerKm) ?? DEFAULT_WEEK_SETTINGS.costPerKmCents,
     ...(parsed.data.maxMinutes !== '' ? { maxMinutes: Number(parsed.data.maxMinutes) } : {}),

@@ -9,6 +9,7 @@ import { RealDataProvider, realSnapshotCapturedAt } from '@/providers/real-data-
 import { realPromotionsCapturedAt } from '@/providers/real-promotions';
 import { dataMode } from '@/config/data-mode';
 import { SeedStoreLocatorProvider } from '@/providers/locator/seed-locator';
+import { SEED_LOCATIONS } from '@/data/seed/stores';
 import type { ProductCatalogProvider } from '@/providers/catalog/types';
 import type { SupermarketPriceProvider } from '@/providers/pricing/types';
 import type { NutritionDataProvider } from '@/providers/nutrition/types';
@@ -108,20 +109,78 @@ export async function findNearbyStores(input: NearbyStoresInput): Promise<Nearby
   });
 }
 
+export interface SupportedChainView {
+  readonly chainId: string;
+  readonly chainName: string;
+  /** The branch whose shelf stands in for the whole chain. */
+  readonly locationId: string;
+}
+
 /**
- * Suggest which nearby stores to tick on first use: the three priority chains,
- * nearest branch each. The user always keeps control — this is a starting point,
- * not a decision.
+ * Which supermarkets you can choose from — a question about the catalogue, not
+ * about geography.
+ *
+ * Choosing shops used to mean choosing *branches* within a radius of your
+ * postcode, and the branches come from the seed (see `travelCostStatus`). For
+ * anyone who does not live near Groningen that list was empty, and an empty
+ * list meant no shop could be ticked and onboarding could not be finished. The
+ * app was unusable for exactly the people it is for.
+ *
+ * So selection is per chain. That is also what the prices actually are: the
+ * snapshot gives one price per chain, so every branch of a chain resolves the
+ * same offers, and the branch behind a chain is a bookkeeping detail rather
+ * than a choice anyone makes. It is kept because the stored settings, the
+ * optimizer and a future real locator all speak locations.
  */
-export function defaultSelectedLocationIds(stores: readonly NearbyStoreView[]): string[] {
-  const chosen: string[] = [];
-  for (const chainId of PRIORITY_CHAIN_IDS) {
-    const nearest = stores
-      .filter((s) => s.chain.id === chainId)
-      .sort((a, b) => a.distanceKm - b.distanceKm)[0];
-    if (nearest) chosen.push(nearest.location.id);
+export async function supportedChains(): Promise<readonly SupportedChainView[]> {
+  const chains = await catalogProvider.getChains();
+  const byPriority = (id: string): number => {
+    const index = (PRIORITY_CHAIN_IDS as readonly string[]).indexOf(id);
+    return index === -1 ? PRIORITY_CHAIN_IDS.length : index;
+  };
+  return chains
+    .filter((chain) => (PRIORITY_CHAIN_IDS as readonly string[]).includes(chain.id))
+    .sort((a, b) => byPriority(a.id) - byPriority(b.id))
+    .flatMap((chain) => {
+      const location = representativeLocationFor(chain.id);
+      return location ? [{ chainId: chain.id, chainName: chain.name, locationId: location }] : [];
+    });
+}
+
+/** The same branch every time, so a saved setting never drifts. */
+function representativeLocationFor(chainId: string): string | undefined {
+  return SEED_LOCATIONS.filter((location) => location.chainId === chainId)
+    .map((location) => location.id)
+    .sort()[0];
+}
+
+/** Which chains a stored list of branches comes down to. */
+export function chainIdsForLocations(locationIds: readonly string[]): string[] {
+  const byId = new Map(SEED_LOCATIONS.map((location) => [location.id, location.chainId]));
+  const chains: string[] = [];
+  for (const id of locationIds) {
+    const chainId = byId.get(id);
+    if (chainId && !chains.includes(chainId)) chains.push(chainId);
   }
-  return chosen;
+  return chains;
+}
+
+/**
+ * Turn chosen chains back into the branches the settings store.
+ *
+ * A chain the household already had keeps the branch it already had, so saving
+ * from the new screen does not rewrite data that was perfectly fine.
+ */
+export function locationIdsForChains(
+  chainIds: readonly string[],
+  current: readonly string[] = [],
+): string[] {
+  const byId = new Map(SEED_LOCATIONS.map((location) => [location.id, location.chainId]));
+  return chainIds.flatMap((chainId) => {
+    const existing = current.find((id) => byId.get(id) === chainId);
+    const location = existing ?? representativeLocationFor(chainId);
+    return location ? [location] : [];
+  });
 }
 
 export interface StoreCandidatesInput {
