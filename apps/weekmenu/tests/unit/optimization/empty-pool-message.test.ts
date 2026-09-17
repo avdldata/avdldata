@@ -41,7 +41,7 @@ describe('wat de app zegt als er geen enkel gerecht overblijft', () => {
 
     expect(result.status).toBe('FAILED');
     if (result.status !== 'FAILED') return;
-    expect(result.reason).toBe('NO_CANDIDATE_RECIPES');
+    expect(result.reason).toBe('NO_ELIGIBLE_RECIPES');
     expect(result.message).toContain('15 minuten');
     // The fastest dish in the library, so the reader knows what would work.
     const fastest = Math.min(...recipes.map((r) => r.totalMinutes));

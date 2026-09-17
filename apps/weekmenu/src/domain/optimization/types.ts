@@ -121,9 +121,12 @@ export interface WeeklyPlan {
 export type OptimizerFailureReason =
   | 'NO_MEMBERS'
   | 'NO_STORES'
-  | 'NO_CANDIDATE_RECIPES'
+  | 'NO_ELIGIBLE_RECIPES'
   | 'NOT_ENOUGH_CANDIDATE_RECIPES'
-  | 'NO_PRICEABLE_WEEK';
+  | 'NO_RETAIL_SOLUTION'
+  | 'INVALID_STORE_SELECTION'
+  | 'BUDGET_TOO_LOW'
+  | 'NO_WEEK_SOLUTION';
 
 export interface OptimizerFailure {
   readonly status: 'FAILED';

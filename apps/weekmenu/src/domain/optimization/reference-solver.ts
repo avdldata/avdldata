@@ -83,7 +83,7 @@ export function solveWeeklyPlanExhaustive(
   const prepared = prepareOptimization(input);
   if (prepared.status === 'FAILED') {
     const reason =
-      prepared.reason === 'NO_CANDIDATE_RECIPES' ? 'NOT_ENOUGH_CANDIDATE_RECIPES' : prepared.reason;
+      prepared.reason === 'NO_ELIGIBLE_RECIPES' ? 'NOT_ENOUGH_CANDIDATE_RECIPES' : prepared.reason;
     return { status: 'FAILED', reason, message: `${prepared.reason} (${prepared.candidateCount})` };
   }
 

@@ -37,7 +37,7 @@ export interface PreparedOptimization {
 export interface PreparationFailure {
   readonly status: 'FAILED';
   readonly reason:
-    'NO_MEMBERS' | 'NO_STORES' | 'NO_CANDIDATE_RECIPES' | 'NOT_ENOUGH_CANDIDATE_RECIPES';
+    'NO_MEMBERS' | 'NO_STORES' | 'NO_ELIGIBLE_RECIPES' | 'NOT_ENOUGH_CANDIDATE_RECIPES';
   /** How many recipes survived the filter, for the caller's message. */
   readonly candidateCount: number;
   readonly excluded: readonly ExcludedRecipe[];
@@ -74,7 +74,7 @@ export function prepareOptimization(
   });
 
   if (candidates.length === 0) {
-    return { status: 'FAILED', reason: 'NO_CANDIDATE_RECIPES', candidateCount: 0, excluded };
+    return { status: 'FAILED', reason: 'NO_ELIGIBLE_RECIPES', candidateCount: 0, excluded };
   }
   if (candidates.length < config.days) {
     return {

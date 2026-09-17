@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { existsSync } from 'node:fs';
 import { DEMO_HOUSEHOLD } from '@/data/seed/demo-household';
 import { DEFAULT_WEEK_SETTINGS } from '@/data/repositories/types';
+import { realSnapshotCapturedAt } from '@/providers/real-data-provider';
 
 /**
  * The service-level half of the availability gate.
@@ -26,11 +27,11 @@ describeSnapshot('the pool the week generator draws from', () => {
       household: DEMO_HOUSEHOLD,
       settings: DEFAULT_WEEK_SETTINGS,
       startDate: '2026-09-14',
-      today: new Date('2026-09-16T09:00:00Z'),
+      today: new Date(realSnapshotCapturedAt()!),
     };
 
     const { recipes, unavailable } = await selectableRecipes(context);
-    const purchasable = await purchasableIngredientIds(context.startDate);
+    const purchasable = await purchasableIngredientIds(context.today.toISOString().slice(0, 10));
     const catalogue = getCatalogue();
 
     // Nothing is lost and nothing is invented: the two halves are the library.
@@ -67,7 +68,7 @@ describeSnapshot('the pool the week generator draws from', () => {
         maxStores: 3,
       },
       startDate: '2026-09-14',
-      today: new Date('2026-09-16T09:00:00Z'),
+      today: new Date(realSnapshotCapturedAt()!),
     };
 
     const result = await generatePlan(context);
@@ -93,7 +94,7 @@ describeSnapshot('the pool the week generator draws from', () => {
         maxStores: 3,
       },
       startDate: '2026-09-14',
-      today: new Date('2026-09-16T09:00:00Z'),
+      today: new Date(realSnapshotCapturedAt()!),
     };
 
     const first = await generatePlan(context);

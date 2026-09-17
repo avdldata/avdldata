@@ -10,6 +10,7 @@ import {
 import type { WeekIngredientRequirement } from '@/domain/aggregation/aggregate';
 import { existsSync } from 'node:fs';
 import { makeOffer } from '../../support/builders';
+import { realSnapshotCapturedAt } from '@/providers/real-data-provider';
 
 /**
  * Three chains, and the two rules that decide whether the answer can be
@@ -216,7 +217,7 @@ async function planWeekFor(chainIds: readonly string[], maxStores: number) {
   const locationIds = chainIds.map(
     (chainId) => SEED_LOCATIONS.find((l) => l.chainId === chainId)!.id,
   );
-  const onDate = '2026-09-16';
+  const onDate = realSnapshotCapturedAt()!.slice(0, 10);
   const { candidates } = await buildStoreCandidates({ locationIds, onDate });
   const catalogue = getCatalogue();
 
@@ -309,8 +310,9 @@ describe('a planned week and the folder', () => {
         expect(promotion.source).toBe('folder');
         // Paying the shelf price for every pack would have cost more.
         expect(line.lineTotalCents).toBeLessThan(line.offer.unitPriceCents * line.units);
-        expect(promotion.validFrom <= '2026-09-16').toBe(true);
-        expect(promotion.validUntil >= '2026-09-16').toBe(true);
+        const pricingDate = realSnapshotCapturedAt()!.slice(0, 10);
+        expect(promotion.validFrom <= pricingDate).toBe(true);
+        expect(promotion.validUntil >= pricingDate).toBe(true);
       }
     },
     120_000,

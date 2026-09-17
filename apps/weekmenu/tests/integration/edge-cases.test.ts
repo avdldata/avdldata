@@ -70,7 +70,7 @@ describe('edge cases', () => {
     const result = optimiseWeek(input({ household: impossible }));
     expect(result.status).toBe('FAILED');
     if (result.status === 'FAILED') {
-      expect(['NO_CANDIDATE_RECIPES', 'NOT_ENOUGH_CANDIDATE_RECIPES']).toContain(result.reason);
+      expect(['NO_ELIGIBLE_RECIPES', 'NOT_ENOUGH_CANDIDATE_RECIPES']).toContain(result.reason);
       expect(result.excludedRecipes.length).toBeGreaterThan(0);
       expect(result.message).toMatch(/recept/i);
     }

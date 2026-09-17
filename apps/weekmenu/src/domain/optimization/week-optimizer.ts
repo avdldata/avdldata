@@ -14,7 +14,7 @@ import { comparePlans, evaluateWeek, selectBestPlan } from './evaluate-week';
 import { generateCandidateWeeks, weekKey } from './candidates';
 import { improveBySwapping, type EvaluatedWeek } from './local-search';
 import { weekLowerBound } from './lower-bound';
-import type { BudgetSettings, OptimizerResult, WeeklyPlan } from './types';
+import type { BudgetSettings, OptimizerFailureReason, OptimizerResult, WeeklyPlan } from './types';
 
 export interface OptimizerLogger {
   (stage: string, data: Readonly<Record<string, number | string>>): void;
@@ -34,6 +34,8 @@ export interface OptimizerInput {
   /** "Now", passed in so the whole engine stays deterministic. */
   readonly today: Date;
   readonly maxMinutes?: number;
+  /** Production generation must never save an incomplete basket. */
+  readonly requireCompleteBasket?: boolean;
   /** Day index -> recipe id, used by the "replace this dish" flow. */
   readonly lockedRecipeIds?: ReadonlyMap<number, string>;
   readonly config?: OptimizerConfig;
@@ -65,7 +67,10 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
 
   // ---- 1-3. household, hard filter, portions -------------------------------
   const prepared = prepareOptimization(input);
-  if (prepared.status === 'FAILED') return preparationFailure(prepared, input);
+  if (prepared.status === 'FAILED') {
+    log('filter', { totalRecipes: input.recipes.length, candidates: prepared.candidateCount });
+    return preparationFailure(prepared, input);
+  }
 
   const { config, stores, maxStores, memberNutrition, candidates, excluded, portionsByRecipe } =
     prepared;
@@ -88,8 +93,8 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
 
   if (weeks.length === 0) {
     return failure(
-      'NOT_ENOUGH_CANDIDATE_RECIPES',
-      `Er passen maar ${candidates.length} recepten bij jullie instellingen; daar krijgen we geen week van ${config.days} verschillende gerechten uit.`,
+      'NO_WEEK_SOLUTION',
+      'De passende recepten konden niet worden gecombineerd tot een volledige week. Controleer de weekinstellingen of probeer een nieuwe week.',
       excluded,
     );
   }
@@ -122,6 +127,7 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
       startDate: input.startDate,
       config,
       excluded,
+      ...(input.requireCompleteBasket ? { requireCompleteBasket: true } : {}),
     });
 
   // A hard maximum is the one setting where stopping early is not a trade-off
@@ -161,10 +167,11 @@ export function optimiseWeek(input: OptimizerInput): OptimizerResult {
     evaluated.push({ plan: priced.plan, penalty: priced.plan.score.totalPenaltyCents });
   }
 
+  log('pricing', { weeksPriced: evaluated.length, storeCombinations: storeCombinationsEvaluated });
   if (evaluated.length === 0) {
     return failure(
-      'NO_PRICEABLE_WEEK',
-      'We konden geen prijs berekenen voor deze week — controleer de geselecteerde supermarkten.',
+      'NO_RETAIL_SOLUTION',
+      'Er zijn passende recepten, maar geen volledige boodschappenlijst met geprijsde producten bij de geselecteerde supermarkten. Kies meer supermarkten of verhoog het maximum aantal winkels.',
       excluded,
     );
   }
@@ -287,7 +294,7 @@ function preparationFailure(failed: PreparationFailure, input: OptimizerInput): 
   const messages: Record<PreparationFailure['reason'], string> = {
     NO_MEMBERS: 'Voeg minimaal één gezinslid toe voordat je een week maakt.',
     NO_STORES: 'Selecteer minimaal één supermarkt in de buurt.',
-    NO_CANDIDATE_RECIPES: blameTheRuleThatDidIt(failed, input),
+    NO_ELIGIBLE_RECIPES: blameTheRuleThatDidIt(failed, input),
     NOT_ENOUGH_CANDIDATE_RECIPES:
       `Er passen maar ${failed.candidateCount} recepten bij jullie instellingen; ` +
       `we hebben er ${days} nodig.` +
@@ -371,12 +378,7 @@ function ruleThatCostsMost(failed: PreparationFailure): string {
 }
 
 function failure(
-  reason:
-    | 'NO_MEMBERS'
-    | 'NO_STORES'
-    | 'NO_CANDIDATE_RECIPES'
-    | 'NOT_ENOUGH_CANDIDATE_RECIPES'
-    | 'NO_PRICEABLE_WEEK',
+  reason: OptimizerFailureReason,
   message: string,
   excludedRecipes: readonly ExcludedRecipe[],
 ): OptimizerResult {

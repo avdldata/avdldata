@@ -256,7 +256,13 @@ blokkerend.
 | ALPHA-001 | **P0** | de supermarktstap van onboarding vroeg om een _filiaal_ binnen een straal van je postcode, en de filialen komen uit de seed: twaalf, allemaal rond Groningen. Wie ergens anders woont kreeg "Geen supermarkten binnen 10 km", kon niets aanvinken en kon onboarding niet afronden. Dezelfde poort blokkeerde de weekinstellingen, waar een andere zoekstraal je selectie bovendien stil wiste | opgelost                              |
 | ALPHA-002 | **P0** | een maximale bereidingstijd onder de twintig minuten sloot elk gerecht uit — zo lang duurt het snelste — en de app zei dat de _dieetregels_ alles uitsloten, terwijl het getal op een ander scherm stond. "0" sloot alles uit, een typfout werd NaN en betekende stilzwijgend "geen maximum"                                                                                                  | opgelost                              |
 
-**Open P0: 0. Open P1: 0.** ALPHA-001 was een P0 en is verholpen; de vier open P2's staan hierboven en zijn geen van
+ALPHA-003: de echte bestaande-accountfout bij "Maak mijn week" is gereproduceerd
+en verholpen. Een vernieuwde prijssnapshot werd tegen de voorafgaande maandag
+geprijsd, waardoor alle producten en daarna alle recepten verdwenen. Zie
+[ALPHA-003.md](ALPHA-003.md) voor de productieflow, persisted vergelijking,
+correcte foutclassificatie en bestaande-accountacceptatie.
+
+**Open P0: 0. Open P1: 0.** ALPHA-001, ALPHA-002 en ALPHA-003 zijn verholpen; de vier open P2's staan hierboven en zijn geen van
 alle een reden om de week niet te kunnen doen.
 
 ## Wat bewust nog niet ondersteund wordt

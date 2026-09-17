@@ -2,7 +2,11 @@ import 'server-only';
 import type { Household } from '@/domain/household/types';
 import { cents } from '@/domain/units';
 import { DEFAULT_OPTIMIZER_CONFIG, type OptimizerConfig } from '@/domain/optimization/config';
-import { optimiseWeek, type OptimizerInput } from '@/domain/optimization/week-optimizer';
+import {
+  optimiseWeek,
+  type OptimizerInput,
+  type OptimizerLogger,
+} from '@/domain/optimization/week-optimizer';
 import { findReplacements, type ReplacementCandidate } from '@/domain/optimization/replace';
 import type { OptimizerResult, WeeklyPlan } from '@/domain/optimization/types';
 import { getRepositories } from '@/data';
@@ -12,7 +16,15 @@ import { partitionByAvailability, type AvailabilityVerdict } from '@/domain/reci
 import type { Recipe } from '@/domain/recipes/types';
 import { getCatalogue } from './catalogue';
 import { serialiseWeeklyPlan } from './stored-week';
-import { buildStoreCandidates, purchasableIngredientIds, travelCostStatus } from './store-service';
+import {
+  buildStoreCandidates,
+  chainIdsForLocations,
+  purchasableIngredientIds,
+  travelCostStatus,
+} from './store-service';
+import { filterCandidateRecipes } from '@/domain/optimization/filter';
+import { prepareOptimization } from '@/domain/optimization/prepare';
+import { evaluateWeek } from '@/domain/optimization/evaluate-week';
 
 export interface PlanContext {
   readonly household: Household;
@@ -59,11 +71,18 @@ export function configFor(settings: WeekSettings): OptimizerConfig {
 }
 
 function developmentLogger(): OptimizerInput['logger'] {
-  if (process.env.NODE_ENV === 'production') return undefined;
+  if (process.env.NODE_ENV === 'production' && process.env.WEEKMENU_TRACE_GENERATION !== '1')
+    return undefined;
   // Stage counters only — never household data, never anything personal.
   return (stage, data) => {
     console.warn(`[optimizer:${stage}]`, JSON.stringify(data));
   };
+}
+
+/** Calendar placement and valuation are separate: a refreshed Thursday price
+ * must not be resolved against the preceding Monday. Repricing also uses now. */
+export function pricingDateFor(context: PlanContext): string {
+  return context.today.toISOString().slice(0, 10);
 }
 
 /**
@@ -83,7 +102,7 @@ export async function selectableRecipes(
   context: PlanContext,
 ): Promise<{ recipes: readonly Recipe[]; unavailable: readonly AvailabilityVerdict[] }> {
   const catalogue = getCatalogue();
-  const purchasable = await purchasableIngredientIds(context.startDate);
+  const purchasable = await purchasableIngredientIds(pricingDateFor(context));
   const { available, unavailable } = partitionByAvailability(
     catalogue.recipes,
     catalogue.ingredientIndex,
@@ -93,6 +112,8 @@ export async function selectableRecipes(
 }
 
 export interface GenerationOptions {
+  /** Opt-in stage counters shared by the CLI and the production action. */
+  readonly logger?: OptimizerLogger;
   /**
    * Dishes the user has already been offered and did not take.
    *
@@ -133,14 +154,48 @@ async function buildOptimizerInput(
    * that is half fiction with no visible seam. See `travelCostStatus`.
    */
   const travelKnown = travelCostStatus() === 'AVAILABLE';
-  const { candidates } = await buildStoreCandidates({
+  const { candidates, unpricedProductCount } = await buildStoreCandidates({
     locationIds: context.settings.selectedLocationIds,
     // Without coordinates there is no distance to compute. Passing (0, 0) would
     // put the household in the Atlantic and make every shop 5.900 km away.
     ...(travelKnown && latitude !== undefined && longitude !== undefined
       ? { home: { latitude, longitude } }
       : {}),
-    onDate: context.startDate,
+    onDate: pricingDateFor(context),
+  });
+
+  const logger = options.logger ?? developmentLogger();
+  logger?.('inputs', {
+    startDate: context.startDate,
+    pricingDate: pricingDateFor(context),
+    rawSelectedStores: JSON.stringify(context.settings.selectedLocationIds),
+    normalizedStores: JSON.stringify(candidates.map((s) => s.location.id)),
+    normalizedChains: JSON.stringify(chainIdsForLocations(context.settings.selectedLocationIds)),
+    maxStores: context.settings.maxStores,
+  });
+  for (const store of candidates) {
+    logger?.('retailProducts', { chain: store.chain.id, products: store.offers.length });
+  }
+  logger?.('retail', { unpricedProductCount });
+  const eligibleLibrary = filterCandidateRecipes({
+    household: context.household,
+    recipes: catalogue.recipes,
+    ...(context.settings.maxMinutes !== undefined
+      ? { maxMinutes: context.settings.maxMinutes }
+      : {}),
+  });
+  const eligibleSelectable = filterCandidateRecipes({
+    household: context.household,
+    recipes,
+    ...(context.settings.maxMinutes !== undefined
+      ? { maxMinutes: context.settings.maxMinutes }
+      : {}),
+  });
+  logger?.('eligibility', {
+    productionRecords: catalogue.recipes.length,
+    eligibleLibrary: eligibleLibrary.candidates.length,
+    selectable: selectable.length,
+    eligibleSelectable: eligibleSelectable.candidates.length,
   });
 
   const maxStores =
@@ -168,7 +223,8 @@ async function buildOptimizerInput(
       : {}),
     ...(lockedRecipeIds ? { lockedRecipeIds } : {}),
     config: configFor(context.settings),
-    ...(developmentLogger() ? { logger: developmentLogger()! } : {}),
+    requireCompleteBasket: true,
+    ...(logger ? { logger } : {}),
     now: () => performance.now(),
   };
 }
@@ -178,7 +234,132 @@ export async function generatePlan(
   context: PlanContext,
   options: GenerationOptions = {},
 ): Promise<OptimizerResult> {
-  return optimiseWeek(await buildOptimizerInput(context, undefined, options));
+  return runOptimizer(await buildOptimizerInput(context, undefined, options), context);
+}
+
+function runOptimizer(input: OptimizerInput, context: PlanContext): OptimizerResult {
+  const log = input.logger;
+  const chains = chainIdsForLocations(context.settings.selectedLocationIds);
+  const invalid = context.settings.selectedLocationIds.some(
+    (id) => !chainIdsForLocations([id]).length,
+  );
+  const filter = (recipes: readonly Recipe[]) =>
+    filterCandidateRecipes({
+      household: input.household,
+      recipes,
+      ...(input.maxMinutes !== undefined ? { maxMinutes: input.maxMinutes } : {}),
+    });
+  const eligibleLibrary = filter(getCatalogue().recipes).candidates.length;
+  const eligibleRetail = filter(input.recipes).candidates.length;
+  let result: OptimizerResult;
+  if (!input.household.members.length) {
+    result = {
+      status: 'FAILED',
+      reason: 'NO_MEMBERS',
+      message: 'Voeg minimaal één gezinslid toe voordat je een week maakt.',
+      excludedRecipes: [],
+    };
+  } else if (!context.settings.selectedLocationIds.length) {
+    result = {
+      status: 'FAILED',
+      reason: 'NO_STORES',
+      message: 'Selecteer minimaal één supermarkt bij Weekinstellingen.',
+      excludedRecipes: [],
+    };
+  } else if (invalid) {
+    result = {
+      status: 'FAILED',
+      reason: 'INVALID_STORE_SELECTION',
+      message:
+        'Een opgeslagen supermarktkeuze wordt niet herkend. Kies je supermarkten opnieuw bij Weekinstellingen.',
+      excludedRecipes: [],
+    };
+  } else if (eligibleLibrary > 0 && eligibleRetail === 0) {
+    result = {
+      status: 'FAILED',
+      reason: 'NO_RETAIL_SOLUTION',
+      message:
+        'Er zijn passende recepten, maar de prijsgegevens leveren geen koopbare gerechten op. Controleer de prijsgegevens en je geselecteerde supermarkten.',
+      excludedRecipes: [],
+    };
+  } else {
+    const prepared = prepareOptimization(input);
+    const solvable: Recipe[] = [];
+    if (prepared.status === 'OK') {
+      for (const recipe of prepared.candidates) {
+        const priced = evaluateWeek({
+          recipes: [recipe],
+          portionsByRecipe: prepared.portionsByRecipe,
+          household: input.household,
+          memberNutrition: prepared.memberNutrition,
+          ingredients: input.ingredients,
+          stores: prepared.stores,
+          matrixHome: prepared.home,
+          maxStores: prepared.maxStores,
+          extraStorePenalty: prepared.extraStorePenalty,
+          budget: {},
+          startDate: input.startDate,
+          config: prepared.config,
+          excluded: prepared.excluded,
+          explain: false,
+          requireCompleteBasket: true,
+        });
+        if (priced) solvable.push(recipe);
+      }
+    }
+    log?.('retailRecipes', { retailSolvable: solvable.length, selectedChains: chains.length });
+    // If dietary rules emptied the full library, preserve its exclusion detail.
+    if (prepared.status === 'OK' && solvable.length < prepared.config.days) {
+      result = {
+        status: 'FAILED',
+        reason: 'NO_RETAIL_SOLUTION',
+        message: `Er zijn passende recepten, maar slechts ${solvable.length} gerechten hebben een volledige boodschappenlijst bij de gekozen supermarkten. Kies meer supermarkten of verhoog het maximum aantal winkels.`,
+        excludedRecipes: prepared.excluded,
+      };
+      log?.('search', { weeksGenerated: 0, pool: solvable.length });
+    } else {
+      result = optimiseWeek({
+        ...input,
+        recipes:
+          prepared.status === 'OK'
+            ? solvable
+            : input.recipes.length === 0
+              ? getCatalogue().recipes
+              : input.recipes,
+      });
+    }
+    if (
+      result.status === 'OK' &&
+      !result.plan.budget.met &&
+      input.budget.hardMaxCents !== undefined
+    ) {
+      const amount = (result.plan.totals.groceryCents / 100).toFixed(2).replace('.', ',');
+      result = {
+        status: 'FAILED',
+        reason: 'BUDGET_TOO_LOW',
+        message: `Geen volledige week gevonden binnen je budget. De gevonden week kost € ${amount}. Verhoog het budget bij Weekinstellingen.`,
+        excludedRecipes: result.plan.excludedRecipes,
+      };
+    }
+  }
+  if (result.status === 'FAILED') {
+    if (
+      result.reason === 'INVALID_STORE_SELECTION' ||
+      (result.reason === 'NO_RETAIL_SOLUTION' && eligibleRetail === 0) ||
+      result.reason === 'NO_STORES' ||
+      result.reason === 'NO_MEMBERS'
+    ) {
+      log?.('retailRecipes', { retailSolvable: 0, selectedChains: chains.length });
+      log?.('search', { weeksGenerated: 0, pool: 0 });
+    }
+    log?.('failure', { reason: result.reason });
+  } else {
+    log?.('success', {
+      meals: result.plan.days.length,
+      groceryCents: result.plan.totals.groceryCents,
+    });
+  }
+  return result;
 }
 
 /**
@@ -210,7 +391,7 @@ export async function repriceStoredPlan(
 ): Promise<OptimizerResult> {
   const locked = new Map<number, string>();
   recipeIds.forEach((id, index) => locked.set(index, id));
-  return optimiseWeek(await buildOptimizerInput(context, locked));
+  return runOptimizer(await buildOptimizerInput(context, locked), context);
 }
 
 export async function findAlternatives(
@@ -267,7 +448,7 @@ export async function persistPlan(
   options: { keepChecked?: readonly string[] } = {},
 ): Promise<StoredPlan> {
   const repositories = getRepositories();
-  return repositories.plans.save({
+  const stored = await repositories.plans.save({
     householdId: context.household.id,
     startDate: plan.startDate,
     recipeIds: plan.days.map((d) => d.recipe.id),
@@ -276,4 +457,6 @@ export async function persistPlan(
     generatedAt: new Date().toISOString(),
     plan: serialiseWeeklyPlan(plan),
   });
+  developmentLogger()?.('persistence', { meals: stored.recipeIds.length, saved: 1 });
+  return stored;
 }

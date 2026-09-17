@@ -55,7 +55,7 @@ export function SavedWeekNotice({
         // The label wraps rather than pushing the page sideways: at 375 px the
         // long version overflowed by 24 px, which on a phone is a page that
         // slides under your thumb.
-        className="mt-1.5 h-auto text-left whitespace-normal"
+        className="mt-1.5 h-auto min-h-6 text-left whitespace-normal"
         disabled={pending}
         onClick={() => {
           setError(undefined);

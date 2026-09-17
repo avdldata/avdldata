@@ -123,7 +123,10 @@ describeSnapshot('a real offer carries its own history', () => {
     const locationIds = ['ah', 'jumbo', 'lidl'].map(
       (chainId) => SEED_LOCATIONS.find((l) => l.chainId === chainId)!.id,
     );
-    const { candidates } = await buildStoreCandidates({ locationIds, onDate: '2026-09-16' });
+    const { candidates } = await buildStoreCandidates({
+      locationIds,
+      onDate: buildRealCatalogue().capturedAt.slice(0, 10),
+    });
     expect(candidates.length).toBe(3);
 
     for (const candidate of candidates) {
@@ -148,15 +151,16 @@ describeSnapshot('a real offer carries its own history', () => {
     const locationIds = ['ah', 'jumbo'].map(
       (chainId) => SEED_LOCATIONS.find((l) => l.chainId === chainId)!.id,
     );
-    const { candidates } = await buildStoreCandidates({ locationIds, onDate: '2026-09-16' });
+    const pricingDate = buildRealCatalogue().capturedAt.slice(0, 10);
+    const { candidates } = await buildStoreCandidates({ locationIds, onDate: pricingDate });
     const promoted = candidates.flatMap((c) => c.offers.filter((o) => o.promotion));
     expect(promoted.length).toBeGreaterThan(0);
     for (const offer of promoted) {
       const promotion = offer.promotion!;
       expect(promotion.source).toBe('folder');
       expect(promotion.id).toMatch(/:/);
-      expect(promotion.validFrom <= '2026-09-16').toBe(true);
-      expect(promotion.validUntil >= '2026-09-16').toBe(true);
+      expect(promotion.validFrom <= pricingDate).toBe(true);
+      expect(promotion.validUntil >= pricingDate).toBe(true);
       expect(promotion.label.trim()).not.toBe('');
     }
   }, 120_000);

@@ -67,6 +67,7 @@ export interface WeekEvaluationInput {
    * building it for a week that loses is the mistake.
    */
   explain?: boolean;
+  requireCompleteBasket?: boolean;
 }
 
 export function evaluateWeek(
@@ -91,7 +92,7 @@ export function evaluateWeek(
     config.packaging,
     input.packagingCache,
   );
-  const options = enumerateStoreOptions({
+  const allOptions = enumerateStoreOptions({
     requirements,
     stores: input.stores,
     matrix,
@@ -101,6 +102,9 @@ export function evaluateWeek(
     unavailableItemPenaltyCents: config.weights.unavailableItemPenalty,
     tripConfig: config.trip,
   });
+  const options = input.requireCompleteBasket
+    ? allOptions.filter((option) => option.unavailable.length === 0)
+    : allOptions;
 
   if (options.length === 0) return undefined;
 

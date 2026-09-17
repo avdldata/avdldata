@@ -3,19 +3,15 @@
  *
  *   pnpm recipes:funnel [pad-naar-demo.json]
  *
- * Runs the household's own rules over the recipe library one at a time and
- * prints how many dishes survive each. "Geen enkel recept past bij de
- * ingestelde dieetregels en uitsluitingen" is true but useless as a diagnosis:
- * it names seven different rules at once and says nothing about which one did
- * it. This says which one, and how much each costs on its own.
+ * Runs the app's household loader, availability gate, rules, retail package
+ * evaluation and week optimizer. It reports the exact domain result without
+ * saving a week. The benchmark catalogue is intentionally not used here.
  *
  * It prints counts and rules — no names, no ages, no weights, no due dates.
  * A pregnancy filter shows up as "aan", not as whose.
  */
 import { readFileSync } from 'node:fs';
-import { buildIngredientIndex } from '@/domain/ingredients/types';
-import { normaliseRecipes } from '@/domain/recipes/normalise';
-import { partitionByAvailability } from '@/domain/recipes/feasibility';
+import { dirname, resolve } from 'node:path';
 import { filterCandidateRecipes } from '@/domain/optimization/filter';
 import {
   hardExcludedIngredientIds,
@@ -26,10 +22,7 @@ import {
   householdRequiresVegetarian,
   type Household,
 } from '@/domain/household/types';
-import { SEED_INGREDIENTS } from '@/data/seed/ingredients';
-import { SEED_RECIPES } from '@/data/seed/recipes';
-import { loadRealChains } from '../tests/support/real-data-store';
-import type { WeekSettings } from '@/data/repositories/types';
+import { DEFAULT_WEEK_SETTINGS, type WeekSettings } from '@/data/repositories/types';
 
 const path = process.argv[2] ?? '.data/demo.json';
 const db = JSON.parse(readFileSync(path, 'utf8')) as {
@@ -37,14 +30,14 @@ const db = JSON.parse(readFileSync(path, 'utf8')) as {
   settings: Record<string, WeekSettings>;
 };
 
-const ingredients = buildIngredientIndex(SEED_INGREDIENTS);
-const recipes = normaliseRecipes(SEED_RECIPES, ingredients);
-
-const purchasable = new Set<string>();
-for (const chain of loadRealChains(['ah', 'jumbo', 'lidl']).chains) {
-  for (const offer of chain.allOffers) purchasable.add(offer.ingredientId);
-}
-const { available } = partitionByAvailability(recipes, ingredients, purchasable);
+// Import after selecting the database. These are the app's services/providers,
+// not the benchmark loader. No writes or persistence are performed by this CLI.
+process.env.DATA_ADAPTER = 'demo';
+process.env.WEEKMENU_DATA_DIR = dirname(resolve(path));
+const { generatePlan, loadContext, mondayOf, selectableRecipes } =
+  await import('@/services/plan-service');
+const { dataModeView } = await import('@/services/store-service');
+console.log('Productieflow:', dataModeView().mode);
 
 const households = Object.entries(db.households);
 if (households.length === 0) {
@@ -52,8 +45,14 @@ if (households.length === 0) {
   process.exit(1);
 }
 
+let scenario = 0;
 for (const [ownerId, household] of households) {
-  const settings = db.settings[household.id];
+  const settings = db.settings[household.id] ?? DEFAULT_WEEK_SETTINGS;
+  const now = new Date();
+  const context = path.endsWith('demo.json')
+    ? (await loadContext(ownerId, now))!
+    : { household, settings, today: now, startDate: mondayOf(now) };
+  const { recipes: available } = await selectableRecipes(context);
   const rules = {
     vegetarisch: householdRequiresVegetarian(household),
     veganistisch: householdRequiresVegan(household),
@@ -75,7 +74,7 @@ for (const [ownerId, household] of households) {
     winkels: settings?.selectedLocationIds ?? [],
   };
 
-  console.log(`\nHUISHOUDEN ${household.id} (eigenaar ${ownerId.slice(0, 8)}…)`);
+  console.log(`\nSCENARIO ${++scenario}`);
   console.log(`  leden                    ${household.members.length}`);
   console.log(`  vegetarisch vereist      ${rules.vegetarisch}`);
   console.log(`  veganistisch vereist     ${rules.veganistisch}`);
@@ -132,5 +131,19 @@ for (const [ownerId, household] of households) {
   console.log(
     `\n  ${result.candidates.length === 0 ? 'GEEN ENKEL RECEPT OVER' : `${result.candidates.length} recepten bruikbaar`}`,
   );
+  console.log('\n  RECIPE ELIGIBILITY → RETAIL → GENERATION (productiecode)');
+  const counters = new Map<string, Readonly<Record<string, number | string>>>();
+  const generated = await generatePlan(context, {
+    logger: (stage, counts) => {
+      counters.set(stage, counts);
+      console.log(`    ${stage.padEnd(18)} ${JSON.stringify(counts)}`);
+    },
+  });
+  console.log(`  candidate week count     ${counters.get('search')?.weeksGenerated ?? 0}`);
+  console.log(`  optimizer result         ${generated.status}`);
+  console.log(
+    `  domain failure reason    ${generated.status === 'FAILED' ? generated.reason : '—'}`,
+  );
+  if (generated.status === 'FAILED') console.log(`  gebruikersmelding        ${generated.message}`);
 }
 console.log('');

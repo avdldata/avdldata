@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { Cents } from '@/domain/units';
+import type { OptimizerFailureReason } from '@/domain/optimization/types';
 import { cents } from '@/domain/units';
 import { getRepositories } from '@/data';
 import { DEFAULT_WEEK_SETTINGS, type WeekSettings } from '@/data/repositories/types';
@@ -22,6 +23,7 @@ import { weekSettingsSchema, type WeekSettingsInput } from './settings-schema';
 export interface PlannerResult {
   readonly ok: boolean;
   readonly error?: string;
+  readonly reason?: OptimizerFailureReason;
 }
 
 /**
@@ -144,7 +146,7 @@ export async function generateWeekAction(): Promise<PlannerResult> {
     if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
 
     const result = await generatePlan(context);
-    if (result.status !== 'OK') return { ok: false, error: result.message };
+    if (result.status !== 'OK') return { ok: false, error: result.message, reason: result.reason };
 
     await persistPlan(context, result.plan);
     revalidatePath('/week');
@@ -187,7 +189,7 @@ export async function regenerateWeekAction(
     const result = await generatePlan(context, {
       ...(enough ? { excludeRecipeIds: seenRecipeIds } : {}),
     });
-    if (result.status !== 'OK') return { ok: false, error: result.message };
+    if (result.status !== 'OK') return { ok: false, error: result.message, reason: result.reason };
 
     await persistPlan(context, result.plan);
     revalidatePath('/week');
