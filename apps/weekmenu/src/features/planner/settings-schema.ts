@@ -26,7 +26,22 @@ export const weekSettingsSchema = z.object({
   budgetAmount: euroString,
   transportMode: z.enum(TRANSPORT_MODES),
   costPerKm: euroString,
-  maxMinutes: z.string().trim(),
+  /**
+   * Empty means no limit. Anything else has to be a real number of minutes:
+   * "0" used to exclude every dish and a typo used to become NaN, which
+   * compares false against everything and so silently meant "no limit".
+   */
+  maxMinutes: z
+    .string()
+    .trim()
+    .refine(
+      (value) => value === '' || /^\d+$/.test(value),
+      'Vul een aantal minuten in, bijvoorbeeld 45.',
+    )
+    .refine(
+      (value) => value === '' || Number(value) > 0,
+      'Een maximum van 0 minuten sluit elk gerecht uit. Laat het veld leeg als je geen maximum wilt.',
+    ),
 });
 
 export type WeekSettingsInput = z.input<typeof weekSettingsSchema>;

@@ -11,6 +11,7 @@ import { locationIdsForChains } from '@/services/store-service';
 import {
   exclusionsLeaveEnough,
   findAlternatives,
+  selectableRecipes,
   generatePlan,
   loadContext,
   persistPlan,
@@ -77,6 +78,30 @@ export async function saveWeekSettingsAction(input: WeekSettingsInput): Promise<
 
   const context = await loadContext(user.id);
   if (!context) return { ok: false, error: 'Geen huishouden gevonden.' };
+
+  /*
+   * A maximum below the fastest dish is a setting that guarantees failure.
+   *
+   * Saving it and finding out at "maak mijn week" cost a user their whole
+   * evening: every recipe fell away, and the only thing the app said was that
+   * their dietary rules excluded everything. The rule itself is not weakened —
+   * a cap still excludes what is too slow — but a cap nothing can meet is
+   * refused here, where the number is still on screen and can be changed.
+   */
+  if (parsed.data.maxMinutes !== '') {
+    const minutes = Number(parsed.data.maxMinutes);
+    const { recipes } = await selectableRecipes(context);
+    const fastest = recipes.reduce(
+      (least, recipe) => Math.min(least, recipe.totalMinutes),
+      Number.POSITIVE_INFINITY,
+    );
+    if (Number.isFinite(fastest) && minutes < fastest) {
+      return {
+        ok: false,
+        error: `Geen enkel gerecht is binnen ${minutes} minuten klaar; het snelste duurt ${fastest} minuten. Kies een hogere maximale bereidingstijd of laat het veld leeg.`,
+      };
+    }
+  }
 
   const budget = toCents(parsed.data.budgetAmount);
 

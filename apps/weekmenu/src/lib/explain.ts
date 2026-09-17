@@ -92,7 +92,7 @@ export function explainReason(reason: Reason, options: ExplainOptions = {}): str
       return `Gevarieerde week: ${num(p.cuisines)} verschillende keukens en ${num(p.proteins)} verschillende eiwitbronnen.`;
 
     case 'VARIETY_COMPROMISED':
-      return `Deze week herhaalt zichzelf op ${num(p.violations)} punt${num(p.violations) === 1 ? '' : 'en'}. Met jullie dieetregels blijven er te weinig gerechten over om alle variatieregels te halen; we kiezen dan liever voor een volledige week dan voor geen week.`;
+      return `Deze week herhaalt zichzelf op ${num(p.violations)} punt${num(p.violations) === 1 ? '' : 'en'}. Met jullie instellingen blijven er te weinig gerechten over om alle variatieregels te halen; we kiezen dan liever voor een volledige week dan voor geen week.`;
 
     case 'PREFERRED_RECIPE':
       return `Past bij jullie voorkeuren: ${str(p.terms)}.`;

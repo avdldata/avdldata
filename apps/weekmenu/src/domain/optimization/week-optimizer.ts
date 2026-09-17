@@ -6,7 +6,7 @@ import {
   type ConveniencePreference,
   type OptimizerConfig,
 } from './config';
-import type { ExcludedRecipe } from './filter';
+import type { ExcludedRecipe, ExclusionReason } from './filter';
 import { prepareOptimization, type PreparationFailure } from './prepare';
 import { bestOrdering } from './diversity';
 import type { PackagingCache, StoreCandidate } from './store-selection';
@@ -287,12 +287,87 @@ function preparationFailure(failed: PreparationFailure, input: OptimizerInput): 
   const messages: Record<PreparationFailure['reason'], string> = {
     NO_MEMBERS: 'Voeg minimaal één gezinslid toe voordat je een week maakt.',
     NO_STORES: 'Selecteer minimaal één supermarkt in de buurt.',
-    NO_CANDIDATE_RECIPES: 'Geen enkel recept past bij de ingestelde dieetregels en uitsluitingen.',
+    NO_CANDIDATE_RECIPES: blameTheRuleThatDidIt(failed, input),
     NOT_ENOUGH_CANDIDATE_RECIPES:
       `Er passen maar ${failed.candidateCount} recepten bij jullie instellingen; ` +
-      `we hebben er ${days} nodig.`,
+      `we hebben er ${days} nodig.` +
+      ruleThatCostsMost(failed),
   };
   return failure(failed.reason, messages[failed.reason], failed.excluded);
+}
+
+/**
+ * Which rule emptied the list?
+ *
+ * "Geen enkel recept past bij de ingestelde dieetregels en uitsluitingen" names
+ * seven rules at once and therefore none of them. A user who had set a maximum
+ * cooking time of fifteen minutes read that as a problem with their diet, and
+ * had no way to find the setting that actually did it. The filter already
+ * records a reason per dropped recipe; this turns the most common one into a
+ * sentence that points at the setting.
+ */
+function blameTheRuleThatDidIt(failed: PreparationFailure, input: OptimizerInput): string {
+  const counts = new Map<ExclusionReason, number>();
+  for (const excluded of failed.excluded) {
+    counts.set(excluded.reason, (counts.get(excluded.reason) ?? 0) + 1);
+  }
+  const [reason] = [...counts].sort((a, b) => b[1] - a[1])[0] ?? [];
+  const generic = 'Geen enkel recept past bij de ingestelde regels en uitsluitingen.';
+  if (!reason) return generic;
+
+  switch (reason) {
+    case 'TOO_MUCH_TIME': {
+      const fastest = input.recipes.reduce(
+        (least, recipe) => Math.min(least, recipe.totalMinutes),
+        Number.POSITIVE_INFINITY,
+      );
+      return (
+        `Geen enkel gerecht is binnen ${input.maxMinutes} minuten klaar — het snelste duurt ` +
+        `${fastest} minuten. Verhoog de maximale bereidingstijd bij Weekinstellingen.`
+      );
+    }
+    case 'ALLERGEN':
+      return 'Elk gerecht bevat een allergeen dat iemand in het huishouden moet vermijden. Controleer de allergieën bij Gezin.';
+    case 'PREGNANCY':
+      return 'Geen enkel gerecht is geschikt tijdens de zwangerschap. Controleer de gegevens bij Gezin.';
+    case 'VEGAN_REQUIRED':
+      return 'Geen enkel gerecht is veganistisch. Pas de voedingswijze aan bij Gezin.';
+    case 'VEGETARIAN_REQUIRED':
+      return 'Geen enkel gerecht is vegetarisch. Pas de voedingswijze aan bij Gezin.';
+    case 'PESCETARIAN_REQUIRED':
+      return 'Geen enkel gerecht past bij pescotarisch eten. Pas de voedingswijze aan bij Gezin.';
+    case 'EXCLUDED_INGREDIENT':
+      return 'Elk gerecht bevat een ingrediënt dat op ⛔ staat. Kijk je smaakvoorkeuren na bij Gezin.';
+    case 'DISLIKED_EXCLUDED_TAG':
+      return 'Je hebt zoveel soorten gerechten op ⛔ gezet dat er niets overblijft. Kijk je smaakvoorkeuren na bij Gezin.';
+    case 'DISLIKED_EXCLUDED_CUISINE':
+      return 'Je hebt zoveel keukens op ⛔ gezet dat er niets overblijft. Kijk je smaakvoorkeuren na bij Gezin.';
+    default:
+      return generic;
+  }
+}
+
+/** The same hint, appended when there are some recipes left but too few. */
+function ruleThatCostsMost(failed: PreparationFailure): string {
+  const counts = new Map<ExclusionReason, number>();
+  for (const excluded of failed.excluded) {
+    counts.set(excluded.reason, (counts.get(excluded.reason) ?? 0) + 1);
+  }
+  const top = [...counts].sort((a, b) => b[1] - a[1])[0];
+  if (!top) return '';
+  const labels: Partial<Record<ExclusionReason, string>> = {
+    TOO_MUCH_TIME: 'de maximale bereidingstijd',
+    ALLERGEN: 'de allergieën',
+    PREGNANCY: 'de zwangerschapsregels',
+    VEGAN_REQUIRED: 'veganistisch eten',
+    VEGETARIAN_REQUIRED: 'vegetarisch eten',
+    PESCETARIAN_REQUIRED: 'pescotarisch eten',
+    EXCLUDED_INGREDIENT: 'ingrediënten op ⛔',
+    DISLIKED_EXCLUDED_TAG: 'soorten gerechten op ⛔',
+    DISLIKED_EXCLUDED_CUISINE: 'keukens op ⛔',
+  };
+  const label = labels[top[0]];
+  return label ? ` De meeste vielen af door ${label} (${top[1]} gerechten).` : '';
 }
 
 function failure(

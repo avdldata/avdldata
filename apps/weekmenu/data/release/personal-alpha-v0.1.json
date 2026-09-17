@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-09-16T23:19:47.599Z",
+  "ranAt": "2026-09-17T14:51:44.704Z",
   "household": {
     "members": [
       "Sanne (36, 172 cm, 68 kg)",
@@ -191,15 +191,15 @@
     "prijsmomentopname": "PASS"
   },
   "timings": {
-    "eerste week genereren": 2940,
-    "vervangers ophalen (dag 1)": 1058,
-    "gerecht vervangen (dag 1)": 1373,
-    "vervangers ophalen (dag 4)": 1083,
-    "gerecht vervangen (dag 4)": 848,
-    "andere week 1": 2899,
+    "eerste week genereren": 2397,
+    "vervangers ophalen (dag 1)": 1059,
+    "gerecht vervangen (dag 1)": 849,
+    "vervangers ophalen (dag 4)": 1073,
+    "gerecht vervangen (dag 4)": 1354,
+    "andere week 1": 2921,
     "andere week 2": 4378,
-    "andere week 3": 5356,
-    "opgeslagen week openen": 290,
-    "boodschappenlijst openen": 325
+    "andere week 3": 5353,
+    "opgeslagen week openen": 313,
+    "boodschappenlijst openen": 282
   }
 }
