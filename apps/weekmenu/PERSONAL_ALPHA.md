@@ -26,6 +26,10 @@ vandaan komt, en — even belangrijk — wat het niet kan en waarom.
 - Een andere week vragen zolang de bibliotheek nieuwe gerechten heeft.
 - Een boodschappenlijst met product, verpakking, aantal, prijs en winkel,
   gegroepeerd zoals je een winkel doorloopt, met vinkjes die blijven staan.
+- Kiezen welke supermarkten meedoen — Albert Heijn, Jumbo, Lidl — en hoeveel
+  winkels je maximaal wilt bezoeken. Dat gaat per keten en niet per filiaal:
+  de prijzen die we hebben zijn per keten, en waar de filialen staan weten we
+  niet.
 - De supermarkten vergelijken: wat kost deze week bij AH, bij Jumbo, bij Lidl,
   en bij elke combinatie daarvan.
 - Alles op een telefoon, want daar wordt een boodschappenlijst gelezen.
@@ -202,7 +206,9 @@ Eerlijk, en zonder ze mooier te maken dan ze zijn.
    zegt dan bij naam wat.
 4. **Reisafstand telt niet mee.** De prijsmomentopname is een catalogus, geen
    kaart: we weten niet waar de filialen staan. Er staat daarom nergens een
-   afstand, een reistijd of een reiskostenbedrag, en het advies zegt dat.
+   afstand, een reistijd of een reiskostenbedrag, en het advies zegt dat. Om
+   dezelfde reden kies je supermarkten per keten en niet per filiaal — een
+   filiaalkeuze zou doen alsof we een kaart hebben.
 5. **Een nieuwe week zonder context kan dezelfde optimale week opleveren.** De
    optimizer is deterministisch: dezelfde vraag geeft hetzelfde antwoord. "Maak
    een andere week" verandert de vraag door wat je al zag uit te sluiten, en
@@ -233,22 +239,23 @@ Gevonden tijdens de acceptatieruns van Sprint 3 en Sprint 4. P0 = kern, correcth
 of veiligheid. P1 = raakt dagelijks gebruik of klopt niet. P2 = hinderlijk, niet
 blokkerend.
 
-| id    | ernst | wat                                                                                                                                                                            | status                                |
-| ----- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------- |
-| S3-01 | P1    | een opgeslagen week werd bij elke opening stil opnieuw doorgerekend, dus het bedrag kon van dag tot dag verschillen                                                            | opgelost                              |
-| S3-02 | P1    | uitgelogd gaf op elk beschermd scherm Next's kale foutpagina in plaats van het inlogformulier                                                                                  | opgelost                              |
-| S3-03 | P1    | een vers geregistreerd account kreeg op `/week` een foutpagina in plaats van onboarding                                                                                        | opgelost                              |
-| S3-04 | P1    | de demo-sessiecookie was het gebruikers-id zonder handtekening: overtypen gaf toegang tot een ander huishouden                                                                 | opgelost                              |
-| S3-05 | P2    | 24 px horizontale overloop op `/week` bij 375 en 390 px                                                                                                                        | opgelost                              |
-| S3-06 | P2    | de engine kende voorkeuren per ingrediënt, maar er was geen scherm om er een aan te wijzen                                                                                     | opgelost                              |
-| S4-01 | P1    | de winkelpagina zei "we kennen de filiaaladressen niet" en toonde twee regels lager "11,6 km · € 0,00 reiskosten" — op vier plekken stond een afstand die we niet kunnen weten | opgelost                              |
-| S4-02 | P2    | de weekpagina toonde een bedrag zonder erbij te zeggen of het echte of demoprijzen waren                                                                                       | opgelost                              |
-| S4-03 | P2    | "Maak een andere week" vergeet na een herlaadactie wat je al zag, dus twee keer drukken rond een refresh kan dezelfde week teruggeven                                          | open, bewuste keuze (zie beperking 5) |
-| S4-04 | P2    | na het opslaan van een gezinslid staat er geen bevestiging; je komt terug op `/gezin` en moet zelf zien dat het gelukt is                                                      | open                                  |
-| S4-05 | P2    | het bedragveld bij het budget verschijnt pas nadat je een budgetmodus kiest, waardoor de eerste klik niets lijkt te doen                                                       | open                                  |
-| S4-06 | P2    | de eerste week van een verse server kost ~1,9 s extra doordat de prijsmomentopname dan pas wordt ingelezen                                                                     | open, gemeten                         |
+| id        | ernst  | wat                                                                                                                                                                                                                                                                                                                                                                                           | status                                |
+| --------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| S3-01     | P1     | een opgeslagen week werd bij elke opening stil opnieuw doorgerekend, dus het bedrag kon van dag tot dag verschillen                                                                                                                                                                                                                                                                           | opgelost                              |
+| S3-02     | P1     | uitgelogd gaf op elk beschermd scherm Next's kale foutpagina in plaats van het inlogformulier                                                                                                                                                                                                                                                                                                 | opgelost                              |
+| S3-03     | P1     | een vers geregistreerd account kreeg op `/week` een foutpagina in plaats van onboarding                                                                                                                                                                                                                                                                                                       | opgelost                              |
+| S3-04     | P1     | de demo-sessiecookie was het gebruikers-id zonder handtekening: overtypen gaf toegang tot een ander huishouden                                                                                                                                                                                                                                                                                | opgelost                              |
+| S3-05     | P2     | 24 px horizontale overloop op `/week` bij 375 en 390 px                                                                                                                                                                                                                                                                                                                                       | opgelost                              |
+| S3-06     | P2     | de engine kende voorkeuren per ingrediënt, maar er was geen scherm om er een aan te wijzen                                                                                                                                                                                                                                                                                                    | opgelost                              |
+| S4-01     | P1     | de winkelpagina zei "we kennen de filiaaladressen niet" en toonde twee regels lager "11,6 km · € 0,00 reiskosten" — op vier plekken stond een afstand die we niet kunnen weten                                                                                                                                                                                                                | opgelost                              |
+| S4-02     | P2     | de weekpagina toonde een bedrag zonder erbij te zeggen of het echte of demoprijzen waren                                                                                                                                                                                                                                                                                                      | opgelost                              |
+| S4-03     | P2     | "Maak een andere week" vergeet na een herlaadactie wat je al zag, dus twee keer drukken rond een refresh kan dezelfde week teruggeven                                                                                                                                                                                                                                                         | open, bewuste keuze (zie beperking 5) |
+| S4-04     | P2     | na het opslaan van een gezinslid staat er geen bevestiging; je komt terug op `/gezin` en moet zelf zien dat het gelukt is                                                                                                                                                                                                                                                                     | open                                  |
+| S4-05     | P2     | het bedragveld bij het budget verschijnt pas nadat je een budgetmodus kiest, waardoor de eerste klik niets lijkt te doen                                                                                                                                                                                                                                                                      | open                                  |
+| S4-06     | P2     | de eerste week van een verse server kost ~1,9 s extra doordat de prijsmomentopname dan pas wordt ingelezen                                                                                                                                                                                                                                                                                    | open, gemeten                         |
+| ALPHA-001 | **P0** | de supermarktstap van onboarding vroeg om een _filiaal_ binnen een straal van je postcode, en de filialen komen uit de seed: twaalf, allemaal rond Groningen. Wie ergens anders woont kreeg "Geen supermarkten binnen 10 km", kon niets aanvinken en kon onboarding niet afronden. Dezelfde poort blokkeerde de weekinstellingen, waar een andere zoekstraal je selectie bovendien stil wiste | opgelost                              |
 
-**Open P0: 0. Open P1: 0.** De vier open P2's staan hierboven en zijn geen van
+**Open P0: 0. Open P1: 0.** ALPHA-001 was een P0 en is verholpen; de vier open P2's staan hierboven en zijn geen van
 alle een reden om de week niet te kunnen doen.
 
 ## Wat bewust nog niet ondersteund wordt
