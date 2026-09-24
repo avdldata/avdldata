@@ -104,22 +104,41 @@ function servingsOf(value: unknown): number | undefined {
   return undefined;
 }
 
+/**
+ * The steps, in every shape schema.org allows: a string, a list of strings, a
+ * list of HowToStep, sections or an ItemList holding those, or a single step
+ * object rather than a list of one.
+ */
 function stepsOf(value: unknown): string[] {
   if (typeof value === 'string') {
-    return decode(value)
-      .split(/\n+/)
-      .map((s) => s.trim())
+    // Split before decoding: `decode` folds all whitespace, newlines included.
+    return value
+      .split(/\n+|<br\s*\/?>|<\/p>|<\/li>/i)
+      .map((s) => decode(s).trim())
       .filter(Boolean);
   }
-  if (!Array.isArray(value)) return [];
-  return value.flatMap((item): string[] => {
-    if (typeof item === 'string') return [decode(item).trim()].filter(Boolean);
-    if (!item || typeof item !== 'object') return [];
-    const node = item as JsonObject;
-    if (node['@type'] === 'HowToSection') return stepsOf(node['itemListElement']);
-    const step = text(node['text']);
-    return step ? [step] : [];
-  });
+  if (Array.isArray(value)) return value.flatMap((item) => stepsOf(item));
+  if (!value || typeof value !== 'object') return [];
+  const node = value as JsonObject;
+  if (node['itemListElement'] !== undefined) return stepsOf(node['itemListElement']);
+  const step = text(node['text']);
+  return step ? [step] : [];
+}
+
+/** What `recipeInstructions` looked like, for a report line when no step came out. */
+function shapeOf(value: unknown): string {
+  if (value === undefined || value === null) return 'ontbreekt';
+  if (typeof value === 'string') return value.trim() === '' ? 'lege tekst' : 'tekst';
+  if (Array.isArray(value)) {
+    if (value.length === 0) return 'lege lijst';
+    return `lijst van ${value.length}: ${shapeOf(value[0])}`;
+  }
+  if (typeof value === 'object') {
+    const node = value as JsonObject;
+    const keys = Object.keys(node).slice(0, 6).join(',');
+    return `object ${String(node['@type'] ?? '?')} {${keys}}`;
+  }
+  return typeof value;
 }
 
 function keywordsOf(value: unknown): string[] {
@@ -141,7 +160,7 @@ const PACK_SIZE =
   /\((?:à|a|van|ca\.?|circa)?\s*(\d+(?:[.,]\d+)?)\s*(g|gr|gram|kg|ml|cl|dl|l|liter)\b[^)]*\)/i;
 /** Words that describe handling, tried away only when the full name matched nothing. */
 const DUTCH_NOISE =
-  /\b(?:milde|biologische|biologisch|bio|grote|grof|grove|kleine|middelgrote|rijpe|halve|hele|fijngesneden|fijngehakte|gesneden|gehakte|gepelde|geschilde|uitgelekte|ongezouten|koude|lauwe|zachte|verse|vers|semi|extra|vierge)\b/gi;
+  /\b(?:milde|biologische|biologisch|bio|grote|grof|grove|kleine|middelgrote|rijpe|halve|hele|fijngesneden|fijngehakte|gesneden|gehakte|gepelde|geschilde|uitgelekte|ongezouten|koude|lauwe|zachte|verse|vers|versgemalen|semi|extra|vierge)\b/gi;
 const SALT_AND_PEPPER =
   /^(?:(?:versgemalen|zwarte|witte|grove)\s+)?(?:peper|zout)(?:\s+(?:en|of)\s+(?:(?:versgemalen|zwarte|witte|grove)\s+)?(?:peper|zout))?(?:\s+naar\s+smaak)?$/i;
 
@@ -558,7 +577,12 @@ export function convertAllerhandeRecipe(
     rejections.push({ code: 'NO_TIME', detail: 'geen bereidingstijd' });
 
   const steps = stepsOf(node['recipeInstructions']);
-  if (steps.length === 0) rejections.push({ code: 'NO_STEPS', detail: 'geen stappen' });
+  if (steps.length === 0) {
+    rejections.push({
+      code: 'NO_STEPS',
+      detail: `geen stappen (recipeInstructions: ${shapeOf(node['recipeInstructions'])})`,
+    });
+  }
 
   const lines = Array.isArray(node['recipeIngredient']) ? node['recipeIngredient'].map(text) : [];
   const merged = new Map<string, AuthoredRecipeIngredient>();

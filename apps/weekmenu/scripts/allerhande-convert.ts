@@ -12,6 +12,7 @@ import { buildIngredientIndex } from '@/domain/ingredients/types';
 import { SEED_INGREDIENTS } from '@/data/seed/ingredients';
 import { convertAllerhandeRecipe, type RejectionCode } from '@/services/recipes/allerhande/convert';
 import { fileStore } from '@/services/recipes/allerhande/file-store';
+import { parseIngredientLine } from '@/services/recipes/ingredient-line';
 
 const rawDirectory = 'data/private/allerhande/raw';
 const outDirectory = 'data/private/allerhande';
@@ -26,6 +27,7 @@ const accepted = [];
 const byCode = new Map<RejectionCode, number>();
 const missing = new Map<string, number>();
 const unknownAmounts = new Map<string, number>();
+const stepShapes = new Map<string, number>();
 let dinners = 0;
 const rejected: { recipeId: string; codes: string[]; details: string[] }[] = [];
 
@@ -43,8 +45,14 @@ for (const record of records) {
     if (rejection.concept)
       missing.set(rejection.concept, (missing.get(rejection.concept) ?? 0) + 1);
     if (rejection.code === 'AMOUNT_UNKNOWN') {
-      const unit = /\((\w+)\)$/.exec(rejection.detail)?.[1] ?? '?';
+      // The unit word itself ("bos", "blik"), which says more than the refusal code.
+      const line = rejection.detail.replace(/\s*\([^)]*\)$/, '');
+      const unit = parseIngredientLine(line).unit ?? 'geen hoeveelheid';
       unknownAmounts.set(unit, (unknownAmounts.get(unit) ?? 0) + 1);
+    }
+    if (rejection.code === 'NO_STEPS') {
+      const shape = /recipeInstructions: (.*)\)$/.exec(rejection.detail)?.[1] ?? '?';
+      stepShapes.set(shape, (stepShapes.get(shape) ?? 0) + 1);
     }
   }
   rejected.push({
@@ -93,6 +101,12 @@ if (unknownAmounts.size > 0) {
   console.log('\nhoeveelheden zonder vaste maat');
   for (const [unit, count] of [...unknownAmounts].sort((a, b) => b[1] - a[1]).slice(0, 10)) {
     console.log(`  ${String(count).padStart(5)}  ${unit}`);
+  }
+}
+if (stepShapes.size > 0) {
+  console.log('\nrecepten zonder stappen: zo zag recipeInstructions eruit');
+  for (const [shape, count] of [...stepShapes].sort((a, b) => b[1] - a[1]).slice(0, 5)) {
+    console.log(`  ${String(count).padStart(5)}  ${shape}`);
   }
 }
 console.log(`\nGeschreven: ${outDirectory}/recipes.json en report.json`);

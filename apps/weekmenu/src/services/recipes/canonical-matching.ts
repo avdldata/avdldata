@@ -472,6 +472,26 @@ const CANONICAL_BY_NAME = new Map(
 );
 /** Longest first, so a two-word concept beats the one-word one inside it. */
 const LOOKUP_KEYS = Object.keys(TO_CANONICAL).sort((a, b) => b.length - a.length);
+
+/**
+ * Dutch recipe wording for ingredients we already have — matched on the whole
+ * name only, never inside a longer one.
+ *
+ * Kept out of `TO_CANONICAL` on purpose, because that table is also searched
+ * for words *inside* a name. "olie" there would turn "arachide olie" into
+ * sunflower oil and hide a peanut allergen; here it only ever matches a line
+ * that says just "olie", which in a Dutch recipe means neutral frying oil.
+ */
+const DUTCH_WHOLE_NAME: Readonly<Record<string, string>> = {
+  olie: 'zonnebloemolie',
+  'neutrale olie': 'zonnebloemolie',
+  zeezout: 'zout',
+  'grof zeezout': 'zout',
+  scharreleieren: 'ei',
+  scharrelei: 'ei',
+  snelkookrijst: 'witte-rijst',
+  'witte snelkookrijst': 'witte-rijst',
+};
 /** The catalogue's own Dutch synonyms ("uien", "teentje knoflook"), exact only. */
 const ALIAS_BY_NAME = new Map(
   SEED_INGREDIENT_ALIASES.map((a) => [normalise(a.alias), a.ingredientId] as const),
@@ -547,6 +567,8 @@ export function matchCanonicalIngredient(rawName: string): IngredientMatch {
 
   const exactKey = TO_CANONICAL[cleaned];
   if (exactKey) return { kind: 'SAFE_ALIAS', ingredientId: exactKey, normalised };
+  const dutch = DUTCH_WHOLE_NAME[cleaned];
+  if (dutch) return { kind: 'SAFE_ALIAS', ingredientId: dutch, normalised };
 
   // The catalogue's own Dutch synonyms, then Dutch plurals of the whole name.
   // Both exact, both before the substring search below.

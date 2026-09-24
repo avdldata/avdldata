@@ -110,4 +110,21 @@ describe('Nederlandse meervouden en synoniemen', () => {
     expect(match.kind).toBe('NEEDS_NEW_CANONICAL');
     expect(match.ingredientId).toBeUndefined();
   });
+
+  it('kent de Allerhande-woorden voor ingrediënten die er al zijn', () => {
+    expect(matchCanonicalIngredient('scharreleieren')).toMatchObject({ ingredientId: 'ei' });
+    expect(matchCanonicalIngredient('zeezout')).toMatchObject({ ingredientId: 'zout' });
+    expect(matchCanonicalIngredient('olie')).toMatchObject({ ingredientId: 'zonnebloemolie' });
+    expect(matchCanonicalIngredient('witte snelkookrijst')).toMatchObject({
+      ingredientId: 'witte-rijst',
+    });
+  });
+
+  it('"olie" geldt alleen als hele naam: arachide- en sesamolie worden geen zonnebloemolie', () => {
+    // Pinda en sesam zijn allergenen. Die mogen nooit wegvallen doordat een
+    // los woord "olie" in een langere naam op zonnebloemolie werd gezet.
+    for (const name of ['arachide olie', 'sesam olie', 'geroosterde sesam olie']) {
+      expect(matchCanonicalIngredient(name).ingredientId, name).not.toBe('zonnebloemolie');
+    }
+  });
 });

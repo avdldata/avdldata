@@ -168,4 +168,60 @@ describe('een Allerhande-recept omzetten', () => {
     expect(isoMinutes('P0DT0H45M')).toBe(45);
     expect(isoMinutes('')).toBeUndefined();
   });
+
+  it('leest stappen in elke vorm die schema.org toestaat', () => {
+    const shapes = [
+      'Kook de rijst.\nBak de kip.',
+      ['Kook de rijst.', 'Bak de kip.'],
+      {
+        '@type': 'ItemList',
+        itemListElement: [{ text: 'Kook de rijst.' }, { text: 'Bak de kip.' }],
+      },
+      [
+        {
+          '@type': 'HowToSection',
+          itemListElement: [{ text: 'Kook de rijst.' }, { text: 'Bak de kip.' }],
+        },
+      ],
+      {
+        '@type': 'HowToSection',
+        itemListElement: {
+          '@type': 'ItemList',
+          itemListElement: ['Kook de rijst.', 'Bak de kip.'],
+        },
+      },
+    ];
+    for (const recipeInstructions of shapes) {
+      const result = ok(stored({ recipeInstructions }));
+      expect(result.recipe.steps, JSON.stringify(recipeInstructions)).toEqual([
+        'Kook de rijst.',
+        'Bak de kip.',
+      ]);
+    }
+  });
+
+  it('zegt bij "geen stappen" hoe de stappen er wel uitzagen', () => {
+    const result = convertAllerhandeRecipe(
+      stored({ recipeInstructions: { '@type': 'Iets', video: 'x' } }),
+      ingredients,
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    const noSteps = result.rejections.find((r) => r.code === 'NO_STEPS');
+    expect(noSteps?.detail).toContain('object Iets {@type,video}');
+  });
+
+  it('herkent scharreleieren en laat versgemalen zeezout weg', () => {
+    const lines = stored().recipe['recipeIngredient'] as string[];
+    const { authored } = ok(
+      stored({
+        recipeIngredient: [...lines, '2 middelgrote scharreleieren', 'versgemalen zeezout'],
+      }),
+    );
+    expect(authored.ingredients.find((l) => l.ingredientId === 'ei')).toMatchObject({
+      amount: 2,
+      unit: 'piece',
+    });
+    expect(authored.ingredients.some((l) => l.ingredientId === 'zout')).toBe(false);
+  });
 });
