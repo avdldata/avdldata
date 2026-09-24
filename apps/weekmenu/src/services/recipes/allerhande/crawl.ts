@@ -28,6 +28,8 @@ export interface HttpResponse {
   readonly status: number;
   header(name: string): string | null;
   text(): Promise<string>;
+  /** The raw body, for archives that store compressed records. */
+  bytes(): Promise<Uint8Array>;
 }
 
 export type HttpGet = (
@@ -38,9 +40,12 @@ export type HttpGet = (
 export interface StoredAllerhandeRecipe {
   readonly recipeId: string;
   readonly url: string;
+  /** When the content was observed: our fetch, or the archive's capture. */
   readonly fetchedAt: string;
   /** The page's own schema.org Recipe, exactly as published. */
   readonly recipe: JsonObject;
+  /** Where it came from. Absent on records written before there was a choice. */
+  readonly source?: 'website' | 'commoncrawl' | 'appie-api';
 }
 
 export interface CrawlStore {
@@ -264,7 +269,13 @@ export async function crawlAllerhande(options: CrawlOptions): Promise<CrawlOutco
       continue;
     }
     withoutRecipeInARow = 0;
-    options.store.save({ recipeId: id, url, fetchedAt: options.now().toISOString(), recipe });
+    options.store.save({
+      recipeId: id,
+      url,
+      fetchedAt: options.now().toISOString(),
+      recipe,
+      source: 'website',
+    });
     counts.fetched += 1;
     if (counts.fetched % 25 === 0) {
       options.log(`${counts.fetched} opgehaald (${counts.alreadyStored} stonden er al)`);

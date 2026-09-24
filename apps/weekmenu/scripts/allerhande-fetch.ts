@@ -65,8 +65,8 @@ if (outcome.status === 'STOPPED') {
   console.log(`\nGESTOPT: ${outcome.reason} — ${outcome.detail}`);
   if (outcome.reason === 'BLOCKED') {
     console.log(
-      'AH weigert deze verzoeken. De tool omzeilt dat bewust niet. Wat er al is opgehaald blijft staan;\n' +
-        'zie ALLERHANDE_IMPORT.md voor de route via je eigen browser.',
+      'AH weigert deze verzoeken. De tool omzeilt dat bewust niet. Wat er al is opgehaald blijft staan.\n' +
+        'Gebruik pnpm allerhande:archive: dat haalt dezelfde recepten uit Common Crawl, zonder ah.nl te benaderen.',
     );
   }
   process.exitCode = 2;

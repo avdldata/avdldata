@@ -5,7 +5,32 @@ weekplanner kan gebruiken en bewaart ze **alleen op je eigen computer**. Ze gaan
 nooit in git, nooit in de gedeelde receptenbibliotheek en worden nooit
 gepubliceerd.
 
-## Wat hij doet, en wat hij bewust niet doet
+## Twee manieren om recepten binnen te halen
+
+| commando                  | bron                      | status                                                                                  |
+| ------------------------- | ------------------------- | --------------------------------------------------------------------------------------- |
+| `pnpm allerhande:archive` | Common Crawl (webarchief) | **gebruik deze**: geen enkel verzoek naar ah.nl                                         |
+| `pnpm allerhande:fetch`   | ah.nl zelf                | AH weigert deze verzoeken (403, gemeten op 24 september 2026); de tool stopt dan direct |
+
+### Common Crawl (`pnpm allerhande:archive`)
+
+[Common Crawl](https://commoncrawl.org) is een openbaar webarchief dat maandelijks
+een groot deel van het web vastlegt en juist bedoeld is om in bulk te lezen.
+De Allerhande-receptpagina's staan erin. De import:
+
+- doorzoekt de index van de recentste crawls (standaard 3) op
+  `www.ah.nl/allerhande/recept/*` en kiest per recept de nieuwste opname;
+- haalt van elke opname alleen dat ene record op, met een byte-range uit het
+  archiefbestand;
+- bewaart alleen het schema.org-recept, precies als hieronder;
+- vraagt één ding tegelijk met een pauze ertussen, en wacht als het archief
+  druk is (de index geeft dan 503) zo lang als gevraagd;
+- gaat na een onderbreking verder waar hij bleef.
+
+Een recept dat in geen van de doorzochte crawls staat, komt niet binnen. Met
+`--crawls 6` zoekt hij verder terug.
+
+### Direct van ah.nl (`pnpm allerhande:fetch`)
 
 **Wel:**
 
@@ -38,26 +63,30 @@ weigering.
 
 ## Stappen (Windows, PowerShell)
 
-De ontwikkelomgeving kan ah.nl niet bereiken, dus dit draait op je eigen computer.
+De ontwikkelomgeving kan Common Crawl en ah.nl niet bereiken, dus dit draait op
+je eigen computer. De app staat op de werkbranch, niet op `main`.
 
 ```powershell
-cd C:\dev\avdldata\apps\weekmenu
+cd C:\dev\avdldata
+git checkout claude/weekly-menu-optimizer-fdagbe
 git pull
+cd apps\weekmenu
 pnpm install
 
-# 1. Proefrit: 20 recepten (ongeveer twee minuten)
-pnpm allerhande:fetch --limit 20
+# 1. Proefrit: 50 recepten uit Common Crawl
+pnpm allerhande:archive --limit 50
 
 # 2. Omzetten en kijken wat er bruikbaar is
 pnpm allerhande:convert
 ```
 
-Ziet dat er goed uit, draai dan de volledige import. Bij 5 seconden per recept
-duren 1.000 recepten ongeveer anderhalf uur. Je kunt hem altijd afbreken
-(Ctrl+C) en later opnieuw starten; hij gaat verder waar hij was.
+Ziet dat er goed uit, draai dan de volledige import. Met een halve seconde
+tussen de verzoeken en een paar duizend tot ruim twintigduizend recepten duurt
+dat enkele uren. Je kunt hem altijd afbreken (Ctrl+C) en later opnieuw
+starten; hij gaat verder waar hij was.
 
 ```powershell
-pnpm allerhande:fetch
+pnpm allerhande:archive
 pnpm allerhande:convert
 ```
 
@@ -121,12 +150,13 @@ ook in het voorkeurenscherm.
 
 ## Code
 
-| bestand                                                        | rol                                               |
-| -------------------------------------------------------------- | ------------------------------------------------- |
-| `src/services/recipes/allerhande/robots.ts`                    | robots.txt volgens RFC 9309                       |
-| `src/services/recipes/allerhande/sitemap.ts`                   | sitemap en receptnummer                           |
-| `src/services/recipes/allerhande/jsonld.ts`                    | schema.org-recept uit de pagina                   |
-| `src/services/recipes/allerhande/crawl.ts`                     | de ophaallus en de stopregels                     |
-| `src/services/recipes/allerhande/convert.ts`                   | Allerhande-recept → planner-recept                |
-| `src/services/catalogue.ts`                                    | laadt de privé-recepten als de variabele gezet is |
-| `scripts/allerhande-fetch.ts`, `scripts/allerhande-convert.ts` | de twee commando's                                |
+| bestand                                                                                         | rol                                                   |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `src/services/recipes/allerhande/robots.ts`                                                     | robots.txt volgens RFC 9309                           |
+| `src/services/recipes/allerhande/sitemap.ts`                                                    | sitemap en receptnummer                               |
+| `src/services/recipes/allerhande/jsonld.ts`                                                     | schema.org-recept uit de pagina                       |
+| `src/services/recipes/allerhande/crawl.ts`                                                      | de ophaallus voor ah.nl en de stopregels              |
+| `src/services/recipes/allerhande/commoncrawl.ts`                                                | index, WARC-records en de ophaallus voor Common Crawl |
+| `src/services/recipes/allerhande/convert.ts`                                                    | Allerhande-recept → planner-recept                    |
+| `src/services/catalogue.ts`                                                                     | laadt de privé-recepten als de variabele gezet is     |
+| `scripts/allerhande-archive.ts`, `scripts/allerhande-fetch.ts`, `scripts/allerhande-convert.ts` | de drie commando's                                    |

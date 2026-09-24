@@ -14,6 +14,7 @@ export const nodeFetchHttp: HttpGet = async (url, headers) => {
     status: response.status,
     header: (name) => response.headers.get(name),
     text: () => response.text(),
+    bytes: async () => new Uint8Array(await response.arrayBuffer()),
   };
 };
 
