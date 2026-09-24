@@ -36,7 +36,9 @@ export type SourceRights =
   /** Research and education only. Never a production recipe. */
   | 'NON_COMMERCIAL_RESEARCH'
   /** We could not establish the terms. Never a production recipe. */
-  | 'UNKNOWN';
+  | 'UNKNOWN'
+  /** Copied for the owner's private use. Never shipped, never published. */
+  | 'PRIVATE_USE';
 
 /**
  * May a corpus supply a recipe that ships in the product?
@@ -46,7 +48,7 @@ export type SourceRights =
  * noticing is a licence problem waiting to happen.
  */
 export function mayBecomeProduction(rights: SourceRights): boolean {
-  return rights !== 'UNKNOWN' && rights !== 'NON_COMMERCIAL_RESEARCH';
+  return rights !== 'UNKNOWN' && rights !== 'NON_COMMERCIAL_RESEARCH' && rights !== 'PRIVATE_USE';
 }
 
 /** Whether a corpus may be *published* commercially, which is a stricter test. */

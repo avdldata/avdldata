@@ -147,6 +147,15 @@ function firstViolation(
   if (c.excludedCuisines.has(recipe.cuisine)) {
     return { reason: 'DISLIKED_EXCLUDED_CUISINE', detail: `uitgesloten keuken: ${recipe.cuisine}` };
   }
+  // An unknown kitchen could be the excluded one. A household that rules out
+  // any cuisine is therefore not served a dish whose cuisine we do not know —
+  // a hard preference is kept by refusing, never by hoping.
+  if (recipe.cuisine === 'internationaal' && c.excludedCuisines.size > 0) {
+    return {
+      reason: 'DISLIKED_EXCLUDED_CUISINE',
+      detail: 'keuken onbekend, en er staat een keuken op uitgesloten',
+    };
+  }
 
   if (c.maxMinutes !== undefined && recipe.totalMinutes > c.maxMinutes) {
     return { reason: 'TOO_MUCH_TIME', detail: `${recipe.totalMinutes} minuten` };

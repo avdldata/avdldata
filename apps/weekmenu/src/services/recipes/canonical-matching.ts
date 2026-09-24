@@ -1,4 +1,4 @@
-import { SEED_INGREDIENTS } from '@/data/seed/ingredients';
+import { SEED_INGREDIENTS, SEED_INGREDIENT_ALIASES } from '@/data/seed/ingredients';
 import { normalise } from '@/domain/ingestion/match-ingredient';
 import { cleanName } from './ingredient-line';
 
@@ -472,6 +472,43 @@ const CANONICAL_BY_NAME = new Map(
 );
 /** Longest first, so a two-word concept beats the one-word one inside it. */
 const LOOKUP_KEYS = Object.keys(TO_CANONICAL).sort((a, b) => b.length - a.length);
+/** The catalogue's own Dutch synonyms ("uien", "teentje knoflook"), exact only. */
+const ALIAS_BY_NAME = new Map(
+  SEED_INGREDIENT_ALIASES.map((a) => [normalise(a.alias), a.ingredientId] as const),
+);
+
+/**
+ * The Dutch singular a plural could have come from — for exact lookups only.
+ *
+ * Only the last word changes, and a candidate counts only when it is exactly a
+ * canonical name or alias. That is what keeps this precise: "aubergines" finds
+ * "aubergine", while "semi zongedroogde tomaten" finds nothing, because no
+ * canonical ingredient is called "semi zongedroogde tomaat" — and falling back
+ * to plain tomato there would put fresh tomatoes on the list for a jar of
+ * sun-dried ones.
+ */
+function dutchSingulars(name: string): string[] {
+  const words = name.split(' ');
+  const last = words.pop() ?? '';
+  const head = words.length > 0 ? `${words.join(' ')} ` : '';
+  const forms: string[] = [];
+  if (last.endsWith('s')) forms.push(last.slice(0, -1)); // aubergines, paprika s → paprika
+  if (last.endsWith('en') && last.length > 4) {
+    const stem = last.slice(0, -2); // wortelen → wortel, uien → ui
+    forms.push(stem);
+    // tomaten → tomaat, bonen → boon: the vowel was doubled away in the plural.
+    const open = /^(.*[^aeiou])([aeiou])([^aeiou])$/.exec(stem);
+    if (open) forms.push(`${open[1]}${open[2]}${open[2]}${open[3]}`);
+    // sjalotten → sjalot: the consonant was doubled in the plural.
+    if (/([^aeiou])\1$/.test(stem)) forms.push(stem.slice(0, -1));
+  }
+  return forms.map((form) => `${head}${form}`);
+}
+
+function exactCanonical(name: string): string | undefined {
+  const key = normalise(name);
+  return CANONICAL_BY_NAME.get(key) ?? (CANONICAL_IDS.has(key) ? key : ALIAS_BY_NAME.get(key));
+}
 
 /**
  * A unit word that survived the line parser.
@@ -483,7 +520,7 @@ const LOOKUP_KEYS = Object.keys(TO_CANONICAL).sort((a, b) => b.length - a.length
  * the report produced.
  */
 const LEADING_UNIT =
-  /^(?:g|gr|gram|grams|kg|ml|cl|dl|l|liter|liters|litre|litres|oz|ounce|ounces|lb|lbs|pound|pounds|cup|cups|cupful|cupfuls|tsp|teaspoon|teaspoons|teaspoonful|teaspoonfuls|tbsp|tablespoon|tablespoons|tablespoonful|tablespoonfuls|pint|pints|quart|quarts|spoonful|spoonfuls|gill|gills|dram|drams)\s+(?:of\s+)?/i;
+  /^(?:g|gr|gram|grams|kg|ml|cl|dl|l|liter|liters|litre|litres|oz|ounce|ounces|lb|lbs|pound|pounds|cup|cups|cupful|cupfuls|tsp|teaspoon|teaspoons|teaspoonful|teaspoonfuls|tbsp|tablespoon|tablespoons|tablespoonful|tablespoonfuls|pint|pints|quart|quarts|spoonful|spoonfuls|gill|gills|dram|drams|el|tl|eetlepels?|theelepels?|teentjes?|tenen|teen)\s+(?:of\s+)?/i;
 
 export function matchCanonicalIngredient(rawName: string): IngredientMatch {
   const cleaned = cleanName(rawName).replace(LEADING_UNIT, '').trim();
@@ -510,6 +547,15 @@ export function matchCanonicalIngredient(rawName: string): IngredientMatch {
 
   const exactKey = TO_CANONICAL[cleaned];
   if (exactKey) return { kind: 'SAFE_ALIAS', ingredientId: exactKey, normalised };
+
+  // The catalogue's own Dutch synonyms, then Dutch plurals of the whole name.
+  // Both exact, both before the substring search below.
+  const alias = ALIAS_BY_NAME.get(normalised);
+  if (alias) return { kind: 'SAFE_ALIAS', ingredientId: alias, normalised };
+  for (const singular of dutchSingulars(normalised)) {
+    const id = exactCanonical(singular);
+    if (id) return { kind: 'SAFE_ALIAS', ingredientId: id, normalised };
+  }
 
   // A substring hit, longest key first. Guarded by the ambiguity check, so a
   // line naming two foods is refused rather than resolved to the first.

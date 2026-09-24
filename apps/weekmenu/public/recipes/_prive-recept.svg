@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="Recept zonder eigen afbeelding">
+  <rect width="640" height="400" fill="#f3efe7"/>
+  <circle cx="320" cy="200" r="118" fill="#ffffff" stroke="#d9d1c3" stroke-width="6"/>
+  <circle cx="320" cy="200" r="84" fill="none" stroke="#e8e1d4" stroke-width="4"/>
+  <path d="M170 110v70c0 14 10 24 22 24v96" fill="none" stroke="#b9ae9c" stroke-width="8" stroke-linecap="round"/>
+  <path d="M158 110v58M182 110v58" stroke="#b9ae9c" stroke-width="6" stroke-linecap="round"/>
+  <path d="M468 110c-22 18-26 56-26 84h26v106" fill="none" stroke="#b9ae9c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

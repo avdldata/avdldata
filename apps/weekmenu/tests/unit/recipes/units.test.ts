@@ -78,3 +78,25 @@ describe('normaliseAmount', () => {
     expect(normaliseAmount(1, 'FL OZ').value).toBeCloseTo(29.5735295625, 5);
   });
 });
+
+describe('Nederlandse eenheden', () => {
+  it('rekent een eetlepel en theelepel om zoals de rest van de app: 15 en 5 ml', () => {
+    // Niet de Amerikaanse 14,79: het domein rekent met ML_PER_TBSP = 15.
+    expect(normaliseAmount(2, 'el')).toMatchObject({ kind: 'volume', value: 30, baseUnit: 'ml' });
+    expect(normaliseAmount(1, 'eetlepels').value).toBe(15);
+    expect(normaliseAmount(3, 'tl')).toMatchObject({ kind: 'volume', value: 15, baseUnit: 'ml' });
+  });
+
+  it('telt een teen, plak of takje als stuk', () => {
+    expect(normaliseAmount(1, 'teen')).toMatchObject({ kind: 'count', value: 1 });
+    expect(normaliseAmount(4, 'plakjes')).toMatchObject({ kind: 'count', value: 4 });
+    expect(normaliseAmount(2, 'takjes')).toMatchObject({ kind: 'count', value: 2 });
+  });
+
+  it('weigert verpakkingen en vage maten bij naam, net als "can" en "pinch"', () => {
+    for (const unit of ['blik', 'pakje', 'zak', 'bos', 'snufje', 'scheut', 'handvol']) {
+      expect(normaliseAmount(1, unit), unit).toMatchObject({ refusal: 'PACKAGE_DEPENDENT' });
+      expect(normaliseAmount(1, unit).value, unit).toBeUndefined();
+    }
+  });
+});

@@ -55,7 +55,9 @@
     "perf:real": "tsx scripts/profile-real-data.ts",
     "perf:stress": "tsx scripts/stress-candidates.ts",
     "release:checkout": "tsx scripts/release-checkout-audit.ts",
-    "recipes:funnel": "tsx --conditions=react-server scripts/recipe-funnel.ts"
+    "recipes:funnel": "tsx --conditions=react-server scripts/recipe-funnel.ts",
+    "allerhande:fetch": "tsx --conditions=react-server scripts/allerhande-fetch.ts",
+    "allerhande:convert": "tsx --conditions=react-server scripts/allerhande-convert.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

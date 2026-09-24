@@ -134,3 +134,29 @@ describe('hard constraint filtering', () => {
     expect(excluded.every((e) => e.detail.length > 0)).toBe(true);
   });
 });
+
+describe('een recept waarvan de keuken onbekend is', () => {
+  it('wordt niet geserveerd aan een huishouden dat een keuken uitsluit', async () => {
+    const { filterCandidateRecipes } = await import('@/domain/optimization/filter');
+    const { recipes, demoHousehold } = await import('../support/fixtures');
+    const unknown = { ...recipes[0]!, id: 'onbekende-keuken', cuisine: 'internationaal' as const };
+
+    const excluding = {
+      ...demoHousehold,
+      preferences: {
+        ...demoHousehold.preferences,
+        cuisines: [{ value: 'mexicaans' as const, level: 'EXCLUDE' as const }],
+      },
+    };
+    const result = filterCandidateRecipes({ household: excluding, recipes: [unknown] });
+    // Het zou de uitgesloten keuken kunnen zijn; een harde voorkeur houden we
+    // door te weigeren, niet door te hopen.
+    expect(result.candidates).toHaveLength(0);
+    expect(result.excluded[0]?.reason).toBe('DISLIKED_EXCLUDED_CUISINE');
+
+    const open = { ...demoHousehold, preferences: { ...demoHousehold.preferences, cuisines: [] } };
+    expect(filterCandidateRecipes({ household: open, recipes: [unknown] }).candidates).toHaveLength(
+      1,
+    );
+  });
+});

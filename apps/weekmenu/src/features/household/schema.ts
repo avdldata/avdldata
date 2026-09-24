@@ -168,6 +168,7 @@ export const CUISINE_LABELS: Record<string, string> = {
   indiaas: 'Indiaas',
   grieks: 'Grieks',
   frans: 'Frans',
+  internationaal: 'Overig (keuken onbekend)',
 };
 
 export const TAG_LABELS: Record<string, string> = {

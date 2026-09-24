@@ -72,6 +72,21 @@ export default async function DayPage({ params }: { params: Promise<{ dag: strin
           />
           <CardContent className="pt-4">
             <p className="text-ink-soft text-sm">{day.recipe.description}</p>
+            {day.recipe.provenance?.kind === 'EXTERNAL' && day.recipe.provenance.sourceUrl ? (
+              // A copied recipe says where it came from, and links back to it.
+              <p className="text-ink-faint mt-2 text-xs" data-testid="recipe-source">
+                {day.recipe.provenance.attribution ?? day.recipe.provenance.source}
+                {' · '}
+                <a
+                  href={day.recipe.provenance.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  bekijk het origineel
+                </a>
+              </p>
+            ) : null}
             <div className="mt-3 flex flex-wrap gap-2">
               <Badge variant="brand">{day.recipe.cuisine}</Badge>
               {day.recipe.tags.slice(0, 4).map((tag) => (

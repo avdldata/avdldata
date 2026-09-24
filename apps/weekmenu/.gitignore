@@ -27,3 +27,7 @@ data/recipes/candidates/forkrecipe/
 data/recipes/candidates/open-recipe-archive/
 data/recipes/candidates/public-domain-recipes/
 data/recipes/candidates/recipe-dataset/
+
+# Recepten die voor eigen gebruik zijn gekopieerd (Allerhande). Nooit committen;
+# zie ALLERHANDE_IMPORT.md.
+data/private/

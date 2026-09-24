@@ -90,3 +90,22 @@ describe('cleanName', () => {
     expect(cleanName('Tomatoes, San Marzano!')).toBe('tomatoes san marzano');
   });
 });
+
+describe('Nederlandse regels', () => {
+  it('leest "2 el" als twee eetlepels, niet als twee stuks', () => {
+    // Zonder de eenheid werd dit twee flessen olijfolie.
+    expect(parseIngredientLine('2 el milde olijfolie')).toMatchObject({
+      quantity: 2,
+      unit: 'el',
+      rawName: 'milde olijfolie',
+    });
+  });
+
+  it('haalt de teen van de knoflook af', () => {
+    expect(parseIngredientLine('1 teen knoflook')).toMatchObject({
+      quantity: 1,
+      unit: 'teen',
+      rawName: 'knoflook',
+    });
+  });
+});

@@ -91,3 +91,23 @@ describe('matchCanonicalIngredient', () => {
     expect(first).toEqual(second);
   });
 });
+
+describe('Nederlandse meervouden en synoniemen', () => {
+  it('vindt het enkelvoud als dat precies een basisingrediënt is', () => {
+    expect(matchCanonicalIngredient('aubergines')).toMatchObject({ ingredientId: 'aubergine' });
+    expect(matchCanonicalIngredient('tomaten')).toMatchObject({ ingredientId: 'tomaat' });
+    expect(matchCanonicalIngredient('wortelen')).toMatchObject({ ingredientId: 'wortel' });
+  });
+
+  it('gebruikt de eigen synoniemen van de catalogus', () => {
+    expect(matchCanonicalIngredient('uien')).toMatchObject({ ingredientId: 'ui' });
+  });
+
+  it('valt voor een specifieker product niet terug op het gewone ingrediënt', () => {
+    // Zongedroogde tomaten uit een pot zijn geen verse tomaten. Liever geen
+    // koppeling dan de verkeerde op de boodschappenlijst.
+    const match = matchCanonicalIngredient('semi-zongedroogde tomaten');
+    expect(match.kind).toBe('NEEDS_NEW_CANONICAL');
+    expect(match.ingredientId).toBeUndefined();
+  });
+});

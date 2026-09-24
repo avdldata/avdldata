@@ -10,6 +10,13 @@ export const CUISINES = [
   'indiaas',
   'grieks',
   'frans',
+  /**
+   * The kitchen is not known — only ever set on an imported recipe whose
+   * source did not say. Never used as a guess for something we could name:
+   * `filterCandidateRecipes` treats it as possibly-any-kitchen, so a household
+   * that excludes a cuisine is not served a dish we simply failed to label.
+   */
+  'internationaal',
 ] as const;
 export type Cuisine = (typeof CUISINES)[number];
 
@@ -85,6 +92,12 @@ export const RECIPE_LICENCES = [
   'NON_COMMERCIAL_RESEARCH',
   /** Rights not established. Never production. */
   'UNKNOWN',
+  /**
+   * Copied for the household's own private use only — never in the shared
+   * library, never in git, never published. Loaded from a local file the
+   * owner points the app at (WEEKMENU_PRIVATE_RECIPES); see ALLERHANDE_IMPORT.md.
+   */
+  'PRIVATE_USE',
 ] as const;
 export type RecipeLicence = (typeof RECIPE_LICENCES)[number];
 
