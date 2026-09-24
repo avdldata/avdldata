@@ -23,7 +23,7 @@ import {
   travelCostStatus,
 } from './store-service';
 import { filterCandidateRecipes } from '@/domain/optimization/filter';
-import { prepareOptimization } from '@/domain/optimization/prepare';
+import { prepareOptimization, type PreparedOptimization } from '@/domain/optimization/prepare';
 import { evaluateWeek } from '@/domain/optimization/evaluate-week';
 
 export interface PlanContext {
@@ -223,7 +223,9 @@ async function buildOptimizerInput(
       : {}),
     ...(lockedRecipeIds ? { lockedRecipeIds } : {}),
     config: configFor(context.settings),
-    requireCompleteBasket: true,
+    // Complete for what the app chooses; a week the user already chose is priced
+    // as it is, with whatever the shops lack shown as unavailable (ALPHA-004).
+    requireCompleteBasket: lockedRecipeIds === undefined,
     ...(logger ? { logger } : {}),
     now: () => performance.now(),
   };
@@ -235,6 +237,36 @@ export async function generatePlan(
   options: GenerationOptions = {},
 ): Promise<OptimizerResult> {
   return runOptimizer(await buildOptimizerInput(context, undefined, options), context);
+}
+
+/**
+ * The eligible dishes the selected shops can supply completely, each on its own.
+ *
+ * Priced with the same evaluation the week uses, so "complete" means exactly
+ * what it means on the shopping list: every ingredient matched, packed and
+ * priced at a shop the household allows.
+ */
+function retailSolvable(input: OptimizerInput, prepared: PreparedOptimization): Recipe[] {
+  return prepared.candidates.filter(
+    (recipe) =>
+      evaluateWeek({
+        recipes: [recipe],
+        portionsByRecipe: prepared.portionsByRecipe,
+        household: input.household,
+        memberNutrition: prepared.memberNutrition,
+        ingredients: input.ingredients,
+        stores: prepared.stores,
+        matrixHome: prepared.home,
+        maxStores: prepared.maxStores,
+        extraStorePenalty: prepared.extraStorePenalty,
+        budget: {},
+        startDate: input.startDate,
+        config: prepared.config,
+        excluded: prepared.excluded,
+        explain: false,
+        requireCompleteBasket: true,
+      }) !== undefined,
+  );
 }
 
 function runOptimizer(input: OptimizerInput, context: PlanContext): OptimizerResult {
@@ -282,31 +314,22 @@ function runOptimizer(input: OptimizerInput, context: PlanContext): OptimizerRes
         'Er zijn passende recepten, maar de prijsgegevens leveren geen koopbare gerechten op. Controleer de prijsgegevens en je geselecteerde supermarkten.',
       excludedRecipes: [],
     };
+  } else if (input.lockedRecipeIds) {
+    /*
+     * A week the user already chose: replace a dish, show alternatives, "bereken
+     * opnieuw", or open a week saved before prices were stored with it.
+     *
+     * The completeness pre-filter below exists so the app never *chooses* a dish
+     * the shops cannot supply. Applied here it removed the user's own dish from
+     * the pool, so the locked week could not be rebuilt at all and the whole week
+     * was refused as NO_WEEK_SOLUTION — after nothing more than unticking a
+     * supermarket, or a snapshot refresh that dropped one product. The seven
+     * dishes are given; only the money is recalculated.
+     */
+    result = optimiseWeek(input);
   } else {
     const prepared = prepareOptimization(input);
-    const solvable: Recipe[] = [];
-    if (prepared.status === 'OK') {
-      for (const recipe of prepared.candidates) {
-        const priced = evaluateWeek({
-          recipes: [recipe],
-          portionsByRecipe: prepared.portionsByRecipe,
-          household: input.household,
-          memberNutrition: prepared.memberNutrition,
-          ingredients: input.ingredients,
-          stores: prepared.stores,
-          matrixHome: prepared.home,
-          maxStores: prepared.maxStores,
-          extraStorePenalty: prepared.extraStorePenalty,
-          budget: {},
-          startDate: input.startDate,
-          config: prepared.config,
-          excluded: prepared.excluded,
-          explain: false,
-          requireCompleteBasket: true,
-        });
-        if (priced) solvable.push(recipe);
-      }
-    }
+    const solvable = prepared.status === 'OK' ? retailSolvable(input, prepared) : [];
     log?.('retailRecipes', { retailSolvable: solvable.length, selectedChains: chains.length });
     // If dietary rules emptied the full library, preserve its exclusion detail.
     if (prepared.status === 'OK' && solvable.length < prepared.config.days) {
@@ -394,13 +417,36 @@ export async function repriceStoredPlan(
   return runOptimizer(await buildOptimizerInput(context, locked), context);
 }
 
+/**
+ * Alternatives for one day of a week the user already has.
+ *
+ * Two rules meet here. The dish the app *proposes* is its choice, so the shops
+ * must be able to supply it completely — the ALPHA-003 guarantee. The other six
+ * days are the user's choice, so they are priced as they are, including
+ * anything the shops lack (ALPHA-004). Requiring the whole week to be complete
+ * meant one incomplete dish elsewhere in the week left every day without a
+ * single alternative.
+ */
 export async function findAlternatives(
   context: PlanContext,
   plan: WeeklyPlan,
   dayIndex: number,
 ): Promise<ReplacementCandidate[]> {
   const base = await buildOptimizerInput(context);
-  return findReplacements({ ...base, currentPlan: plan, dayIndex });
+  const prepared = prepareOptimization(base);
+  if (prepared.status !== 'OK') return [];
+
+  const kept = plan.days.filter((day) => day.dayIndex !== dayIndex).map((day) => day.recipe);
+  const pool = new Map<string, Recipe>();
+  for (const recipe of [...retailSolvable(base, prepared), ...kept]) pool.set(recipe.id, recipe);
+
+  return findReplacements({
+    ...base,
+    recipes: [...pool.values()],
+    requireCompleteBasket: false,
+    currentPlan: plan,
+    dayIndex,
+  });
 }
 
 // ---------------------------------------------------------------------------

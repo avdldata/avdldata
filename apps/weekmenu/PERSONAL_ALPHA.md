@@ -262,8 +262,26 @@ geprijsd, waardoor alle producten en daarna alle recepten verdwenen. Zie
 [ALPHA-003.md](ALPHA-003.md) voor de productieflow, persisted vergelijking,
 correcte foutclassificatie en bestaande-accountacceptatie.
 
-**Open P0: 0. Open P1: 0.** ALPHA-001, ALPHA-002 en ALPHA-003 zijn verholpen; de vier open P2's staan hierboven en zijn geen van
-alle een reden om de week niet te kunnen doen.
+ALPHA-004 (P1): de ALPHA-003-regel "een week heeft een complete
+boodschappenlijst" werd ook toegepast op een week die de gebruiker al had.
+Vervangen, alternatieven tonen, "bereken opnieuw" en het openen van een week
+van vóór de opgeslagen prijzen zetten de zeven dagen vast en prijzen ze
+opnieuw; zodra één van die gerechten niet volledig te koop was bij de huidige
+winkels — na het uitzetten van een supermarkt, of een verversing die een
+product laat verdwijnen — weigerde de app de hele week met "konden niet worden
+gecombineerd tot een volledige week". De boodschappenlijst zei op datzelfde
+moment "vervang het bijbehorende gerecht". Nu geldt: volledig voor wat de app
+kiest (een nieuwe week, een voorgesteld alternatief), niet voor wat de
+gebruiker al koos; wat ontbreekt staat als niet verkrijgbaar op de lijst.
+Opgelost, met een integratietest en een browsertest die op `89af56b` falen.
+
+Nog een open keuze, geen bug: sinds ALPHA-003 levert een hard budget dat
+geen week haalt helemaal geen week meer op (`BUDGET_TOO_LOW`), ook niet bij
+vervangen of doorrekenen van een bestaande week. Daarvóór kreeg je de beste
+week met het tekort erbij.
+
+**Open P0: 0. Open P1: 0.** ALPHA-001 tot en met ALPHA-004 zijn verholpen; de vier open P2's staan hierboven en zijn geen
+van alle een reden om de week niet te kunnen doen.
 
 ## Wat bewust nog niet ondersteund wordt
 
