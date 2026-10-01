@@ -1,7 +1,7 @@
 import conftest  # noqa: F401  (sets up sys.path)
 from datetime import date
 
-from classify import classify, is_recognized, split
+from classify import classify, is_excluded, is_recognized, split
 from models import Fixture
 
 
@@ -41,6 +41,31 @@ def test_split_buckets_and_flags_unclassified():
     assert len(senioren) == 2
     assert len(jeugd) == 1
     assert len(unclassified) == 1
+
+
+def test_18plus_women_and_35_45plus_men_are_excluded():
+    for name in ["VV Pekela 45+1", "VV Pekela 35+ 1", "VV Pekela VR18+ 1", "VV Pekela Vrouwen 18+ 1"]:
+        assert is_excluded(_fx(name)), name
+        # also when it's only the opponent that is an excluded team
+        assert is_excluded(_fx("VV Pekela 1", name)), name
+
+
+def test_regular_senior_women_and_men_are_not_excluded():
+    for name in ["VV Pekela 1", "VV Pekela VR1", "VV Pekela Dames 1", "VV Pekela JO19-1", "Meeden 145"]:
+        assert not is_excluded(_fx(name)), name
+
+
+def test_split_drops_excluded_fixtures_from_every_list():
+    fixtures = [
+        _fx("VV Pekela 1", "SC Loppersum 2"),
+        _fx("VV Pekela 45+1", "Gieten 45+1"),
+        _fx("VV Pekela VR18+ 1", "Meeden VR18+ 1"),
+        _fx("VV Pekela JO17-1", "Veendam 1894 JO17-1"),
+    ]
+    senioren, jeugd, unclassified = split(fixtures)
+    assert [f.home_team for f in senioren] == ["VV Pekela 1"]
+    assert len(jeugd) == 1
+    assert unclassified == []
 
 
 if __name__ == "__main__":

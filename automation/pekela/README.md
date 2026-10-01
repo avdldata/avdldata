@@ -8,8 +8,9 @@ Draait via `.github/workflows/pekela-poster.yml` (cron + handmatige
 ## Hoe het werkt
 1. `scraper.py` haalt `programma-komende-week` op en zet elke wedstrijd om in
    een `Fixture`.
-2. `classify.py` verdeelt de wedstrijden in senioren (mannen, vrouwen,
-   veteranen) en jeugd (JO/MO/O-teams), op basis van de teamnaam.
+2. `classify.py` verdeelt de wedstrijden in senioren en jeugd (JO/MO/O-teams),
+   op basis van de teamnaam. 18+ vrouwen en 35+/45+ mannen komen bewust op
+   geen van beide posters (`is_excluded`).
 3. `poster.py` tekent per groep een PNG (Pillow) met de kleuren/het patroon
    van de club's eigen Canva-ontwerp, dynamisch geschaald voor elk aantal
    wedstrijden.
