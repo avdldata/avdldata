@@ -55,6 +55,27 @@ def test_regular_senior_women_and_men_are_not_excluded():
         assert not is_excluded(_fx(name)), name
 
 
+def test_real_programma_2_t_m_4_oktober():
+    """Team names copied from the club's own week-40 programme: the 13 Friday
+    18+/35+/45+ matches must go, the 5 regular weekend matches must stay."""
+    excluded = [
+        ("Bareveld VR18+1", "VV Pekela VR18+1"), ("VV Pekela 45+1", "Wildervank 45+1"),
+        ("VV Pekela 45+1", "Pekelder Boys 45+1"), ("VV Pekela VR18+2", "Pekelder Boys VR18+1"),
+        ("Westerwolde 35+1", "VV Pekela 35+1"), ("Bareveld 45+1", "VV Pekela 45+1"),
+        ("Onstwedder Boys 35+1", "VV Pekela 35+1"), ("VV Pekela VR18+1", "Wildervank VR18+1"),
+        ("VV Pekela VR18+2", "Bareveld VR18+1"), ("VV Pekela 35+1", "Noordster 35+1"),
+        ("VV Pekela VR18+1", "Pekelder Boys VR18+1"), ("VV Pekela VR18+2", "Wildervank VR18+1"),
+        ("VV Pekela VR18+2", "VV Pekela VR18+1"),
+    ]
+    kept = [
+        ("VV Pekela 2", "Noordscheschut 3"), ("VV Pekela 1", "SJS 1"), ("BATO VR1", "VV Pekela VR2"),
+        ("VV Pekela 4", "SPW 2"), ("VV Pekela 2 (ZON)", "Alteveer 2 (ZON)"),
+    ]
+    senioren, jeugd, unclassified = split([_fx(h, a) for h, a in excluded + kept])
+    assert [(f.home_team, f.away_team) for f in senioren] == kept
+    assert jeugd == [] and unclassified == []
+
+
 def test_split_drops_excluded_fixtures_from_every_list():
     fixtures = [
         _fx("VV Pekela 1", "SC Loppersum 2"),
